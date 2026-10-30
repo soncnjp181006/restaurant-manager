@@ -57,7 +57,7 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: desktop/src-tauri -> target
-          shared-key: posr-desktop-linux
+          shared-key: restaurant-manager-desktop-linux
 
       - name: Install JS dependencies (app)
         run: bun install --frozen-lockfile
@@ -87,7 +87,7 @@ jobs:
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: posr-desktop-linux-deb
+          name: restaurant-manager-desktop-linux-deb
           path: desktop/src-tauri/target/release/bundle/deb/
           if-no-files-found: error
           retention-days: 14

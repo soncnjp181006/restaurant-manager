@@ -1,7 +1,7 @@
 {
-  "name": "posr-gateway",
+  "name": "restaurant-manager-gateway",
   "version": "1.0.0",
-  "description": "Auth gateway + Surreal WebSocket relay for POSR",
+  "description": "Auth gateway + Surreal WebSocket relay for Restaurant Manager",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

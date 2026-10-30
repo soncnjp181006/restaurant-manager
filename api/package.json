@@ -1,5 +1,5 @@
 {
-  "name": "posr-api-server",
+  "name": "restaurant-manager-api",
   "version": "1.0.0",
   "license": "SEE LICENSE IN LICENSE",
   "description": "POS general-purpose backend API service (extensible modules). Keeps third-party secrets server-side.",

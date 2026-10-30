@@ -73,8 +73,9 @@ allocators.
 - **Unsafe presets** (terminal sequential, pool, hybrid) require
   `acknowledgeGaps` and are documented as fiscal-gap risks. Pool/hybrid re-enable
   local invoice refill; hybrid online still gateway-overwrites to reduce holes.
-- Fiscal provider numbers stay on `integration_order_fiscal` — POSR does not
-  mint `FBR-…` strings. Provider-defined is documented storage, not a minter.
+- Fiscal provider numbers stay on `integration_order_fiscal` — Restaurant
+  Manager does not mint `FBR-…` strings. Provider-defined is documented storage,
+  not a minter.
 
 ## Consequences
 

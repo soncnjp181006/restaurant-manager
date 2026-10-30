@@ -7,7 +7,7 @@ Automated user guides driven by Playwright screenshots and localized prose.
 Every build produces a **multi-guide tree** from [`docs-automation/guide-catalog.mjs`](../../docs-automation/guide-catalog.mjs). Do not hardcode the tree only in markdown — edit the catalog; assemble regenerates structure.
 
 ```
-POSR Documentation
+Restaurant Manager Documentation
 │
 ├── 📘 Employee Guide
 │   ├── Login

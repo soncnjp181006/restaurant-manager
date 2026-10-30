@@ -1,5 +1,5 @@
 {
-  "name": "posr-payment-server",
+  "name": "restaurant-manager-payments",
   "version": "1.0.0",
   "license": "SEE LICENSE IN LICENSE",
   "description": "POS payment gateway orchestration service",

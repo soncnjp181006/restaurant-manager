@@ -1,9 +1,9 @@
 {
-  "name": "posr-tracking-api",
+  "name": "restaurant-manager-tracking-api",
   "version": "1.0.0",
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
-  "description": "Tracking ingestion API for POSR",
+  "description": "Tracking ingestion API for Restaurant Manager",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -14,6 +14,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.22.2",
     "jose": "^5.9.6",
+    "pg": "^8.23.1",
     "surrealdb": "^2.0.3",
     "ws": "^8.21.3"
   },

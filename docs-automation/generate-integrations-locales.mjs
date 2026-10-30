@@ -16,7 +16,7 @@ const LANGS = ['es', 'tr', 'pt-br', 'fr', 'nl', 'de', 'it', 'ar', 'ru'];
 const T = {
   es: {
     title: 'Integraciones',
-    intro: 'Las integraciones conectan POSR con proveedores externos de contabilidad, fiscalidad, logging e inventario. Active proveedores, configure credenciales y supervise salud y cola.',
+    intro: 'Las integraciones conectan Restaurant Manager con proveedores externos de contabilidad, fiscalidad, logging e inventario. Active proveedores, configure credenciales y supervise salud y cola.',
     sections: {
       open: { title: 'Abrir Integraciones', steps: ['Inicie sesión con acceso a integraciones.', 'Pulse Integraciones en la barra lateral.', 'Se abre en la pestaña Proveedores por defecto.'], caption: 'Pantalla Integraciones con pestañas y lista de proveedores.' },
       tabs: { title: 'Navegación por pestañas', intro: 'Las pestañas cubren lista, configuración, salud y cola. Cambiar puede requerir PIN de gerente.', steps: ['Proveedores lista conectores y switches.', 'Configuración guarda credenciales y opciones.', 'Salud y Cola muestran estado y trabajos pendientes.'], caption: 'Barra de pestañas de Integraciones.' },
@@ -28,7 +28,7 @@ const T = {
   },
   tr: {
     title: 'Entegrasyonlar',
-    intro: 'Entegrasyonlar POSR\'yi muhasebe, mali, günlük ve envanter sağlayıcılarına bağlar. Sağlayıcıları etkinleştirin, kimlik bilgilerini yapılandırın, sağlık ve kuyruğu izleyin.',
+    intro: 'Entegrasyonlar Restaurant Manager\'yi muhasebe, mali, günlük ve envanter sağlayıcılarına bağlar. Sağlayıcıları etkinleştirin, kimlik bilgilerini yapılandırın, sağlık ve kuyruğu izleyin.',
     sections: {
       open: { title: 'Entegrasyonları aç', steps: ['Entegrasyon erişimiyle giriş yapın.', 'Yan menüde Entegrasyonlar\'a dokunun.', 'Varsayılan olarak Sağlayıcılar sekmesi açılır.'], caption: 'Entegrasyonlar ekranı.' },
       tabs: { title: 'Sekme gezinmesi', intro: 'Sekmeler liste, yapılandırma, sağlık ve kuyruğu kapsar.', steps: ['Sağlayıcılar bağlayıcıları listeler.', 'Yapılandırma kimlik bilgilerini tutar.', 'Sağlık ve Kuyruk durum ve işleri gösterir.'], caption: 'Entegrasyonlar sekme çubuğu.' },
@@ -40,7 +40,7 @@ const T = {
   },
   'pt-br': {
     title: 'Integrações',
-    intro: 'Integrações conectam o POSR a provedores externos de contabilidade, fiscal, logging e estoque. Ative provedores, configure credenciais e monitore saúde e fila.',
+    intro: 'Integrações conectam o Restaurant Manager a provedores externos de contabilidade, fiscal, logging e estoque. Ative provedores, configure credenciais e monitore saúde e fila.',
     sections: {
       open: { title: 'Abrir Integrações', steps: ['Entre com acesso a integrações.', 'Toque em Integrações na barra lateral.', 'Abre na aba Provedores.'], caption: 'Tela Integrações.' },
       tabs: { title: 'Navegação por abas', intro: 'Abas cobrem lista, configuração, saúde e fila.', steps: ['Provedores lista conectores.', 'Configuração guarda credenciais.', 'Saúde e Fila mostram status e jobs.'], caption: 'Barra de abas Integrações.' },
@@ -52,7 +52,7 @@ const T = {
   },
   fr: {
     title: 'Intégrations',
-    intro: 'Les intégrations connectent POSR à des fournisseurs externes (comptabilité, fiscal, logging, inventaire). Activez, configurez et surveillez santé et file.',
+    intro: 'Les intégrations connectent Restaurant Manager à des fournisseurs externes (comptabilité, fiscal, logging, inventaire). Activez, configurez et surveillez santé et file.',
     sections: {
       open: { title: 'Ouvrir Intégrations', steps: ['Connectez-vous avec accès intégrations.', 'Appuyez sur Intégrations.', 'S\'ouvre sur Fournisseurs.'], caption: 'Écran Intégrations.' },
       tabs: { title: 'Navigation par onglets', intro: 'Onglets : liste, configuration, santé et file.', steps: ['Fournisseurs liste les connecteurs.', 'Configuration stocke les identifiants.', 'Santé et File montrent l\'état et les jobs.'], caption: 'Barre d\'onglets Intégrations.' },
@@ -64,7 +64,7 @@ const T = {
   },
   nl: {
     title: 'Integraties',
-    intro: 'Integraties verbinden POSR met externe boekhoud-, fiscale, logging- en voorraadproviders. Schakel in, configureer en monitor gezondheid en wachtrij.',
+    intro: 'Integraties verbinden Restaurant Manager met externe boekhoud-, fiscale, logging- en voorraadproviders. Schakel in, configureer en monitor gezondheid en wachtrij.',
     sections: {
       open: { title: 'Integraties openen', steps: ['Log in met integratietoegang.', 'Tik op Integraties.', 'Opent op Providers.'], caption: 'Integratiescherm.' },
       tabs: { title: 'Tabnavigatie', intro: 'Tabs: lijst, configuratie, gezondheid en wachtrij.', steps: ['Providers toont connectors.', 'Configuratie bewaart credentials.', 'Gezondheid en Wachtrij tonen status en jobs.'], caption: 'Integraties tabbalk.' },
@@ -76,7 +76,7 @@ const T = {
   },
   de: {
     title: 'Integrationen',
-    intro: 'Integrationen verbinden POSR mit externen Buchhaltungs-, Fiskal-, Logging- und Inventaranbietern. Aktivieren, konfigurieren und Gesundheit sowie Warteschlange überwachen.',
+    intro: 'Integrationen verbinden Restaurant Manager mit externen Buchhaltungs-, Fiskal-, Logging- und Inventaranbietern. Aktivieren, konfigurieren und Gesundheit sowie Warteschlange überwachen.',
     sections: {
       open: { title: 'Integrationen öffnen', steps: ['Mit Integrationszugriff anmelden.', 'Integrationen tippen.', 'Öffnet Anbieter.'], caption: 'Integrationen-Bildschirm.' },
       tabs: { title: 'Tab-Navigation', intro: 'Tabs: Liste, Konfiguration, Gesundheit und Warteschlange.', steps: ['Anbieter listet Konnektoren.', 'Konfiguration speichert Zugangsdaten.', 'Gesundheit und Warteschlange zeigen Status und Jobs.'], caption: 'Integrationen-Tableiste.' },
@@ -88,7 +88,7 @@ const T = {
   },
   it: {
     title: 'Integrazioni',
-    intro: 'Le integrazioni collegano POSR a provider esterni di contabilità, fiscale, logging e inventario. Abilita, configura e monitora salute e coda.',
+    intro: 'Le integrazioni collegano Restaurant Manager a provider esterni di contabilità, fiscale, logging e inventario. Abilita, configura e monitora salute e coda.',
     sections: {
       open: { title: 'Apri Integrazioni', steps: ['Accedi con accesso integrazioni.', 'Tocca Integrazioni.', 'Si apre su Provider.'], caption: 'Schermata Integrazioni.' },
       tabs: { title: 'Navigazione schede', intro: 'Schede: elenco, configurazione, salute e coda.', steps: ['Provider elenca i connettori.', 'Configurazione conserva le credenziali.', 'Salute e Coda mostrano stato e job.'], caption: 'Barra schede Integrazioni.' },
@@ -100,7 +100,7 @@ const T = {
   },
   ar: {
     title: 'التكاملات',
-    intro: 'تربط التكاملات POSR بمزوّدين خارجيين للمحاسبة والضرائب والسجلات والمخزون. فعّل المزوّدين واضبط الاعتمادات وراقب الصحة والطابور.',
+    intro: 'تربط التكاملات Restaurant Manager بمزوّدين خارجيين للمحاسبة والضرائب والسجلات والمخزون. فعّل المزوّدين واضبط الاعتمادات وراقب الصحة والطابور.',
     sections: {
       open: { title: 'فتح التكاملات', steps: ['سجّل الدخول بصلاحية التكاملات.', 'اضغط التكاملات في الشريط الجانبي.', 'تفتح على تبويب المزوّدين افتراضياً.'], caption: 'شاشة التكاملات.' },
       tabs: { title: 'التنقل بين التبويبات', intro: 'التبويبات: القائمة والإعداد والصحة والطابور.', steps: ['المزوّدون يعرضون الموصلات.', 'الإعداد يحفظ الاعتمادات.', 'الصحة والطابور يعرضان الحالة والمهام.'], caption: 'شريط تبويبات التكاملات.' },
@@ -112,7 +112,7 @@ const T = {
   },
   ru: {
     title: 'Интеграции',
-    intro: 'Интеграции связывают POSR с внешними провайдерами учёта, фискальности, логирования и склада. Включайте провайдеров, настраивайте доступ и следите за здоровьем и очередью.',
+    intro: 'Интеграции связывают Restaurant Manager с внешними провайдерами учёта, фискальности, логирования и склада. Включайте провайдеров, настраивайте доступ и следите за здоровьем и очередью.',
     sections: {
       open: { title: 'Открыть Интеграции', steps: ['Войдите с доступом к интеграциям.', 'Нажмите Интеграции.', 'Открывается вкладка Провайдеры.'], caption: 'Экран Интеграции.' },
       tabs: { title: 'Навигация по вкладкам', intro: 'Вкладки: список, конфигурация, здоровье и очередь.', steps: ['Провайдеры показывают коннекторы.', 'Конфигурация хранит учётные данные.', 'Здоровье и Очередь — статус и задания.'], caption: 'Панель вкладок Интеграции.' },

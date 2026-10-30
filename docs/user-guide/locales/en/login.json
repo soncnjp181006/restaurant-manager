@@ -1,6 +1,6 @@
 {
   "title": "Login",
-  "intro": "Open POSR in your browser. The login screen is the first screen you see when you are not signed in or when the terminal is locked.",
+  "intro": "Open Restaurant Manager in your browser. The login screen is the first screen you see when you are not signed in or when the terminal is locked.",
   "sections": [
     {
       "id": "methods",

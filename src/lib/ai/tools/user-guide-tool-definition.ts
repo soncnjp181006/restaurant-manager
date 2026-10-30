@@ -11,7 +11,7 @@ export const LOOKUP_USER_GUIDE_TOOL: OpenAIToolDefinition = {
   function: {
     name: LOOKUP_USER_GUIDE_TOOL_NAME,
     description:
-      "Look up POSR end-user guide steps for how to use a screen or feature. "
+      "Look up Restaurant Manager end-user guide steps for how to use a screen or feature. "
       + "Call this for how-to / where-is / UI help questions. "
       + "Do not invent buttons or menus — follow the returned steps. "
       + `Chapters: ${catalogUserGuideForPrompt()}`,

@@ -61,7 +61,7 @@ async function main() {
         ok: true,
         enabled: false,
         distributionMode: config.distributionMode,
-        service: 'posr-sync-service',
+        service: 'restaurant-manager-sync-service',
         message: config.distributionMode === 'off'
           ? 'Sync service is disabled (SYNC_DISTRIBUTION_MODE=off or SYNC_MASTER_URL missing).'
           : 'Sync service is disabled because SYNC_MASTER_URL is not configured.',
@@ -74,7 +74,7 @@ async function main() {
       ok: stats.healthy,
       enabled: true,
       distributionMode: config.distributionMode,
-      service: 'posr-sync-service',
+      service: 'restaurant-manager-sync-service',
       stats,
     });
   });

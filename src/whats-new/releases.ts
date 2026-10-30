@@ -83,7 +83,7 @@ export const RELEASES: ReleaseNotes[] = [
     date: '2026-10-11',
     title: 'Login branding',
     items: [
-      'Settings → Branding lets you upload a restaurant logo shown on the login screen under the POSR mark.',
+      'Settings → Branding lets you upload a restaurant logo shown on the login screen under the Restaurant Manager mark.',
       'The login page is split into a logo panel and the PIN or form sign-in on larger screens.',
     ],
   },
@@ -1093,7 +1093,7 @@ export const RELEASES: ReleaseNotes[] = [
   },
   {
     date: '2026-07-19',
-    title: 'Welcome to POSR',
+    title: 'Welcome to Restaurant Manager',
     items: [
       'Added change log component, can be viewed again from settings.',
       '** AI Report now available to test via Reports > AI > AI Report',

@@ -34,7 +34,7 @@
   },
   "branding": {
     "title": "Thương hiệu",
-    "description": "Tải lên logo nhà hàng của bạn để hiển thị trên màn hình đăng nhập, bên dưới biểu tượng POSR.",
+    "description": "Tải lên logo nhà hàng của bạn để hiển thị trên màn hình đăng nhập, bên dưới biểu tượng Restaurant Manager.",
     "logo": "Logo thương hiệu",
     "logoHint": "PNG, JPEG, GIF hoặc WebP. Tối đa 500 KB.",
     "upload": "Tải logo lên",
@@ -299,7 +299,7 @@
       "composite": "Ghép mã",
       "pool": "Dải số / kho số",
       "hybrid": "Kết hợp trực tuyến và kho số ngoại tuyến",
-      "fiscal_plus_posr": "Số thuế + hiển thị POSR",
+      "fiscal_plus_posr": "Số thuế + hiển thị Restaurant Manager",
       "provider_defined": "Do nhà cung cấp đặt (chỉ lưu)"
     },
     "mint": {
@@ -333,7 +333,7 @@
       "pool": "Ưu điểm: chạy hoàn toàn ngoại tuyến nhờ giữ trước số nguyên. Nhược điểm: gặp vấn đề nhảy theo khối 200 số; không an toàn về thuế.",
       "hybrid": "Ưu điểm: đơn tạo khi ngoại tuyến vẫn nhận số nguyên. Nhược điểm: số đã giữ mà không dùng sẽ thành khoảng trống sau khi kết nối lại.",
       "fiscal_plus_posr": "Ưu điểm: hiển thị trên POS kèm số do cơ quan thuế cấp. Nhược điểm: để hai số trên một hoá đơn là rủi ro gian lận thuế — hãy hiển thị số thuế khi có.",
-      "provider_defined": "Ưu điểm: POSR lưu đúng những gì FBR/PRA trả về. Nhược điểm: POSR không tự sinh số — hãy dùng kèm các tích hợp thuế."
+      "provider_defined": "Ưu điểm: Restaurant Manager lưu đúng những gì FBR/PRA trả về. Nhược điểm: Restaurant Manager không tự sinh số — hãy dùng kèm các tích hợp thuế."
     }
   },
   "catalogSync": {

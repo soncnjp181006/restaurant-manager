@@ -1,7 +1,8 @@
 # Security Hardening — `security/hardening` branch
 
-This branch fixes the critical security defects identified in the POSR audit
-(2026-08-27). Every change is backwards-compatible at the configuration level —
+This branch fixes the critical security defects identified in the Restaurant
+Manager audit (2026-08-27). Every change is backwards-compatible at the
+configuration level —
 operators who already set the documented env vars see no behaviour change;
 operators who relied on insecure defaults will be **forced** to set them.
 

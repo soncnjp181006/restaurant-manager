@@ -34,7 +34,7 @@
   },
   "branding": {
     "title": "Branding",
-    "description": "Upload your restaurant logo to show on the login screen below the POSR mark.",
+    "description": "Upload your restaurant logo to show on the login screen below the Restaurant Manager mark.",
     "logo": "Brand logo",
     "logoHint": "PNG, JPEG, GIF, or WebP. Max 500 KB.",
     "upload": "Upload logo",
@@ -299,7 +299,7 @@
       "composite": "Composite",
       "pool": "Range / pool",
       "hybrid": "Hybrid online + offline pool",
-      "fiscal_plus_posr": "Fiscal + POSR display",
+      "fiscal_plus_posr": "Fiscal + Restaurant Manager display",
       "provider_defined": "Provider-defined (store only)"
     },
     "mint": {
@@ -333,7 +333,7 @@
       "pool": "Pros: works fully offline with reserved ints. Cons: the 200-block jump problem; fiscal-unsafe.",
       "hybrid": "Pros: offline creates still get ints. Cons: leftover reserved numbers become holes after reconnect.",
       "fiscal_plus_posr": "Pros: POS display plus authority fiscal number. Cons: two numbers on a receipt is an evasion risk — show fiscal when present.",
-      "provider_defined": "Pros: POSR stores what FBR/PRA return. Cons: not a POSR minter — use with fiscal integrations."
+      "provider_defined": "Pros: Restaurant Manager stores what FBR/PRA return. Cons: not a Restaurant Manager minter — use with fiscal integrations."
     }
   },
   "catalogSync": {

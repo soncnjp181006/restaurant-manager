@@ -52,7 +52,7 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: desktop/src-tauri -> target
-          shared-key: posr-desktop-windows
+          shared-key: restaurant-manager-desktop-windows
 
       - name: Install JS dependencies (app)
         run: bun install --frozen-lockfile
@@ -96,7 +96,7 @@ jobs:
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: posr-desktop-windows-nsis
+          name: restaurant-manager-desktop-windows-nsis
           path: desktop/src-tauri/target/release/bundle/nsis/
           if-no-files-found: error
           retention-days: 14
@@ -106,7 +106,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_tag }}
-          name: POSR Desktop Windows (${{ inputs.release_tag }})
+          name: Restaurant Manager Desktop Windows (${{ inputs.release_tag }})
           draft: true
           prerelease: true
           body: |

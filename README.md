@@ -1,8 +1,8 @@
-# POSR — AI-Powered Restaurant POS & Management System
+# Restaurant Manager — AI-Powered Restaurant POS & Management System
 
-**Offline-first, source-available restaurant POS software** for ordering, kitchen display (KDS), inventory, recipes, staff scheduling, payroll, accounting, delivery, fiscalization, and AI-powered restaurant analytics — delivered by **Kashif**, POSR's in-app AI assistant — in one platform.
+**Offline-first, source-available restaurant POS software** for ordering, kitchen display (KDS), inventory, recipes, staff scheduling, payroll, accounting, delivery, fiscalization, and AI-powered restaurant analytics — delivered by **Kashif**, Restaurant Manager's in-app AI assistant — in one platform.
 
-POSR is a **source-available restaurant POS and restaurant management system** built for modern food businesses. It combines point-of-sale ordering, kitchen display systems (KDS), inventory and recipe management, staff scheduling and payroll, accounting, delivery, fiscalization (FBR / PRA), and AI restaurant analytics powered by **Kashif** in one **offline-first** platform.
+Restaurant Manager is a **source-available restaurant POS and restaurant management system** built for modern food businesses. It combines point-of-sale ordering, kitchen display systems (KDS), inventory and recipe management, staff scheduling and payroll, accounting, delivery, fiscalization (FBR / PRA), and AI restaurant analytics powered by **Kashif** in one **offline-first** platform.
 
 React · TypeScript · Vite · Bun · SurrealDB · WebSockets · IndexedDB
 
@@ -16,13 +16,13 @@ React · TypeScript · Vite · Bun · SurrealDB · WebSockets · IndexedDB
 
 ---
 
-## Who is POSR for?
+## Who is Restaurant Manager for?
 
-POSR is designed for **restaurants, cafés, coffee shops, bakeries, bars, hotels, cloud kitchens, food courts, catering, and multi-location restaurant groups** that need a full operations stack — not just a cash register.
+Restaurant Manager is designed for **restaurants, cafés, coffee shops, bakeries, bars, hotels, cloud kitchens, food courts, catering, and multi-location restaurant groups** that need a full operations stack — not just a cash register.
 
-## Why POSR?
+## Why Restaurant Manager?
 
-Traditional restaurant POS software often depends on cloud connectivity and separate tools for inventory, accounting, staff, delivery, and analytics. POSR combines those workflows in one **offline-first, extensible** platform.
+Traditional restaurant POS software often depends on cloud connectivity and separate tools for inventory, accounting, staff, delivery, and analytics. Restaurant Manager combines those workflows in one **offline-first, extensible** platform.
 
 - **Source-available** — inspect, modify, extend, and self-host under PSAL
 - **Offline-first** — keep selling during internet outages; sync when back online
@@ -35,7 +35,7 @@ Traditional restaurant POS software often depends on cloud connectivity and sepa
 
 ## Meet Kashif
 
-**Kashif** is POSR's AI assistant for managers and back-office staff. Ask questions in plain language and get answers from **live POS data** — never guessed numbers. The same Kashif persona powers the **floating assistant** on back-office screens and the full-page **AI Report**.
+**Kashif** is Restaurant Manager's AI assistant for managers and back-office staff. Ask questions in plain language and get answers from **live POS data** — never guessed numbers. The same Kashif persona powers the **floating assistant** on back-office screens and the full-page **AI Report**.
 
 **Where Kashif appears**
 
@@ -181,13 +181,16 @@ cp .env.example .env
 cp api/.env.example api/.env
 cp gateway/.env.example gateway/.env
 cp payments/.env.example payments/.env
+cp tracking-api/.env.example tracking-api/.env
 bun install
 docker compose up -d
 ```
 
-Copied `.env` files include **local-dev** Surreal and JWT values. Change `SURREAL_USER`, `SURREAL_PASS`, and `GATEWAY_JWT_SECRET` before any non-localhost deploy. `root`/`root` is rejected.
+Copied `.env` files include **local-dev** Surreal credentials (`posr` / `CHANGE_ME_BEFORE_DEPLOY`). Change `SURREAL_USER`, `SURREAL_PASS`, and `GATEWAY_JWT_SECRET` before any non-localhost deploy — `GATEWAY_JWT_SECRET` ships **blank** on purpose, so generate one (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`). `root`/`root` is rejected.
 
 **Auth gateway (default):** SPA uses port **3142**, not Surreal **8000**. Set `VITE_GATEWAY_URL` / `VITE_DB_WEBDOCKET` to the gateway; do **not** set `VITE_DB_USER` / `VITE_DB_PASS` in the browser bundle. Details and rollback: [docs/security/GATEWAY.md](docs/security/GATEWAY.md).
+
+**Optional PostgreSQL mirror:** the tracking / activity log can additionally be copied into PostgreSQL for SQL analytics. SurrealDB stays the store every report reads, and nothing is required — leave the `TRACKING_PG_*` variables blank and no Postgres is contacted. Design, limits, and how to enable it: [docs/adr/0006-postgres-tracking-mirror.md](docs/adr/0006-postgres-tracking-mirror.md).
 
 ---
 
@@ -213,7 +216,7 @@ Fork → feature branch → PR. Stars help visibility.
 
 **POSR Source Available License (PSAL) v1.0** — no `LICENSE` file is committed in this repository yet, so the summary below is the only licence text available; `package.json` still says `SEE LICENSE IN LICENSE` and that file has to be added (or the claim rewritten) before publishing.
 
-POSR is **source-available** (not OSI “open source”): you may view, study, clone, fork, modify; build plugins/connectors; run your own business (any locations); hire contractors to maintain it.
+Restaurant Manager is **source-available** (not OSI “open source”): you may view, study, clone, fork, modify; build plugins/connectors; run your own business (any locations); hire contractors to maintain it.
 
 - No selling/reselling the Software as a product; no hosted multi-tenant SaaS; no white-label competing POS.
 

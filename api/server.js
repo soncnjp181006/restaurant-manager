@@ -91,7 +91,7 @@ app.use(requestLogMiddleware);
 app.get('/health', (req, res) => {
   res.json({
     ok: true,
-    service: 'posr-api-server',
+    service: 'restaurant-manager-api',
     modules: modules.map((m) => m.name),
   });
 });

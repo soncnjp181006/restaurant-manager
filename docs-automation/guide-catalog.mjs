@@ -1,9 +1,9 @@
 /**
- * POSR Documentation catalog — single source of truth for multi-guide structure.
+ * Restaurant Manager Documentation catalog — single source of truth for multi-guide structure.
  * Used by assemble.mjs and print-pdf.mjs on every docs build.
  *
  * Tree:
- *   POSR Documentation
+ *   Restaurant Manager Documentation
  *   ├── Employee Guide
  *   ├── Manager Guide
  *   ├── Inventory Guide

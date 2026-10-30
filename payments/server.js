@@ -34,7 +34,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(requestLogMiddleware);
 
 app.get('/health', (req, res) => {
-  res.json({ ok: true, service: 'posr-payment-server' });
+  res.json({ ok: true, service: 'restaurant-manager-payments' });
 });
 
 const requireSession = createSessionAuthMiddleware();

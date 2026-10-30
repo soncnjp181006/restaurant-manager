@@ -57,7 +57,7 @@ services:
     build:
       context: ./printing
       dockerfile: Dockerfile
-    image: posr-react-printer:latest
+    image: restaurant-manager-printer:latest
     working_dir: /app
     env_file:
       - path: ./api/.env
@@ -164,6 +164,11 @@ services:
       - TRACKING_DB_NAME=posr
       - TRACKING_DB_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
       - TRACKING_DB_PASS=${SURREAL_PASS:?Set SURREAL_PASS in .env}
+      # Optional PostgreSQL analytical mirror. Left unset the tracking service
+      # behaves exactly as before (SurrealDB alone). Set them, or start the
+      # `analytics` profile below, to also copy every event into Postgres.
+      - TRACKING_PG_URL=${TRACKING_PG_URL:-}
+      - TRACKING_PG_SCHEMA=${TRACKING_PG_SCHEMA:-}
       - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
     command: sh -c "npm install && npm start"
     ports:
@@ -171,6 +176,12 @@ services:
     depends_on:
       - surrealdb
       - gateway
+
+  # The optional PostgreSQL tracking mirror is declared in
+  # docker-compose.analytics.yml (run it with -f docker-compose.yml -f that
+  # file). Compose interpolates `${VAR:?}` for every service in a file even
+  # when a profile hides it, so the mirror's required credentials cannot live
+  # here without breaking the default `docker compose up`.
 
   api:
     image: node:20-alpine

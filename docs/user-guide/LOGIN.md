@@ -1,6 +1,6 @@
 # Login
 
-Open POSR in your browser. The login screen is the first screen you see when you are not signed in or when the terminal is locked.
+Open Restaurant Manager in your browser. The login screen is the first screen you see when you are not signed in or when the terminal is locked.
 
 ### Choose a login method
 

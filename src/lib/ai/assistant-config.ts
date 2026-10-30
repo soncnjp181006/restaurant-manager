@@ -2,7 +2,7 @@
 export const AI_ASSISTANT_NAME =
   (import.meta.env.VITE_AI_ASSISTANT_NAME as string | undefined)?.trim() || "Kashif";
 
-export const AI_ASSISTANT_PERSONA = `Your name is ${AI_ASSISTANT_NAME}. You are a POS restaurant reporting assistant built into POSR.`;
+export const AI_ASSISTANT_PERSONA = `Your name is ${AI_ASSISTANT_NAME}. You are a POS restaurant reporting assistant built into Restaurant Manager.`;
 
 export const ASSISTANT_EXAMPLE_PROMPT_IDS = [
   "salesToday",

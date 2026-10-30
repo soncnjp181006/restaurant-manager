@@ -1,4 +1,4 @@
-# Kế hoạch thu gọn dự án POSR → `restaurant-manager`
+# Kế hoạch thu gọn dự án Restaurant Manager → `restaurant-manager`
 
 Tài liệu này là kế hoạch, chưa phải kết quả. Số liệu đo trực tiếp trên working tree, branch `main`, remote `https://github.com/soncnjp181006/restaurant-manager.git`.
 
@@ -92,6 +92,11 @@ sequenceDiagram
     U->>PR: POST /print (receipt)
     Note over U,DB: Luồng thứ 2: sync-service :3136<br/>SYNC_SOURCE_* → SYNC_MASTER_* (catalog đa chi nhánh)<br/>Đang tắt: VITE_SYNC_SERVICE_URL rỗng
 ```
+
+Ngoài ba đường sync, từ 2026-10-30 có thêm một nhánh ghi một chiều: `tracking :3138` vẫn ghi bảng
+`tracking` vào SurrealDB như cũ, và **nếu** được cấp biến `TRACKING_PG_*` thì ghi thêm bản sao vào
+PostgreSQL `tracking_events` (tuỳ chọn, chỉ qua `docker-compose.yml` + `docker-compose.analytics.yml`,
+không màn hình nào đọc — xem Phase 5 và ADR 0006).
 
 Ba đường sync cùng tồn tại — đây là chỗ chồng chéo lớn nhất cần quyết định (xem §3 Phase 3):
 
@@ -273,7 +278,7 @@ Trạng thái: các bước 1–9 và 11 dưới đây đã áp dụng trong wor
 Cổng parity báo `Locale parity OK for 1 languages × 22 namespaces`;
 `node scripts/i18n-check-pair.mjs vi all` báo 4 610 khoá lá, 0 lỗi cấu trúc, 30 giá trị
 trùng tiếng Anh — toàn bộ là token `{{...}}`, viết tắt (VID/PID/PIN/KOT/AI/CSV/FIFO/FEFO/ESC-POS),
-đơn vị ("58 mm") hoặc brand POSR, không có chuỗi nào bị bỏ dịch.
+đơn vị ("58 mm") hoặc brand Restaurant Manager, không có chuỗi nào bị bỏ dịch.
 Hai việc chưa làm, cần quyết định: **bước 10** (nối i18next cho `src/self-order/`,
 hiện vẫn chỉ tiếng Anh) và bản `vi` của guide Kashif (`docs/user-guide/locales/vi/`
 chưa tồn tại nên tool fallback sang tiếng Anh).
@@ -319,6 +324,22 @@ Cổng: mọi `VITE_*_SERVER_URL` trỏ tới service còn tồn tại; `docker 
 - **Bỏ** pipeline PDF: xoá `docs-automation/` (1,4 MB, 80 file) + 4 npm script `docs:guide*`, giữ JSON `en`+`vi` vì Kashif `lookup_user_guide` cần nó.
 
 Đây là chỗ giảm nhiều file nhất mà không đụng nghiệp vụ: `docs/` + `docs-automation/` = 667 file / 7,8 MB, chỉ để phục vụ tính năng "AI tra hướng dẫn".
+
+### Phase 5 — PostgreSQL: chỉ nhận một phần (ĐÃ THỰC HIỆN 2026-10-30)
+
+Yêu cầu "dùng PostgreSQL" không thể áp lên toàn bộ hệ thống mà không phá §7 (không đổi engine) và không viết lại 6 màn report đang đọc `SELECT * FROM tracking` thẳng từ Surreal. Phần duy nhất nhận Postgres là **mirror của log tracking/activity**, thiết kế ghi trong [`docs/adr/0006-postgres-tracking-mirror.md`](docs/adr/0006-postgres-tracking-mirror.md):
+
+| Điểm | Thực hiện |
+|---|---|
+| Phạm vi | `tracking-api` ghi thêm mỗi event vào bảng `tracking_events` (Postgres). Mọi bảng khác vẫn ở SurrealDB. |
+| Nguồn đọc | Không đổi: report, cash audit, order lifecycle, sales dashboard, order detail, schema Kashif vẫn đọc `tracking` trong Surreal. |
+| Bật/tắt | `TRACKING_PG_URL` hoặc `TRACKING_PG_HOST/PORT/DB/USER/PASS`. Để trống = không tạo pool, không kết nối, hành vi y hệt hôm qua. |
+| Hỏng mirror | Không biến 201 thành 500: `writeTrackingEvent()` trả `{written, reason}`, ghi log và tăng bộ đếm hiển thị ở `GET /health` (`pgMirror`, `pgMirrorFailures`). |
+| Schema | `CREATE TABLE IF NOT EXISTS` + 2 index (`created_at`, `(module, created_at)`) soi theo `2026_08_30_hot_path_indexes.surql`. **Không** thêm file nào vào `migrations/`. |
+| Khoá | id client hợp lệ (`^[a-zA-Z0-9_-]{1,128}$`) thành `tracking_id` + `ON CONFLICT DO UPDATE` (đúng semantics CREATE-overwrite của Surreal); id không hợp lệ → UUID, giữ nguyên giá trị cũ trong `payload` jsonb. |
+| Hạ tầng | `docker-compose.analytics.yml` tách riêng, dùng `-f docker-compose.yml -f docker-compose.analytics.yml`. Lý do: Compose nội suy `${VAR:?}` cho **mọi** service trong file kể cả khi profile ẩn nó — đặt Postgres vào file chính làm `docker compose up` mặc định fail với người không dùng Postgres (đo: lỗi `required variable TRACKING_PG_USER is missing`). Container chỉ bind `127.0.0.1`. |
+| Dependency | `pg@8.23.1` chỉ ở `tracking-api` — bundle trình duyệt và 5 sidecar còn lại không đổi. |
+| Test | `npm run test:tracking` = 28 test: 26 pass + 2 skip khi không có Postgres; 28/28 pass khi chạy với `postgres:16-alpine` thật (container xoá sau khi đo). |
 
 ### Tổng kết khối lượng giảm được sau Phase 1–4
 
@@ -480,12 +501,14 @@ Năm quyết định này thay đổi phạm vi, không suy ra được từ cod
 3. **`sync-service` (đa chi nhánh) còn trong roadmap không?** Còn → bật + test + CI. Không → gỡ compose + archive. Để im lặng là tốn 3 860 LOC bảo trì.
 4. **Guide PDF người dùng (`docs-automation`) giữ hay bỏ?** Giữ thì phải sửa pipeline cho 2 ngôn ngữ; bỏ thì xoá 1,4 MB nhưng phải giữ JSON `en`+`vi` cho Kashif.
 5. **Deploy đích là đâu?** ~~VPS riêng (SSH + compose, như §4.4) hay chỉ cần repo sạch + image GHCR?~~ **ĐÃ CHỐT (2026-10-30): chưa deploy, chỉ chạy local.** Hệ quả: không tạo `deploy.yml`, không tạo environment secret, không dựng `compose.prod.yml`; §4.2–§4.7 chuyển thành thiết kế tham chiếu. Phần local cần gì để chạy thì đã liệt kê trong bảng biến ở §4.0.
+6. **PostgreSQL chiếm phần nào?** **ĐÃ CHỐT (2026-10-30): chỉ phần log tracking** — mirror song song, SurrealDB vẫn là nguồn đọc. Chi tiết và bằng chứng: Phase 5 + ADR 0006. Các phương án khác đã loại vì đụng ràng buộc: chuyển `tracking` hoàn toàn sang Postgres phải viết lại SurrealQL ở 6 màn report; đưa Postgres vào làm kho nghiệp vụ thì vi phạm "không đổi engine" (§7) và vô hiệu hoá `migrations/`.
+7. **Đổi tên app chạm tới đâu?** **ĐÃ CHỐT (2026-10-30): tên hiển thị + package/image**, không phải định danh dữ liệu. Đã đổi: `name` của 7 package (`posr-*` → `restaurant-manager-*`, mirror trong 6 `package-lock.json`), nhãn `service:` ở 6 `/health`, 3 tag image printer, `<title>` + manifest PWA, persona Kashif, nhãn tool `lookup_user_guide`, `whats-new`, artifact name workflow desktop, 9 xuất hiện "POSR" trong README/SECURITY/ADR/user-guide. Giữ nguyên vì là định dạng đã ghi xuống DB hoặc hợp đồng giao thức: `SURREAL_NS=posr`, `SURREAL_DB=posr`, `posr-posstore-write`, `posr-operational-orders-updated`, `posr:session-security-changed`, `posr-catalog-ready`, `posr-db-reconnect`, issuer `posr-gateway` (JWT đã ký), khoá `localStorage`/IndexedDB (`posr-terminal-posstore`, `posr_docs_tableless_leak_recovered`), module `src/routes/posr.ts`, `posrId` + nhãn gửi QuickBooks (`src/integrations/**`), `migrations/*.surql`, `POSR_REPO_ROOT` (biên trong workflow), `COMPOSE_PROJECT_NAME:-posr-react`, tên licence "POSR Source Available License". Đo sau đổi tên (code + config, trừ `docs/`, `package-lock.json`, `*.lockb`): 85 hit / 41 file mang định danh giao thức kể trên, `src/locales` 0 chuỗi "POSR" hiển thị.
 
 ## 7. Những gì kế hoạch này KHÔNG làm
 
-Không xoá tính năng nghiệp vụ (HR, accounts, inventory, delivery, promotions...). Không đổi UI framework: `antd` chỉ chạm 7 file nhưng thay nó nghĩa là viết lại họ date/time picker cho 30 file consumer — đó là redesign, để riêng ở backlog, không lẫn vào thu gọn. Không đổi DB sang engine khác. Không rewrite 12 922 LOC `src/lib/ai`. Không đụng logic tiền (payment/`fiscal`) ngoài việc chuyển sang thư viện dùng chung.
+Không xoá tính năng nghiệp vụ (HR, accounts, inventory, delivery, promotions...). Không đổi UI framework: `antd` chỉ chạm 7 file nhưng thay nó nghĩa là viết lại họ date/time picker cho 30 file consumer — đó là redesign, để riêng ở backlog, không lẫn vào thu gọn. Không đổi DB sang engine khác: SurrealDB vẫn là engine của mọi bảng nghiệp vụ và mọi đường đọc; PostgreSQL chỉ xuất hiện như bản sao phân tích của riêng log tracking (Phase 5, ADR 0006) và không phục vụ màn hình nào. Không rewrite 12 922 LOC `src/lib/ai`. Không đụng logic tiền (payment/`fiscal`) ngoài việc chuyển sang thư viện dùng chung.
 
-Trạng thái áp dụng (đo lại ngày 2026-10-30): Phase 1 đã xong trong working tree (xem ghi chú ở đầu Phase 1). Phase 0 đã một phần: `eslint.config.js` flat config thay `.eslintrc.cjs` nên `npm run lint` chạy được (38 error / 278 warning, đang tất toán error), `package-lock.json` đã sinh lại nên `npm ci --dry-run` và `npm install --dry-run` exit 0. `tsc --noEmit` giảm 183 → 141 lỗi, phần còn lại đang sửa. Phase 2, 3 chưa làm. §4 (CI/CD + deploy) **hoãn theo quyết định local-only ở §4.0**; riêng hạ tầng key đã được gỡ giá trị commit (xem bảng §4.3).
+Trạng thái áp dụng (đo lại ngày 2026-10-30, sau Phase 5 và đổi tên): Phase 1 đã xong trong working tree (xem ghi chú ở đầu Phase 1). Phase 0 xong toàn bộ phần cổng: `eslint.config.js` flat config nên `npm run lint` chạy được và **0 error / 278 warning**; `package-lock.json` sinh lại nên `npm ci --dry-run` và `npm install --dry-run` exit 0; **`tsc --noEmit` 0 lỗi** (từ 183); **`vitest run` 75 file / 546 pass / 0 fail** (từ 12 test đỏ); `npm run build` exit 0; ba cổng i18n (`i18n:verify`, `i18n:verify-keys`, `i18n:pair`) exit 0 — 22 namespace, 4 634 khoá lá `vi`, parity en↔vi OK. Phase 2, 3 chưa làm. Phase 5 (PostgreSQL mirror) đã làm. §4 (CI/CD + deploy) **hoãn theo quyết định local-only ở §4.0**; riêng hạ tầng key đã được gỡ giá trị commit (xem bảng §4.3).
 
 ## 8. Đối chiếu yêu cầu → phần trả lời
 
@@ -498,3 +521,5 @@ Trạng thái áp dụng (đo lại ngày 2026-10-30): Phase 1 đã xong trong w
 | Sơ đồ dự án | §1.1, 1.2, 1.3, 1.5, §4.2, §4.4 | 6 khối `mermaid`, fence cân nhau, không dùng type ngoài `flowchart`/`sequenceDiagram` |
 | Kế hoạch deploy lên `restaurant-manager` branch `main` | §4.0 (chế độ local hiện tại), §4.1–4.7 (thiết kế tham chiếu, đã hoãn), §5 | remote HEAD đã push, không có CI nào cho app; workflow desktop tham chiếu `desktop/` không tồn tại; repo không có key deploy nào để gỡ ngoài 2 giá trị JWT đã commit trong `.env.example` (đã xoá value, giữ biến) |
 | CI/CD lỗi thời → thay thế | §2.6, §4.2, §4.3 | `desktop-windows.yml` 14 dòng / `desktop-linux.yml` 11 dòng nhắc `desktop`; `desktop:build` không có trong `package.json` scripts |
+| Dùng PostgreSQL | Phase 5, §6.6, [`docs/adr/0006`](docs/adr/0006-postgres-tracking-mirror.md) | Mirror `tracking_events` trong `tracking-api/src/postgres-store.js`; SurrealDB vẫn là nguồn đọc của 6 màn report; 28 test (28/28 với `postgres:16-alpine` thật, 26 pass + 2 skip khi không có Postgres); `docker compose config` mặc định không còn/không cần Postgres |
+| Đổi tên app sang Restaurant-Manager | §6.7 | `name` 7 package + 6 lockfile mirror, 6 nhãn `service:`, 3 image tag printer, `<title>`/manifest/persona/tool label, `restaurant-manager-desktop-*` trong workflow; 0 chuỗi "POSR" trong `src/locales`; 85 hit định danh giao thức/DB giữ nguyên ở 41 file (code + config) |

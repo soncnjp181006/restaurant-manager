@@ -17,7 +17,7 @@ app.use(cors({ origin: createCorsOriginDelegate() }));
 app.use(express.json({ limit: '1mb' }));
 
 app.get('/health', (req, res) => {
-  res.json({ ok: true, service: 'posr-print-server' });
+  res.json({ ok: true, service: 'restaurant-manager-printing' });
 });
 
 app.post('/print/preview', requireSession, (req, res) => {

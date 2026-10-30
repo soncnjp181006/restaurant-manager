@@ -7,7 +7,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: posr-print:latest
+    image: restaurant-manager-print:latest
     ports:
       - "3132:3132"
     environment:

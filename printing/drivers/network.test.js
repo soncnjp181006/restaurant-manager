@@ -13,7 +13,7 @@ test('network close flushes with socket.end instead of destroy', async () => {
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const { port } = server.address();
   const device = createDevice({ ip: '127.0.0.1', port });
-  const payload = Buffer.from('POSR-FLUSH-TEST');
+  const payload = Buffer.from('RM-FLUSH-TEST');
 
   await new Promise((resolve, reject) => {
     device.open((openErr) => {

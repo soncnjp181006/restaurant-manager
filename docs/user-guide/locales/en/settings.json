@@ -147,7 +147,7 @@
         "Date reset / global / period with gateway mint: restaurant-wide continuous sequence — preferred when fiscal authorities reject jumps.",
         "Terminal sequential and reserved pools work offline but create holes across tills — unsafe for continuous fiscal sequences.",
         "Hybrid online sequential + offline pool still leaves unused reserved numbers after reconnect.",
-        "Fiscal authority numbers (FBR/PRA) are stored on fiscal submissions; POSR does not invent FBR-looking strings.",
+        "Fiscal authority numbers (FBR/PRA) are stored on fiscal submissions; Restaurant Manager does not invent FBR-looking strings.",
         "Offline checks show a temporary random code (configurable length) until the gateway assigns the real number."
       ]
     },

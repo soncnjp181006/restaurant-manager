@@ -1,6 +1,7 @@
 'use strict';
 
 const { getClient } = require('../surreal-client');
+const { writeTrackingEvent } = require('../postgres-store');
 
 const TRACKING_TABLE = 'tracking';
 
@@ -48,9 +49,10 @@ async function createTracking(rawPayload) {
   const payload = normalizeTrackingPayload(rawPayload);
   const trackingId = toTrackingId(payload.id);
 
+  let result;
   if (trackingId) {
     const { id, ...rest } = payload;
-    const [result] = await client.query(
+    const [created] = await client.query(
       'CREATE type::record($table, $id) CONTENT $data;',
       {
         table: TRACKING_TABLE,
@@ -58,16 +60,27 @@ async function createTracking(rawPayload) {
         data: rest,
       }
     );
-    return result;
+    result = created;
+  } else {
+    const [created] = await client.query(
+      'CREATE type::table($table) CONTENT $data;',
+      {
+        table: TRACKING_TABLE,
+        data: payload,
+      }
+    );
+    result = created;
   }
 
-  const [result] = await client.query(
-    'CREATE type::table($table) CONTENT $data;',
-    {
-      table: TRACKING_TABLE,
-      data: payload,
-    }
-  );
+  // SurrealDB stays the store every report reads from; the PostgreSQL copy is
+  // an analytical mirror. Its status is logged, never thrown — a missing or
+  // broken Postgres must not turn a successful ingestion into a 500.
+  const mirror = await writeTrackingEvent(payload);
+  if (!mirror.written && mirror.reason !== 'mirror not configured') {
+    // eslint-disable-next-line no-console
+    console.error('Tracking PostgreSQL mirror write failed:', mirror.reason);
+  }
+
   return result;
 }
 

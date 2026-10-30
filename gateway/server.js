@@ -82,7 +82,7 @@ app.use(
 app.use(express.json({ limit: '256kb' }));
 
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, service: 'posr-gateway' });
+  res.json({ ok: true, service: 'restaurant-manager-gateway' });
 });
 
 app.use('/auth', authRoutes);

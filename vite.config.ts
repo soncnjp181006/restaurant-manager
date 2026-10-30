@@ -40,8 +40,8 @@ export default defineConfig(({ mode }) => {
         strategies: 'generateSW',
         includeAssets: ['favicon-32.png', 'pwa-192.png', 'pwa-512.png', 'vite.svg'],
         manifest: {
-          name: 'Restaurant POS',
-          short_name: 'POS',
+          name: 'Restaurant Manager',
+          short_name: 'Restaurant',
           description: 'Restaurant point of sale — works offline after first load',
           theme_color: '#1a1a1a',
           background_color: '#fdfdfd',

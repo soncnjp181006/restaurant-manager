@@ -1,4 +1,4 @@
-# POSR Branch Sync Service (local ↔ cloud)
+# Restaurant Manager Branch Sync Service (local ↔ cloud)
 
 Two directions, controlled by `SYNC_DISTRIBUTION_MODE`:
 

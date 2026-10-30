@@ -1,9 +1,9 @@
-# POSR Documentation structure
+# Restaurant Manager Documentation structure
 
 Generated from `docs-automation/guide-catalog.mjs` (edit the catalog, not this file by hand).
 
 ```
-POSR Documentation
+Restaurant Manager Documentation
 │
 ├── 📘 Employee Guide
 │   ├── Login

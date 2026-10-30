@@ -68,7 +68,10 @@ backups/surrealdb
 api/.env
 gateway/.env
 payments/.env
+tracking-api/.env
 # scratch / probe files from ad-hoc debugging — never publish
 scratch/
 __probe.tsx
 probe-tmp.ts
+# emitted by a build-time dependency during `npm run build`
+doc/

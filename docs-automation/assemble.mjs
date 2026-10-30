@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Assembles localized Markdown + HTML for POSR Documentation:
+ * Assembles localized Markdown + HTML for Restaurant Manager Documentation:
  *   dist/{lang}/index.html              — hub (role guides tree)
  *   dist/{lang}/{guide}/user-guide.html — per-role guide
  *   dist/{lang}/{guide}/user-guide.md
@@ -335,7 +335,7 @@ function buildGuideHtml(guideMeta, guideDef, chapters, lang, langFolder) {
 }
 
 function buildHubTreeText(guidesMeta, chaptersByGuide) {
-  const lines = ['POSR Documentation', '│'];
+  const lines = ['Restaurant Manager Documentation', '│'];
   guidesMeta.forEach((g, gi) => {
     const lastGuide = gi === guidesMeta.length - 1;
     const gBranch = lastGuide ? '└──' : '├──';
@@ -419,10 +419,10 @@ function assembleLang(lang) {
   const common = readJsonSafe(path.join(localeDir, 'common.json'), { chapters: {} });
   const guidesJson = readJsonSafe(path.join(localeDir, 'guides.json'), {});
   const hub = {
-    title: guidesJson.title || 'POSR Documentation',
+    title: guidesJson.title || 'Restaurant Manager Documentation',
     intro:
       guidesJson.intro ||
-      'Role-based guides for POSR. Start with the Employee Guide for floor operations.',
+      'Role-based guides for Restaurant Manager. Start with the Employee Guide for floor operations.',
     toc: guidesJson.toc || 'Guides',
     openGuide: guidesJson.openGuide || 'Open guide',
     statusReady: guidesJson.statusReady || 'Ready',
@@ -490,7 +490,7 @@ function assembleLang(lang) {
       body.push(`<header><h1>${escapeHtml(meta.emoji)} ${escapeHtml(meta.title)}</h1>`);
       body.push(`<p>${escapeHtml(meta.intro)}</p>`);
       body.push(
-        `<p><em>Legacy combined file — prefer <a href="./index.html">POSR Documentation hub</a>.</em></p></header>`
+        `<p><em>Legacy combined file — prefer <a href="./index.html">Restaurant Manager Documentation hub</a>.</em></p></header>`
       );
       body.push(`<nav><h2>${escapeHtml(meta.toc)}</h2><ul>`);
       for (const ch of chapters) {
@@ -545,12 +545,12 @@ function writeBrowseCopies() {
   // STRUCTURE.md snapshot from catalog (always)
   const enCommon = readJsonSafe(path.join(enDir, 'common.json'), { chapters: {} });
   const structureLines = [
-    '# POSR Documentation structure',
+    '# Restaurant Manager Documentation structure',
     '',
     'Generated from `docs-automation/guide-catalog.mjs` (edit the catalog, not this file by hand).',
     '',
     '```',
-    'POSR Documentation',
+    'Restaurant Manager Documentation',
     '│',
   ];
   GUIDES.forEach((g, gi) => {

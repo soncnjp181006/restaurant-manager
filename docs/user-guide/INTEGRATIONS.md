@@ -1,6 +1,6 @@
 # Integrations
 
-Integrations connect POSR to external accounting, fiscal, logging, and inventory providers. Enable providers, configure credentials, and monitor health and the outbound queue.
+Integrations connect Restaurant Manager to external accounting, fiscal, logging, and inventory providers. Enable providers, configure credentials, and monitor health and the outbound queue.
 
 ### Open Integrations
 
