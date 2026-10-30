@@ -1,0 +1,422 @@
+import {useEffect, useMemo, useRef, useState} from "react";
+import {useTranslation} from 'react-i18next';
+import {ReportsLayout} from "@/screens/partials/reports.layout.tsx";
+import {useDB} from "@/api/db/db.ts";
+import {Tables} from "@/api/db/tables.ts";
+import {OrderFiscalSubmission} from "@/api/model/order_fiscal_submission.ts";
+import {Order} from "@/api/model/order.ts";
+import {formatNumber, withCurrency} from "@/lib/utils.ts";
+import {toLuxonDateTime} from "@/lib/datetime.ts";
+import {getOrderSettlementFigures} from "@/lib/order.ts";
+import {
+  buildCreatedAtDateConditions,
+  buildStringInsideCondition,
+} from "@/api/reports/shared/query.ts";
+
+import {useReportBranchScope} from "@/hooks/useReportBranchScope.ts";
+import {BranchBreakdown} from "@/components/reports/branch.breakdown.tsx";
+import { DATE_FORMAT, TIME_FORMAT } from '@/lib/date-format';
+
+/** Friendly labels for known fiscal provider record ids. */
+const PROVIDER_LABELS: Record<string, string> = {
+  'provider:fbr': 'FBR',
+  'provider:pra': 'PRA',
+};
+
+const providerLabel = (providerId?: string | null): string => {
+  if (!providerId) return '—';
+  return PROVIDER_LABELS[providerId] ?? providerId.replace(/^provider:/, '').toUpperCase();
+};
+
+const getOrder = (submission: OrderFiscalSubmission): Order | undefined =>
+  submission.order && typeof submission.order === 'object' ? (submission.order as Order) : undefined;
+
+const cashierName = (order?: Order): string => {
+  const cashier = order?.cashier;
+  if (!cashier) return '—';
+  return `${cashier.first_name ?? ''} ${cashier.last_name ?? ''}`.trim() || cashier.login || '—';
+};
+
+interface ReportFilters {
+  startDate?: string | null;
+  endDate?: string | null;
+  providerIds: string[];
+  statuses: string[];
+}
+
+const parseFilters = (): ReportFilters => {
+  const params = new URLSearchParams(window.location.search);
+  const parseMulti = (name: string) =>
+    [...params.getAll(`${name}[]`), ...params.getAll(name)].filter(Boolean) as string[];
+
+  return {
+    startDate: params.get('start'),
+    endDate: params.get('end'),
+    providerIds: parseMulti('providers'),
+    statuses: parseMulti('statuses'),
+  };
+};
+
+const statusBadgeClass = (status: string): string => {
+  switch (status) {
+    case 'completed':
+      return 'bg-success-100 text-success-700';
+    case 'failed':
+      return 'bg-danger-100 text-danger-700';
+    default:
+      return 'bg-surface text-muted';
+  }
+};
+
+export const OrderFiscalReport = () => {
+  const {t} = useTranslation('reports');
+  const db = useDB();
+  const branchScope = useReportBranchScope();
+  const queryRef = useRef(db.query);
+  const [submissions, setSubmissions] = useState<OrderFiscalSubmission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const filters = useMemo(parseFilters, []);
+  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+
+  useEffect(() => {
+    queryRef.current = db.query;
+  }, [db]);
+
+  useEffect(() => {
+    if (!branchScope.ready) return;
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const conditions: string[] = [];
+        const params: Record<string, any> = {};
+
+        const dateFilter = buildCreatedAtDateConditions(
+          {startDate: filters.startDate ?? undefined, endDate: filters.endDate ?? undefined},
+          'submitted_at',
+        );
+        conditions.push(...dateFilter.conditions);
+        Object.assign(params, dateFilter.params);
+
+        const providerFilter = buildStringInsideCondition('provider_id', filters.providerIds, 'providerIds');
+        if (providerFilter.condition) {
+          conditions.push(providerFilter.condition);
+          Object.assign(params, providerFilter.params);
+        }
+
+        const statusFilter = buildStringInsideCondition('status', filters.statuses, 'statuses');
+        if (statusFilter.condition) {
+          conditions.push(statusFilter.condition);
+          Object.assign(params, statusFilter.params);
+        }
+
+        if (branchScope.branchIds !== undefined) {
+          if (branchScope.branchIds.length === 0) {
+            setSubmissions([]);
+            return;
+          }
+          conditions.push('order.branch_id INSIDE $branchIds');
+          params.branchIds = branchScope.branchIds;
+        }
+
+        const query = `
+          SELECT * FROM ${Tables.integration_order_fiscals}
+          ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+          ORDER BY submitted_at DESC
+          FETCH order, order.cashier, order.tax, order.extras, order.coupon,
+            order.order_taxes, order.order_taxes.tax, order.order_discounts, order.order_discounts.discount,
+            order.items, order.items.taxes, order.items.tax_mode, order.items.modifiers
+        `;
+
+        const result: any = await queryRef.current(query, params);
+        setSubmissions((result?.[0] ?? []) as OrderFiscalSubmission[]);
+      } catch (err) {
+        console.error('Failed to load order fiscal report:', err);
+        setError(err instanceof Error ? err.message : t('errors.unableToLoad'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [branchScope.ready, branchScope.branchIds, filters.startDate, filters.endDate, filters.providerIds, filters.statuses]);
+
+
+  const rowsWithBranch = useMemo(
+    () =>
+      submissions.map((sub) => {
+        const order = getOrder(sub);
+        return {
+          ...sub,
+          branch_id: order?.branch_id ?? undefined,
+        };
+      }),
+    [submissions],
+  );
+
+  if (loading || !branchScope.ready) {
+    return (
+      <ReportsLayout title={t('titles.orderFiscal')} subtitle={subtitle}>
+        <div className="py-12 text-center text-muted">{t('loading.orderFiscal')}</div>
+      </ReportsLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <ReportsLayout title={t('titles.orderFiscal')} subtitle={subtitle}>
+        <div className="py-12 text-center text-red-600">{t('errors.failedToLoad', {error})}</div>
+      </ReportsLayout>
+    );
+  }
+
+  return (
+    <ReportsLayout title={t('titles.orderFiscal')} subtitle={subtitle}>
+      <BranchBreakdown
+        enabled={branchScope.isByBranch}
+        rows={rowsWithBranch}
+        labels={branchScope.branchLabels}
+        branchOrder={branchScope.branchOrder}
+        renderSection={({rows, key}) => <OrderFiscalBody key={key} submissions={rows} />}
+      />
+    </ReportsLayout>
+  );
+};
+
+const OrderFiscalBody = ({submissions}: {submissions: OrderFiscalSubmission[]}) => {
+  const {t} = useTranslation('reports');
+
+  const statusLabel = (status: string): string => {
+    switch (status) {
+      case 'completed':
+        return t('orderFiscal.statusCompleted');
+      case 'failed':
+        return t('orderFiscal.statusFailed');
+      case 'skipped':
+        return t('orderFiscal.statusSkipped');
+      default:
+        return status;
+    }
+  };
+
+  const byProvider = useMemo(() => {
+    const map = new Map<string, {total: number; completed: number; failed: number; skipped: number}>();
+    submissions.forEach(sub => {
+      const key = providerLabel(sub.provider_id);
+      const existing = map.get(key) || {total: 0, completed: 0, failed: 0, skipped: 0};
+      existing.total += 1;
+      if (sub.status === 'completed') existing.completed += 1;
+      else if (sub.status === 'failed') existing.failed += 1;
+      else existing.skipped += 1;
+      map.set(key, existing);
+    });
+    return Array.from(map.entries())
+      .map(([provider, data]) => ({provider, ...data}))
+      .sort((a, b) => b.total - a.total);
+  }, [submissions]);
+
+  const byStatus = useMemo(() => {
+    const map = new Map<string, number>();
+    submissions.forEach(sub => {
+      map.set(sub.status, (map.get(sub.status) || 0) + 1);
+    });
+    return Array.from(map.entries())
+      .map(([status, count]) => ({status, count}))
+      .sort((a, b) => b.count - a.count);
+  }, [submissions]);
+
+  const detailTotals = useMemo(() => {
+    return submissions.reduce(
+      (acc, sub) => {
+        const order = getOrder(sub);
+        if (!order) return acc;
+        const figures = getOrderSettlementFigures(order);
+        // items only so: gross + tax - discount + service + extras (+ tips) = grand
+        acc.gross += figures.itemsTotal;
+        acc.tax += figures.tax;
+        acc.discount += figures.discounts;
+        acc.serviceCharges += figures.serviceCharges;
+        acc.extras += figures.extrasTotal;
+        acc.total += figures.grandTotalDue;
+        return acc;
+      },
+      {gross: 0, tax: 0, discount: 0, serviceCharges: 0, extras: 0, total: 0},
+    );
+  }, [submissions]);
+
+  return (
+      <div className="space-y-8">
+        {/* Summary sections */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* By provider */}
+          <div className="overflow-hidden rounded-lg border border-border">
+            <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('orderFiscal.byProvider')}</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-neutral-200">
+                <thead className="bg-surface">
+                  <tr>
+                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('orderFiscal.provider')}</th>
+                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.count')}</th>
+                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('orderFiscal.statusCompleted')}</th>
+                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('orderFiscal.statusFailed')}</th>
+                    <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">{t('orderFiscal.statusSkipped')}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
+                  {byProvider.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center text-sm text-muted">{t('orderFiscal.noRecords')}</td>
+                    </tr>
+                  ) : (
+                    byProvider.map(item => (
+                      <tr key={item.provider}>
+                        <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">{item.provider}</td>
+                        <td className="py-3 px-3 text-right text-sm text-foreground">{formatNumber(item.total)}</td>
+                        <td className="py-3 px-3 text-right text-sm text-success-700">{formatNumber(item.completed)}</td>
+                        <td className="py-3 px-3 text-right text-sm text-danger-700">{formatNumber(item.failed)}</td>
+                        <td className="py-3 pr-6 text-right text-sm text-muted">{formatNumber(item.skipped)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* By status */}
+          <div className="overflow-hidden rounded-lg border border-border">
+            <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('orderFiscal.byStatus')}</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-neutral-200">
+                <thead className="bg-surface">
+                  <tr>
+                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('columns.status')}</th>
+                    <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">{t('metrics.count')}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
+                  {byStatus.length === 0 ? (
+                    <tr>
+                      <td colSpan={2} className="py-6 text-center text-sm text-muted">{t('orderFiscal.noRecords')}</td>
+                    </tr>
+                  ) : (
+                    byStatus.map(item => (
+                      <tr key={item.status}>
+                        <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">
+                          <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusBadgeClass(item.status)}`}>
+                            {statusLabel(item.status)}
+                          </span>
+                        </td>
+                        <td className="py-3 pr-6 text-right text-sm text-foreground">{formatNumber(item.count)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Detail table */}
+        <div className="overflow-hidden rounded-lg border border-border">
+          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('orderFiscal.detail')}</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-neutral-200">
+              <thead className="bg-surface">
+                <tr>
+                  <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('columns.date')}</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('common:actions.time')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('orderFiscal.order')}</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('orderFiscal.provider')}</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('orderFiscal.fiscalInvoice')}</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('columns.status')}</th>
+                  <th className="py-3 px-3 text-center text-xs font-semibold text-foreground">{t('orderFiscal.qr')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('orderFiscal.grossTotal')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.tax')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.discount')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.serviceCharges')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.extras')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.grandTotal')}</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('metrics.cashier')}</th>
+                  <th className="py-3 pr-6 text-left text-xs font-semibold text-foreground">{t('orderFiscal.error')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
+                {submissions.length === 0 ? (
+                  <tr>
+                    <td colSpan={15} className="py-6 text-center text-sm text-muted">{t('orderFiscal.noRecords')}</td>
+                  </tr>
+                ) : (
+                  submissions.map(sub => {
+                    const order = getOrder(sub);
+                    const figures = order ? getOrderSettlementFigures(order) : null;
+                    const submittedAt = sub.submitted_at ?? sub.created_at;
+                    const date = submittedAt ? toLuxonDateTime(submittedAt) : null;
+                    const dateStr = date ? date.toFormat(DATE_FORMAT) : '—';
+                    const timeStr = date ? date.toFormat(TIME_FORMAT) : '—';
+                    return (
+                      <tr key={String(sub.id)}>
+                        <td className="py-3 pl-6 pr-3 text-sm text-foreground">{dateStr}</td>
+                        <td className="py-3 px-3 text-sm text-foreground">{timeStr}</td>
+                        <td className="py-3 px-3 text-right text-sm text-foreground">{order?.invoice_number ?? '—'}</td>
+                        <td className="py-3 px-3 text-sm text-foreground">{providerLabel(sub.provider_id)}</td>
+                        <td className="py-3 px-3 text-sm text-foreground">{sub.invoice_number || '—'}</td>
+                        <td className="py-3 px-3 text-sm">
+                          <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusBadgeClass(sub.status)}`}>
+                            {statusLabel(sub.status)}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 text-center text-sm text-foreground">
+                          {sub.qrcode ? t('orderFiscal.available') : t('orderFiscal.notAvailable')}
+                        </td>
+                        <td className="py-3 px-3 text-right text-sm text-foreground">
+                          {figures ? withCurrency(figures.itemsTotal) : '—'}
+                        </td>
+                        <td className="py-3 px-3 text-right text-sm text-foreground">
+                          {figures ? withCurrency(figures.tax) : '—'}
+                        </td>
+                        <td className="py-3 px-3 text-right text-sm text-foreground">
+                          {figures ? withCurrency(figures.discounts) : '—'}
+                        </td>
+                        <td className="py-3 px-3 text-right text-sm text-foreground">
+                          {figures ? withCurrency(figures.serviceCharges) : '—'}
+                        </td>
+                        <td className="py-3 px-3 text-right text-sm text-foreground">
+                          {figures ? withCurrency(figures.extrasTotal) : '—'}
+                        </td>
+                        <td className="py-3 px-3 text-right text-sm font-semibold text-foreground">
+                          {figures ? withCurrency(figures.grandTotalDue) : '—'}
+                        </td>
+                        <td className="py-3 px-3 text-sm text-foreground">{cashierName(order)}</td>
+                        <td className="py-3 pr-6 text-sm text-danger-600">{sub.error || '—'}</td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+              {submissions.length > 0 && (
+                <tfoot className="bg-surface">
+                  <tr>
+                    <td colSpan={2} className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">{t('columns.total')}</td>
+                    <td className="py-3 px-3 text-right text-sm font-bold text-foreground">{formatNumber(submissions.length)}</td>
+                    <td colSpan={4}></td>
+                    <td className="py-3 px-3 text-right text-sm font-bold text-foreground">{withCurrency(detailTotals.gross)}</td>
+                    <td className="py-3 px-3 text-right text-sm font-bold text-foreground">{withCurrency(detailTotals.tax)}</td>
+                    <td className="py-3 px-3 text-right text-sm font-bold text-foreground">{withCurrency(detailTotals.discount)}</td>
+                    <td className="py-3 px-3 text-right text-sm font-bold text-foreground">{withCurrency(detailTotals.serviceCharges)}</td>
+                    <td className="py-3 px-3 text-right text-sm font-bold text-foreground">{withCurrency(detailTotals.extras)}</td>
+                    <td className="py-3 px-3 text-right text-sm font-bold text-foreground">{withCurrency(detailTotals.total)}</td>
+                    <td colSpan={2}></td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </div>
+      </div>
+  );
+};

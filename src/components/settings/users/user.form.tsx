@@ -1,0 +1,552 @@
+import { Modal } from "@/components/common/react-aria/modal.tsx";
+import { InputField } from "@/components/common/form/rhf-fields.tsx";
+import { Button } from "@/components/common/input/button.tsx";
+import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
+import { Checkbox } from "@/components/common/input/checkbox.tsx";
+import { Controller, useForm } from "react-hook-form";
+import { useDB } from "@/api/db/db.ts";
+import { Tables } from "@/api/db/tables.ts";
+import { toast } from 'sonner';
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect, useRef, useState } from "react";
+import { User } from "@/api/model/user.ts";
+import { ReactSelect } from "@/components/common/input/custom.react.select.tsx";
+import useApi, { SettingsData } from "@/api/db/use.api.ts";
+import { UserRole } from "@/api/model/user_role.ts";
+import { Shift } from "@/api/model/shift.ts";
+import { StringRecordId } from "surrealdb";
+import {useTranslation} from 'react-i18next';
+import i18n from '@/lib/i18n.ts';
+import {
+  createLinkedEmployee,
+  extractFirstRecord,
+  generateEmployeeNumber,
+} from "@/lib/labor-engine/employee.resolver.ts";
+import {recordIdToString} from "@/api/reports/shared/records.ts";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { UserRoleForm } from "@/components/settings/users/roles/role.form.tsx";
+import { ShiftForm } from "@/components/settings/users/shifts/shift.form.tsx";
+import { PROTECTED_LAST_ADMIN_ROLE_NAME } from "@/lib/access.rules.ts";
+import { listSyncBranches } from '@/lib/catalog-publish.ts';
+
+const CATALOG_PUBLISH_ENABLED =
+  String(import.meta.env.VITE_CATALOG_PUBLISH_ENABLED || '').toLowerCase() === 'true';
+
+interface Props {
+  open: boolean
+  onClose: () => void;
+  data?: User
+}
+
+const validationSchema = yup.object({
+  login_method: yup.object({
+    label: yup.string().required(),
+    value: yup.string().required(),
+  }).required(i18n.t('validation:required')),
+  first_name: yup.string().required(i18n.t('validation:required')),
+  last_name: yup.string().required(i18n.t('validation:required')),
+  login: yup
+    .string()
+    .required(i18n.t('validation:required'))
+    .when("login_method.value", {
+      is: "pin",
+      then: (schema) =>
+        schema.matches(/^\d{4}$/, "PIN must be exactly 4 digits only."),
+    }),
+  password: yup.string().nullable(),
+  user_role: yup.object({
+    label: yup.string(),
+    value: yup.string(),
+  }).nullable().required('This is required'),
+  user_shift: yup.object({
+    label: yup.string(),
+    value: yup.string(),
+  }).nullable().default(null),
+  create_employee: yup.boolean().default(true),
+  employee_number: yup.string().when('create_employee', {
+    is: true,
+    then: (schema) => schema.required(i18n.t('validation:required')),
+    otherwise: (schema) => schema.nullable(),
+  }),
+  // Rendered only when VITE_CATALOG_PUBLISH_ENABLED is on; the ReactSelect
+  // keeps `{label, value}` option objects and onSubmit maps them to ids.
+  branch_ids: yup.array().of(
+    yup.object({
+      label: yup.string().required(),
+      value: yup.string().required(),
+    })
+  ).optional(),
+});
+
+export const UserForm = ({
+  open, onClose, data
+}: Props) => {
+  const { t } = useTranslation(['admin', 'common', 'validation', 'toast']);
+
+  const { control, handleSubmit, formState: { errors }, reset, watch, setValue, getValues } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      login_method: {
+        label: i18n.t('admin:forms.pin'),
+        value: "pin",
+      },
+      create_employee: true,
+      employee_number: '',
+    },
+  });
+
+  const lastAutoEmployeeNumber = useRef('');
+  const login = watch('login');
+  const createEmployee = watch('create_employee');
+  const isCreateMode = !data;
+
+  const closeModal = () => {
+    onClose();
+    reset({
+      login_method: {
+        label: i18n.t('admin:forms.pin'),
+        value: "pin",
+      },
+      first_name: null,
+      last_name: null,
+      login: null,
+      password: null,
+      user_role: null,
+      user_shift: null,
+      create_employee: true,
+      employee_number: '',
+    });
+    lastAutoEmployeeNumber.current = '';
+  }
+
+  useEffect(() => {
+    if( data ) {
+      reset({
+        ...data,
+        login_method: {
+          label: ((data.login_method || "pin") === "form" ? i18n.t('admin:forms.formLogin') : i18n.t('admin:forms.pin')),
+          value: (data.login_method || "pin"),
+        },
+        first_name: data.first_name,
+        last_name: data.last_name,
+        login: data.login,
+        user_role: data?.user_role ? {
+          label: data.user_role.name,
+          value: data.user_role.id,
+        } : null,
+        user_shift: (data as any)?.user_shift ? {
+          label: (data as any)?.user_shift?.name,
+          value: (data as any)?.user_shift?.id,
+        } : null,
+        password: null,
+        create_employee: false,
+        employee_number: '',
+        branch_ids: Array.isArray((data as any).branch_ids)
+          ? (data as any).branch_ids.map((id: string) => ({
+              label: id,
+              value: id,
+            }))
+          : [],
+      });
+    }
+  }, [data, reset]);
+
+  useEffect(() => {
+    if (!isCreateMode || !createEmployee || !login) {
+      return;
+    }
+
+    const current = getValues('employee_number');
+    if (current && current !== lastAutoEmployeeNumber.current) {
+      return;
+    }
+
+    const next = generateEmployeeNumber(login);
+    setValue('employee_number', next);
+    lastAutoEmployeeNumber.current = next;
+  }, [login, createEmployee, isCreateMode, setValue, getValues]);
+
+  const db = useDB();
+  const {
+    data: roleData,
+    fetchData: fetchRoles,
+  } = useApi<SettingsData<UserRole>>(Tables.user_roles, [], ["name asc"], 0, 99999, [], {
+    enabled: false,
+  });
+  const {
+    data: shiftData,
+    fetchData: fetchShifts,
+  } = useApi<SettingsData<Shift>>(Tables.shifts, [], ["name asc"], 0, 99999, [], {
+    enabled: false,
+  });
+  const selectedLoginMethod = watch("login_method");
+  const isPinLogin = selectedLoginMethod?.value !== "form";
+
+  const onSubmit = async (values: any) => {
+    const vals = { ...values };
+    const selectedRoleId = values.user_role?.value;
+    const selectedRole = (roleData?.data || []).find((item) => item.id === selectedRoleId);
+    const selectedRoleModules = [...new Set(selectedRole?.roles || [])];
+
+    vals.user_role = selectedRoleId ? new StringRecordId(selectedRoleId) : null;
+    vals.roles = selectedRoleModules;
+    vals.user_shift = values.user_shift?.value ? new StringRecordId(values.user_shift.value) : null;
+    vals.login_method = values.login_method.value;
+    const branchIds = CATALOG_PUBLISH_ENABLED
+      ? (values.branch_ids || [])
+          .map((o: any) => String(o?.value || o || '').trim())
+          .filter(Boolean)
+      : undefined;
+
+    if (vals.login_method === "pin") {
+      vals.password = vals.login;
+    }
+
+    if(vals.login_method === "form" && !vals.id && !vals.password){
+      toast.error(t('toast:admin.passwordRequired'));
+      return;
+    }
+
+    try {
+      // Prevent duplicate logins (PIN or username) — the auth endpoint just
+      // returns the first matching row, so two active users sharing a login
+      // means the wrong one could end up authenticated. Compared across all
+      // login methods: a PIN and a form username share the same lookup.
+      const loginConflictFilter = data?.id
+        ? `login = $login AND deleted_at = none AND id != $selfId`
+        : `login = $login AND deleted_at = none`;
+      const [loginConflict] = await db.query(
+        `SELECT count() FROM ${Tables.users} WHERE ${loginConflictFilter} GROUP ALL`,
+        data?.id
+          ? { login: vals.login, selfId: new StringRecordId(data.id) }
+          : { login: vals.login },
+      ) as [{ count: number }[]];
+
+      if (loginConflict?.[0]?.count) {
+        toast.error(t('toast:admin.loginTaken'));
+        return;
+      }
+
+      // Prevent reusing another user's password (form-login only — PIN's
+      // "password" is just the login itself, already covered above). Hashes
+      // are bcrypt, so we compare plaintext against each other active
+      // form-login user's stored hash server-side rather than comparing hashes.
+      if (vals.login_method === "form" && vals.password) {
+        const passwordConflictFilter = data?.id
+          ? `login_method = 'form' AND deleted_at = none AND password IS NOT NONE AND password IS NOT NULL AND id != $selfId`
+          : `login_method = 'form' AND deleted_at = none AND password IS NOT NONE AND password IS NOT NULL`;
+        const [passwordConflict] = await db.query(
+          `SELECT count() FROM ${Tables.users} WHERE ${passwordConflictFilter} AND crypto::bcrypt::compare(password, $password) = true GROUP ALL`,
+          data?.id
+            ? { password: vals.password, selfId: new StringRecordId(data.id) }
+            : { password: vals.password },
+        ) as [{ count: number }[]];
+
+        if (passwordConflict?.[0]?.count) {
+          toast.error(t('toast:admin.passwordTaken'));
+          return;
+        }
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+      return;
+    }
+
+    if (data?.id) {
+      const wasProtectedRole = data.user_role?.name === PROTECTED_LAST_ADMIN_ROLE_NAME;
+      // Compare role IDs directly rather than trusting `selectedRole` (a
+      // lookup in roleData, which may still be loading) — an ID that didn't
+      // change can never count as "leaving" the role, regardless of whether
+      // roleData has resolved yet.
+      const roleIdChanged = recordIdToString(selectedRoleId) !== recordIdToString(data.user_role?.id);
+
+      if (wasProtectedRole && roleIdChanged) {
+        const [otherHolders] = await db.query(
+          `SELECT count() FROM ${Tables.users} WHERE user_role = $roleId AND deleted_at = none AND id != $selfId GROUP ALL`,
+          { roleId: new StringRecordId(data.user_role!.id), selfId: new StringRecordId(data.id) },
+        ) as [{ count: number }[]];
+
+        if (!otherHolders?.[0]?.count) {
+          toast.error(t('toast:admin.lastMasterRole', {
+            role: PROTECTED_LAST_ADMIN_ROLE_NAME,
+            defaultValue: `This is the only ${PROTECTED_LAST_ADMIN_ROLE_NAME} user — assign another user that role first, or the system will have no one left who can manage it.`,
+          }));
+          return;
+        }
+      }
+    }
+
+    const displayName = `${values.first_name} ${values.last_name}`;
+
+    try {
+      if( data?.id ) {
+        if (vals.login_method === "pin") {
+          await db.query(`UPDATE ${data.id} set first_name = $first_name, last_name = $last_name, login = $login, login_method = $login_method, password = crypto::bcrypt::generate($password), roles = $roles, user_role = $user_role, user_shift = $user_shift${branchIds ? ', branch_ids = $branch_ids' : ''}`, {
+            ...vals,
+            ...(branchIds ? { branch_ids: branchIds.length ? branchIds : null } : {}),
+          });
+        } else if (vals.password) {
+          await db.query(`UPDATE ${data.id} set first_name = $first_name, last_name = $last_name, login = $login, login_method = $login_method, password = crypto::bcrypt::generate($password), roles = $roles, user_role = $user_role, user_shift = $user_shift${branchIds ? ', branch_ids = $branch_ids' : ''}`, {
+            ...vals,
+            ...(branchIds ? { branch_ids: branchIds.length ? branchIds : null } : {}),
+          });
+        } else {
+          await db.query(`UPDATE ${data.id} set first_name = $first_name, last_name = $last_name, login = $login, login_method = $login_method, roles = $roles, user_role = $user_role, user_shift = $user_shift${branchIds ? ', branch_ids = $branch_ids' : ''}`, {
+            ...vals,
+            ...(branchIds ? { branch_ids: branchIds.length ? branchIds : null } : {}),
+          });
+        }
+
+        closeModal();
+        toast.success(t('toast:admin.userSaved', { name: displayName }));
+      } else {
+        const userParams = {
+          first_name: vals.first_name,
+          last_name: vals.last_name,
+          login: vals.login,
+          login_method: vals.login_method,
+          password: vals.password,
+          roles: vals.roles,
+          user_role: vals.user_role,
+          user_shift: vals.user_shift,
+          ...(branchIds ? { branch_ids: branchIds.length ? branchIds : null } : {}),
+        };
+
+        const result = await db.query(
+          branchIds
+            ? `INSERT INTO user (first_name, last_name, login, login_method, password, roles, user_role, user_shift, branch_ids) VALUES ($first_name, $last_name, $login, $login_method, crypto::bcrypt::generate($password), $roles, $user_role, $user_shift, $branch_ids) RETURN AFTER`
+            : `INSERT INTO user (first_name, last_name, login, login_method, password, roles, user_role, user_shift) VALUES ($first_name, $last_name, $login, $login_method, crypto::bcrypt::generate($password), $roles, $user_role, $user_shift) RETURN AFTER`,
+          userParams,
+        );
+        const createdUser = extractFirstRecord<User>(result);
+        const userId = recordIdToString(createdUser?.id ?? createdUser);
+
+        if (values.create_employee) {
+          if (!userId) {
+            closeModal();
+            toast.error(t('toast:admin.employeeLinkFailed'));
+            toast.success(t('toast:admin.userSaved', { name: displayName }));
+            return;
+          }
+
+          try {
+            await createLinkedEmployee(db, {
+              userId,
+              employeeNumber: values.employee_number,
+              first_name: values.first_name,
+              last_name: values.last_name,
+            });
+            closeModal();
+            toast.success(t('toast:admin.userAndEmployeeSaved', { name: displayName }));
+          } catch (employeeError) {
+            closeModal();
+            toast.error(employeeError instanceof Error ? employeeError.message : String(employeeError));
+            toast.success(t('toast:admin.userSaved', { name: displayName }));
+          }
+        } else {
+          closeModal();
+          toast.success(t('toast:admin.userSaved', { name: displayName }));
+        }
+      }
+    } catch ( e ) {
+      toast.error(e instanceof Error ? e.message : String(e));
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    if (open) {
+      fetchRoles();
+      fetchShifts();
+    }
+  }, [open, fetchRoles, fetchShifts]);
+
+  const [roleModal, setRoleModal] = useState(false);
+  const [shiftModal, setShiftModal] = useState(false);
+  const [branchOptions, setBranchOptions] = useState<{ label: string; value: string }[]>([]);
+
+  useEffect(() => {
+    if (!open || !CATALOG_PUBLISH_ENABLED) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const branches = await listSyncBranches(db);
+        if (cancelled) return;
+        setBranchOptions(
+          branches
+            .filter((b) => b.active !== false)
+            .map((b) => ({
+              label: `${b.name} (${b.client_id})`,
+              value: b.client_id,
+            }))
+        );
+      } catch {
+        // sync_branch may be missing until HQ migration
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- never put db in hook deps
+  }, [open]);
+
+  return (
+    <>
+      <Modal
+        testId="admin-form-user"
+        title={data ? t('forms.updateUser', { name: `${data?.first_name} ${data?.last_name}` }) : t('forms.createUser')}
+        open={open}
+        onClose={closeModal}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex gap-3 flex-col mb-3">
+            <div className="flex-1">
+              <InputField name="first_name" control={control} label={t('columns.firstName')} autoFocus error={errors?.first_name?.message}/>
+            </div>
+            <div className="flex-1">
+              <InputField name="last_name" control={control} label={t('columns.lastName')} error={errors?.last_name?.message}/>
+            </div>
+            <div className="flex-1">
+              <label htmlFor="login_method">{t('forms.loginMethod')}</label>
+              <Controller
+                name="login_method"
+                control={control}
+                render={({field}) => (
+                  <ReactSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={[
+                      { label: t('forms.pin'), value: "pin" },
+                      { label: t('forms.formLogin'), value: "form" },
+                    ]}
+                  />
+                )}
+              />
+            </div>
+            <div className="flex-1">
+              <InputField name="login" control={control} label={isPinLogin ? t('forms.pin') : t('forms.username')} error={errors?.login?.message}/>
+            </div>
+            {!isPinLogin && (
+              <div className="flex-1">
+                <InputField type="password" name="password" control={control} label={t('forms.password')} error={errors?.password?.message}/>
+              </div>
+            )}
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <label htmlFor="user_role">{t('columns.role')}</label>
+                <Controller
+                  name="user_role"
+                  control={control}
+                  render={({field}) => (
+                    <ReactSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={(roleData?.data || []).map(item => ({
+                        label: item.name,
+                        value: item.id
+                      }))}
+                    />
+                  )}
+                />
+                <span className="text-danger-600 text-sm">{errors?.user_role?.message as string}</span>
+              </div>
+              <IconTooltipButton label={t('common:actions.add')} type="button" variant="primary" onClick={() => setRoleModal(true)}><FontAwesomeIcon icon={faPlus}/></IconTooltipButton>
+            </div>
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <label htmlFor="user_shift">{t('columns.shift')}</label>
+                <Controller
+                  name="user_shift"
+                  control={control}
+                  render={({field}) => (
+                    <ReactSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={(shiftData?.data || []).map(item => ({
+                        label: item.name,
+                        value: item.id
+                      }))}
+                      isClearable
+                    />
+                  )}
+                />
+              </div>
+              <IconTooltipButton label={t('common:actions.add')} type="button" variant="primary" onClick={() => setShiftModal(true)}><FontAwesomeIcon icon={faPlus}/></IconTooltipButton>
+            </div>
+
+            {CATALOG_PUBLISH_ENABLED && (
+              <div className="flex-1">
+                <label htmlFor="branch_ids">{t('forms.userBranches')}</label>
+                <Controller
+                  name="branch_ids"
+                  control={control}
+                  render={({field}) => (
+                    <ReactSelect
+                      isMulti
+                      isClearable
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={branchOptions}
+                      placeholder={t('forms.userBranchesShared')}
+                    />
+                  )}
+                />
+                <p className="text-xs text-muted mt-1">{t('forms.userBranchesHint')}</p>
+              </div>
+            )}
+
+            {isCreateMode && (
+              <div className="flex flex-col gap-3 pt-2 border-t border-border">
+                <Controller
+                  name="create_employee"
+                  control={control}
+                  render={({field}) => (
+                    <Checkbox
+                      label={t('forms.createEmployeeToo')}
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.currentTarget.checked)}
+                    />
+                  )}
+                />
+                {createEmployee && (
+                  <>
+                    <p className="text-sm text-muted">{t('forms.createEmployeeHint')}</p>
+                    <InputField
+                      name="employee_number"
+                      control={control}
+                      label={t('forms.employeeNumber')}
+                      error={errors?.employee_number?.message}
+                    />
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <Button type="submit" variant="primary">{t('common:actions.save')}</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {roleModal && (
+        <UserRoleForm
+          open={true}
+          onClose={() => {
+            fetchRoles();
+            setRoleModal(false);
+          }}
+        />
+      )}
+      {shiftModal && (
+        <ShiftForm
+          open={true}
+          onClose={() => {
+            fetchShifts();
+            setShiftModal(false);
+          }}
+        />
+      )}
+    </>
+  )
+}

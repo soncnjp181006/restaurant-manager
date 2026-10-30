@@ -1,0 +1,40 @@
+{
+  "sidebar": {
+    "menu": "Thực đơn",
+    "orders": "Đơn hàng",
+    "summary": "Tổng hợp",
+    "kitchen": "Bếp",
+    "orderDisplay": "Màn hình đơn",
+    "delivery": "Giao hàng",
+    "closing": "Chốt ca",
+    "inventory": "Tồn kho",
+    "manage": "Quản lý",
+    "reports": "Báo cáo",
+    "tipDist": "Chia tiền boa",
+    "accounts": "Sổ sách",
+    "settings": "Cài đặt",
+    "clock": "Chấm công",
+    "hr": "Nhân sự",
+    "integrations": "Tích hợp",
+    "requiresApproval": "Cần quản lý phê duyệt"
+  },
+  "modules": {
+    "Menu": "Thực đơn",
+    "Orders": "Đơn hàng",
+    "Summary": "Tổng hợp",
+    "Reports": "Báo cáo",
+    "Closing": "Chốt ca",
+    "Kitchen": "Bếp",
+    "Order Display": "Màn hình hiển thị đơn",
+    "Delivery": "Giao hàng",
+    "Admin": "Quản trị",
+    "Riders": "Tài xế",
+    "Tips": "Phân chia tiền boa",
+    "Inventory": "Tồn kho",
+    "Accounts": "Sổ sách",
+    "Settings": "Cài đặt",
+    "HR": "Nhân sự",
+    "Integrations": "Tích hợp"
+  },
+  "authenticateToAccess": "Xác thực để truy cập {{module}}"
+}

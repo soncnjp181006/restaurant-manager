@@ -1,0 +1,25 @@
+{
+  "name": "posr-sync-service",
+  "version": "1.0.0",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE",
+  "description": "Live sync from local SurrealDB to master reporting SurrealDB",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test src/*.test.js",
+    "smoke:upload": "node scripts/smoke-changefeed.cjs",
+    "smoke:catalog": "node scripts/smoke-catalog-download.cjs"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.22.2",
+    "surrealdb": "^2.0.3",
+    "ws": "^8.21.3"
+  },
+  "overrides": {
+    "qs": "^6.16.0",
+    "body-parser": "^1.20.6",
+    "path-to-regexp": "0.1.13"
+  }
+}

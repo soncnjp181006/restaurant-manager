@@ -1,0 +1,383 @@
+import { Printer } from "@/api/model/printer.ts";
+import { Kitchen } from "@/api/model/kitchen.ts";
+import { Modal } from "@/components/common/react-aria/modal.tsx";
+import { Input } from "@/components/common/input/input.tsx";
+import { InputField } from "@/components/common/form/rhf-fields.tsx";
+import { Controller, useForm } from "react-hook-form";
+import { transformValue } from "@/lib/utils.ts";
+import { Button } from "@/components/common/input/button.tsx";
+import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
+import { useEffect, useState } from "react";
+import { useDB } from "@/api/db/db.ts";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Tables } from "@/api/db/tables.ts";
+import { toast } from "sonner";
+import {useTranslation} from 'react-i18next';
+import i18n from '@/lib/i18n.ts';
+import * as yup from "yup";
+import { ReactSelect } from "@/components/common/input/custom.react.select.tsx";
+import useApi, { SettingsData } from "@/api/db/use.api.ts";
+import { Dish } from "@/api/model/dish.ts";
+import { StringRecordId } from "surrealdb";
+import { Checkbox } from "@/components/common/input/checkbox.tsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { PrinterForm } from "@/components/settings/printers/printer.form.tsx";
+import { ensureLocationForKitchen } from "@/lib/inventory/location.service.ts";
+import { recordIdToString } from "@/api/reports/shared/records.ts";
+
+import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+interface Props {
+  open: boolean
+  onClose: () => void;
+  data?: Kitchen
+}
+
+const selectOptionSchema = yup.object({
+  label: yup.string(),
+  value: yup.string()
+});
+
+const validationSchema = yup.object({
+  name: yup.string().required(i18n.t('validation:required')),
+  printers: yup.array().of(selectOptionSchema).nullable().optional(),
+  items: yup.array().of(selectOptionSchema),
+  priority: yup.number().min(1, i18n.t('validation:required')).required(i18n.t('validation:required')),
+});
+
+export const KitchenForm = ({
+  open, onClose, data
+}: Props) => {
+  const { t } = useTranslation(['admin', 'common', 'validation', 'toast']);
+
+  const [dishSearch, setDishSearch] = useState("");
+
+  const closeModal = () => {
+    onClose();
+    setDishSearch("");
+    reset({
+      name: null,
+      printers: [],
+      priority: null,
+      items: []
+    });
+  }
+
+  useEffect(() => {
+    if(data){
+      reset({
+        ...data,
+        name: data.name,
+        priority: data.priority,
+        printers: data?.printers?.map(item => ({
+          label: item.name,
+          value: item.id.toString()
+        })),
+        items: data?.items?.map(item => ({
+          label: item.name,
+          value: item.id.toString()
+        })),
+      });
+    }
+  }, [data]);
+
+  const db = useDB();
+
+  const {
+    data: printers,
+    fetchData: fetchPrinters
+  } = useApi<SettingsData<Printer>>(Tables.printers, [], ['priority asc'], 0, 99999, [], {
+    enabled: false
+  });
+
+  const {
+    data: dishes,
+    fetchData: fetchDishes
+  } = useApi<SettingsData<Dish>>(Tables.dishes, [], ['priority asc'], 0, 99999, ['categories'], {
+    enabled: false
+  });
+
+  const { control, handleSubmit, formState: {errors}, reset } = useForm({
+    resolver: yupResolver(validationSchema)
+  });
+
+  console.log(errors)
+
+  const onSubmit = async (values: any) => {
+    const vals = {...values};
+    if(values.items){
+      vals.items = values.items.map(item => new StringRecordId(item.value));
+    }
+
+    if(values.printers){
+      vals.printers = values.printers.map(item => new StringRecordId(item.value));
+    }
+
+    vals.priority = Number(values.priority);
+
+    try {
+      let kitchenId = data?.id ? recordIdToString(data.id) : "";
+      if(data?.id){
+        await db.update(data.id, {
+          ...vals
+        })
+      }else{
+        const [created] = await db.create(Tables.kitchens, {
+          ...vals
+        });
+        kitchenId = recordIdToString(created?.id) || String(created?.id ?? "");
+      }
+
+      // Phase 8: keep inventory_location shim in sync with kitchens
+      if (kitchenId) {
+        await ensureLocationForKitchen(db, kitchenId, {
+          name: values.name,
+          type: "Kitchen",
+        });
+      }
+
+      
+      await emitEntityCrudSave({
+        domain: 'manage',
+        table: Tables.kitchens,
+        entityId: data?.id ? String(data.id) : Tables.kitchens,
+        isUpdate: Boolean(data?.id),
+        source: 'settings-form',
+      });
+
+      closeModal();
+      toast.success(t('toast:admin.kitchenSaved', { name: values.name }));
+    }catch(e){
+      toast.error(e);
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    if(open){
+      fetchPrinters();
+      fetchDishes();
+    }
+  }, [open]);
+
+  const [printersModal, setPrintersModal] = useState(false);
+
+  return (
+    <>
+      <Modal
+        testId="admin-form-kitchen"
+        title={data ? t('forms.updateKitchen', { name: data?.name }) : t('forms.createKitchen')}
+        open={open}
+        onClose={closeModal}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex gap-3 mb-3 flex-col">
+            <div className="flex-1">
+              <InputField name="name" control={control} label={t('columns.name')} autoFocus error={errors?.name?.message}/>
+            </div>
+
+            <div className="flex-1">
+              <label htmlFor="">{t('tabs.dishes')}</label>
+              <div className="mt-2">
+                <Input
+                  placeholder={t('forms.searchDishes')}
+                  value={dishSearch}
+                  onChange={(e) => setDishSearch(e.target.value)}
+                />
+              </div>
+              <Controller
+                render={({ field }) => (
+                  <div className="mt-2 rounded border border-border p-3 max-h-96 overflow-auto">
+                    {(() => {
+                      const searchTerm = dishSearch.trim().toLowerCase();
+                      const selectedItems = Array.isArray(field.value) ? field.value : [];
+                      const selectedMap = new Map(
+                        selectedItems.map(item => [item.value, item])
+                      );
+                      const filteredDishes = (dishes?.data ?? []).filter((dish) => {
+                        if (!searchTerm) return true;
+                        return dish.name.toLowerCase().includes(searchTerm);
+                      });
+
+                      const groupedDishes = filteredDishes.reduce((acc, dish) => {
+                        const categories = dish.categories?.length
+                          ? dish.categories
+                          : [{ id: "__uncategorized__", name: "Uncategorized" }];
+
+                        categories.forEach((category) => {
+                          const key = category.id?.toString?.() ?? "__uncategorized__";
+                          if (!acc[key]) {
+                            acc[key] = {
+                              id: key,
+                              name: category.name ?? "Uncategorized",
+                              dishes: []
+                            };
+                          }
+
+                          const alreadyExists = acc[key].dishes.some(item => item.id === dish.id);
+                          if (!alreadyExists) {
+                            acc[key].dishes.push(dish);
+                          }
+                        });
+
+                        return acc;
+                      }, {} as Record<string, { id: string; name: string; dishes: Dish[] }>);
+
+                      const categories = Object.values(groupedDishes)
+                        .sort((a, b) => a.name.localeCompare(b.name));
+
+                      const toggleDish = (dish: Dish) => {
+                        const dishId = dish.id.toString();
+                        if (selectedMap.has(dishId)) {
+                          field.onChange(selectedItems.filter(item => item.value !== dishId));
+                          return;
+                        }
+
+                        field.onChange([
+                          ...selectedItems,
+                          {
+                            label: dish.name,
+                            value: dishId
+                          }
+                        ]);
+                      };
+
+                      const toggleCategory = (categoryDishes: Dish[]) => {
+                        const categoryDishIds = categoryDishes.map(item => item.id.toString());
+                        const isAllSelected = categoryDishIds.every(id => selectedMap.has(id));
+
+                        if (isAllSelected) {
+                          field.onChange(
+                            selectedItems.filter(item => !categoryDishIds.includes(item.value))
+                          );
+                          return;
+                        }
+
+                        const nextItems = [...selectedItems];
+                        categoryDishes.forEach((dish) => {
+                          const dishId = dish.id.toString();
+                          if (!selectedMap.has(dishId)) {
+                            nextItems.push({
+                              label: dish.name,
+                              value: dishId
+                            });
+                          }
+                        });
+                        field.onChange(nextItems);
+                      };
+
+                      if (!categories.length) {
+                        return (
+                          <p className="text-muted">
+                            {searchTerm ? t('forms.noDishesMatch') : t('forms.noDishesFound')}
+                          </p>
+                        );
+                      }
+
+                      return (
+                        <div className="space-y-2">
+                          {categories.map((category) => {
+                            const categoryDishIds = category.dishes.map(item => item.id.toString());
+                            const selectedCount = categoryDishIds.filter(id => selectedMap.has(id)).length;
+                            const isAllSelected = categoryDishIds.length > 0 && selectedCount === categoryDishIds.length;
+
+                            return (
+                              <div key={category.id} className="rounded border border-border">
+                                <button
+                                  type="button"
+                                  onClick={() => toggleCategory(category.dishes)}
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-surface"
+                                >
+                                  <Checkbox
+                                    checked={isAllSelected}
+                                    indeterminate={selectedCount > 0 && !isAllSelected}
+                                    readOnly
+                                    className="pointer-events-none"
+                                  />
+                                  <span className="font-medium">{category.name}</span>
+                                </button>
+                                <div className="pl-8 pr-3 pb-2 space-y-1">
+                                  {category.dishes.map((dish) => {
+                                    const dishId = dish.id.toString();
+                                    return (
+                                      <label
+                                        key={`${category.id}-${dishId}`}
+                                        className="flex items-center gap-2 py-1 cursor-pointer"
+                                      >
+                                        <Checkbox
+                                          checked={selectedMap.has(dishId)}
+                                          onChange={() => toggleDish(dish)}
+                                        />
+                                        <span>{dish.name}</span>
+                                      </label>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+                name="items"
+                control={control}
+              />
+            </div>
+
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <label htmlFor="">{t('columns.printers')}</label>
+                <Controller
+                  render={({ field }) => (
+                    <ReactSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={printers?.data?.map(item => ({
+                        label: item.name,
+                        value: item.id.toString()
+                      }))}
+                      isMulti
+                    />
+                  )}
+                  name="printers"
+                  control={control}
+                />
+              </div>
+              <IconTooltipButton label={t('common:actions.add')} type="button" variant="primary" onClick={() => setPrintersModal(true)}><FontAwesomeIcon icon={faPlus}/></IconTooltipButton>
+            </div>
+            <div className="flex-1">
+              <Controller
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    label={t('columns.priority')}
+                    error={errors?.priority?.message}
+                    value={transformValue.input(field.value)}
+                    onChange={(e) => field.onChange(transformValue.output(e))}
+                  />
+                )}
+                name="priority"
+                control={control}
+              />
+            </div>
+          </div>
+          <div>
+            <Button type="submit" variant="primary">{t('common:actions.save')}</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {printersModal && (
+        <PrinterForm
+          open={true}
+          onClose={() => {
+            fetchPrinters();
+            setPrintersModal(false);
+          }}
+        />
+      )}
+    </>
+  )
+}

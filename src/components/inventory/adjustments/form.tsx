@@ -1,0 +1,499 @@
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import * as yup from "yup";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "sonner";
+import useApi, { SettingsData } from "@/api/db/use.api.ts";
+import { Tables } from "@/api/db/tables.ts";
+import { useDB } from "@/api/db/db.ts";
+import { Modal } from "@/components/common/react-aria/modal.tsx";
+import { Input } from "@/components/common/input/input.tsx";
+import { InputField } from "@/components/common/form/rhf-fields.tsx";
+import { Button } from "@/components/common/input/button.tsx";
+import { AiSparklesIcon } from "@/components/common/icons/ai-sparkles.tsx";
+import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
+import { ReactSelect } from "@/components/common/input/custom.react.select.tsx";
+import { InventoryItem } from "@/api/model/inventory_item.ts";
+import {
+  INVENTORY_ADJUSTMENT_REASON_VALUES,
+  InventoryAdjustment,
+} from "@/api/model/inventory_adjustment.ts";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { fetchNextSequentialNumber } from "@/utils/recordNumbers.ts";
+import { toRecordId } from "@/lib/utils.ts";
+import { nowSurrealDateTime } from "@/lib/datetime.ts";
+import { useAtom } from "jotai";
+import { appPage } from "@/store/jotai.ts";
+import { recordIdToString } from "@/api/reports/shared/records.ts";
+import { canEdit } from "@/lib/inventory/lifecycle.ts";
+import { postDocument } from "@/lib/inventory/posting.service.ts";
+import { useIntegrationManager } from "@/providers/integration.provider.tsx";
+import { useInventoryLocations } from "@/hooks/useInventoryLocations.ts";
+import { DataImportModal } from "@/components/common/data-import/data-import-modal.tsx";
+import { createAdjustmentImportConfig } from "@/components/inventory/adjustments/adjustment.import.config.ts";
+import { convertQuantityOnlyLine } from "@/lib/inventory/unit.convert.ts";
+import {
+  lineEnteredDefaults,
+  QuantityUomFields,
+} from "@/components/inventory/common/quantity.uom.fields.tsx";
+import { normalizeUom } from "@/utils/inventoryUom.ts";
+type Option = { label: string; value: string };
+
+interface FormValues {
+  invoice_number: number;
+  reason: Option | null;
+  notes?: string;
+  location: Option | null;
+  items: Array<{
+    item: Option | null;
+    quantity_change: number | string;
+    entered_uom?: string;
+    unit_cost?: number | string;
+    comments?: string;
+  }>;
+}
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  data?: InventoryAdjustment;
+}
+
+const validationSchema = yup.object({
+  invoice_number: yup.number().required(),
+  reason: yup.object({ label: yup.string(), value: yup.string() }).required().nullable(),
+  location: yup.object({ label: yup.string(), value: yup.string() }).required().nullable(),
+  notes: yup.string().optional(),
+  items: yup
+    .array()
+    .of(
+      yup.object({
+        item: yup.object({ label: yup.string(), value: yup.string() }).required().nullable(),
+        quantity_change: yup.number().typeError("Required").required(),
+        entered_uom: yup.string().nullable().optional(),
+        unit_cost: yup.number().nullable().optional(),
+        comments: yup.string().optional(),
+      })
+    )
+    .min(1),
+});
+
+const resolveLocationOption = (data?: InventoryAdjustment): Option | null => {
+  const loc = data?.location;
+  if (!loc) return null;
+  return {
+    label: (loc as any).name ?? String(loc),
+    value: recordIdToString((loc as any).id ?? loc),
+  };
+};
+
+export const InventoryAdjustmentForm = ({ open, onClose, data }: Props) => {
+  const { t } = useTranslation(["inventory", 'common']);
+  const db = useDB();
+  const [state] = useAtom(appPage);
+  const { manager } = useIntegrationManager();
+  const locked = data?.id ? !canEdit(data.status) : false;
+
+  const reasonOptions = useMemo(
+    () =>
+      INVENTORY_ADJUSTMENT_REASON_VALUES.map((value) => ({
+        value,
+        label: t(`adjustment.reasons.${value}`),
+      })),
+    [t]
+  );
+
+  const {
+    data: items,
+    fetchData: fetchItems,
+    isFetching: loadingItems,
+  } = useApi<SettingsData<InventoryItem>>(Tables.inventory_items, [], [], 0, 9999, [], {
+    enabled: false,
+  });
+  const {
+    options: locationOptions,
+    loading: loadingLocations,
+    reload: reloadLocations,
+  } = useInventoryLocations(open);
+
+  const { control, handleSubmit, reset, getValues, setValue, watch, formState: { errors } } = useForm<FormValues>({
+    resolver: yupResolver(validationSchema) as any,
+    defaultValues: {
+      invoice_number: 1,
+      reason: reasonOptions[0],
+      notes: "",
+      location: null,
+      items: [{ item: null, quantity_change: 0, entered_uom: "", unit_cost: "", comments: "" }],
+    },
+  });
+
+  const { fields, append, remove, update } = useFieldArray({ control, name: "items" });
+
+  const [importModal, setImportModal] = useState(false);
+  const adjustmentImportConfig = useMemo(
+    () => createAdjustmentImportConfig({
+      db,
+      t,
+      append,
+      update,
+      getLines: () => getValues("items") ?? [],
+    }),
+    [db, t, append, update, getValues]
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    fetchItems();
+    void reloadLocations();
+    if (!data?.id) {
+      fetchNextSequentialNumber(db, Tables.inventory_adjustments, "invoice_number").then(
+        (n) => reset((prev) => ({ ...prev, invoice_number: n, reason: reasonOptions[0] }))
+      );
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!data) return;
+    reset({
+      invoice_number: data.invoice_number,
+      reason:
+        reasonOptions.find((r) => r.value === data.reason) ?? reasonOptions[0],
+      notes: data.notes ?? "",
+      location: resolveLocationOption(data),
+      items: (data.items ?? []).map((line) => {
+        const entered = lineEnteredDefaults({
+          quantity: line.quantity_change,
+          entered_quantity: (line as any).entered_quantity,
+          entered_uom: (line as any).entered_uom,
+          item: line.item,
+        });
+        return {
+        item: line.item
+          ? {
+              label: `${line.item.name}-${line.item.code ?? ""}`,
+              value: recordIdToString(line.item.id ?? line.item),
+            }
+          : null,
+        quantity_change: entered.quantity,
+        entered_uom: entered.entered_uom,
+        unit_cost: line.unit_cost ?? "",
+        comments: line.comments ?? "",
+      };
+      }),
+    });
+  }, [data, reset, reasonOptions]);
+
+  const itemOptions: Option[] = (items?.data ?? []).map((item) => ({
+    label: `${item.name}-${item.code ?? ""}`,
+    value: recordIdToString(item.id),
+  }));
+
+  const save = async (values: FormValues, postAfterSave?: boolean) => {
+    if (data?.id && !canEdit(data.status)) {
+      toast.error(t("adjustment.cannotEditPosted"));
+      return;
+    }
+
+    try {
+      const locationId = values.location!.value;
+
+      const payload: Record<string, unknown> = {
+        invoice_number: Number(values.invoice_number),
+        reason: values.reason!.value,
+        notes: values.notes?.trim() || undefined,
+        location: toRecordId(locationId),
+        status: data?.id
+          ? data.status && data.status !== "posted"
+            ? data.status
+            : "draft"
+          : "draft",
+        items: [],
+      };
+
+      if (!data?.id) {
+        payload.created_at = nowSurrealDateTime();
+        if (state?.user?.id) {
+          payload.created_by = toRecordId(state.user.id);
+        }
+      }
+
+      let adjustmentId = data?.id ? String(data.id) : "";
+      if (data?.id) {
+        await db.merge(toRecordId(data.id), payload);
+        await db.query(
+          `DELETE FROM ${Tables.inventory_adjustment_items} WHERE adjustment = $id`,
+          { id: toRecordId(data.id) }
+        );
+      } else {
+        const [created] = await db.create(Tables.inventory_adjustments, payload);
+        adjustmentId = recordIdToString(created?.id) || String(created?.id ?? "");
+      }
+
+      if (!adjustmentId) {
+        throw new Error(t("adjustment.saveFailed"));
+      }
+
+      const catalogItems = items?.data ?? [];
+      const lineIds: string[] = [];
+      for (const line of values.items) {
+        const catalog = catalogItems.find(
+          (it) => recordIdToString(it.id) === line.item!.value
+        );
+        const rawChange = Number(line.quantity_change) || 0;
+        const sign = rawChange < 0 ? -1 : rawChange > 0 ? 1 : 0;
+        const absEntered = Math.abs(rawChange);
+        const stockUomNormalized =
+          normalizeUom(line.entered_uom || catalog?.uom) ??
+          line.entered_uom ??
+          catalog?.uom ??
+          "";
+        let quantityChange = 0;
+        let enteredUom = stockUomNormalized || undefined;
+        if (sign !== 0) {
+          const stock = convertQuantityOnlyLine({
+            enteredQuantity: absEntered,
+            enteredUom: line.entered_uom || catalog?.uom,
+            stockUom: catalog?.uom,
+            stockUnitPrice:
+              line.unit_cost === "" || line.unit_cost == null
+                ? undefined
+                : Number(line.unit_cost),
+          });
+          quantityChange = sign * stock.quantity;
+          enteredUom = stock.entered_uom;
+        }
+        const [created] = await db.create(Tables.inventory_adjustment_items, {
+          adjustment: toRecordId(adjustmentId),
+          item: toRecordId(line.item!.value),
+          location: toRecordId(locationId),
+          quantity_change: quantityChange,
+          entered_quantity: rawChange,
+          entered_uom: enteredUom,
+          unit_cost:
+            line.unit_cost === "" || line.unit_cost == null
+              ? undefined
+              : Number(line.unit_cost),
+          comments: line.comments?.trim() || undefined,
+        });
+        if (created?.id) {
+          lineIds.push(recordIdToString(created.id) || String(created.id));
+        }
+      }
+
+      await db.merge(toRecordId(adjustmentId), {
+        items: lineIds.map((id) => toRecordId(id)),
+      });
+
+      if (postAfterSave) {
+        await postDocument({
+          db,
+          documentType: "adjustment",
+          documentId: adjustmentId,
+          userId: state?.user?.id ? recordIdToString(state.user.id) : undefined,
+          integrationManager: manager,
+        });
+        toast.success(t("adjustment.savedAndPosted"));
+      } else {
+        toast.success(t("adjustment.saved"));
+      }
+      onClose();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+    }
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={
+        data?.id
+          ? t("forms.editAdjustment", { number: data.invoice_number })
+          : t("forms.createAdjustment")
+      }
+      size="lg"
+    >
+      <form className="space-y-4" onSubmit={handleSubmit((v) => save(v, false))}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Controller
+            name="invoice_number"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <Input
+                  type="number"
+                  label={t("columns.invoiceNumber")}
+                  disabled={locked}
+                  {...field}
+                  value={field.value ?? ""}
+                  error={errors.invoice_number?.message}
+                />
+              </div>
+            )}
+          />
+          <Controller
+            name="reason"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <label className="block text-sm mb-1">{t("forms.reason")}</label>
+                <ReactSelect
+                  options={reasonOptions}
+                  value={field.value}
+                  onChange={field.onChange}
+                  isDisabled={locked}
+                  isClearable={false}
+                />
+              </div>
+            )}
+          />
+          <Controller
+            name="location"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <label className="block text-sm mb-1">{t("columns.location")}</label>
+                <ReactSelect
+                  options={locationOptions}
+                  value={field.value}
+                  onChange={field.onChange}
+                  isLoading={loadingLocations}
+                  isDisabled={locked}
+                />
+              </div>
+            )}
+          />
+        </div>
+
+        <div>
+          <InputField name="notes" control={control} label={t("forms.notes")} disabled={locked} />
+        </div>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <h3 className="font-medium">{t("forms.lines")}</h3>
+            {!locked && (
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setImportModal(true)}
+                >
+                  <span className="mr-2"><AiSparklesIcon /></span>
+                  {t("common:actions.smartImport", { defaultValue: "AI Import" })}
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  icon={faPlus}
+                  onClick={() =>
+                    append({ item: null, quantity_change: 0, entered_uom: "", unit_cost: "", comments: "" })
+                  }
+                >
+                  {t("buttons.line")}
+                </Button>
+              </div>
+            )}
+          </div>
+          {fields.map((field, index) => (
+            <div key={field.id} className="grid grid-cols-12 gap-2 items-start">
+              <div className="col-span-4">
+                <Controller
+                  name={`items.${index}.item`}
+                  control={control}
+                  render={({ field: f }) => (
+                    <ReactSelect
+                      options={itemOptions}
+                      value={f.value}
+                      onChange={(option) => {
+                        f.onChange(option);
+                        const catalog = (items?.data ?? []).find(
+                          (it) => recordIdToString(it.id) === option?.value
+                        );
+                        if (catalog?.uom) {
+                          setValue(
+                            `items.${index}.entered_uom`,
+                            normalizeUom(catalog.uom) ?? catalog.uom
+                          );
+                        }
+                      }}
+                      isLoading={loadingItems}
+                      isDisabled={locked}
+                    />
+                  )}
+                />
+              </div>
+              <div className="col-span-3">
+                <QuantityUomFields
+                  control={control}
+                  quantityName={`items.${index}.quantity_change`}
+                  uomName={`items.${index}.entered_uom`}
+                  stockUom={
+                    (items?.data ?? []).find(
+                      (it) => recordIdToString(it.id) === watch(`items.${index}.item`)?.value
+                    )?.uom
+                  }
+                  quantityLabel={t("columns.quantityChange")}
+                  errors={errors}
+                  disabled={locked}
+                />
+              </div>
+              <div className="col-span-2">
+                <InputField
+                  name={`items.${index}.unit_cost`}
+                  control={control}
+                  type="number"
+                  step="any"
+                  placeholder={t("columns.unitCost")}
+                  disabled={locked}
+                />
+              </div>
+              <div className="col-span-2">
+                <InputField
+                  name={`items.${index}.comments`}
+                  control={control}
+                  placeholder={t("forms.comments")}
+                  disabled={locked}
+                />
+              </div>
+              <div className="col-span-1">
+                {!locked && fields.length > 1 && (
+                  <IconTooltipButton label={t('common:actions.remove')} type="button" variant="danger" onClick={() => remove(index)}>
+                    <FontAwesomeIcon icon={faTrash} />
+                  </IconTooltipButton>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {!locked && (
+          <div className="flex gap-2 justify-end">
+            <Button type="submit" variant="secondary">
+              {t("buttons.saveDraft")}
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => handleSubmit((v) => save(v, true))()}
+            >
+              {t("buttons.saveAndPost")}
+            </Button>
+          </div>
+        )}
+      </form>
+      {importModal && (
+        <DataImportModal
+          isOpen
+          onClose={() => setImportModal(false)}
+          config={adjustmentImportConfig}
+          title={t("forms.smartImportAdjustmentTitle", { defaultValue: "AI Import adjustment lines" })}
+          enableImportModes
+          defaultMatchFields={['item']}
+          onDone={() => setImportModal(false)}
+        />
+      )}
+    </Modal>
+  );
+};

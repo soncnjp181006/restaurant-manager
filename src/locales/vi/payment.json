@@ -1,0 +1,139 @@
+{
+  "labels": {
+    "subTotal": "Tạm tính ({{count}})",
+    "total": "Tổng cộng"
+  },
+  "actions": {
+    "toKitchen": "Gửi bếp",
+    "payNow": "Thanh toán ngay",
+    "cancel": "Huỷ"
+  },
+  "errors": {
+    "createOrder": "Không tạo được đơn hàng.",
+    "openPayment": "Không mở được màn hình thanh toán.",
+    "notOwner": "Đơn hàng này đang mở trên một thiết bị đầu cuối khác",
+    "numbersExhausted": "Hết mã đơn hàng đã đặt chỗ ngoại tuyến — hãy kết nối lại để tiếp tục",
+    "invoicePendingSync": "Số hoá đơn đang chờ đồng bộ — hãy đợi đơn hàng trực tuyến trước khi gửi dữ liệu tài chính",
+    "fiscalFailed": "Gửi dữ liệu tài chính thất bại",
+    "fireFailed": "Không thể gửi đi các món đang tạm giữ"
+  },
+  "tracking": {
+    "createOrder": "Tạo đơn hàng",
+    "appendOrder": "Bổ sung đơn hàng"
+  },
+  "print": {
+    "kitchenTitle": "In phiếu bếp"
+  },
+  "title": "Đơn hàng #{{invoice}}",
+  "tabs": {
+    "tax": "Thuế",
+    "taxWithRate": "Thuế ({{name}} {{rate}}%)",
+    "discount": "Giảm giá",
+    "coupon": "Mã giảm giá",
+    "serviceCharges": "Phí phục vụ ({{value}}{{unit}})",
+    "tip": "Tiền tip ({{value}}{{unit}})",
+    "notes": "Ghi chú",
+    "total": "Tổng cộng"
+  },
+  "totals": {
+    "items": "Món ({{count}})"
+  },
+  "tax": {
+    "noTax": "Không thuế"
+  },
+  "discount": {
+    "noDiscount": "Không giảm giá",
+    "label": "Giảm giá",
+    "withMaxCap": "với mức trần tối đa {{amount}}",
+    "applied": "Đã áp dụng",
+    "automaticBadge": "Tự động",
+    "selectItems": "Chọn món",
+    "reason": "Lý do",
+    "reasonNotes": "Ghi chú (tuỳ chọn)",
+    "apply": "Áp dụng giảm giá"
+  },
+  "coupon": {
+    "codeLabel": "Mã giảm giá",
+    "applied": "Đã áp dụng mã giảm giá: {{code}}",
+    "discount": "Giảm giá: {{amount}}",
+    "discountFromCoupon": "Giảm giá từ mã giảm giá: {{amount}}",
+    "errors": {
+      "notFound": "Không tìm thấy mã giảm giá hoặc mã không còn hiệu lực",
+      "unsupportedType": "Loại mã giảm giá này không được hỗ trợ trên đơn hàng",
+      "belowMinimum": "Tổng đơn hàng thấp hơn số tiền tối thiểu của mã giảm giá này",
+      "notValidToday": "Mã giảm giá không hợp lệ trong hôm nay",
+      "notValidTime": "Mã giảm giá không hợp lệ vào thời điểm này",
+      "notActiveYet": "Mã giảm giá chưa có hiệu lực",
+      "expired": "Mã giảm giá đã hết hạn",
+      "usageLimitReached": "Đã đạt giới hạn sử dụng của mã giảm giá",
+      "userLimitReached": "Bạn đã đạt giới hạn sử dụng cho mã giảm giá này",
+      "firstOrderOnly": "Mã giảm giá này chỉ hợp lệ trên đơn hàng đầu tiên",
+      "notStackable": "Mã giảm giá này không thể dùng cùng với các khoản giảm giá khác",
+      "noDiscount": "Mã giảm giá này không mang lại khoản giảm giá nào cho đơn hàng này"
+    },
+    "appliedSuccess": "Đã áp dụng mã giảm giá"
+  },
+  "serviceCharges": {
+    "defaultFromSettings": "Mặc định từ thiết lập:",
+    "noServiceCharge": "Không có phí phục vụ"
+  },
+  "tip": {
+    "noTip": "Không có tiền tip"
+  },
+  "notes": {
+    "title": "Ghi chú",
+    "hint": "Bạn có thể nhập số thẻ hoặc thông tin giảm giá"
+  },
+  "receiving": {
+    "remaining": "Còn lại",
+    "change": "Tiền thừa",
+    "tempBill": "Hoá đơn tạm",
+    "tempAlreadyPrinted": "Hoá đơn tạm đã được in rồi",
+    "complete": "Hoàn tất",
+    "cannotAddCard": "Không thể thêm thanh toán bằng thẻ",
+    "exactCardAmount": "Đã thêm đúng số tiền cho thanh toán bằng thẻ",
+    "alreadyClosed": "Đơn hàng này đã được đóng.",
+    "notOwner": "Đơn hàng này đang được xử lý trên một thiết bị đầu cuối khác."
+  },
+  "remote": {
+    "remoteLabel": "{{name}} (Từ xa)",
+    "status": "Trạng thái: {{status}}",
+    "openLink": "Mở liên kết",
+    "verify": "Xác minh"
+  },
+  "discountType": {
+    "percent": "Phần trăm",
+    "fixed": "Cố định"
+  },
+  "remoteGateway": {
+    "missingProvider": "Loại thanh toán từ xa thiếu nhà cung cấp cổng thanh toán.",
+    "linkGenerated": "Đã tạo liên kết thanh toán từ xa.",
+    "tokenGenerated": "Đã tạo mã thông báo từ xa: {{token}}",
+    "intentGenerated": "Đã tạo yêu cầu thanh toán từ xa.",
+    "paymentTimedOut": "Thanh toán {{gateway}} đã hết thời gian chờ. Nhấn Xác minh để kiểm tra lại.",
+    "paymentStatus": "Thanh toán {{gateway}} {{status}}.",
+    "completeOnPage": "Hoàn tất thanh toán trên trang {{gateway}}, sau đó quay lại POS.",
+    "scanQr": "Quét mã QR bằng ứng dụng {{gateway}} để thanh toán.",
+    "enterCardDetails": "Nhập thông tin thẻ bên dưới để hoàn tất thanh toán.",
+    "intentCreated": "Đã tạo yêu cầu thanh toán {{gateway}}.",
+    "usePaypalButton": "Dùng nút PayPal bên dưới để hoàn tất thanh toán.",
+    "useRazorpayButton": "Nhấn Thanh toán bằng Razorpay bên dưới để hoàn tất thanh toán.",
+    "paymentFailed": "Thanh toán thất bại.",
+    "paymentStatusLabel": "Trạng thái thanh toán: {{status}}",
+    "paymentIs": "Thanh toán ở trạng thái {{status}}.",
+    "paypalPaymentIs": "Thanh toán PayPal ở trạng thái {{status}}.",
+    "razorpayPaymentFailed": "Thanh toán Razorpay thất bại.",
+    "stripePaymentFailed": "Thanh toán Stripe thất bại.",
+    "mpesaPhoneUnavailable": "Lời nhắc trên điện thoại M-Pesa không khả dụng.",
+    "mpesaPromptSent": "Đã gửi STK push tới số {{phone}}. Kiểm tra điện thoại để nhập mã PIN M-Pesa.",
+    "mpesaPromptSentGeneric": "Đã gửi STK push. Kiểm tra điện thoại để nhập mã PIN M-Pesa.",
+    "mpesaInvalidPhone": "Nhập số M-Pesa hợp lệ (2547XXXXXXXX hoặc 07XXXXXXXX).",
+    "verifiedAndAdded": "Đã xác minh và thêm thanh toán từ xa.",
+    "generateFailed": "Không tạo được liên kết/mã thông báo thanh toán từ xa",
+    "mustBePaid": "Thanh toán ở trạng thái {{status}}. Phải được thanh toán/uỷ quyền trước khi thêm.",
+    "verifyFailed": "Không xác minh được thanh toán từ xa",
+    "paymentReceived": "Đã nhận được thanh toán {{gateway}}.",
+    "payWithCard": "Thanh toán bằng thẻ",
+    "payWithRazorpay": "Thanh toán bằng Razorpay"
+  }
+}

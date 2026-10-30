@@ -1,0 +1,396 @@
+import {useEffect, useMemo, useRef, useState} from "react";
+import { useTranslation } from 'react-i18next';
+import {ReportsLayout} from "@/screens/partials/reports.layout.tsx";
+import {useDB} from "@/api/db/db.ts";
+import {Tables} from "@/api/db/tables.ts";
+import {Order} from "@/api/model/order.ts";
+import {withCurrency, formatNumber} from "@/lib/utils.ts";
+import {calculateOrderItemPrice} from "@/lib/cart.ts";
+import {getOrderFilteredItems} from "@/lib/order.ts";
+import {DateTime} from "luxon";
+import { getAppTimezone, toLuxonDateTime } from "@/lib/datetime.ts";
+import {
+  buildBranchInsideCondition,
+  buildCreatedAtDateConditions,
+  buildNestedRecordAnyCondition,
+  buildRecordInsideCondition,
+} from "@/api/reports/shared/query.ts";
+import {recordIdToString} from "@/api/reports/shared/records.ts";
+import {useReportBranchScope} from "@/hooks/useReportBranchScope.ts";
+import {BranchBreakdown} from "@/components/reports/branch.breakdown.tsx";
+import { DATE_TIME_FORMAT } from '@/lib/date-format';
+
+const safeNumber = (value: unknown) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const WEEK_DAYS: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+interface ReportFilters {
+  week?: string;
+  orderTakerIds: string[];
+  orderTypeIds: string[];
+  categoryIds: string[];
+  menuItemIds: string[];
+}
+
+const parseFilters = (): ReportFilters => {
+  const params = new URLSearchParams(window.location.search);
+  const parseMulti = (name: string) => {
+    const list = [
+      ...params.getAll(`${name}[]`),
+      ...params.getAll(name),
+    ].filter(Boolean);
+    return list as string[];
+  };
+
+  return {
+    week: params.get('week') || undefined,
+    orderTakerIds: parseMulti('order_takers'),
+    orderTypeIds: parseMulti('order_types'),
+    categoryIds: parseMulti('categories'),
+    menuItemIds: parseMulti('menu_items'),
+  };
+};
+
+const parseWeekParams = (weekParam?: string) => {
+  const timezone = getAppTimezone();
+  let weekStart = weekParam ? DateTime.fromISO(weekParam, {zone: timezone}) : DateTime.now().setZone(timezone);
+  if (!weekStart.isValid) {
+    weekStart = DateTime.now().setZone(timezone);
+  }
+  weekStart = weekStart.startOf('week');
+  const weekEnd = weekStart.plus({days: 6});
+  const dateTimeFormat = DATE_TIME_FORMAT;
+
+  return {
+    weekStart,
+    weekEnd,
+    weekStartISO: weekStart.toISODate() || '',
+    weekEndISO: weekEnd.toISODate() || '',
+    // Full day bounds so a date-only end still includes the last day
+    queryStart: weekStart.startOf('day').toFormat(dateTimeFormat),
+    queryEnd: weekEnd.endOf('day').toFormat(dateTimeFormat),
+  };
+};
+
+interface DayMetrics {
+  quantity: number;
+  total: number;
+}
+
+interface OrderTakerMetrics {
+  userId: string;
+  userName: string;
+  days: Record<string, DayMetrics>;
+  weeklyTotal: DayMetrics;
+}
+
+export const ProductMixWeeklyReport = () => {
+  const { t } = useTranslation('reports');
+  const db = useDB();
+  const branchScope = useReportBranchScope();
+  const queryRef = useRef(db.query);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const filters = useMemo(parseFilters, []);
+  const {weekStart, weekStartISO, weekEndISO, queryStart, queryEnd} = useMemo(() => parseWeekParams(filters.week), [filters.week]);
+  const subtitle = filters.week ? `${weekStartISO} to ${weekEndISO}` : undefined;
+
+  useEffect(() => {
+    queryRef.current = db.query;
+  }, [db]);
+
+  useEffect(() => {
+    if (!branchScope.ready) return;
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Week date range filter
+        const {conditions, params} = buildCreatedAtDateConditions(
+          {startDate: queryStart, endDate: queryEnd},
+          "created_at",
+        );
+
+        const userFilter = buildRecordInsideCondition('user', filters.orderTakerIds, 'userIds');
+        if (userFilter.condition) {
+          conditions.push(userFilter.condition);
+          Object.assign(params, userFilter.params);
+        }
+
+        const orderTypeFilter = buildRecordInsideCondition('order_type', filters.orderTypeIds, 'orderTypeIds');
+        if (orderTypeFilter.condition) {
+          conditions.push(orderTypeFilter.condition);
+          Object.assign(params, orderTypeFilter.params);
+        }
+
+        const categoryFilter = buildNestedRecordAnyCondition('items.item.categories', filters.categoryIds, 'category');
+        if (categoryFilter.condition) {
+          conditions.push(categoryFilter.condition);
+          Object.assign(params, categoryFilter.params);
+        }
+
+        const menuItemFilter = buildNestedRecordAnyCondition('items.item', filters.menuItemIds, 'menuItem');
+        if (menuItemFilter.condition) {
+          conditions.push(menuItemFilter.condition);
+          Object.assign(params, menuItemFilter.params);
+        }
+
+        const branchFilter = buildBranchInsideCondition(branchScope.branchIds);
+        if (branchFilter.emptyResult) {
+          setOrders([]);
+          return;
+        }
+        if (branchFilter.condition) {
+          conditions.push(branchFilter.condition);
+          Object.assign(params, branchFilter.params);
+        }
+
+        const ordersQuery = `
+          SELECT * FROM ${Tables.orders}
+          WHERE ${conditions.join(' AND ')}
+          FETCH user, order_type, items, items.item, items.item.categories
+        `;
+
+        const ordersResult: any = await queryRef.current(ordersQuery, params);
+        setOrders((ordersResult?.[0] ?? []) as Order[]);
+      } catch (err) {
+        console.error("Failed to load product mix weekly report", err);
+        setError(err instanceof Error ? err.message : t('errors.unableToLoad'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [branchScope.ready, branchScope.branchIds, queryStart, queryEnd, filters.orderTakerIds, filters.orderTypeIds, filters.categoryIds, filters.menuItemIds]);
+
+
+  if (loading || !branchScope.ready) {
+    return (
+      <ReportsLayout title={t('reports.productMixWeekly')} subtitle={subtitle}>
+        <div className="py-12 text-center text-muted">{t('loading.productMixWeekly')}</div>
+      </ReportsLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <ReportsLayout title={t('reports.productMixWeekly')} subtitle={subtitle}>
+        <div className="py-12 text-center text-red-600">{t('errors.failedToLoad', { error })}</div>
+      </ReportsLayout>
+    );
+  }
+
+  return (
+    <ReportsLayout title={t('reports.productMixWeekly')} subtitle={subtitle}>
+      <BranchBreakdown
+        enabled={branchScope.isByBranch}
+        rows={orders}
+        labels={branchScope.branchLabels}
+        branchOrder={branchScope.branchOrder}
+        renderSection={({rows, key}) => (
+          <ProductMixWeeklyBody
+            key={key}
+            orders={rows}
+            filters={filters}
+            weekStart={weekStart}
+          />
+        )}
+      />
+    </ReportsLayout>
+  );
+};
+
+const ProductMixWeeklyBody = ({
+  orders,
+  filters,
+  weekStart,
+}: {
+  orders: Order[];
+  filters: ReportFilters;
+  weekStart: DateTime;
+}) => {
+  const { t } = useTranslation('reports');
+
+  // Filter items within orders by category and menu item
+  const getFilteredOrderItems = (order: Order) => {
+    const validItems = getOrderFilteredItems(order);
+    return validItems.filter(item => {
+      if (filters.categoryIds.length > 0) {
+        const itemCategories = item.item?.categories || [];
+        const hasMatchingCategory = Array.isArray(itemCategories)
+          ? itemCategories.some((cat: any) => {
+              const catId = recordIdToString(cat);
+              return catId && filters.categoryIds.includes(catId);
+            })
+          : false;
+        if (!hasMatchingCategory) {
+          return false;
+        }
+      }
+
+      if (filters.menuItemIds.length > 0) {
+        const itemId = recordIdToString(item.item);
+        if (!itemId || !filters.menuItemIds.includes(itemId)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  };
+
+  // Calculate metrics grouped by order taker and day
+  const orderTakerMetrics = useMemo(() => {
+    const metricsMap = new Map<string, OrderTakerMetrics>();
+
+    // Initialize day keys for the week
+    const dayKeys: string[] = [];
+    for (let i = 0; i < 7; i++) {
+      const dayDate = weekStart.plus({days: i});
+      dayKeys.push(dayDate.toISODate() || '');
+    }
+
+    orders.forEach(order => {
+      const orderDate = toLuxonDateTime(order.created_at);
+      const dayKey = orderDate.toISODate() || '';
+      
+      // Skip if not within the week
+      if (!dayKeys.includes(dayKey)) {
+        return;
+      }
+
+      // Get order taker info
+      const userId = order.user?.id?.toString() || 'unknown';
+      const userName = order.user?.first_name && order.user?.last_name
+        ? `${order.user.first_name} ${order.user.last_name}`
+        : order.user?.login || 'Unknown User';
+
+      // Get or create metrics for this order taker
+      if (!metricsMap.has(userId)) {
+        const days: Record<string, DayMetrics> = {};
+        dayKeys.forEach(key => {
+          days[key] = {quantity: 0, total: 0};
+        });
+        metricsMap.set(userId, {
+          userId,
+          userName,
+          days,
+          weeklyTotal: {quantity: 0, total: 0},
+        });
+      }
+
+      const metrics = metricsMap.get(userId)!;
+
+      // Get filtered items for this order
+      const filteredItems = getFilteredOrderItems(order);
+
+      // Calculate quantity and total for filtered items
+      const quantity = filteredItems.reduce((sum, item) => sum + safeNumber(item.quantity), 0);
+      const total = filteredItems.reduce((sum, item) => {
+        const itemPrice = calculateOrderItemPrice(item);
+        return sum + safeNumber(itemPrice);
+      }, 0);
+
+      // Update day metrics
+      const dayMetrics = metrics.days[dayKey];
+      if (dayMetrics) {
+        dayMetrics.quantity = safeNumber(dayMetrics.quantity + quantity);
+        dayMetrics.total = safeNumber(dayMetrics.total + total);
+      }
+
+      // Update weekly totals
+      metrics.weeklyTotal.quantity = safeNumber(metrics.weeklyTotal.quantity + quantity);
+      metrics.weeklyTotal.total = safeNumber(metrics.weeklyTotal.total + total);
+    });
+
+    return Array.from(metricsMap.values()).sort((a, b) => a.userName.localeCompare(b.userName));
+  }, [orders, weekStart, filters.categoryIds, filters.menuItemIds]);
+
+  const dayHeaders = useMemo(() => {
+    return WEEK_DAYS.map((day, index) => ({
+      day,
+      dateKey: weekStart.plus({days: index}).toISODate() || '',
+      dateLabel: weekStart.plus({days: index}).toFormat('yyyy-LL-dd'),
+    }));
+  }, [weekStart]);
+
+  return (
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-neutral-200 border border-border">
+          <thead className="bg-surface">
+            <tr>
+              <th rowSpan={2} className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground border-r border-border">
+                Order Taker
+              </th>
+              {dayHeaders.map(({day, dateLabel}) => (
+                <th key={day} colSpan={2} className="py-3 px-3 text-center text-xs font-semibold text-foreground border-r border-border">
+                  <div>{day}</div>
+                  <div className="text-xs text-muted font-normal">{dateLabel}</div>
+                </th>
+              ))}
+              <th colSpan={2} className="py-3 pr-6 text-center text-xs font-semibold text-foreground">
+                Weekly Total
+              </th>
+            </tr>
+            <tr>
+              {dayHeaders.flatMap(({day}) => [
+                <th key={`${day}-qty`} className="py-2 px-3 text-center text-xs font-semibold text-muted bg-surface border-r border-border">
+                  Qty
+                </th>,
+                <th key={`${day}-total`} className="py-2 px-3 text-center text-xs font-semibold text-muted bg-surface border-r border-border">
+                  Total
+                </th>
+              ])}
+              <th className="py-2 px-3 text-center text-xs font-semibold text-muted bg-surface border-r border-border">
+                Qty
+              </th>
+              <th className="py-2 pr-6 text-center text-xs font-semibold text-muted bg-surface">
+                Total
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
+            {orderTakerMetrics.map((metrics) => (
+              <tr key={metrics.userId} className="hover:bg-surface">
+                <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground border-r border-border">
+                  {metrics.userName}
+                </td>
+                {dayHeaders.flatMap(({dateKey}) => {
+                  const dayMetrics = metrics.days[dateKey] || {quantity: 0, total: 0};
+                  return [
+                    <td key={`${dateKey}-qty`} className="py-3 px-3 text-right text-sm text-foreground border-r border-border">
+                      {formatNumber(dayMetrics.quantity)}
+                    </td>,
+                    <td key={`${dateKey}-total`} className="py-3 px-3 text-right text-sm text-foreground border-r border-border">
+                      {withCurrency(dayMetrics.total)}
+                    </td>
+                  ];
+                })}
+                <td className="py-3 px-3 text-right text-sm font-semibold text-foreground border-r border-border">
+                  {formatNumber(metrics.weeklyTotal.quantity)}
+                </td>
+                <td className="py-3 pr-6 text-right text-sm font-semibold text-foreground">
+                  {withCurrency(metrics.weeklyTotal.total)}
+                </td>
+              </tr>
+            ))}
+            {orderTakerMetrics.length === 0 && (
+              <tr>
+                <td colSpan={dayHeaders.length * 2 + 3} className="py-6 text-center text-sm text-muted">
+                  No data available for the selected filters
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  );
+};

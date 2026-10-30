@@ -1,0 +1,171 @@
+import {useState} from "react";
+import {Tables} from "@/api/db/tables.ts";
+import useApi, {SettingsData} from "@/api/db/use.api.ts";
+import {createColumnHelper} from "@tanstack/react-table";
+import {Button} from "@/components/common/input/button.tsx";
+import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPencil, faPlus} from "@fortawesome/free-solid-svg-icons";
+import {TableComponent} from "@/components/common/table/table.tsx";
+import {Discount, DiscountType} from "@/api/model/discount.ts";
+import {DiscountForm} from "@/components/settings/discounts/discount.form.tsx";
+import {DeleteConfirm} from "@/components/common/table/delete.confirm.tsx";
+import {useDB} from "@/api/db/db.ts";
+import {useTranslation} from 'react-i18next';
+import {executeSettingsDelete} from "@/lib/settings-delete.service.ts";
+import {TabList, Tabs} from "react-aria-components";
+import {Tab, TabPanel} from "@/components/common/react-aria/tabs";
+import {DiscountPermissionMatrix} from "@/components/settings/discounts/permission-matrix.tsx";
+import {DiscountReasonsAdmin} from "@/components/settings/discounts/reasons/index.tsx";
+import {useSecurity} from "@/hooks/useSecurity.ts";
+import {getAccessRuleChildLabel} from "@/lib/access.rules.i18n.ts";
+import { HqCatalogBaseOnlyAction } from '@/components/settings/hq_catalog_base_only_action.tsx';
+import { useHqCatalogListScope } from '@/hooks/useHqCatalogListScope.ts';
+
+export const AdminDiscounts = () => {
+  const {t} = useTranslation(['admin', 'common', 'toast', 'payment']);
+  const loadHook = useApi<SettingsData<Discount>>(Tables.discounts, ['deleted_at = none']);
+  useHqCatalogListScope(loadHook);
+
+  const db = useDB();
+  const {protectAction} = useSecurity();
+
+  const [data, setData] = useState<Discount>();
+  const [formModal, setFormModal] = useState(false);
+  const [tab, setTab] = useState('rules');
+
+  const columnHelper = createColumnHelper<Discount>();
+
+  const translateCategory = (value?: string) => {
+    const key = value || 'manual';
+    return t(`discountEngine.categories.${key}`, {defaultValue: key});
+  };
+
+  const translateScope = (value?: string) => {
+    const key = value || 'cart';
+    return t(`discountEngine.scopes.${key}`, {defaultValue: key});
+  };
+
+  const translateMode = (value?: string) => {
+    const key = value || 'manual';
+    return t(`discountEngine.applicationModes.${key}`, {defaultValue: key});
+  };
+
+  const translateType = (value?: string) => {
+    if (value === DiscountType.Fixed) {
+      return t('payment:discountType.fixed');
+    }
+    return t('payment:discountType.percent');
+  };
+
+  const columns: any = [
+    columnHelper.accessor("name", {header: t('columns.name')}),
+    columnHelper.accessor("category", {
+      header: t('discountEngine.columns.category'),
+      cell: info => translateCategory(info.getValue()),
+    }),
+    columnHelper.accessor("scope", {
+      header: t('discountEngine.columns.scope'),
+      cell: info => translateScope(info.getValue()),
+    }),
+    columnHelper.accessor("application_mode", {
+      header: t('discountEngine.columns.mode'),
+      cell: info => translateMode(info.getValue()),
+    }),
+    columnHelper.accessor("type", {
+      header: t('columns.type'),
+      cell: info => translateType(info.getValue()),
+    }),
+    columnHelper.accessor("priority", {header: t('columns.priority')}),
+    columnHelper.accessor("id", {
+      id: "actions",
+      header: t('columns.actions'),
+      enableSorting: false,
+      enableColumnFilter: false,
+      cell: (info) => (
+        <div className="flex gap-3 items-center">
+          <IconTooltipButton label={t('common:actions.edit')} variant="primary" onClick={() => {
+            protectAction(() => {
+              setData(info.row.original);
+              setFormModal(true);
+            }, {
+              module: 'admin.discounts.update',
+              description: getAccessRuleChildLabel('admin.discounts.update'),
+            });
+          }}><FontAwesomeIcon icon={faPencil}/></IconTooltipButton>
+          <DeleteConfirm
+            message={t('delete.discount', {name: info.row.original.name})}
+            onConfirm={() => protectAction(() => deleteItem(info.row.original.id), {
+              module: 'admin.discounts.delete',
+              description: getAccessRuleChildLabel('admin.discounts.delete'),
+            })}
+          />
+        </div>
+      ),
+    }),
+  ];
+
+  const deleteItem = async (id: string) => {
+    await executeSettingsDelete({
+      db,
+      id,
+      entityLabel: t('entities.discount'),
+      usageChecks: [
+        {
+          query: `SELECT count() AS count
+                  FROM ${Tables.orders}
+                  WHERE discount = $idRecord
+                  GROUP ALL`
+        }
+      ],
+      onAfter: async () => {
+        loadHook.fetchData();
+      }
+    });
+  };
+
+  return (
+    <>
+      <Tabs selectedKey={tab} onSelectionChange={key => setTab(String(key))}>
+        <TabList className="flex gap-3 p-3 bg-surface-elevated border-b border-border" data-testid="admin-discounts-tabs">
+          <Tab id="rules" data-testid="admin-discounts-tab-rules">{t('discountEngine.tabs.rules')}</Tab>
+          <Tab id="reasons" data-testid="admin-discounts-tab-reasons">{t('discountEngine.tabs.reasons')}</Tab>
+          <Tab id="permissions" data-testid="admin-discounts-tab-permissions">{t('discountEngine.tabs.permissions')}</Tab>
+        </TabList>
+
+        <TabPanel id="rules">
+          <TableComponent
+            columns={columns}
+            loaderHook={loadHook}
+            loaderLineItems={columns.length}
+            buttons={[
+              <HqCatalogBaseOnlyAction><Button key="add" variant="primary" data-testid="admin-add-discounts" onClick={() => protectAction(() => {
+                setData(undefined);
+                setFormModal(true);
+              }, {
+                module: 'admin.discounts.create',
+                description: getAccessRuleChildLabel('admin.discounts.create'),
+              })} icon={faPlus}>
+                {t('buttons.discount')}
+              </Button></HqCatalogBaseOnlyAction>
+            ]}
+          />
+
+          {formModal && (
+            <DiscountForm
+              open={formModal}
+              data={data}
+              onClose={() => {
+                setFormModal(false);
+                setData(undefined);
+                loadHook.fetchData();
+              }}
+            />
+          )}
+        </TabPanel>
+        <TabPanel id="reasons"><DiscountReasonsAdmin/></TabPanel>
+        <TabPanel id="permissions"><DiscountPermissionMatrix/></TabPanel>
+      </Tabs>
+    </>
+  )
+}

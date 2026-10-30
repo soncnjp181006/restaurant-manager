@@ -1,0 +1,360 @@
+{
+  "language": {
+    "title": "Ngôn ngữ",
+    "description": "Chọn ngôn ngữ hiển thị cho thiết bị này. Chỉ áp dụng cho thiết bị này.",
+    "changed": "Đã cập nhật ngôn ngữ"
+  },
+  "theme": {
+    "title": "Giao diện",
+    "description": "Chọn sáng, tối hoặc theo cài đặt hệ thống của thiết bị này. Chỉ áp dụng cho thiết bị này.",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống",
+    "brandTitle": "Màu thương hiệu",
+    "brandDescription": "Chọn một bộ màu cho thiết bị này. Khung ứng dụng, nút, ô chọn và biểu đồ cập nhật ngay.",
+    "brand": {
+      "classic": "Cổ điển",
+      "ocean": "Xanh biển",
+      "forest": "Xanh rừng",
+      "cream": "Màu kem",
+      "ruby": "Hồng ngọc",
+      "sapphire": "Lam ngọc",
+      "custom": "Tùy chỉnh"
+    },
+    "customDescription": "Chọn màu chính. Nền, đường viền và màu nhấn được tạo từ màu này cho cả chế độ sáng và tối.",
+    "customPrimary": "Màu chính",
+    "customHex": "Mã màu",
+    "customApply": "Áp dụng",
+    "customPreview": "Xem trước",
+    "colorCanvas": "Nền",
+    "colorSurface": "Bề mặt",
+    "colorForeground": "Văn bản",
+    "colorPrimary": "Màu chính",
+    "colorBorder": "Đường viền"
+  },
+  "branding": {
+    "title": "Thương hiệu",
+    "description": "Tải lên logo nhà hàng của bạn để hiển thị trên màn hình đăng nhập, bên dưới biểu tượng POSR.",
+    "logo": "Logo thương hiệu",
+    "logoHint": "PNG, JPEG, GIF hoặc WebP. Tối đa 500 KB.",
+    "upload": "Tải logo lên",
+    "remove": "Xóa logo",
+    "preview": "Xem trước logo",
+    "updated": "Đã cập nhật cài đặt thương hiệu",
+    "saveDescription": "Lưu cài đặt thương hiệu",
+    "tooLarge": "Tệp vượt quá kích thước tối đa {{size}}.",
+    "invalidType": "Hãy dùng ảnh PNG, JPEG, GIF hoặc WebP.",
+    "readFailed": "Không đọc được tệp ảnh",
+    "saveFailed": "Không lưu được cài đặt thương hiệu"
+  },
+  "touch": {
+    "title": "Bàn phím trên màn hình",
+    "description": "Bật hoặc tắt bàn phím trên màn hình. Chỉ áp dụng cho thiết bị này."
+  },
+  "cache": {
+    "title": "Bộ nhớ đệm",
+    "description": "Dữ liệu POS lưu cục bộ trên máy POS này. Làm mới danh mục sẽ cập nhật menu, khu vực, thanh toán và thuế mà không ảnh hưởng các hoá đơn đang mở. Tải lại bộ nhớ đệm sẽ xóa toàn bộ và tải lại từ máy chủ (kể cả khách hàng và đơn hàng gần đây). Cần kết nối trực tuyến.",
+    "refreshCatalog": "Làm mới danh mục",
+    "reload": "Tải lại bộ nhớ đệm",
+    "orderTypes": "Loại đơn",
+    "categories": "Nhóm món ăn",
+    "dishes": "Món ăn",
+    "modifierGroups": "Nhóm tùy chọn",
+    "groupDishes": "Món trong nhóm",
+    "floors": "Khu vực",
+    "tables": "Bàn",
+    "kitchens": "Bếp",
+    "paymentTypes": "Loại thanh toán",
+    "taxes": "Thuế",
+    "catalogReloaded": "Đã làm mới danh mục từ máy chủ",
+    "catalogReloadFailed": "Không làm mới được danh mục",
+    "confirmCatalog": "Làm mới menu, khu vực, thanh toán và thuế từ máy chủ? Hoá đơn đang mở và đơn hàng chưa đồng bộ vẫn nằm trên máy POS này.",
+    "reloaded": "Đã xóa bộ nhớ đệm và tải lại từ máy chủ",
+    "reloadFailed": "Không tải lại được bộ nhớ đệm",
+    "confirm": "Xóa bộ nhớ đệm POS cục bộ và tải bản mới từ máy chủ?",
+    "confirmWithPending": "Bạn có {{count}} thay đổi chưa đồng bộ và sẽ bị xóa. Xóa bộ nhớ đệm POS cục bộ và tải bản mới từ máy chủ?",
+    "offline": "Không thể làm mới bộ nhớ đệm khi ngắt kết nối",
+    "offlineHint": "Chỉ dùng được khi đã kết nối với máy chủ"
+  },
+  "serviceCharges": {
+    "title": "Phí phục vụ",
+    "updated": "Đã cập nhật phí phục vụ",
+    "saveDescription": "Lưu phí phục vụ"
+  },
+  "printers": {
+    "title": "Máy in mặc định",
+    "description": "Gán máy in theo từng người dùng hoặc cho máy POS này. Khi bật máy in hệ thống, hoá đơn tạm, hoá đơn cuối, hoàn tiền và bảng tổng hợp dùng cấu hình của thiết bị này. Đơn giao hàng luôn dùng cài đặt theo người dùng hoặc cài đặt chung.",
+    "loading": "Đang tải cài đặt máy in…",
+    "useSystemPrinters": "Dùng máy in hệ thống trên thiết bị này",
+    "useSystemPrintersDescription": "Khi bật, trình duyệt/máy POS này dùng cấu hình máy in hệ thống bên dưới thay vì máy in của người dùng đang đăng nhập (ngoại trừ đơn giao hàng).",
+    "systemTitle": "Máy in hệ thống (thiết bị này)",
+    "systemDescription": "Chỉ lưu trong trình duyệt này. Phù hợp với máy POS dùng chung để bản in ra máy in ở gần. Không áp dụng cho đơn giao hàng — phần đó vẫn theo người dùng hoặc cài đặt chung.",
+    "userTitle": "Máy in của người dùng",
+    "userDescription": "Lưu theo từng người dùng đang đăng nhập. Được dùng khi máy in hệ thống đang tắt và luôn dùng cho đơn giao hàng.",
+    "tempPrint": "Máy in cho hoá đơn tạm",
+    "finalPrint": "Máy in cho hoá đơn cuối",
+    "refundPrint": "Máy in cho hoá đơn hoàn tiền",
+    "deliveryPrint": "Máy in cho hoá đơn giao hàng",
+    "summaryPrint": "Máy in cho bảng tổng hợp",
+    "selectPrinters": "Chọn máy in…",
+    "saving": "Đang lưu…",
+    "save": "Lưu cài đặt máy in",
+    "saveDescription": "Lưu máy in",
+    "loadFailed": "Không tải được cài đặt máy in",
+    "loginRequired": "Vui lòng đăng nhập để lưu cài đặt máy in.",
+    "saved": "Đã lưu cài đặt máy in",
+    "saveFailed": "Không lưu được cài đặt máy in"
+  },
+  "printOptions": {
+    "title": "Tùy chọn in",
+    "description": "Đặt số bản in thật cho mỗi kiểu in và số lần được in hoá đơn tạm hoặc hoá đơn cuối cho mỗi đơn hàng trước khi cần quản lý phê duyệt.",
+    "copiesTitle": "Số bản cho mỗi kiểu in",
+    "maxAttemptsTitle": "Số lần in tối đa cho mỗi đơn",
+    "unlimitedHint": "Đặt số lần tối đa bằng 0 để không giới hạn. Khi đạt giới hạn, quản lý có quyền “Ghi đè giới hạn in” phải phê duyệt.",
+    "copies": {
+      "temp": "Số bản hoá đơn tạm",
+      "final": "Số bản hoá đơn cuối",
+      "refund": "Số bản hoá đơn hoàn tiền",
+      "kitchen": "Số bản phiếu bếp / KOT",
+      "delivery": "Số bản hoá đơn giao hàng",
+      "summary": "Số bản bảng tổng hợp"
+    },
+    "maxAttempts": {
+      "temp": "Số lần in hoá đơn tạm tối đa",
+      "final": "Số lần in hoá đơn cuối tối đa"
+    },
+    "updated": "Đã cập nhật tùy chọn in",
+    "saveDescription": "Lưu tùy chọn in"
+  },
+  "menus": {
+    "title": "Cài đặt menu",
+    "activateMenus": "Kích hoạt menu",
+    "selectMenus": "Chọn menu…",
+    "loading": "Đang tải cài đặt menu…",
+    "saving": "Đang lưu…",
+    "save": "Lưu cài đặt menu",
+    "saveDescription": "Lưu menu",
+    "loadFailed": "Không tải được cài đặt menu",
+    "loginRequired": "Vui lòng đăng nhập để lưu cài đặt menu.",
+    "saved": "Đã lưu cài đặt menu",
+    "saveFailed": "Không lưu được cài đặt menu"
+  },
+  "tableSelection": {
+    "title": "Ẩn bước chọn bàn trên menu",
+    "description": "Bỏ qua bước chọn bàn và mở trực tiếp menu. Chỉ áp dụng cho thiết bị này. Phù hợp với đặt hàng mang đi."
+  },
+  "autoCheckClose": {
+    "title": "Đóng hoá đơn tự động",
+    "description": "Tự động đóng các hoá đơn bàn đang mở khi đến giờ kết thúc chu kỳ đóng ca. Đơn giao hàng không bị ảnh hưởng. Cảnh báo xuất hiện 1 phút trước khi đóng.",
+    "printOnClose": "In hoá đơn cuối khi đóng",
+    "paymentType": "Loại thanh toán",
+    "paymentTypeRequired": "Cần chọn loại thanh toán khi bật đóng tự động",
+    "paymentTypeRequiredField": "Loại thanh toán là bắt buộc",
+    "updated": "Đã cập nhật cài đặt đóng hoá đơn tự động",
+    "saveDescription": "Lưu cài đặt đóng hoá đơn tự động"
+  },
+  "closingCycle": {
+    "title": "Chu kỳ đóng ca",
+    "description": "Cấu hình giờ bắt đầu và giờ kết thúc chu kỳ. Giờ kết thúc có thể thuộc ngày hôm sau (ví dụ: 06:00 đến 02:00).",
+    "startTime": "Giờ bắt đầu",
+    "endTime": "Giờ kết thúc",
+    "updated": "Đã cập nhật cài đặt chu kỳ đóng ca",
+    "saveDescription": "Lưu cài đặt chu kỳ đóng ca"
+  },
+  "showInclusivePrices": {
+    "title": "Hiển thị giá đã gồm thuế",
+    "description": "Khi bật, số tiền của từng món trên màn hình thanh toán, hoá đơn in và báo cáo theo món sẽ hiển thị giá đã bao gồm thuế (giá gộp) với các món được cấu hình thuế gộp. Dòng tổng món ăn/tạm tính vẫn là giá chưa gồm thuế, thuế vẫn hiển thị thành dòng riêng và tổng cộng không đổi. Món tính thuế ngoài không bị ảnh hưởng. Tùy chọn này chỉ thay đổi cách hiển thị, không thay đổi cách lưu giá hay cách tính thuế.",
+    "updated": "Đã cập nhật cài đặt hiển thị giá đã gồm thuế",
+    "saveDescription": "Lưu cài đặt hiển thị giá đã gồm thuế"
+  },
+  "currencySymbol": {
+    "title": "Ký hiệu tiền tệ",
+    "description": "Quyết định ký hiệu tiền tệ có hiển thị cạnh số tiền trong ứng dụng và trên hoá đơn in hay không. Tắt các tùy chọn này sẽ chỉ hiện con số (ví dụ 1,250 thay vì Rs 1,250). Tùy chọn này chỉ thay đổi cách hiển thị, không thay đổi giá trị đã lưu.",
+    "showInUi": "Hiển thị trên màn hình",
+    "showOnReceipts": "Hiển thị trên hoá đơn",
+    "updated": "Đã cập nhật cài đặt ký hiệu tiền tệ",
+    "saveDescription": "Lưu cài đặt ký hiệu tiền tệ"
+  },
+  "translateReceipts": {
+    "title": "Dịch hoá đơn",
+    "description": "Khi bật, các nhãn hệ thống trên hoá đơn in (tiêu đề hoá đơn, số hoá đơn, bàn, thuế, tổng cộng, phiếu bếp và bảng tổng hợp) sẽ dùng ngôn ngữ đã chọn của thiết bị này. Phần đầu và phần chân trang tùy chỉnh trong cài đặt in không được dịch.",
+    "updated": "Đã cập nhật cài đặt dịch hoá đơn",
+    "saveDescription": "Lưu cài đặt dịch hoá đơn"
+  },
+  "visibilityConfig": {
+    "title": "Cấu hình hiển thị thông tin món",
+    "description": "Cập nhật cấu hình cho thiết bị này về những cột thông tin món bạn muốn hiển thị hoặc ẩn. Chỉ áp dụng cho thiết bị này.",
+    "menu": "Menu",
+    "enableDishSearch": "Bật tìm kiếm theo số món trên menu",
+    "showDishNumber": "Hiển thị số món trên ô món của menu",
+    "dishSearchType": "Chế độ tìm món",
+    "dishSearchTypeNumber": "Chỉ theo số",
+    "dishSearchTypeBoth": "Theo tên và số",
+    "cart": "Giỏ hàng",
+    "showTotalsInCart": "Hiển thị tổng tiền của món trong từng dòng giỏ hàng",
+    "orders": "Đơn hàng",
+    "showTotalInOrderCard": "Hiển thị tổng tiền của món trong thẻ đơn hàng",
+    "showGroupsInOrderCard": "Hiển thị nhóm của món trong thẻ đơn hàng",
+    "showQuantityInOrderCard": "Hiển thị số lượng của món trong thẻ đơn hàng",
+    "showPriceInOrderCard": "Hiển thị giá của món trong thẻ đơn hàng",
+    "showModifiersInOrderCard": "Hiển thị tùy chọn của món trong thẻ đơn hàng",
+    "showModifierPriceInOrderCard": "Hiển thị giá tùy chọn của món trong thẻ đơn hàng",
+    "showTotalInPaymentCard": "Hiển thị tổng tiền của món trong khung thanh toán"
+  },
+  "inventory": {
+    "title": "Tồn kho",
+    "description": "Chuyển sang sổ cái tồn kho và các theo dõi nâng cao tùy chọn. Chỉ bật theo dõi lô/hạn dùng khi bạn thật sự cần.",
+    "ledgerEnabled": "Dùng sổ cái tồn kho (nguồn dữ liệu duy nhất)",
+    "ledgerHint": "Chỉ bật sau khi chạy nạp dữ liệu quá khứ cho sổ cái và xác nhận đối soát.",
+    "costingMethod": "Phương pháp tính giá vốn",
+    "costing": {
+      "average": "Bình quân gia quyền",
+      "fifo": "FIFO",
+      "fefo": "FEFO"
+    },
+    "landedCostsSection": "Phân bổ chi phí mua hàng",
+    "enableLandedCosts": "Bật chi phí phát sinh khi mua (vận chuyển, cước phí, v.v.)",
+    "enablePurchaseDiscounts": "Bật giảm giá mua hàng trong giá vốn tồn kho",
+    "enablePurchaseTaxes": "Bật thuế mua hàng trong giá vốn tồn kho",
+    "defaultAllocationMethod": "Phương pháp phân bổ mặc định",
+    "allocation": {
+      "by_value": "Theo giá trị",
+      "by_quantity": "Theo số lượng",
+      "equal": "Chia đều"
+    },
+    "defaultPurchaseTaxBehavior": "Cách xử lý thuế mua hàng mặc định",
+    "defaultPurchaseTaxBehaviorHint": "Thuế không khấu trừ được sẽ cộng vào giá trị tồn kho. Thuế khấu trừ được sẽ không tính vào định giá tồn kho.",
+    "taxBehavior": {
+      "non_recoverable": "Không khấu trừ được (cộng vào giá vốn)",
+      "recoverable": "Khấu trừ được (bỏ qua với tồn kho)"
+    },
+    "enableBatchTracking": "Bật theo dõi lô",
+    "enableExpiryTracking": "Bật theo dõi hạn dùng",
+    "enableManufacturingDate": "Bật ngày sản xuất",
+    "requireBatchSelection": "Bắt buộc chọn lô khi xuất kho",
+    "updated": "Đã cập nhật cài đặt tồn kho",
+    "save": "Lưu",
+    "saveDescription": "Lưu cài đặt tồn kho"
+  },
+  "whatsNew": {
+    "title": "Có gì mới",
+    "description": "Xem ghi chú phát hành và các bản cập nhật gần đây của ứng dụng này.",
+    "open": "Mở mục Có gì mới",
+    "dismiss": "Đã hiểu",
+    "dialogTitle": "Có gì mới",
+    "previousReleases": "Các bản cập nhật trước",
+    "dateLabel": "Cập nhật {{date}}"
+  },
+  "sessionSecurity": {
+    "title": "Bảo mật phiên",
+    "description": "Tự động khóa hoặc đăng xuất người dùng này sau một khoảng thời gian không hoạt động. Hãy chọn một hành động.",
+    "idleMinutes": "Số phút không hoạt động (ví dụ 0.1 ≈ 6 giây)",
+    "action": "Hành động",
+    "actionLock": "Khóa",
+    "actionLogout": "Đăng xuất",
+    "updated": "Đã cập nhật cài đặt bảo mật phiên",
+    "saveDescription": "Lưu cài đặt bảo mật phiên",
+    "loginRequired": "Bạn cần đăng nhập để lưu cài đặt bảo mật phiên"
+  },
+  "autoClockOut": {
+    "title": "Tan ca tự động",
+    "description": "Tự động chấm công tan ca cho người dùng đang đăng nhập khi ca của họ kết thúc và/hoặc vào một giờ cố định mỗi ngày. Dùng ca đã lên lịch nếu có, nếu không thì dùng ca được gán cho người dùng. Áp dụng cho tất cả người dùng.",
+    "onShiftEnd": "Tan ca khi ca kết thúc",
+    "onDefinedTime": "Tan ca vào giờ cố định",
+    "definedTime": "Giờ tan ca",
+    "triggerRequired": "Khi bật tan ca tự động, hãy chọn tan ca khi ca kết thúc và/hoặc giờ cố định",
+    "updated": "Đã cập nhật cài đặt tan ca tự động",
+    "saveDescription": "Lưu cài đặt tan ca tự động"
+  },
+  "numberPolicy": {
+    "title": "Số hoá đơn",
+    "description": "Chọn cách sinh, đặt lại và định dạng số hoá đơn POS. Giá trị số nguyên luôn an toàn về thuế; chuỗi hiển thị được cố định tại thời điểm sinh số. Đồng bộ cài đặt cho tất cả máy POS sau khi lưu.",
+    "preset": "Cấu hình sẵn",
+    "mintLabel": "Sinh số",
+    "resetLabel": "Đặt lại",
+    "scopeLabel": "Phạm vi",
+    "pendingModeLabel": "Nhãn khi chờ",
+    "template": "Mẫu",
+    "prefix": "Tiền tố",
+    "suffix": "Hậu tố",
+    "branchCode": "Mã chi nhánh",
+    "terminalCode": "Mã máy POS này",
+    "startAt": "Bắt đầu từ",
+    "pad": "Đệm số 0",
+    "pendingMin": "Số ký tối thiểu khi chờ",
+    "pendingMax": "Số ký tối đa khi chờ",
+    "preview": "Xem trước",
+    "gapWarning": "Cấu hình sẵn này có thể tạo khoảng trống số hoá đơn trong toàn nhà hàng và không an toàn với cơ quan thuế yêu cầu dãy số liên tục.",
+    "acknowledgeGaps": "Tôi hiểu rằng cách này có thể tạo khoảng trống số hoá đơn",
+    "ackRequired": "Hãy xác nhận cảnh báo khoảng trống trước khi lưu cấu hình sẵn này",
+    "updated": "Đã cập nhật quy tắc số hoá đơn",
+    "saveDescription": "Lưu quy tắc số hoá đơn",
+    "presets": {
+      "date_reset": "Đặt lại theo ngày (khuyên dùng)",
+      "global": "Liên tục toàn cục",
+      "period": "Đặt lại theo kỳ (năm/tháng)",
+      "branch": "Liên tục theo chi nhánh",
+      "terminal": "Liên tục theo máy POS",
+      "prefix": "Tiền tố / hậu tố",
+      "composite": "Ghép mã",
+      "pool": "Dải số / kho số",
+      "hybrid": "Kết hợp trực tuyến và kho số ngoại tuyến",
+      "fiscal_plus_posr": "Số thuế + hiển thị POSR",
+      "provider_defined": "Do nhà cung cấp đặt (chỉ lưu)"
+    },
+    "mint": {
+      "gateway": "Qua cổng chia sẻ",
+      "terminal": "Kho số của máy POS",
+      "hybrid": "Kết hợp"
+    },
+    "reset": {
+      "never": "Không bao giờ",
+      "day": "Mỗi ngày",
+      "month": "Mỗi tháng",
+      "year": "Mỗi năm"
+    },
+    "scope": {
+      "restaurant": "Toàn nhà hàng",
+      "branch": "Chi nhánh",
+      "terminal": "Máy POS"
+    },
+    "pendingMode": {
+      "random": "Mã ngẫu nhiên",
+      "blank": "Để trống đến khi đồng bộ"
+    },
+    "help": {
+      "date_reset": "Ưu điểm: dãy 1,2,3… cho toàn nhà hàng mỗi ngày; an toàn về thuế. Nhược điểm: hoá đơn ngoại tuyến hiển thị mã tạm cho đến khi đồng bộ.",
+      "global": "Ưu điểm: dãy liên tục đơn giản, không điểm dừng (1001, 1002…). Nhược điểm: không bao giờ đặt lại; số tăng vô hạn.",
+      "period": "Ưu điểm: chứng từ theo năm/tháng trông gọn gàng. Nhược điểm: phải cân nhắc chọn theo tháng hay theo năm.",
+      "branch": "Ưu điểm: nhãn dạng LHR-001. Nhược điểm: chưa có mô hình nhiều chi nhánh — mỗi nhà hàng chỉ dùng một mã chi nhánh.",
+      "terminal": "Ưu điểm: mỗi máy POS có dãy số riêng. Nhược điểm: tạo khoảng trống trong toàn nhà hàng; không an toàn về thuế.",
+      "prefix": "Ưu điểm: định dạng dạng INV-001 với mọi cách sinh/đặt lại. Nhược điểm: chỉ thay đổi hình thức; số thuế vẫn dùng số nguyên.",
+      "composite": "Ưu điểm: LHR-T02-2026-00125 được ghép từ các biến trong mẫu. Nhược điểm: nhãn dài hơn; số thuế vẫn dùng số nguyên.",
+      "pool": "Ưu điểm: chạy hoàn toàn ngoại tuyến nhờ giữ trước số nguyên. Nhược điểm: gặp vấn đề nhảy theo khối 200 số; không an toàn về thuế.",
+      "hybrid": "Ưu điểm: đơn tạo khi ngoại tuyến vẫn nhận số nguyên. Nhược điểm: số đã giữ mà không dùng sẽ thành khoảng trống sau khi kết nối lại.",
+      "fiscal_plus_posr": "Ưu điểm: hiển thị trên POS kèm số do cơ quan thuế cấp. Nhược điểm: để hai số trên một hoá đơn là rủi ro gian lận thuế — hãy hiển thị số thuế khi có.",
+      "provider_defined": "Ưu điểm: POSR lưu đúng những gì FBR/PRA trả về. Nhược điểm: POSR không tự sinh số — hãy dùng kèm các tích hợp thuế."
+    }
+  },
+  "catalogSync": {
+    "title": "Đồng bộ danh mục",
+    "description": "Tải menu và dữ liệu danh mục khu vực phục vụ khác đã được phát hành từ đám mây. Dùng Đồng bộ ngay để tải bản cập nhật khi cần.",
+    "mode": "Chế độ phân phối",
+    "localVersion": "Phiên bản danh mục đã áp dụng",
+    "remoteVersion": "Phiên bản danh mục đã phát hành",
+    "updateAvailable": "Có phiên bản danh mục mới hơn. Đồng bộ để áp dụng.",
+    "upToDate": "Danh mục đã cập nhật.",
+    "lastSynced": "Tải lần cuối: {{table}} {{record}}",
+    "syncNow": "Đồng bộ danh mục ngay",
+    "syncing": "Đang đồng bộ…",
+    "refresh": "Làm mới trạng thái",
+    "queued": "Đã xếp hàng chờ đồng bộ danh mục",
+    "failed": "Đồng bộ danh mục thất bại",
+    "unreachable": "Không kết nối được dịch vụ đồng bộ. Kiểm tra VITE_SYNC_SERVICE_URL và xem dịch vụ đồng bộ có đang chạy không.",
+    "modeRequired": "Đặt SYNC_DISTRIBUTION_MODE=full trên dịch vụ đồng bộ để bật tải danh mục.",
+    "complete": "Đồng bộ danh mục hoàn tất",
+    "progressTable": "Đang tải {{table}}…",
+    "progressCount": "{{completed}} / {{total}} bảng ({{percent}}%)",
+    "reloadCacheHint": "Đồng bộ danh mục hoàn tất. Hãy tải lại bộ nhớ đệm trong phần Cài đặt để giao diện POS nhận menu mới."
+  }
+}

@@ -1,0 +1,266 @@
+import {useEffect, useMemo, useRef, useState} from "react";
+import { useTranslation } from 'react-i18next';
+import {ReportsLayout} from "@/screens/partials/reports.layout.tsx";
+import {useDB} from "@/api/db/db.ts";
+import {Tables} from "@/api/db/tables.ts";
+import {InventoryWaste} from "@/api/model/inventory_waste.ts";
+import {formatInventoryNumber, withInventoryCurrency} from "@/lib/inventory/rounding.ts";
+import {formatInventoryItemLabel} from "@/lib/inventory/item.label.ts";
+import {lineAmount, resolveInventoryLineUnitCost} from "@/lib/inventory/line.cost.ts";
+import { toLuxonDateTime } from "@/lib/datetime.ts";
+import {
+  buildCreatedAtDateConditions,
+  buildNestedRecordAnyCondition,
+  buildRecordInsideCondition,
+} from "@/api/reports/shared/query.ts";
+import {inventoryPrintUrl} from "@/routes/posr.ts";
+import { DATE_FORMAT } from '@/lib/date-format';
+
+const safeNumber = (value: unknown) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+interface ReportFilters {
+  startDate?: string | null;
+  endDate?: string | null;
+  itemIds: string[];
+  userIds: string[];
+}
+
+const parseFilters = (): ReportFilters => {
+  const params = new URLSearchParams(window.location.search);
+  const parseMulti = (name: string) => {
+    const list = [
+      ...params.getAll(`${name}[]`),
+      ...params.getAll(name),
+    ].filter(Boolean);
+    return list as string[];
+  };
+
+  return {
+    startDate: params.get('start') || params.get('start'),
+    endDate: params.get('end') || params.get('end'),
+    itemIds: parseMulti('items'),
+    userIds: parseMulti('users'),
+  };
+};
+
+export const WasteReport = () => {
+  const { t } = useTranslation('reports');
+  const db = useDB();
+  const queryRef = useRef(db.query);
+  const [wastes, setWastes] = useState<InventoryWaste[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const filters = useMemo(parseFilters, []);
+  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+
+  useEffect(() => {
+    queryRef.current = db.query;
+  }, [db]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const {conditions, params} = buildCreatedAtDateConditions(
+          {startDate: filters.startDate ?? undefined, endDate: filters.endDate ?? undefined},
+          "created_at",
+        );
+
+        const userFilter = buildRecordInsideCondition('created_by', filters.userIds, 'userIds');
+        if (userFilter.condition) {
+          conditions.push(userFilter.condition);
+          Object.assign(params, userFilter.params);
+        }
+
+        const itemFilter = buildNestedRecordAnyCondition('items.item', filters.itemIds, 'item');
+        if (itemFilter.condition) {
+          conditions.push(itemFilter.condition);
+          Object.assign(params, itemFilter.params);
+        }
+
+        const query = `
+          SELECT * FROM ${Tables.inventory_wastes}
+          ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+          ORDER BY created_at ASC
+          FETCH items, items.item, items.item.category, items.purchase_item, items.issue_item, created_by, purchase, issue
+        `;
+
+        const result: any = await queryRef.current(query, params);
+        setWastes((result?.[0]?.result ?? result?.[0] ?? []) as InventoryWaste[]);
+      } catch (err) {
+        console.error('Failed to load waste report:', err);
+        setError(err instanceof Error ? err.message : t('errors.unableToLoad'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [filters.startDate, filters.endDate, filters.itemIds, filters.userIds]);
+
+  // Calculate totals
+  const totals = useMemo(() => {
+    let totalQuantity = 0;
+    let totalAmount = 0;
+    let totalItems = 0;
+
+    wastes.forEach(waste => {
+      waste.items?.forEach(item => {
+        const qty = safeNumber(item.quantity);
+        const unitCost = resolveInventoryLineUnitCost({
+          price: item.price,
+          purchaseItem: item.purchase_item,
+          issueItem: item.issue_item,
+          item: item.item,
+        });
+        totalQuantity += qty;
+        totalAmount += lineAmount(unitCost, qty);
+        totalItems += 1;
+      });
+    });
+
+    return { totalQuantity, totalAmount, totalItems };
+  }, [wastes]);
+
+  if (loading) {
+    return (
+      <ReportsLayout title={t('titles.waste')} subtitle={subtitle}>
+        <div className="py-12 text-center text-muted">{t('loading.waste')}</div>
+      </ReportsLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <ReportsLayout title={t('titles.waste')} subtitle={subtitle}>
+        <div className="py-12 text-center text-red-600">{t('errors.failedToLoad', { error })}</div>
+      </ReportsLayout>
+    );
+  }
+
+  return (
+    <ReportsLayout
+      title={t('titles.waste')}
+      subtitle={subtitle}
+    >
+      <div className="space-y-8">
+        {/* Summary */}
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-surface p-4 rounded-lg">
+            <p className="text-sm text-muted">Total Waste Records</p>
+            <p className="text-2xl font-bold text-foreground">{formatInventoryNumber(wastes.length)}</p>
+          </div>
+          <div className="bg-surface p-4 rounded-lg">
+            <p className="text-sm text-muted">Total Items</p>
+            <p className="text-2xl font-bold text-foreground">{formatInventoryNumber(totals.totalItems)}</p>
+          </div>
+          <div className="bg-surface p-4 rounded-lg">
+            <p className="text-sm text-muted">Total Amount</p>
+            <p className="text-2xl font-bold text-foreground">{withInventoryCurrency(totals.totalAmount)}</p>
+          </div>
+        </div>
+
+        {/* Detailed table */}
+        <div className="overflow-hidden rounded-lg border border-border">
+          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Waste Details</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-neutral-200">
+              <thead className="bg-surface">
+                <tr>
+                  <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('columns.date')}</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('columns.invoice')}</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('filters.item')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.quantity')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.price')}</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Source</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('columns.createdBy')}</th>
+                  <th className="py-3 pr-6 text-left text-xs font-semibold text-foreground">{t('columns.comments')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
+                {wastes.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="py-6 text-center text-sm text-muted">
+                      No waste records found for the selected filters
+                    </td>
+                  </tr>
+                ) : (
+                  wastes.flatMap(waste => {
+                    const date = toLuxonDateTime(waste.created_at);
+                    const dateStr = date.toFormat(DATE_FORMAT);
+                    const createdByName = waste.created_by
+                      ? `${waste.created_by.first_name ?? ''} ${waste.created_by.last_name ?? ''}`.trim() || waste.created_by.login || 'Unknown'
+                      : 'Unknown';
+                    const source = waste.purchase ? `Purchase #${waste.purchase.invoice_number}` : waste.issue ? `Issue #${waste.issue.invoice_number || waste.issue.id}` : 'N/A';
+
+                    return waste.items?.map((item, index) => {
+                      const itemName = formatInventoryItemLabel(item.item?.name, item.item?.code);
+                      const quantity = safeNumber(item.quantity);
+                      const price = resolveInventoryLineUnitCost({
+                        price: item.price,
+                        purchaseItem: item.purchase_item,
+                        issueItem: item.issue_item,
+                        item: item.item,
+                      });
+                      const amount = lineAmount(price, quantity);
+
+                      return (
+                        <tr key={`${waste.id}-${index}`}>
+                          <td className="py-3 pl-6 pr-3 text-sm text-foreground">{dateStr}</td>
+                          <td className="py-3 px-3 text-sm text-foreground">
+                            {waste.id ? (
+                              <a
+                                className="text-primary underline print:no-underline print:text-foreground"
+                                href={inventoryPrintUrl("waste", String(waste.id))}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                {waste.invoice_number || 'N/A'}
+                              </a>
+                            ) : (
+                              waste.invoice_number || 'N/A'
+                            )}
+                          </td>
+                          <td className="py-3 px-3 text-sm text-foreground">{itemName}</td>
+                          <td className="py-3 px-3 text-right text-sm text-foreground">{formatInventoryNumber(quantity)}</td>
+                          <td className="py-3 px-3 text-right text-sm text-foreground">{withInventoryCurrency(price)}</td>
+                          <td className="py-3 px-3 text-right text-sm font-semibold text-foreground">{withInventoryCurrency(amount)}</td>
+                          <td className="py-3 px-3 text-sm text-foreground">{source}</td>
+                          <td className="py-3 px-3 text-sm text-foreground">{createdByName}</td>
+                          <td className="py-3 pr-6 text-sm text-foreground">{item.comments || '-'}</td>
+                        </tr>
+                      );
+                    }) || [];
+                  })
+                )}
+              </tbody>
+              {wastes.length > 0 && (
+                <tfoot className="bg-surface">
+                  <tr>
+                    <td colSpan={3} className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">{t('columns.total')}</td>
+                    <td className="py-3 px-3 text-right text-sm font-bold text-foreground">
+                      {formatInventoryNumber(totals.totalQuantity)}
+                    </td>
+                    <td colSpan={1}></td>
+                    <td className="py-3 px-3 text-right text-sm font-bold text-foreground">
+                      {withInventoryCurrency(totals.totalAmount)}
+                    </td>
+                    <td colSpan={3}></td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </div>
+      </div>
+    </ReportsLayout>
+  );
+};
+

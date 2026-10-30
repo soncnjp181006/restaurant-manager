@@ -1,0 +1,83 @@
+import useApi, {SettingsData} from "@/api/db/use.api.ts";
+import {InventoryItem} from "@/api/model/inventory_item.ts";
+import {Tables} from "@/api/db/tables.ts";
+import {useMemo} from "react";
+import { useTranslation } from 'react-i18next';
+import {createColumnHelper} from "@tanstack/react-table";
+import {TableComponent} from "@/components/common/table/table.tsx";
+import {InventoryLocation} from "@/api/model/inventory_location.ts";
+import {StoreInventoryCell} from "@/components/inventory/inventory/store.inventory.cell.tsx";
+import {resolveCatalogUnitCost} from "@/lib/inventory/line.cost.ts";
+import {withInventoryCurrency} from "@/lib/inventory/rounding.ts";
+
+
+export const InventorySummary = () => {
+  const { t } = useTranslation('inventory');
+  const loadHook = useApi<SettingsData<InventoryItem>>(Tables.inventory_items, [], [], 0, 10, ['category', 'suppliers', 'locations', 'stores']);
+  const {
+    data: locations
+  } = useApi<SettingsData<InventoryLocation>>(
+    Tables.inventory_locations,
+    ['is_active = true'],
+    [],
+    0,
+    99999
+  );
+
+  const columnHelper = createColumnHelper<InventoryItem>();
+
+  const columns = useMemo(() => {
+    const c = [
+      columnHelper.accessor("name", {
+        header: t('columns.name'),
+      }),
+      columnHelper.accessor("code", {
+        header: t('columns.code'),
+      }),
+      columnHelper.accessor(row => row.category?.name ?? "", {
+        id: "category",
+        header: t('columns.category')
+      }),
+      columnHelper.accessor("suppliers", {
+        header: t('tabs.suppliers'),
+        cell: info => (
+          <div className="flex flex-wrap gap-2">
+            {info.getValue()?.map((item, index) => (
+              <span className="tag" key={item.id ?? index}>{item.name}</span>
+            ))}
+          </div>
+        )
+      }),
+      columnHelper.accessor(row => resolveCatalogUnitCost(row), {
+        id: "unit_cost",
+        header: t('columns.averageCost', {defaultValue: t('columns.avgPrice')}),
+        cell: info => withInventoryCurrency(info.getValue()),
+      }),
+    ];
+
+    if (locations?.data && locations?.data?.length > 0) {
+      for (const location of locations.data) {
+        c.push(columnHelper.accessor("id", {
+          header: location.name,
+          id: `location-${location.id}`,
+          cell: (info) => {
+            return <StoreInventoryCell item={info.row.original} locationId={String(location.id)} />;
+          }
+        }));
+      }
+    }
+
+    return c;
+  }, [columnHelper, locations?.data, t])
+
+  return (
+    <>
+      <TableComponent
+        columns={columns}
+        loaderHook={loadHook}
+        loaderLineItems={columns.length}
+        enableRefresh={false}
+      />
+    </>
+  );
+}

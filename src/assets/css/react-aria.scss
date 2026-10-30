@@ -1,0 +1,201 @@
+.react-aria-ModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: var(--app-toolbar-h);
+  /* Keep below app toolbar (z-9990) so UOM converter stays interactive */
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  /* Fill the inset box; do not also set 100vh (that fights bottom offset). */
+  height: auto;
+  max-height: none;
+
+  background: rgba(0 0 0 / .5);
+
+  overflow: auto;
+
+  /* Full-screen modals must not page-scroll — scrollbars break touch drag. */
+  &:has(.modal-full) {
+    overflow: hidden;
+    align-items: stretch;
+
+    .react-aria-Modal {
+      height: 100%;
+      width: 100%;
+      max-height: 100%;
+    }
+  }
+
+  &.bottom-sheet{
+    justify-content: flex-end;
+  }
+}
+
+.react-aria-Modal {
+  transform-origin: bottom center;
+  will-change: transform, clip-path, opacity;
+
+  &[data-entering] {
+    //animation: genieIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  &[data-exiting] {
+    //animation: genieOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+}
+
+@keyframes genieIn {
+  0% {
+    transform: translateY(120%) scaleY(0.01) scaleX(0.1);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(80%) scaleY(0.15) scaleX(0.4);
+    opacity: 0.6;
+  }
+  40% {
+    transform: translateY(50%) scaleY(0.4) scaleX(0.6);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes genieOut {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(-8%) scaleY(1.1) scaleX(1.05);
+  }
+  60% {
+    transform: translateY(50%) scaleY(0.4) scaleX(0.6);
+  }
+  100% {
+    transform: translateY(120%) scaleY(0.05) scaleX(0.3);
+    opacity: 0;
+  }
+}
+
+.react-aria-Dialog {
+  @apply shadow-2xl;
+
+  .static-content {
+    position: sticky;
+    top: 0;
+    background: rgb(var(--surface-elevated));
+  }
+
+  &.modal-full {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    @apply rounded-none border-none shadow-none overflow-hidden;
+
+    .modal-full-shell {
+      height: 100%;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      @apply rounded-none;
+    }
+
+    .modal-container {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: auto;
+      max-height: none;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  &.modal-bottom-sheet {
+    width: 100vw;
+    height: calc(100vh - 50%);
+    @apply rounded-none border-none;
+    bottom: 0;
+    position: fixed;
+    background-color: rgb(var(--surface-elevated));
+  }
+
+  &.modal-sm {
+    width: 35vw;
+  }
+
+  &.modal-md {
+    min-width: 60vw;
+  }
+
+  &.modal-lg {
+    min-width: 75vw;
+  }
+
+  &.modal-xl {
+    min-width: 90vw;
+  }
+}
+
+@media (max-width: 1024px) {
+  .react-aria-Dialog {
+    &.modal-md {
+      width: 80vw;
+    }
+
+    &.modal-lg {
+      width: 90vw;
+    }
+
+    &.modal-sm {
+      width: 60vw;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .react-aria-Dialog {
+    &.modal-sm, &.modal-md, &.modal-lg {
+      width: 100vw;
+    }
+  }
+}
+
+.react-aria-CalendarCell {
+  &[data-disabled="true"] {
+    @apply text-muted;
+  }
+}
+
+.react-aria-Tooltip {
+  .react-aria-OverlayArrow svg {
+    display: block;
+  }
+
+  &[data-placement='top'] .react-aria-OverlayArrow svg {
+    transform: rotate(180deg);
+  }
+
+  &[data-placement='bottom'] .react-aria-OverlayArrow svg {
+    transform: rotate(0deg);
+  }
+
+  &[data-placement='left'] .react-aria-OverlayArrow svg {
+    transform: rotate(90deg);
+  }
+
+  &[data-placement='right'] .react-aria-OverlayArrow svg {
+    transform: rotate(-90deg);
+  }
+}

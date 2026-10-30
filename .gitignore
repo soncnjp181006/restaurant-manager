@@ -1,0 +1,74 @@
+.freebuff
+.vscode
+.qoder
+.zcode
+.agent
+.agents
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.idea
+*.vscode
+posr.db*
+.cursor
+cert
+posr.db
+posr.db1
+
+database/clog
+database/manifest
+database/sstables
+database/vlog
+database/wal
+database/LOCK
+
+.orchids
+
+# End-user guide generated artifacts (MD/HTML/PDF) and Playwright output
+docs/user-guide/dist
+docs/user-guide/images
+docs-automation/.output
+docs-automation/test-results
+docs-automation/playwright-report
+
+# Print service persisted logo (written at runtime)
+printing/data
+# API AI usage counters (written at runtime)
+api/data
+backups/surrealdb
+.qwen
+.commandcode
+.freebuff
+# Real env files carry secrets (SURREAL_USER/PASS, GATEWAY_JWT_SECRET, API keys).
+# Never commit them. Only the .env.example templates are tracked.
+.env
+.env.local
+api/.env
+gateway/.env
+payments/.env
+# scratch / probe files from ad-hoc debugging — never publish
+scratch/
+__probe.tsx
+probe-tmp.ts

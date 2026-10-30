@@ -1,0 +1,11 @@
+{
+  "required": "Trường này là bắt buộc",
+  "invalidEmail": "Địa chỉ email không hợp lệ",
+  "invalidNumber": "Số không hợp lệ",
+  "mustBeNumber": "Giá trị phải là một số",
+  "mustBeGreaterThanZero": "Giá trị phải lớn hơn 0",
+  "quantityMin": "Số lượng phải lớn hơn 0",
+  "costMin": "Chi phí phải lớn hơn hoặc bằng 0",
+  "uniqueItems": "Mỗi món chỉ được thêm một lần",
+  "invalidPort": "Số cổng không hợp lệ"
+}

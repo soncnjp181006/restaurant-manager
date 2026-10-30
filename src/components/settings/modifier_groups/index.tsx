@@ -1,0 +1,190 @@
+import useApi, { SettingsData } from "@/api/db/use.api.ts";
+import { Tables } from "@/api/db/tables.ts";
+import { useMemo, useState } from "react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { Button } from "@/components/common/input/button.tsx";
+import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { TableComponent } from "@/components/common/table/table.tsx";
+import { ModifierGroup } from "@/api/model/modifier_group.ts";
+import { ModifierGroupForm } from "@/components/settings/modifier_groups/modifier_group.form.tsx";
+import {DeleteConfirm} from "@/components/common/table/delete.confirm.tsx";
+import {useDB} from "@/api/db/db.ts";
+import {useTranslation} from 'react-i18next';
+import {executeSettingsDelete} from "@/lib/settings-delete.service.ts";
+import {useSecurity} from "@/hooks/useSecurity.ts";
+import {getAccessRuleChildLabel} from "@/lib/access.rules.i18n.ts";
+import {DataImportModal} from "@/components/common/data-import/data-import-modal.tsx";
+import {AiSparklesIcon} from "@/components/common/icons/ai-sparkles.tsx";
+import {createModifierGroupImportConfig} from "@/components/settings/modifier_groups/modifier-group.import.config.ts";
+import { HqCatalogBaseOnlyAction } from '@/components/settings/hq_catalog_base_only_action.tsx';
+import { useHqCatalogListScope } from '@/hooks/useHqCatalogListScope.ts';
+
+export const AdminModifierGroups = () => {
+  const { t } = useTranslation(['admin', 'common', 'toast']);
+  const loadHook = useApi<SettingsData<ModifierGroup>>(Tables.modifier_groups, ['deleted_at = none'], ['priority asc'], 0, 10, ['modifiers', 'modifiers.modifier', 'modifiers.allowed_next_groups', 'modifiers.next_group_overrides']);
+  const db = useDB();
+  const { protectAction } = useSecurity();
+
+  const [data, setData] = useState<ModifierGroup>();
+  const [formModal, setFormModal] = useState(false);
+  const [importModal, setImportModal] = useState(false);
+
+  const smartImportConfig = useMemo(
+    () => createModifierGroupImportConfig({db, t}),
+    [db, t]
+  );
+
+  useHqCatalogListScope(loadHook);
+
+  const columnHelper = createColumnHelper<ModifierGroup>();
+
+  const columns: any = [
+    columnHelper.accessor("name", {
+      header: t('columns.name')
+    }),
+    columnHelper.accessor("modifiers", {
+      header: t('columns.modifiers'),
+      cell: info => <div className="flex gap-2 flex-wrap">
+        {info.getValue()?.map((item, index) => (
+          <span className="tag" key={`${item.id}-${index}`}>
+            {item.modifier.name} — {item.price}
+            {item.allowed_next_groups != null && item.allowed_next_groups.length > 0 && (
+              <span className="text-muted"> ({t('columns.nextCount', { count: item.allowed_next_groups.length })})</span>
+            )}
+          </span>
+        ))}
+      </div>,
+      enableSorting: false
+    }),
+    columnHelper.accessor("priority", {
+      header: t('columns.priority')
+    }),
+    columnHelper.accessor("id", {
+      id: "actions",
+      header: t('columns.actions'),
+      enableSorting: false,
+      enableColumnFilter: false,
+      cell: (info) => {
+        return (
+          <div className="flex gap-3 items-center">
+            <IconTooltipButton label={t('common:actions.edit')}
+              variant="primary"
+              onClick={() => {
+                protectAction(() => {
+                  setData(info.row.original);
+                  setFormModal(true);
+                }, {
+                  module: 'admin.modifier_groups.update',
+                  description: getAccessRuleChildLabel('admin.modifier_groups.update'),
+                });
+              }}
+            ><FontAwesomeIcon icon={faPencil}/></IconTooltipButton>
+            <div className="separator"></div>
+            <DeleteConfirm
+              message={t('delete.dish', { name: info.row.original.name })}
+              onConfirm={() => protectAction(() => deleteItem(info.row.original.id), {
+                module: 'admin.modifier_groups.delete',
+                description: getAccessRuleChildLabel('admin.modifier_groups.delete'),
+              })}
+            />
+          </div>
+        );
+      },
+    }),
+  ];
+
+  const deleteItem = async (id: string) => {
+    await executeSettingsDelete({
+      db,
+      id,
+      entityLabel: t('entities.modifierGroup'),
+      usageChecks: [
+        {
+          query: `SELECT count() AS count FROM ${Tables.dish_modifier_groups} WHERE out = $idRecord GROUP ALL`
+        },
+        {
+          query: `SELECT count() AS count FROM ${Tables.order_items} WHERE array::any(modifiers.id ?? [], $idRecord) GROUP ALL`
+        }
+      ],
+      cleanupQueries: [
+        {
+          query: `DELETE ${Tables.dish_modifier_groups} WHERE out = $idRecord`
+        }
+      ],
+      onAfter: async () => {
+        loadHook.fetchData();
+      }
+    });
+  }
+
+  return (
+    <>
+      <TableComponent
+        columns={columns}
+        loaderHook={loadHook}
+        loaderLineItems={columns.length}
+        buttons={[
+          <Button variant="primary" onClick={() => {
+            protectAction(() => setImportModal(true), {
+              module: 'admin.modifier_groups.import',
+              description: getAccessRuleChildLabel('admin.modifier_groups.import'),
+            });
+          }}><span className="mr-2"><AiSparklesIcon /></span>{t('buttons.smartImport')}</Button>,
+          <HqCatalogBaseOnlyAction><Button variant="primary" onClick={() => {
+            protectAction(() => {
+              setData(undefined);
+              setFormModal(true);
+            }, {
+              module: 'admin.modifier_groups.create',
+              description: getAccessRuleChildLabel('admin.modifier_groups.create'),
+            });
+          }} icon={faPlus} data-testid="admin-add-modifier_groups">{t('buttons.modifierGroup')}</Button></HqCatalogBaseOnlyAction>
+        ]}
+      />
+
+      {importModal && (
+        <DataImportModal
+          isOpen
+          onClose={() => setImportModal(false)}
+          config={smartImportConfig}
+          title={t('forms.smartImportStandaloneModifierGroupsTitle', {defaultValue: 'AI Import modifier groups'})}
+          enableImportModes
+          defaultMatchFields={['group', 'modifier']}
+          onExport={async () => {
+            const [rows] = await db.query(
+              `SELECT * FROM ${Tables.modifier_groups} WHERE deleted_at = none FETCH modifiers, modifiers.modifier`
+            );
+            const exported: Array<Record<string, string>> = [];
+            for (const group of rows as ModifierGroup[]) {
+              const lines = group.modifiers?.length ? group.modifiers : [undefined];
+              for (const item of lines) {
+                exported.push({
+                  group: group.name ?? '',
+                  priority: String(group.priority ?? 0),
+                  modifier: item?.modifier?.name ?? item?.modifier?.number ?? '',
+                  price: item ? String(item.price ?? '') : '',
+                });
+              }
+            }
+            return exported;
+          }}
+          onDone={() => loadHook.fetchData()}
+        />
+      )}
+
+      {/*{formModal && (*/}
+        <ModifierGroupForm
+          open={formModal}
+          data={data}
+          onClose={() => {
+            setFormModal(false);
+            setData(undefined);
+            loadHook.fetchData();
+          }}
+        />
+      {/*)}*/}
+    </>
+  )
+}

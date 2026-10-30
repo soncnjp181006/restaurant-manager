@@ -1,0 +1,707 @@
+import ScrollContainer from "react-indiana-drag-scroll";
+import {Button} from "@/components/common/input/button.tsx";
+import {cn, DENOMINATION_COINS, DENOMINATION_NOTES, withCurrency} from "@/lib/utils.ts";
+import {faClose, faPrint} from "@fortawesome/free-solid-svg-icons";
+import * as React from "react";
+import {useEffect, useMemo, useState} from "react";
+import {PaymentType} from "@/api/model/payment_type.ts";
+import {Order} from "@/api/model/order.ts";
+import {useDB} from "@/api/db/db.ts";
+import {Tax} from "@/api/model/tax.ts";
+import {DiscountType} from "@/api/model/discount.ts";
+import {Coupon} from "@/api/model/coupon.ts";
+import {OrderPayment} from "@/api/model/order_payment.ts";
+import {nanoid} from "nanoid";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {useAtom} from "jotai";
+import {appAlert, appPage, appSettings} from "@/store/jotai.ts";
+import {dispatchPrint} from "@/lib/print.service.ts";
+import {PRINT_TYPE} from "@/lib/print.registry.tsx";
+import {calculateChangeDue} from "@/lib/cart.ts";
+import {posStore} from "@/infrastructure/pos-store/pos-store.ts";
+import {terminalSyncService} from "@/infrastructure/sync/sync-service.ts";
+import {
+  isRemotePaymentType,
+  RemotePaymentPendingSlot,
+  RemotePaymentProvider,
+  useRemotePayment,
+} from "@/components/orders/payment/remote";
+import {useSecurity} from "@/hooks/useSecurity.ts";
+import {postOrderTracking} from "@/lib/tracking.service.ts";
+import {useTranslation} from "react-i18next";
+import {useIntegrationManager} from "@/providers/integration.provider.tsx";
+import { hasTempPrint, requestBillPrint } from "@/lib/order-print.ts";
+import { fetchOrderFull } from "@/lib/order-fetch.ts";
+import {
+  fiscalShouldBlockBeforePaid,
+  loadOrderForFiscal,
+  runFiscalSettlementForOrder,
+} from "@/integrations/providers/fiscal/settlement.ts";
+import { publishSaleCompleted } from "@/integrations/accounting/events/publish.ts";
+import {
+  publishInvoiceCreated,
+  publishPaymentCompleted,
+} from "@/integrations/events/publish/payments.ts";
+import {toast} from "sonner";
+
+interface Props {
+  order: Order
+  total: number
+  resolvePayable: (taxOverride?: Tax | null, paymentTypeId?: string) => number
+  onComplete: (opts?: { settled?: boolean }) => void
+
+  extras: Record<string, number>
+
+  setTax?: (tax?: Tax) => void;
+  tax?: Tax
+  taxAmount?: number
+
+  discountAmount?: number
+  /** Notify parent of selected tender so payment-gated discounts can evaluate */
+  onPaymentTypeSelected?: (paymentTypeId: string) => void
+
+  tip: number
+  tipType?: DiscountType
+  tipAmount: number
+
+  payments: OrderPayment[]
+  setPayments: (paymentType: OrderPayment[] | ((prev: OrderPayment[]) => OrderPayment[])) => void;
+
+  itemsTotal: number
+
+  setServiceChargeAmount: (amt: number) => void
+  serviceChargeAmount: number
+  serviceCharge: number
+  serviceChargeType: DiscountType
+
+  notes: string
+  coupon?: Coupon
+  couponAmount?: number
+}
+
+type ContentProps = Props & {
+  selectedAmount: string
+  setSelectedAmount: React.Dispatch<React.SetStateAction<string>>
+};
+
+export const OrderPaymentReceiving = (props: Props) => {
+  const [page] = useAtom(appPage);
+  const [selectedAmount, setSelectedAmount] = useState("");
+
+  return (
+    <RemotePaymentProvider
+      order={props.order}
+      setPayments={props.setPayments}
+      page={page?.page}
+      user={page?.user}
+      onRemotePaymentStarted={() => setSelectedAmount("")}
+    >
+      <OrderPaymentReceivingContent
+        {...props}
+        selectedAmount={selectedAmount}
+        setSelectedAmount={setSelectedAmount}
+      />
+    </RemotePaymentProvider>
+  );
+};
+
+const OrderPaymentReceivingContent = ({
+  total,
+  resolvePayable,
+  order,
+  onComplete,
+  extras,
+  setTax,
+  tax,
+  taxAmount,
+  discountAmount,
+  onPaymentTypeSelected,
+  tipType,
+  tip,
+  tipAmount,
+  payments,
+  setPayments,
+  itemsTotal: _itemsTotal,
+  serviceChargeAmount,
+  serviceCharge,
+  serviceChargeType,
+  notes,
+  coupon,
+  couponAmount,
+  selectedAmount,
+  setSelectedAmount,
+}: ContentProps) => {
+  const {t} = useTranslation('payment');
+  const remote = useRemotePayment();
+  const db = useDB();
+  const {protectAction} = useSecurity();
+  const { manager: integrationManager } = useIntegrationManager();
+  const [page] = useAtom(appPage);
+  const [tempPrinted, setTempPrinted] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void hasTempPrint(db, order.id.toString()).then((v) => {
+      if (!cancelled) setTempPrinted(v);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [db, order.id]);
+
+  const [, setAlert] = useAtom(appAlert);
+  const [settings] = useAtom(appSettings);
+
+  const tableId = order?.table?.id?.toString();
+
+  const paymentTypes: PaymentType[] = useMemo(() => {
+    if (tableId) {
+      const table = settings.tables.find((row) => String(row.id) === tableId);
+      if (table?.payment_types && table.payment_types.length > 0) {
+        return table.payment_types as PaymentType[];
+      }
+    }
+    return settings.payment_types ?? [];
+  }, [settings.tables, settings.payment_types, tableId]);
+
+  // const [paymentType, setPaymentType] = useState<string>();
+  const [mode, setMode] = useState<'quick' | 'button'>('quick');
+
+  const quickAmounts = [...DENOMINATION_COINS, ...DENOMINATION_NOTES];
+  const keyboardKeys = [1, 2, 3, 4, 5, 6, 7, 8, 9, '.', 0];
+
+  const [closing, setClosing] = useState(false);
+
+  const isTaxObject = (value: unknown): value is Tax => {
+    return (
+      typeof value === 'object' &&
+      value !== null &&
+      typeof (value as Tax).rate === 'number' &&
+      typeof (value as Tax).name === 'string'
+    );
+  }
+
+  const getPaymentTypeTax = (paymentType?: PaymentType): Tax | undefined => {
+    return isTaxObject(paymentType?.tax) ? paymentType?.tax : undefined;
+  }
+
+  const closeOrder = async () => {
+    setClosing(true);
+
+    try {
+      // Fiscal pre-check is an online integration concern; when the master DB is
+      // unreachable we settle locally and let the post-settle fiscal run catch up.
+      let blockBeforePaid = false;
+      let fiscalOrderSnapshot: Order | undefined;
+      let settledOrder = order;
+      try {
+        if (settledOrder.invoice_number == null) {
+          await terminalSyncService.synchronize({ force: true }).catch(() => undefined);
+          const local = await posStore.getOrder(String(settledOrder.id));
+          if (local?.invoice_number != null) {
+            settledOrder = { ...settledOrder, invoice_number: local.invoice_number } as Order;
+          }
+        }
+        blockBeforePaid = await fiscalShouldBlockBeforePaid(integrationManager, db);
+        if (blockBeforePaid) {
+          fiscalOrderSnapshot = await loadOrderForFiscal(db, String(settledOrder.id));
+          if (fiscalOrderSnapshot && settledOrder.invoice_number != null) {
+            fiscalOrderSnapshot = {
+              ...fiscalOrderSnapshot,
+              invoice_number: settledOrder.invoice_number,
+            };
+          }
+        }
+      } catch (fiscalCheckError) {
+        console.warn('Fiscal pre-check skipped (offline?)', fiscalCheckError);
+        blockBeforePaid = false;
+      }
+
+      if (blockBeforePaid) {
+        if (fiscalOrderSnapshot) {
+          const preResult = await runFiscalSettlementForOrder(
+            integrationManager,
+            db,
+            {
+              ...fiscalOrderSnapshot,
+              tax: tax ?? fiscalOrderSnapshot.tax,
+              tax_amount: taxAmount ?? fiscalOrderSnapshot.tax_amount,
+              discount_amount: discountAmount ?? fiscalOrderSnapshot.discount_amount,
+              tip,
+              tip_amount: tipAmount,
+              tip_type: tipType,
+              service_charge: serviceCharge,
+              service_charge_amount: serviceChargeAmount,
+              service_charge_type: serviceChargeType,
+              payments: payments.length > 0 ? payments : fiscalOrderSnapshot.payments,
+            }
+          );
+          if (preResult.blocked) {
+            toast.error(
+              preResult.blockedCode === 'INVOICE_PENDING'
+                ? t('errors.invoicePendingSync')
+                : (preResult.blockedError ?? t('errors.fiscalFailed')),
+            );
+            return;
+          }
+          if (Object.values(preResult.resultsByProvider).some((row) => row.status === 'failed')) {
+            toast.warning('Some fiscal providers failed; check Integrations queue');
+          }
+        }
+      }
+
+      const orderId = String(order.id);
+      const hasCoupon = !!(coupon && couponAmount && couponAmount > 0);
+      const resolvedDiscountAmount = discountAmount ?? order.discount_amount ?? 0;
+      const resolvedDiscountId = order.discount?.id ? String(order.discount.id) : undefined;
+      const extraRows = Object.keys(extras).map((name) => ({
+        id: `order_extras:${orderId.split(':')[1]}_${name.replace(/[^a-zA-Z0-9_]/g, '_')}`,
+        name,
+        value: extras[name],
+      }));
+
+      // Local-first settlement: Dexie commit + outbox (CREATE_PAYMENT×n, MERGE order,
+      // REPLACE taxes/extras, coupon + redemption). Works offline; drains when back.
+      const settled = await posStore.settleOrder({
+        orderId,
+        payments: payments
+          .filter((payment) => payment?.payment_type?.id && Number(payment.amount) > 0)
+          .map((payment) => ({
+            id: payment.id ? String(payment.id) : undefined,
+            paymentTypeId: String(payment.payment_type.id),
+            amount: Number(payment.amount),
+            payable: Number(payment.payable ?? total),
+            comments: payment.comments ?? null,
+          })),
+        cashierId: page?.user?.id ? String(page.user.id) : null,
+        taxId: tax?.id ? String(tax.id) : null,
+        tip,
+        tipAmount,
+        tipType,
+        serviceCharge,
+        serviceChargeAmount,
+        serviceChargeType,
+        notes,
+        discountAmount: resolvedDiscountAmount,
+        ...(resolvedDiscountId ? { discountId: resolvedDiscountId } : {}),
+        extras: extraRows,
+        coupon: hasCoupon
+          ? {
+              id: order?.coupon?.id ? String(order.coupon.id) : undefined,
+              couponId: String(coupon!.id),
+              discount: Number(couponAmount),
+            }
+          : null,
+        couponRedemption: hasCoupon
+          ? {
+              userId: page?.user?.id ? String(page.user.id) : null,
+              discountAmount: Number(couponAmount),
+            }
+          : null,
+        // Payment screen auto-saves draft + taxes — skip redundant work on settle.
+        keepTaxes: true,
+        skipDraft: true,
+        seed: { order, items: order.items },
+      });
+
+      const settledPayments = payments.map((payment) => {
+        const row = settled.payments.find(
+          (p) => p.id === payment.id || p.id === `order_payment:${payment.id}`,
+        );
+        return row ? { ...payment, id: row.id as any } : payment;
+      });
+      setPayments(settledPayments);
+
+      // Table is free once the check is settled.
+      if (order?.table?.id) {
+        void posStore.unlockTable(String(order.table.id)).catch(() => undefined);
+      }
+
+      postOrderTracking({
+        module: "orders.complete_payment",
+        page: page?.page,
+        orderId: order.id,
+        payload: {
+          payment_count: payments.length,
+          coupon: coupon?.id?.toString(),
+          total,
+        },
+        user: page?.user,
+      });
+
+      // Post-settle side effects (fiscal, accounting, integration events) never
+      // block the cashier; they wait for the outbox to drain so remote reads
+      // see the settled order.
+      void (async () => {
+        try {
+          await terminalSyncService.synchronize().catch(() => undefined);
+
+          if (!blockBeforePaid) {
+            const settledOrder = await loadOrderForFiscal(db, orderId);
+            if (settledOrder) {
+              const fiscalResult = await runFiscalSettlementForOrder(
+                integrationManager,
+                db,
+                settledOrder
+              );
+              if (Object.values(fiscalResult.resultsByProvider).some((row) => row.status === 'failed')) {
+                toast.warning('Some fiscal providers failed; check Integrations queue');
+              }
+            }
+          }
+
+          const saleOrder = await loadOrderForFiscal(db, orderId);
+          if (saleOrder && integrationManager) {
+            await publishSaleCompleted(integrationManager, saleOrder);
+            await publishInvoiceCreated(integrationManager, {
+              orderId: String(saleOrder.id),
+              invoiceNumber: saleOrder.invoice_number,
+              total: Number(saleOrder.payments?.reduce((s, p) => s + Number(p?.amount || 0), 0) || total),
+              totalCollected: Number(saleOrder.payments?.reduce((s, p) => s + Number(p?.amount || 0), 0) || total),
+              taxAmount: Number(saleOrder.tax_amount || taxAmount || 0),
+              customerId: saleOrder.customer?.id
+                ? String(saleOrder.customer.id)
+                : undefined,
+              completedAt: new Date().toISOString(),
+            });
+            for (const payment of settledPayments) {
+              if (!payment?.id) continue;
+              await publishPaymentCompleted(integrationManager, {
+                paymentId: String(payment.id),
+                orderId,
+                amount: Number(payment.amount || 0),
+                paymentTypeId: payment.payment_type?.id
+                  ? String(payment.payment_type.id)
+                  : undefined,
+                paymentTypeName: payment.payment_type?.name,
+                tipAmount: tipAmount,
+              });
+            }
+          }
+        } catch (sideEffectError) {
+          console.warn('Post-settlement side effects failed', sideEffectError);
+        }
+      })();
+
+      onComplete({ settled: true });
+    } catch (e) {
+      if ((e as any)?.code === 'ALREADY_CLOSED') {
+        toast.error(t('receiving.alreadyClosed'));
+        onComplete({ settled: true });
+        return;
+      }
+      if ((e as any)?.code === 'NOT_OWNER') {
+        toast.error(t('receiving.notOwner'));
+        return;
+      }
+      throw e;
+    } finally {
+      setClosing(false);
+    }
+  }
+
+  useEffect(() => {
+    if (payments.length > 0) {
+      // find largest tax and apply it
+      const paymentsWithTaxes = payments.filter(item => !!getPaymentTypeTax(item.payment_type));
+      let highest: Tax | undefined;
+      if (paymentsWithTaxes.length > 0) {
+        paymentsWithTaxes.forEach(pt => {
+          const paymentTax = getPaymentTypeTax(pt.payment_type);
+          if (!paymentTax) {
+            return;
+          }
+
+          if (!highest) {
+            highest = paymentTax;
+          }
+
+          if (highest.rate < paymentTax.rate) {
+            highest = paymentTax;
+          }
+        });
+
+        if (highest) {
+          if (setTax) setTax(highest);
+        }
+      }
+    }
+  }, [setTax, payments]);
+
+  const tendered = useMemo(() => {
+    return payments.reduce((prev, item) => prev + item.amount, 0)
+  }, [payments])
+
+  const changeDue = useMemo(() => {
+    return calculateChangeDue(tendered, total);
+  }, [total, tendered]);
+
+  const addPayment = async (amount: string | number, paymentType: PaymentType, payable: number) => {
+    if (amount.toString().length === 0) {
+      return;
+    }
+
+    if (isRemotePaymentType(paymentType)) {
+      await remote.startRemotePayment(amount, paymentType, payable);
+      return;
+    }
+
+    // Compute change due relative to this payable (may include tax for selected payment type)
+    const localChangeDue = tendered - payable;
+
+    if (paymentType.type === 'Card' && localChangeDue >= 0) {
+      setAlert(prev => ({
+        ...prev,
+        opened: true,
+        type: 'error',
+        message: t('receiving.cannotAddCard')
+      }));
+
+      return;
+    }
+
+    if (paymentType.type === 'Card' && Number(amount) > Number(-1 * localChangeDue)) {
+      setAlert(prev => ({
+        ...prev,
+        opened: true,
+        type: 'warning',
+        message: t('receiving.exactCardAmount')
+      }));
+
+      amount = -1 * localChangeDue;
+    }
+
+    setPayments(prev => [
+      ...prev,
+      {
+        payment_type: paymentType,
+        amount: Number(amount),
+        payable: payable,
+        id: nanoid()
+      }
+    ])
+    setSelectedAmount('');
+  }
+
+  const getHighestTaxObject = (candidate?: Tax): Tax | undefined => {
+    const existingTaxes = payments
+      .map(p => getPaymentTypeTax(p.payment_type))
+      .filter((paymentTax): paymentTax is Tax => !!paymentTax);
+    let highest: Tax | undefined = existingTaxes.length > 0
+      ? existingTaxes.reduce((acc, t) => (acc.rate >= t.rate ? acc : t))
+      : undefined;
+    if (candidate) {
+      if (!highest || candidate.rate >= highest.rate) {
+        highest = candidate;
+      }
+    }
+    return highest;
+  }
+
+  const applyPaymentTypeTaxAndDiscount = (paymentType: PaymentType): number => {
+    const paymentTypeId = String(paymentType.id);
+    onPaymentTypeSelected?.(paymentTypeId);
+    const candidateTax = getPaymentTypeTax(paymentType);
+    const hasTax = !!candidateTax;
+    const highestTax = hasTax ? getHighestTaxObject(candidateTax) : getHighestTaxObject(undefined);
+    if (hasTax) {
+      if (setTax) setTax(highestTax);
+    }
+    return resolvePayable(hasTax ? highestTax : undefined, paymentTypeId);
+  }
+
+  const allTaxes = settings.taxes;
+
+  return (
+    <div className="grid grid-cols-2 gap-5 h-[calc(100vh_-_120px_-_var(--app-toolbar-h))]" data-testid="payment-receiving">
+      <div className="bg-surface-elevated rounded-xl h-full" data-testid="payment-tender-panel">
+        <div className="mb-3 text-5xl p-5 text-center " data-testid="payment-tendered">
+          {withCurrency(tendered)}
+        </div>
+        <div
+          data-testid="payment-change-due"
+          className={
+          cn(
+            "mb-3 text-3xl p-5 text-center",
+            changeDue < 0 && 'text-danger-700',
+            changeDue > 0 && 'text-success-700'
+          )
+        }>
+          {changeDue < 0 ? t('receiving.remaining') : t('receiving.change')}: <span className="">{withCurrency(changeDue)}</span>
+        </div>
+        <div className="relative">
+          <ScrollContainer className="gap-3 flex overflow-x-auto mb-5" data-testid="payment-quick-amounts">
+          <span
+            className="btn btn-primary w-[100px] lg"
+            data-testid="payment-quick-exact"
+            onClick={() => {
+              if (!paymentTypes || paymentTypes.length === 0) {
+                return;
+              }
+              const pt = paymentTypes[0];
+              const payable = applyPaymentTypeTaxAndDiscount(pt);
+              void addPayment(payable, pt, payable);
+              setMode('quick');
+            }}
+          >{withCurrency(total)}</span>
+            {quickAmounts.reverse().map(item => (
+              <span
+                key={item}
+                className="btn btn-primary w-[100px] lg"
+                onClick={() => {
+                  if (!paymentTypes || paymentTypes.length === 0) {
+                    return;
+                  }
+                  const pt = paymentTypes[0];
+                  const payable = applyPaymentTypeTaxAndDiscount(pt);
+                  void addPayment(item, pt, payable);
+                  setMode('quick');
+                }}
+              >{withCurrency(item)}</span>
+            ))}
+          </ScrollContainer>
+          {/*{!isCash && <div className="payment-disabled absolute w-full z-10 top-0 bg-surface/50 h-[48px]"></div>}*/}
+        </div>
+
+        <ScrollContainer className="gap-5 flex overflow-x-auto mb-5" data-testid="payment-types">
+          {paymentTypes?.map(item => (
+            <Button
+              className="min-w-[150px]"
+              variant="primary"
+              key={item.id}
+              data-testid="payment-type"
+              onClick={() => {
+                const payable = applyPaymentTypeTaxAndDiscount(item);
+
+                if (selectedAmount.trim().length > 0) {
+                  void addPayment(selectedAmount, item, payable)
+                } else if (changeDue < 0) {
+                  const remaining = payable - tendered;
+                  const amt = remaining.toString();
+                  setSelectedAmount(amt);
+                  void addPayment(amt, item, payable)
+                } else {
+                  // Nothing typed and no remaining due – do nothing (card will be blocked inside addPayment)
+                }
+              }}
+              size="lg"
+            >
+              {item.name}
+            </Button>
+          ))}
+        </ScrollContainer>
+
+        <div className="flex justify-center items-center mb-3 text-xl h-[28px]" data-testid="payment-amount-entry">
+          {selectedAmount.trim().length > 0 && selectedAmount}
+        </div>
+
+        <div className="flex">
+          <div className="flex-1">
+            <div className="grid grid-cols-3 gap-3 mb-3" data-testid="payment-keypad">
+              {keyboardKeys.map(item => (
+                <Button key={item} size="xl" flat variant="primary" onClick={() => {
+                  if (mode === 'button') {
+                    setSelectedAmount((prev: string) => {
+                      return prev + item.toString()
+                    });
+                  } else {
+                    setSelectedAmount(item.toString());
+                  }
+
+                  setMode('button');
+                }}>
+                  {item}
+                </Button>
+              ))}
+              <Button size="xl" flat variant="primary" onClick={() => {
+                setSelectedAmount('')
+              }}>
+                C
+              </Button>
+            </div>
+            <div className="flex gap-5" data-testid="payment-finish-actions">
+              <span title={tempPrinted ? t('receiving.tempAlreadyPrinted') : undefined} className="flex-1 flex">
+                <Button
+                  variant={tempPrinted ? "warning" : "primary"}
+                  className="flex-1"
+                  flat
+                  icon={faPrint}
+                  size="lg"
+                  data-testid="payment-temp-bill"
+                  onClick={() => {
+                    void requestBillPrint({
+                      db,
+                      protectAction,
+                      orderId: order.id.toString(),
+                      printType: 'temp',
+                      printModule: 'orders.print_temp',
+                      description: 'Print temp bill',
+                      payload: { order: order.id.toString() },
+                      userId: page?.user?.id?.toString?.() ?? page?.user?.id,
+                      doPrint: async () => {
+                        const full = await fetchOrderFull(db, order.id);
+                        if (!full) {
+                          throw new Error('Failed to load order for temp bill print');
+                        }
+                        await dispatchPrint(db, PRINT_TYPE.presale_bill, {
+                          order: full,
+                          taxes: allTaxes
+                        }, {userId: page?.user?.id});
+                        // Deliberately falsy (this callback's declared contract is
+                        // `() => Promise<boolean>` and it always resolved to undefined
+                        // here): requestBillPrint only records the print attempt and
+                        // fires onPrinted for a truthy result, so returning
+                        // dispatchPrint()'s boolean would start writing order_print
+                        // rows and flip the temp-printed state. Needs sign-off.
+                        return false;
+                      },
+                      onPrinted: () => setTempPrinted(true),
+                    });
+                  }}
+                >{t('receiving.tempBill')}</Button>
+              </span>
+              <Button
+                variant="success"
+                className="flex-1"
+                filled
+                size="lg"
+                data-testid="payment-complete"
+                onClick={async () => {
+                  await protectAction(async () => await closeOrder(), {
+                    module: 'orders.complete',
+                    description: 'Complete order',
+                    payload: {
+                      order: order.id.toString()
+                    }
+                  });
+                }}
+                disabled={changeDue < 0 || closing || remote.isProcessing}
+                flat
+              >{t('receiving.complete')}</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 p-3 bg-surface-elevated rounded-xl h-full" data-testid="payment-lines">
+        <RemotePaymentPendingSlot/>
+        {payments.map(payment => (
+          <div
+            className="flex justify-between text-lg cursor-pointer"
+            key={payment.id}
+            data-testid="payment-line"
+            onClick={() => {
+              setPayments(prev => prev.filter(item => item.id !== payment.id))
+            }}
+          >
+            <strong className="flex gap-3 justify-center items-center">
+              <FontAwesomeIcon icon={faClose}
+                               className="text-danger-500 p-2 px-3 rounded border border-danger-500"/>
+              {payment.payment_type.name}
+            </strong>
+            <span>{withCurrency(payment.amount)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

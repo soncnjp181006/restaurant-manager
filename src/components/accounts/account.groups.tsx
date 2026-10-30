@@ -1,0 +1,141 @@
+import {useMemo, useState} from "react";
+import {createColumnHelper} from "@tanstack/react-table";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPencilAlt, faPlus} from "@fortawesome/free-solid-svg-icons";
+import {StringRecordId} from "surrealdb";
+import {useTranslation} from "react-i18next";
+import {Button} from "@/components/common/input/button.tsx";
+import {TableComponent} from "@/components/common/table/table.tsx";
+import {Switch} from "@/components/common/input/switch.tsx";
+import useApi, {SettingsData} from "@/api/db/use.api.ts";
+import {Tables} from "@/api/db/tables.ts";
+import {useDB} from "@/api/db/db.ts";
+import {AccountGroup} from "@/api/model/account.group.ts";
+import {CreateAccountGroup} from "@/components/accounts/create.account.group.tsx";
+import {DeleteConfirm} from "@/components/common/table/delete.confirm.tsx";
+import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
+
+export const AccountGroups = () => {
+  const {t} = useTranslation(['accounts', 'common']);
+  const db = useDB();
+  const [modal, setModal] = useState(false);
+  const [operation, setOperation] = useState<"create" | "update">("create");
+  const [group, setGroup] = useState<AccountGroup>();
+  const [activateConfirm, setActivateConfirm] = useState<AccountGroup | null>(null);
+
+  const groupListHook = useApi<SettingsData<AccountGroup>>(
+    Tables.account_groups,
+    [],
+    ["code ASC"],
+    0,
+    25,
+  );
+
+  const columnHelper = createColumnHelper<AccountGroup>();
+
+  const columns = useMemo(() => [
+    columnHelper.accessor("code", {header: t('columns.code')}),
+    columnHelper.accessor("name", {header: t('columns.name')}),
+    columnHelper.accessor("head_type", {
+      header: t('columns.mainHead'),
+      cell: (info) => info.getValue()?.toUpperCase?.() || "-",
+    }),
+    columnHelper.accessor("normal_balance", {
+      header: t('columns.normal'),
+      cell: (info) => info.getValue()?.toUpperCase?.() || "-",
+    }),
+    columnHelper.accessor("is_active", {
+      header: t('columns.status'),
+      cell: (info) => (
+        <span className={info.getValue() ? "text-success-600" : "text-danger-600"}>
+          {info.getValue() ? t('status.active') : t('status.inactive')}
+        </span>
+      ),
+    }),
+    columnHelper.accessor("id", {
+      header: t('columns.actions'),
+      enableSorting: false,
+      enableColumnFilter: false,
+      cell: (info) => {
+        const current = info.row.original;
+        return (
+          <>
+            <IconTooltipButton label={t('common:actions.edit')}
+              type="button"
+              variant="primary"
+              className="w-[40px]"
+              onClick={() => {
+                setGroup(current);
+                setOperation("update");
+                setModal(true);
+              }}
+              tabIndex={-1}
+            >
+              <FontAwesomeIcon icon={faPencilAlt}/>
+            </IconTooltipButton>
+            <span className="mx-2 text-gray-300">|</span>
+            <Switch
+              checked={current.is_active}
+              onChange={() => setActivateConfirm(current)}
+            />
+          </>
+        );
+      },
+    }),
+  ], [columnHelper, t]);
+
+  return (
+    <>
+      <TableComponent
+        columns={columns}
+        loaderHook={groupListHook}
+        loaderLineItems={6}
+        buttons={[
+          <Button
+            key="create-group"
+            variant="primary"
+            onClick={() => {
+              setGroup(undefined);
+              setOperation("create");
+              setModal(true);
+            }}
+          >
+            <FontAwesomeIcon icon={faPlus} className="mr-2"/> {t('actions.group')}
+          </Button>,
+        ]}
+      />
+
+      <DeleteConfirm
+        open={activateConfirm != null}
+        onOpenChange={(next) => {
+          if (!next) setActivateConfirm(null);
+        }}
+        title={t('confirm.title')}
+        message={activateConfirm
+          ? t('confirm.activateGroup', {action: activateConfirm.is_active ? 'de-' : ''})
+          : undefined}
+        onConfirm={async () => {
+          if (!activateConfirm) return;
+          await db.merge(new StringRecordId(activateConfirm.id.toString()), {
+            is_active: !activateConfirm.is_active,
+          });
+          await groupListHook.fetchData();
+        }}
+      />
+
+      {modal && (
+        <CreateAccountGroup
+          addModal={modal}
+          operation={operation}
+          entity={group}
+          onClose={async () => {
+            setModal(false);
+            setGroup(undefined);
+            setOperation("create");
+            await groupListHook.fetchData();
+          }}
+        />
+      )}
+    </>
+  );
+};

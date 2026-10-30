@@ -1,0 +1,189 @@
+{
+  "customer": {
+    "name": "Tên",
+    "phone": "Số điện thoại",
+    "address": "Địa chỉ",
+    "attach": "Gắn kèm",
+    "search": "Tìm kiếm",
+    "columns": {
+      "select": "Chọn",
+      "name": "Tên",
+      "email": "Email",
+      "phone": "Điện thoại",
+      "address": "Địa chỉ",
+      "secondaryAddress": "Địa chỉ phụ",
+      "points": "Điểm"
+    }
+  },
+  "filters": {
+    "status": "Chọn trạng thái đơn hàng",
+    "orderTypes": "Chọn loại đơn hàng",
+    "floors": "Chọn khu vực",
+    "users": "Chọn người dùng"
+  },
+  "view": {
+    "blocks": "Khối",
+    "table": "Bảng"
+  },
+  "merge": {
+    "chooseTableAlert": "Vui lòng chọn một bàn mới",
+    "success": "Đã gộp vào {{invoiceNumber}} thành công",
+    "successPending": "Đã gộp các đơn hàng. Số hoá đơn sẽ xuất hiện sau khi đồng bộ.",
+    "failed": "Không tạo được các đơn hàng gộp",
+    "chooseTable": "Chọn một bàn",
+    "selectTwoOrMore": "Chọn từ 2 đơn hàng trở lên",
+    "confirmMerging": "Xác nhận gộp {{count}} đơn hàng",
+    "cancelMerging": "Huỷ việc gộp"
+  },
+  "header": {
+    "orderNumber": "Đơn hàng #{{invoice}} / {{orderType}}"
+  },
+  "status": {
+    "inProgress": "Đang thực hiện",
+    "paid": "Đã thanh toán",
+    "cancelled": "Đã huỷ",
+    "spilt": "Đã tách",
+    "merged": "Đã gộp",
+    "refunded": "Đã hoàn tiền"
+  },
+  "totals": {
+    "items": "Món ({{count}})",
+    "itemsShort": "Món",
+    "tax": "Thuế",
+    "discount": "Giảm giá",
+    "serviceCharges": "Phí phục vụ ({{value}}{{unit}})",
+    "tip": "Tiền tip",
+    "tipPercent": "% tiền tip",
+    "total": "Tổng cộng",
+    "totalWithTax": "Tổng cộng gồm {{name}} {{rate}}%",
+    "change": "Tiền thừa",
+    "sc": "Phí phục vụ ({{value}}%)",
+    "extras": "Phụ thu"
+  },
+  "actions": {
+    "selectToMerge": "Chọn để gộp hoá đơn",
+    "more": "Thêm",
+    "cancelOrder": "Huỷ đơn hàng",
+    "splitBySeats": "Tách theo chỗ",
+    "splitByItems": "Tách theo món",
+    "splitByAmount": "Tách theo số tiền",
+    "mergeOrders": "Gộp đơn hàng",
+    "refund": "Hoàn tiền",
+    "printFinalBillCopy": "In bản hoá đơn cuối cùng",
+    "openCashDrawer": "Mở két tiền",
+    "tempBill": "Hoá đơn tạm",
+    "payNow": "Thanh toán ngay",
+    "printKotCopy": "In bản KOT"
+  },
+  "print": {
+    "tempAlreadyPrinted": "Hoá đơn tạm đã được in rồi"
+  },
+  "cancel": {
+    "title": "Huỷ đơn hàng",
+    "reason": "Lý do",
+    "items": "Món",
+    "comments": "Bình luận",
+    "commentsPlaceholder": "Nhập bình luận",
+    "confirmCancellation": "Xác nhận huỷ bỏ",
+    "unknownItem": "Món không xác định",
+    "chooseReason": "Vui lòng chọn một lý do",
+    "selectAtLeastOne": "Vui lòng chọn ít nhất một món",
+    "cannotIdentifyUser": "Không xác định được người dùng đang đăng nhập",
+    "successOrder": "Đã huỷ đơn hàng thành công",
+    "successItems": "Đã huỷ các món được chọn",
+    "failed": "Không huỷ được đơn hàng"
+  },
+  "refund": {
+    "title": "Hoàn tiền đơn hàng",
+    "selectItems": "Chọn món cần hoàn tiền",
+    "itemsTotal": "Tổng tiền món:",
+    "tax": "Thuế ({{name}} {{rate}}%):",
+    "discount": "Giảm giá:",
+    "serviceCharges": "Phí phục vụ ({{value}}{{unit}}):",
+    "tip": "Tiền tip:",
+    "refundTotal": "Tổng hoàn tiền:",
+    "itemsSelected": "Đã chọn {{count}} món",
+    "reason": "Lý do",
+    "reasonPlaceholder": "Nhập lý do hoàn tiền",
+    "refundButton": "Hoàn tiền",
+    "refundButtonWithCount": "Hoàn tiền {{count}} món",
+    "selectAtLeastOne": "Vui lòng chọn ít nhất một món để hoàn tiền",
+    "cannotIdentifyUser": "Không xác định được người dùng đang đăng nhập",
+    "success": "Đã hoàn tiền thành công cho {{count}} món",
+    "failed": "Không hoàn tiền được đơn hàng"
+  },
+  "voidReasons": {
+    "fohNotMade": "Bộ phận sảnh chưa phục vụ",
+    "bohNotMade": "Bếp chưa chế biến",
+    "guestNotMade": "Khách chưa dùng",
+    "fohMade": "Bộ phận sảnh đã phục vụ",
+    "bohMade": "Bếp đã chế biến",
+    "guestMade": "Khách đã dùng",
+    "punchByMistake": "Gọi món nhầm",
+    "testing": "Thử nghiệm"
+  },
+  "split": {
+    "title": "Tách đơn hàng {{invoice}}",
+    "titleByAmount": "Tách theo số tiền — Đơn hàng {{invoice}}",
+    "splitName": "Phần tách {{number}}",
+    "seatName": "Chỗ {{number}}",
+    "noSeat": "Không có chỗ",
+    "toast": {
+      "success": "Đã tạo thành công {{count}} đơn hàng tách",
+      "failed": "Không tách được đơn hàng"
+    },
+    "bySeats": {
+      "heading": "Các phần tách bổ sung",
+      "scrollHint": "Cuộn để xem tất cả phần tách",
+      "total": "Tổng cộng: {{amount}}",
+      "noItems": "Không có món",
+      "dragItemsHere": "Kéo món vào đây",
+      "noAdditionalSplits": "Không có phần tách bổ sung",
+      "addSplitHint": "Thêm một phần tách để chia món",
+      "creating": "Đang tạo phần tách...",
+      "save": "Lưu {{count}} phần tách",
+      "addMoreSplits": "Thêm phần tách trước khi lưu",
+      "allSplitsNeedItems": "Mọi phần tách phải có ít nhất một món"
+    },
+    "byItems": {
+      "splitOneFixed": "Phần tách 1 (chính)",
+      "mainSplitHint": "Món bắt đầu ở đây. Kéo sang các phần tách khác.",
+      "total": "Tổng cộng: {{amount}}",
+      "noItems": "Không có món",
+      "itemsReturnHere": "Món quay về đây khi kéo lại",
+      "additionalSplits": "Các phần tách bổ sung",
+      "scrollHint": "Cuộn ngang để xem thêm phần tách",
+      "addSplit": "Thêm phần tách",
+      "dragFromSplitOne": "Kéo món từ Phần tách 1",
+      "moveBackToSplitOne": "Chuyển về Phần tách 1",
+      "noAdditionalSplits": "Không có phần tách bổ sung",
+      "addSplitHint": "Thêm một phần tách để chia món",
+      "creating": "Đang tạo phần tách...",
+      "save": "Lưu {{count}} phần tách",
+      "addMoreSplits": "Thêm phần tách trước khi lưu",
+      "allSplitsNeedItems": "Mọi phần tách phải có ít nhất một món"
+    },
+    "byAmount": {
+      "orderTotal": "Tổng đơn hàng",
+      "assignHint": "Gán số tiền cho từng phần tách. Phần còn lại phải bằng 0.",
+      "assigned": "Đã gán: {{amount}}",
+      "remaining": "Còn lại: {{amount}}",
+      "amount": "Số tiền",
+      "percentage": "{{value}}%",
+      "itemsCount": "{{count}} món trong đơn hàng",
+      "noItemsInOrder": "Không có món trong đơn hàng này",
+      "itemFallback": "Món",
+      "subtotal": "Tạm tính",
+      "addSplit": "Thêm phần tách",
+      "autoFillRemaining": "Tự điền phần còn lại",
+      "distributeEvenly": "Chia đều",
+      "assignRemaining": "Gán phần còn lại {{amount}}",
+      "exceedsTotal": "Vượt tổng cộng {{amount}}",
+      "creating": "Đang tạo phần tách...",
+      "save": "Lưu {{count}} phần tách"
+    }
+  },
+  "loadingItems": "Đang tải món…",
+  "retryLoad": "Thử tải lại món",
+  "loadFailed": "Không tải được đơn hàng"
+}

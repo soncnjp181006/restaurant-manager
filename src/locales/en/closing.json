@@ -1,0 +1,139 @@
+{
+  "orderTakingDisabled": "Order taking is currently disabled.",
+  "verifyClosingFailed": "Unable to verify closing cycle status. Please try again.",
+  "tableLocked": "{{user}} is already taking order on this table",
+  "floor": {
+    "switchTable": "Switch from Table {{table}} to another",
+    "reloadCachePrefix": "Press reload cache button from",
+    "settings": "settings",
+    "ordersWarming": "Loading open checks… please wait a moment."
+  },
+  "guard": {
+    "punchDisabled": "Punching is disabled until current cycle is closed, or delete current cycle closing.",
+    "cycleEnded": "Closing cycle ended at {{time}}. Please complete day closing if not already done."
+  },
+  "window": {
+    "cycle": "Cycle",
+    "period": "Period",
+    "label": "{{prefix}}: {{start}} - {{end}}"
+  },
+  "terminal": {
+    "defaultName": "Terminal {{number}}",
+    "notes": "Notes",
+    "coins": "Coins",
+    "denomination": "x {{value}}",
+    "total": "Terminal Total: {{amount}}",
+    "add": "Add Terminal",
+    "mode": {
+      "breakdown": "Count bills",
+      "total": "Enter total",
+      "totalLabel": "Counted cash total"
+    }
+  },
+  "title": "Daily Closing as of {{date}}",
+  "loading": "Loading closing...",
+  "alerts": {
+    "cycleDisabled": "Closing cycle is disabled. The last completed closing time is used as the start of this period, and the current time is used as the end.",
+    "cycleCompleted": "Closing is completed for this cycle. Order taking is now blocked until the next cycle.",
+    "periodCompleted": "Closing is completed for this period.",
+    "varianceReasonRequired": "Enter a reason for the cash over or short before completing the closing."
+  },
+  "sections": {
+    "previousDayBalance": "Cash left from previous closing",
+    "pettyCash": "Petty cash in",
+    "cashDrop": "Cash drop / safe drop",
+    "terminalCash": "Terminal Cash",
+    "paymentTypesSummary": "Payment totals from system",
+    "nonCashBatch": "Non-cash batch check",
+    "expenses": "Expenses / paid outs",
+    "openChecks": "Open checks",
+    "shiftRecap": "Shift recap",
+    "notes": "Notes",
+    "summary": "Drawer summary",
+    "selfOrders": "QR self-orders"
+  },
+  "fields": {
+    "previousDayBalance": "Previous float",
+    "pettyCash": "Petty cash added",
+    "cashDrop": "Cash removed to safe",
+    "description": "Description",
+    "category": "Category",
+    "amount": "Amount",
+    "batchAmount": "Batch / terminal amount",
+    "varianceReason": "Over / short reason",
+    "varianceReasonPlaceholder": "Explain the cash difference...",
+    "notesPlaceholder": "Add any additional notes..."
+  },
+  "labels": {
+    "cashSystemTotal": "Cash from system",
+    "systemAmount": "System",
+    "noNonCash": "No non-cash payment types for this period.",
+    "noOpenChecks": "No open checks in this closing window.",
+    "closedBy": "Closed by {{name}}"
+  },
+  "columns": {
+    "invoice": "Invoice",
+    "table": "Table",
+    "status": "Status",
+    "amount": "Amount"
+  },
+  "recap": {
+    "paidOrders": "Paid orders",
+    "discounts": "Discounts",
+    "tax": "Tax",
+    "serviceCharge": "Service charge",
+    "tips": "Tips",
+    "voids": "Voids",
+    "refunds": "Refunds"
+  },
+  "totals": {
+    "totalCash": "Counted cash: {{amount}}",
+    "cashSales": "Cash sales (system)",
+    "cashFromPayments": "Cash from payment summary",
+    "expectedInDrawer": "Expected in drawer",
+    "overShort": "Over / short",
+    "cashLeftNextShift": "Cash left for next shift",
+    "countedCash": "Counted cash",
+    "difference": "Difference: {{amount}}",
+    "batchDifference": "Batch difference: {{amount}}",
+    "totalOtherPayments": "Total other payments: {{amount}}",
+    "totalExpenses": "Total expenses: {{amount}}",
+    "previousBalance": "Previous float",
+    "totalCashShort": "Total cash",
+    "otherPayments": "Other payments",
+    "totalExpensesShort": "Expenses",
+    "netAmount": "Cash left for next shift"
+  },
+  "actions": {
+    "addExpense": "Add Expense",
+    "saveClosing": "Save draft",
+    "closeClosing": "Complete closing",
+    "saving": "Saving...",
+    "reopen": "Edit (Manager Approval)",
+    "reopening": "Re-opening...",
+    "printClosing": "Print Closing",
+    "goToClosing": "Go to closing"
+  },
+  "security": {
+    "reopenDescription": "Re-open daily closing",
+    "reopenModule": "Edit Closing"
+  },
+  "autoCheckClose": {
+    "autoClosed_one": "Auto-closed {{count}} check",
+    "autoClosed_other": "Auto-closed {{count}} checks",
+    "failed_one": "Failed to auto-close {{count}} check",
+    "failed_other": "Failed to auto-close {{count}} checks",
+    "noOpenChecks": "Closing cycle ended. No open checks to close.",
+    "retry_one": "Found {{count}} open check but none were closed{{skipped}}. Will retry.",
+    "retry_other": "Found {{count}} open checks but none were closed{{skipped}}. Will retry.",
+    "skippedSuffix": " ({{count}} skipped)",
+    "executionFailed": "Failed to auto-close checks",
+    "warning": "Checks will auto-close in {{countdown}}"
+  },
+  "selfOrders": {
+    "hint": "Paid online by guests at their table — not in the cash drawer or card batch above.",
+    "orders": "QR orders",
+    "total": "Paid online",
+    "testWarning": "{{count}} test order(s) ({{amount}}) — no money was collected for these."
+  }
+}

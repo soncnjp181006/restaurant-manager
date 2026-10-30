@@ -1,0 +1,12 @@
+{
+  "preparing": "Đang chế biến",
+  "readyForPickup": "Sẵn sàng lấy",
+  "orderTime": "Đặt lúc",
+  "celebrationTitle": "Sẵn sàng lấy!",
+  "orderReadyAnnouncement": "Đơn số {{number}} đã sẵn sàng",
+  "filters": {
+    "status": "Trạng thái",
+    "orderTypes": "Loại đơn"
+  },
+  "toggleSidebar": "Hiện thanh bên"
+}

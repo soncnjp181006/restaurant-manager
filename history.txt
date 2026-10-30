@@ -1,0 +1,28 @@
+#V2
+RETURN "does" - "not";
+RETURN does - not;
+SELECT * FROM {does: "does", not: "not"} WHERE does - not;
+SELECT * FROM order WHERE floor = floor:does-not;
+SELECT * FROM order WHERE floor = floor:⟨does-not⟩;
+CREATE order SET status = "In Progress", does = "does", not = "not";
+SELECT * FROM order WHERE floor = does-not;
+SELECT * FROM order WHERE status = "does" - "not";
+SELECT * FROM order WHERE status = "In Progress" and (does - not);
+CREATE order SET status = "In Progress";
+SELECT * FROM order WHERE floor = does-not;
+SELECT * FROM order WHERE floor = does - not;
+SELECT * FROM order WHERE user = does-not;
+SELECT * FROM order WHERE status = "In Progress" AND (floor = does-not);
+SELECT *FROM order
+CREATE order:⟨does-not⟩ SET status = "In Progress", does = "hello", not = "world";
+SELECT * FROM ONLY order:⟨does-not⟩;
+SELECT * FROM ONLY order:⟨does-not⟩ FETCH status;
+# bare interpolation style that might happen if brackets stripped
+SELECT * FROM ONLY order:does - not;
+SELECT * FROM ONLY order:does-not;
+SELECT * FROM ONLY order:does-not FETCH items, user;
+SELECT * FROM order:does-not;
+SELECT * FROM ONLY does-not;
+SELECT * FROM ONLY does-not FETCH items;
+CREATE order:⟨x⟩ SET status = "In Progress";
+SELECT * FROM ONLY does-not FETCH user;

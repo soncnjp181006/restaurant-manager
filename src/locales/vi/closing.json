@@ -1,0 +1,139 @@
+{
+  "orderTakingDisabled": "Việc nhận đơn hàng hiện đang bị tắt.",
+  "verifyClosingFailed": "Không xác minh được trạng thái chu kỳ chốt ngày. Vui lòng thử lại.",
+  "tableLocked": "{{user}} đang nhận đơn hàng trên bàn này rồi",
+  "floor": {
+    "switchTable": "Chuyển từ Bàn {{table}} sang bàn khác",
+    "reloadCachePrefix": "Nhấn nút nạp lại bộ nhớ đệm từ",
+    "settings": "thiết lập",
+    "ordersWarming": "Đang tải các hoá đơn đang mở… vui lòng đợi một lát."
+  },
+  "guard": {
+    "punchDisabled": "Việc gọi món bị tắt cho đến khi chu kỳ hiện tại được chốt, hoặc xoá bản chốt của chu kỳ hiện tại.",
+    "cycleEnded": "Chu kỳ chốt ngày kết thúc lúc {{time}}. Vui lòng hoàn tất chốt ngày nếu chưa thực hiện."
+  },
+  "window": {
+    "cycle": "Chu kỳ",
+    "period": "Kỳ",
+    "label": "{{prefix}}: {{start}} - {{end}}"
+  },
+  "terminal": {
+    "defaultName": "Thiết bị đầu cuối {{number}}",
+    "notes": "Ghi chú",
+    "coins": "Tiền xu",
+    "denomination": "x {{value}}",
+    "total": "Tổng thiết bị đầu cuối: {{amount}}",
+    "add": "Thêm thiết bị đầu cuối",
+    "mode": {
+      "breakdown": "Đếm tờ tiền",
+      "total": "Nhập tổng",
+      "totalLabel": "Tổng tiền mặt đã đếm"
+    }
+  },
+  "title": "Chốt ngày tính đến {{date}}",
+  "loading": "Đang tải dữ liệu chốt ngày...",
+  "alerts": {
+    "cycleDisabled": "Chu kỳ chốt ngày đang bị tắt. Thời điểm chốt hoàn tất gần nhất được dùng làm đầu kỳ của kỳ này, và thời điểm hiện tại được dùng làm cuối kỳ.",
+    "cycleCompleted": "Chốt ngày đã hoàn tất cho chu kỳ này. Việc nhận đơn hàng bị chặn cho đến chu kỳ tiếp theo.",
+    "periodCompleted": "Chốt ngày đã hoàn tất cho kỳ này.",
+    "varianceReasonRequired": "Hãy nhập lý do cho khoản tiền mặt thừa/thiếu trước khi hoàn tất chốt ngày."
+  },
+  "sections": {
+    "previousDayBalance": "Tiền mặt còn lại từ lần chốt trước",
+    "pettyCash": "Tiền quỹ cho vào",
+    "cashDrop": "Tiền nộp két sắt",
+    "terminalCash": "Tiền mặt thiết bị đầu cuối",
+    "paymentTypesSummary": "Tổng thanh toán từ hệ thống",
+    "nonCashBatch": "Kiểm tra lô phi tiền mặt",
+    "expenses": "Chi phí / khoản chi",
+    "openChecks": "Hoá đơn đang mở",
+    "shiftRecap": "Tổng hợp ca",
+    "notes": "Ghi chú",
+    "summary": "Tóm tắt két tiền",
+    "selfOrders": "Đơn tự đặt qua QR"
+  },
+  "fields": {
+    "previousDayBalance": "Tiền lẻ đầu ca kỳ trước",
+    "pettyCash": "Tiền quỹ đã cho vào",
+    "cashDrop": "Tiền rút về két sắt",
+    "description": "Mô tả",
+    "category": "Nhóm",
+    "amount": "Số tiền",
+    "batchAmount": "Số tiền lô / thiết bị đầu cuối",
+    "varianceReason": "Lý do thừa / thiếu",
+    "varianceReasonPlaceholder": "Giải thích chênh lệch tiền mặt...",
+    "notesPlaceholder": "Thêm ghi chú bổ sung..."
+  },
+  "labels": {
+    "cashSystemTotal": "Tiền mặt từ hệ thống",
+    "systemAmount": "Hệ thống",
+    "noNonCash": "Không có hình thức thanh toán phi tiền mặt cho kỳ này.",
+    "noOpenChecks": "Không có hoá đơn đang mở trong cửa sổ chốt ngày này.",
+    "closedBy": "Được chốt bởi {{name}}"
+  },
+  "columns": {
+    "invoice": "Hoá đơn",
+    "table": "Bàn",
+    "status": "Trạng thái",
+    "amount": "Số tiền"
+  },
+  "recap": {
+    "paidOrders": "Đơn hàng đã thanh toán",
+    "discounts": "Giảm giá",
+    "tax": "Thuế",
+    "serviceCharge": "Phí phục vụ",
+    "tips": "Tiền tip",
+    "voids": "Huỷ bỏ",
+    "refunds": "Hoàn tiền"
+  },
+  "totals": {
+    "totalCash": "Tiền mặt đã đếm: {{amount}}",
+    "cashSales": "Doanh thu tiền mặt (hệ thống)",
+    "cashFromPayments": "Tiền mặt từ bảng tổng hợp thanh toán",
+    "expectedInDrawer": "Dự kiến trong két tiền",
+    "overShort": "Thừa / thiếu",
+    "cashLeftNextShift": "Tiền mặt để lại cho ca tiếp theo",
+    "countedCash": "Tiền mặt đã đếm",
+    "difference": "Chênh lệch: {{amount}}",
+    "batchDifference": "Chênh lệch lô: {{amount}}",
+    "totalOtherPayments": "Tổng các khoản thanh toán khác: {{amount}}",
+    "totalExpenses": "Tổng chi phí: {{amount}}",
+    "previousBalance": "Tiền lẻ đầu ca kỳ trước",
+    "totalCashShort": "Tổng tiền mặt",
+    "otherPayments": "Thanh toán khác",
+    "totalExpensesShort": "Chi phí",
+    "netAmount": "Tiền mặt để lại cho ca tiếp theo"
+  },
+  "actions": {
+    "addExpense": "Thêm chi phí",
+    "saveClosing": "Lưu bản nháp",
+    "closeClosing": "Hoàn tất chốt ngày",
+    "saving": "Đang lưu...",
+    "reopen": "Chỉnh sửa (quản lý phê duyệt)",
+    "reopening": "Đang mở lại...",
+    "printClosing": "In bảng chốt ngày",
+    "goToClosing": "Đi tới chốt ngày"
+  },
+  "security": {
+    "reopenDescription": "Mở lại bảng chốt ngày",
+    "reopenModule": "Chỉnh sửa chốt ngày"
+  },
+  "autoCheckClose": {
+    "autoClosed_one": "Đã tự động đóng {{count}} hoá đơn",
+    "autoClosed_other": "Đã tự động đóng {{count}} hoá đơn",
+    "failed_one": "Không tự động đóng được {{count}} hoá đơn",
+    "failed_other": "Không tự động đóng được {{count}} hoá đơn",
+    "noOpenChecks": "Chu kỳ chốt ngày đã kết thúc. Không có hoá đơn đang mở để đóng.",
+    "retry_one": "Đã tìm thấy {{count}} hoá đơn đang mở nhưng không hoá đơn nào được đóng{{skipped}}. Sẽ thử lại.",
+    "retry_other": "Đã tìm thấy {{count}} hoá đơn đang mở nhưng không hoá đơn nào được đóng{{skipped}}. Sẽ thử lại.",
+    "skippedSuffix": " (bỏ qua {{count}})",
+    "executionFailed": "Không tự động đóng được các hoá đơn",
+    "warning": "Các hoá đơn sẽ tự động đóng sau {{countdown}}"
+  },
+  "selfOrders": {
+    "hint": "Khách thanh toán trực tuyến ngay tại bàn — không nằm trong két tiền hay lô thẻ ở trên.",
+    "orders": "Đơn hàng QR",
+    "total": "Đã thanh toán trực tuyến",
+    "testWarning": "{{count}} đơn hàng thử nghiệm ({{amount}}) — không thu được tiền cho các đơn này."
+  }
+}

@@ -1,0 +1,360 @@
+{
+  "language": {
+    "title": "Language",
+    "description": "Choose the display language for this device. Only applies to this device.",
+    "changed": "Language updated"
+  },
+  "theme": {
+    "title": "Appearance",
+    "description": "Choose light, dark, or follow this device’s system setting. Only applies to this device.",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "brandTitle": "Brand colors",
+    "brandDescription": "Pick a color pack for this device. Shell, buttons, selects, and charts update immediately.",
+    "brand": {
+      "classic": "Classic",
+      "ocean": "Ocean",
+      "forest": "Forest",
+      "cream": "Cream",
+      "ruby": "Ruby",
+      "sapphire": "Sapphire",
+      "custom": "Custom"
+    },
+    "customDescription": "Pick a primary color. Surfaces, borders, and accents are built from it for light and dark mode.",
+    "customPrimary": "Primary color",
+    "customHex": "Hex",
+    "customApply": "Apply",
+    "customPreview": "Preview",
+    "colorCanvas": "Background",
+    "colorSurface": "Surface",
+    "colorForeground": "Text",
+    "colorPrimary": "Primary",
+    "colorBorder": "Border"
+  },
+  "branding": {
+    "title": "Branding",
+    "description": "Upload your restaurant logo to show on the login screen below the POSR mark.",
+    "logo": "Brand logo",
+    "logoHint": "PNG, JPEG, GIF, or WebP. Max 500 KB.",
+    "upload": "Upload logo",
+    "remove": "Remove logo",
+    "preview": "Logo preview",
+    "updated": "Branding settings updated",
+    "saveDescription": "Save branding settings",
+    "tooLarge": "File exceeds the maximum size of {{size}}.",
+    "invalidType": "Use a PNG, JPEG, GIF, or WebP image.",
+    "readFailed": "Could not read the image file",
+    "saveFailed": "Failed to save branding settings"
+  },
+  "touch": {
+    "title": "On screen keyboard",
+    "description": "Enable or disable on screen keyboard. Only applies to this device."
+  },
+  "cache": {
+    "title": "Cache",
+    "description": "Local POS data on this terminal. Refresh catalog updates menu, floors, payments, and taxes without touching open checks. Reload cache clears everything and re-downloads from the server (including customers and recent orders). Requires an online connection.",
+    "refreshCatalog": "Refresh catalog",
+    "reload": "Reload cache",
+    "orderTypes": "Order types",
+    "categories": "Categories",
+    "dishes": "Dishes",
+    "modifierGroups": "Modifier groups",
+    "groupDishes": "Group dishes",
+    "floors": "Floors",
+    "tables": "Tables",
+    "kitchens": "Kitchens",
+    "paymentTypes": "Payment types",
+    "taxes": "Taxes",
+    "catalogReloaded": "Catalog refreshed from server",
+    "catalogReloadFailed": "Failed to refresh catalog",
+    "confirmCatalog": "Refresh menu, floors, payments, and taxes from the server? Open checks and unsynced orders stay on this terminal.",
+    "reloaded": "Cache cleared and reloaded from server",
+    "reloadFailed": "Failed to reload cache",
+    "confirm": "Clear local POS cache and download a fresh copy from the server?",
+    "confirmWithPending": "You have {{count}} unsynced change(s) that will be discarded. Clear local POS cache and download a fresh copy from the server?",
+    "offline": "Cannot refresh cache while offline",
+    "offlineHint": "Available when connected to the server"
+  },
+  "serviceCharges": {
+    "title": "Service charges",
+    "updated": "Service charges updated",
+    "saveDescription": "Save service charges"
+  },
+  "printers": {
+    "title": "Default printers",
+    "description": "Assign printers per user or for this terminal. When system printers are enabled, temp, final, refund, and summary use this device’s assignments. Delivery always uses user or global settings.",
+    "loading": "Loading printer settings…",
+    "useSystemPrinters": "Use system printers on this device",
+    "useSystemPrintersDescription": "When enabled, this browser/terminal uses the system printer assignments below instead of the logged-in user’s printers (except delivery).",
+    "systemTitle": "System printers (this device)",
+    "systemDescription": "Stored in this browser only. Ideal for shared terminals so prints go to nearby printers. Delivery is not included — it stays user or global.",
+    "userTitle": "User printers",
+    "userDescription": "Stored per logged-in user. Used when system printers are off, and always for delivery.",
+    "tempPrint": "Printers for temp print",
+    "finalPrint": "Printers for final print",
+    "refundPrint": "Printers for refund print",
+    "deliveryPrint": "Printers for delivery print",
+    "summaryPrint": "Printers for summary print",
+    "selectPrinters": "Select printers…",
+    "saving": "Saving…",
+    "save": "Save printer settings",
+    "saveDescription": "Save printers",
+    "loadFailed": "Failed to load printer settings",
+    "loginRequired": "Please log in to save printer settings.",
+    "saved": "Printer settings saved",
+    "saveFailed": "Failed to save printer settings"
+  },
+  "printOptions": {
+    "title": "Print options",
+    "description": "Set how many physical copies each print type produces, and how many times temp or final bills can be printed per order before manager approval is required.",
+    "copiesTitle": "Copies per print type",
+    "maxAttemptsTitle": "Max print attempts per order",
+    "unlimitedHint": "Set max attempts to 0 for unlimited. When the limit is reached, a manager with Override print limit permission must approve.",
+    "copies": {
+      "temp": "Temp bill copies",
+      "final": "Final bill copies",
+      "refund": "Refund bill copies",
+      "kitchen": "Kitchen / KOT copies",
+      "delivery": "Delivery bill copies",
+      "summary": "Summary copies"
+    },
+    "maxAttempts": {
+      "temp": "Max temp bill prints",
+      "final": "Max final bill prints"
+    },
+    "updated": "Print options updated",
+    "saveDescription": "Save print options"
+  },
+  "menus": {
+    "title": "Menu settings",
+    "activateMenus": "Activate menus",
+    "selectMenus": "Select menus…",
+    "loading": "Loading menu settings…",
+    "saving": "Saving…",
+    "save": "Save menu settings",
+    "saveDescription": "Save menus",
+    "loadFailed": "Failed to load menu settings",
+    "loginRequired": "Please log in to save menu settings.",
+    "saved": "Menu settings saved",
+    "saveFailed": "Failed to save menu settings"
+  },
+  "tableSelection": {
+    "title": "Hide table selection from menu",
+    "description": "Skip table selection and open the menu directly. Only applies to this device. Suitable for takeaway based ordering"
+  },
+  "autoCheckClose": {
+    "title": "Auto check close",
+    "description": "Automatically close open table checks at closing cycle end time. Delivery orders are excluded. A warning appears 1 minute before close.",
+    "printOnClose": "Print final bill on close",
+    "paymentType": "Payment type",
+    "paymentTypeRequired": "Payment type is required when auto close is enabled",
+    "paymentTypeRequiredField": "Payment type is required",
+    "updated": "Auto check close settings updated",
+    "saveDescription": "Save auto check close settings"
+  },
+  "closingCycle": {
+    "title": "Closing cycle",
+    "description": "Configure cycle start and end time. End time can be next day (example: 06:00 to 02:00).",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "updated": "Closing cycle settings updated",
+    "saveDescription": "Save closing cycle settings"
+  },
+  "showInclusivePrices": {
+    "title": "Show inclusive prices",
+    "description": "When enabled, line item amounts on the payment screen, receipts, and item-level reports show the tax-included (gross) price for menu items configured with inclusive tax. The Items/subtotal row stays tax-exclusive, tax is still shown as its own row, and the grand total is unchanged. Exclusive-tax items are not affected. This is display-only and does not change how prices are stored or how tax is calculated.",
+    "updated": "Show inclusive prices settings updated",
+    "saveDescription": "Save show inclusive prices settings"
+  },
+  "currencySymbol": {
+    "title": "Currency symbol",
+    "description": "Control whether the currency symbol appears next to amounts in the app and on printed receipts. Turning these off shows numbers only (e.g. 1,250 instead of Rs 1,250). This is display-only and does not change stored values.",
+    "showInUi": "Show on screen",
+    "showOnReceipts": "Show on receipts",
+    "updated": "Currency symbol settings updated",
+    "saveDescription": "Save currency symbol settings"
+  },
+  "translateReceipts": {
+    "title": "Translate receipts",
+    "description": "When enabled, system labels on printed receipts (bill titles, Invoice#, Table, Tax, Total, kitchen tickets, and summary) use this device's selected language. Custom header and footer text from print settings is not translated.",
+    "updated": "Translate receipts settings updated",
+    "saveDescription": "Save translate receipts settings"
+  },
+  "visibilityConfig": {
+    "title": "Items visibility config",
+    "description": "Update config for this device for which columns for items you want to show or hide. Only applies to this device.",
+    "menu": "Menu",
+    "enableDishSearch": "Enable dish number search on menu",
+    "showDishNumber": "Show dish numbers on menu tiles",
+    "dishSearchType": "Dish search mode",
+    "dishSearchTypeNumber": "Number only",
+    "dishSearchTypeBoth": "Name and number",
+    "cart": "Cart",
+    "showTotalsInCart": "Show totals for items in cart item",
+    "orders": "Orders",
+    "showTotalInOrderCard": "Show totals for items in order card",
+    "showGroupsInOrderCard": "Show groups for items in order card",
+    "showQuantityInOrderCard": "Show quantity for items in order card",
+    "showPriceInOrderCard": "Show price for items in order card",
+    "showModifiersInOrderCard": "Show modifiers for items in order card",
+    "showModifierPriceInOrderCard": "Show modifier price for items in order card",
+    "showTotalInPaymentCard": "Show totals for items in payment box"
+  },
+  "inventory": {
+    "title": "Inventory",
+    "description": "Ledger cutover and optional advanced tracking. Keep batch/expiry off unless you need them.",
+    "ledgerEnabled": "Use inventory ledger (single source of truth)",
+    "ledgerHint": "Enable only after running the ledger backfill and confirming reconciliation.",
+    "costingMethod": "Costing method",
+    "costing": {
+      "average": "Weighted Average",
+      "fifo": "FIFO",
+      "fefo": "FEFO"
+    },
+    "landedCostsSection": "Purchase cost allocation",
+    "enableLandedCosts": "Enable landed costs (shipping, freight, etc.)",
+    "enablePurchaseDiscounts": "Enable purchase discounts in inventory cost",
+    "enablePurchaseTaxes": "Enable purchase taxes in inventory cost",
+    "defaultAllocationMethod": "Default allocation method",
+    "allocation": {
+      "by_value": "By value",
+      "by_quantity": "By quantity",
+      "equal": "Equal"
+    },
+    "defaultPurchaseTaxBehavior": "Default purchase tax behavior",
+    "defaultPurchaseTaxBehaviorHint": "Non-recoverable tax is capitalized into inventory. Recoverable tax is ignored for valuation.",
+    "taxBehavior": {
+      "non_recoverable": "Non-recoverable (capitalize)",
+      "recoverable": "Recoverable (ignore for inventory)"
+    },
+    "enableBatchTracking": "Enable batch tracking",
+    "enableExpiryTracking": "Enable expiry tracking",
+    "enableManufacturingDate": "Enable manufacturing dates",
+    "requireBatchSelection": "Require batch selection on issues",
+    "updated": "Inventory settings updated",
+    "save": "Save",
+    "saveDescription": "Save inventory settings"
+  },
+  "whatsNew": {
+    "title": "What's New",
+    "description": "View release notes and recent updates for this app.",
+    "open": "Open What's New",
+    "dismiss": "Got it",
+    "dialogTitle": "What's New",
+    "previousReleases": "Previous updates",
+    "dateLabel": "Updated {{date}}"
+  },
+  "sessionSecurity": {
+    "title": "Session security",
+    "description": "Automatically lock or log out this user after a period of inactivity. Choose one action.",
+    "idleMinutes": "Idle minutes (e.g. 0.1 ≈ 6 seconds)",
+    "action": "Action",
+    "actionLock": "Lock",
+    "actionLogout": "Logout",
+    "updated": "Session security settings updated",
+    "saveDescription": "Save session security settings",
+    "loginRequired": "You must be logged in to save session security settings"
+  },
+  "autoClockOut": {
+    "title": "Auto clock-out",
+    "description": "Automatically clock out the logged-in user when their shift ends and/or at a fixed daily time. Uses the scheduled shift when available, otherwise the user's assigned shift. Applies to all users.",
+    "onShiftEnd": "Clock out when shift ends",
+    "onDefinedTime": "Clock out at a defined time",
+    "definedTime": "Clock-out time",
+    "triggerRequired": "Enable shift end and/or a defined time when auto clock-out is on",
+    "updated": "Auto clock-out settings updated",
+    "saveDescription": "Save auto clock-out settings"
+  },
+  "numberPolicy": {
+    "title": "Invoice numbers",
+    "description": "Choose how POS invoice numbers are minted, reset, and formatted. The integer stays fiscal-safe; the display string is a snapshot at mint. Sync settings to all tills after saving.",
+    "preset": "Preset",
+    "mintLabel": "Mint",
+    "resetLabel": "Reset",
+    "scopeLabel": "Scope",
+    "pendingModeLabel": "Pending label",
+    "template": "Template",
+    "prefix": "Prefix",
+    "suffix": "Suffix",
+    "branchCode": "Branch code",
+    "terminalCode": "This terminal code",
+    "startAt": "Start at",
+    "pad": "Zero pad",
+    "pendingMin": "Pending min chars",
+    "pendingMax": "Pending max chars",
+    "preview": "Preview",
+    "gapWarning": "This preset can create gaps across the restaurant and is unsafe for fiscal authorities that require a continuous sequence.",
+    "acknowledgeGaps": "I understand this may create invoice gaps",
+    "ackRequired": "Acknowledge the gap warning before saving this preset",
+    "updated": "Invoice number policy updated",
+    "saveDescription": "Save invoice number policy",
+    "presets": {
+      "date_reset": "Date reset (recommended)",
+      "global": "Global sequential",
+      "period": "Period reset (year/month)",
+      "branch": "Branch sequential",
+      "terminal": "Terminal sequential",
+      "prefix": "Prefix / suffix",
+      "composite": "Composite",
+      "pool": "Range / pool",
+      "hybrid": "Hybrid online + offline pool",
+      "fiscal_plus_posr": "Fiscal + POSR display",
+      "provider_defined": "Provider-defined (store only)"
+    },
+    "mint": {
+      "gateway": "Gateway (shared)",
+      "terminal": "Terminal pool",
+      "hybrid": "Hybrid"
+    },
+    "reset": {
+      "never": "Never",
+      "day": "Each day",
+      "month": "Each month",
+      "year": "Each year"
+    },
+    "scope": {
+      "restaurant": "Restaurant",
+      "branch": "Branch",
+      "terminal": "Terminal"
+    },
+    "pendingMode": {
+      "random": "Random code",
+      "blank": "Blank until sync"
+    },
+    "help": {
+      "date_reset": "Pros: restaurant-wide 1,2,3… each day; fiscal-safe. Cons: offline checks show a temporary code until sync.",
+      "global": "Pros: simple forever sequence (1001, 1002…). Cons: never resets; numbers grow forever.",
+      "period": "Pros: yearly/monthly documents look tidy. Cons: pick month vs year carefully.",
+      "branch": "Pros: LHR-001 style labels. Cons: no multi-branch org yet — one configured branch code per restaurant.",
+      "terminal": "Pros: each till has its own sequence. Cons: gaps across the restaurant; fiscal-unsafe.",
+      "prefix": "Pros: INV-001 style formatting on any mint/reset. Cons: cosmetic only; fiscal still uses the integer.",
+      "composite": "Pros: LHR-T02-2026-00125 from tokens. Cons: longer labels; fiscal still uses the integer.",
+      "pool": "Pros: works fully offline with reserved ints. Cons: the 200-block jump problem; fiscal-unsafe.",
+      "hybrid": "Pros: offline creates still get ints. Cons: leftover reserved numbers become holes after reconnect.",
+      "fiscal_plus_posr": "Pros: POS display plus authority fiscal number. Cons: two numbers on a receipt is an evasion risk — show fiscal when present.",
+      "provider_defined": "Pros: POSR stores what FBR/PRA return. Cons: not a POSR minter — use with fiscal integrations."
+    }
+  },
+  "catalogSync": {
+    "title": "Catalog sync",
+    "description": "Download menu and other front-of-house catalog data published from the cloud. Use Sync now to pull updates on demand.",
+    "mode": "Distribution mode",
+    "localVersion": "Applied catalog version",
+    "remoteVersion": "Published catalog version",
+    "updateAvailable": "A newer catalog is available. Sync to apply it.",
+    "upToDate": "Catalog is up to date.",
+    "lastSynced": "Last downloaded: {{table}} {{record}}",
+    "syncNow": "Sync catalog now",
+    "syncing": "Syncing…",
+    "refresh": "Refresh status",
+    "queued": "Catalog sync queued",
+    "failed": "Catalog sync failed",
+    "unreachable": "Cannot reach the sync service. Check VITE_SYNC_SERVICE_URL and that sync is running.",
+    "modeRequired": "Set SYNC_DISTRIBUTION_MODE=full on the sync service to enable catalog download.",
+    "complete": "Catalog sync finished",
+    "progressTable": "Downloading {{table}}…",
+    "progressCount": "{{completed}} / {{total}} tables ({{percent}}%)",
+    "reloadCacheHint": "Catalog sync finished. Reload cache in Settings so the POS UI picks up the new menu."
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "screen": {
+    "previousDate": "Ngày trước",
+    "nextDate": "Ngày kế tiếp",
+    "printSummary": "In bảng tổng hợp",
+    "productMixReport": "Báo cáo cơ cấu sản phẩm",
+    "serverSales": "Doanh thu theo nhân viên phục vụ"
+  },
+  "security": {
+    "printSummaryDescription": "In bảng tổng hợp",
+    "printSummaryModule": "In bảng tổng hợp",
+    "productMixDescription": "Báo cáo cơ cấu sản phẩm",
+    "productMixModule": "Báo cáo cơ cấu sản phẩm",
+    "serverSalesDescription": "Doanh thu theo nhân viên phục vụ",
+    "serverSalesModule": "Doanh thu theo nhân viên phục vụ"
+  },
+  "unknown": {
+    "user": "Không xác định",
+    "item": "Món không xác định",
+    "coupon": "Không xác định"
+  },
+  "report": {
+    "title": "Bảng tổng hợp doanh thu ngày — {{date}}",
+    "orderDiscount": "Giảm giá theo đơn hàng",
+    "uncategorized": "Chưa phân loại",
+    "unknownItem": "Món không xác định",
+    "sections": {
+      "salesRevenue": "1. Doanh thu bán hàng",
+      "surchargesTaxes": "2. Phụ phí và thuế",
+      "settlementCashier": "3. Quyết toán và thu ngân",
+      "operationalControls": "4. Kiểm soát vận hành",
+      "productMix": "5. Cơ cấu sản phẩm",
+      "paymentTypes": "6. Hình thức thanh toán",
+      "taxesBreakdown": "7. Chi tiết thuế",
+      "discountsBreakdown": "8. Chi tiết giảm giá",
+      "extrasBreakdown": "9. Chi tiết phụ thu",
+      "couponsBreakdown": "10. Chi tiết mã giảm giá"
+    },
+    "subtitles": {
+      "surchargesTaxes": "Phụ phí và thuế đã thu (từ các đơn hàng; thường được tính trên giá ròng sau giảm giá).",
+      "settlementCashier": "Xem theo két tiền.",
+      "operationalControls": "Các tín hiệu kiểm toán (phần huỷ bỏ tách riêng khỏi doanh thu gộp).",
+      "productMix": "Các nhóm được gom cùng món ăn và tuỳ chọn thêm của chúng.",
+      "paymentTypes": "Số tiền đã thu chia theo phương thức thanh toán.",
+      "taxesBreakdown": "Các khoản thuế đã thu từ đơn hàng.",
+      "discountsBreakdown": "Các chương trình giảm giá đã áp dụng trong kỳ này.",
+      "extrasBreakdown": "Chi tiết các khoản phụ thu cấp đơn hàng.",
+      "couponsBreakdown": "Các mã giảm giá đã sử dụng và giá trị của chúng."
+    },
+    "rows": {
+      "exclusiveSales": "Doanh thu món",
+      "extras": "Phụ thu",
+      "grossSales": "Doanh thu gộp",
+      "itemDiscounts": "Giảm giá theo món",
+      "subtotalDiscounts": "Giảm giá trên tạm tính",
+      "couponDiscounts": "Giảm giá theo mã giảm giá",
+      "discounts": "(−) Giảm giá",
+      "netSales": "Doanh thu ròng",
+      "serviceCharges": "Phí phục vụ",
+      "taxes": "Thuế",
+      "totalRevenue": "Tổng doanh thu",
+      "amountDueBeforeTips": "Số tiền phải thu (chưa gồm tiền tip)",
+      "tips": "Tiền tip",
+      "grandTotalDue": "Tổng cộng (phải thu)",
+      "amountCollected": "Số tiền đã thu",
+      "rounding": "Làm tròn",
+      "changeVariance": "Tiền thừa / chênh lệch",
+      "voids": "Huỷ bỏ",
+      "refunds": "Hoàn tiền",
+      "covers": "Số khách",
+      "averageCover": "Trung bình mỗi khách",
+      "ordersChecks": "Đơn hàng / hoá đơn",
+      "averageOrderCheck": "Trung bình mỗi đơn hàng / hoá đơn",
+      "totalTips": "Tổng tiền tip"
+    },
+    "hints": {
+      "exclusiveSales": "Chỉ doanh thu món (trước phụ thu, phí phục vụ và thuế).",
+      "extras": "Phụ thu và khoản phụ phí cấp đơn hàng gắn với hoá đơn.",
+      "grossSales": "Doanh thu món + phụ thu (không tính các dòng đã huỷ bỏ).",
+      "itemDiscounts": "Giá trị giảm giá áp trực tiếp trên từng dòng món.",
+      "subtotalDiscounts": "Giảm giá cấp đơn hàng, không gồm giảm giá cấp món.",
+      "couponDiscounts": "Số tiền đã sử dụng của mã giảm giá.",
+      "discounts": "Các khoản giảm theo dòng, theo đơn hàng và theo mã giảm giá.",
+      "netSales": "Doanh thu gộp − giảm giá.",
+      "serviceCharges": "Số tiền trên đơn hàng; dựa trên giá ròng sau giảm giá",
+      "taxes": "Thuế nhà nước được ghi nhận theo từng đơn hàng.",
+      "totalRevenue": "Doanh thu ròng + phí phục vụ + thuế (chưa gồm tiền tip).",
+      "amountDueBeforeTips": "Doanh thu ròng + phí phục vụ + thuế.",
+      "tips": "Từ trường tiền tip của đơn hàng / trên tổng cộng (không nằm trong doanh thu gộp).",
+      "grandTotalDue": "Tổng doanh thu + tiền tip.",
+      "amountCollected": "Tổng thanh toán đã nhận theo phương thức (không gồm tiền thừa đã trả lại).",
+      "rounding": "Số tiền đã thu − tổng cộng (phải thu); thừa/thiếu so với số phải thu tính được.",
+      "changeVariance": "Tiền mặt thanh toán vượt quá số tiền đã nhận.",
+      "voids": "Giá trị các dòng bị xoá sau khi ghi nhận (không nằm trong doanh thu gộp ở trên).",
+      "refunds": "Các khoản hoàn từ thanh toán âm hoặc hoá đơn đã huỷ.",
+      "covers": "Số lượng khách.",
+      "averageCover": "Số tiền phải thu (chưa gồm tiền tip) ÷ số khách.",
+      "ordersChecks": "Số lượng hoá đơn/đơn hàng đã đóng.",
+      "averageOrderCheck": "Số tiền phải thu (chưa gồm tiền tip) ÷ số đơn hàng.",
+      "roundingLegacy": "Số tiền đã thu - Số tiền phải thu"
+    },
+    "columns": {
+      "item": "Món",
+      "qty": "Số lượng",
+      "total": "Tổng",
+      "share": "Tỷ trọng"
+    },
+    "empty": {
+      "noCategoryData": "Không có dữ liệu nhóm cho ngày này.",
+      "noPaymentData": "Không có dữ liệu thanh toán cho ngày này.",
+      "noTaxRows": "Không có dòng thuế nào cho ngày này.",
+      "noDiscountRows": "Không có dòng giảm giá nào cho ngày này.",
+      "noExtras": "Không tìm thấy phụ thu nào cho ngày này.",
+      "noCoupons": "Không có mã giảm giá nào được sử dụng cho ngày này."
+    },
+    "footer": "Thứ tự: doanh thu gộp → giảm giá → doanh thu ròng → phí phục vụ → thuế → tiền tip → tổng cộng → số tiền đã thu. Cơ cấu sản phẩm được gom theo nhóm, các món đặt lồng bên trong.",
+    "legacy": {
+      "tips": "Tiền tip",
+      "categories": "Nhóm",
+      "dishes": "Món ăn",
+      "paymentTypes": "Hình thức thanh toán",
+      "taxes": "Thuế",
+      "discounts": "Giảm giá",
+      "extras": "Phụ thu",
+      "coupons": "Mã giảm giá",
+      "covers": "Số khách",
+      "averageCover": "Trung bình mỗi khách",
+      "ordersChecks": "Đơn hàng/Hoá đơn",
+      "averageOrderCheck": "Trung bình mỗi đơn hàng/hoá đơn"
+    }
+  },
+  "clock": {
+    "title": "Chấm công",
+    "subtitle": "Theo dõi giờ làm việc của bạn",
+    "saleSummary": "Tóm tắt bán hàng",
+    "loadingSaleData": "Đang tải dữ liệu bán hàng...",
+    "loading": "Đang tải...",
+    "signedInAs": "Đang đăng nhập với",
+    "shift": "Ca làm việc",
+    "endsNextDay": "kết thúc sang ngày hôm sau",
+    "clockInTime": "Giờ vào ca",
+    "timeElapsed": "Thời gian đã làm việc",
+    "sinceClockIn": "Kể từ lúc vào ca",
+    "clockOut": "Ra ca",
+    "metrics": {
+      "totalSales": "Tổng doanh thu",
+      "refunds": "Hoàn tiền",
+      "serviceCharges": "Phí phục vụ",
+      "discounts": "Giảm giá",
+      "taxes": "Thuế",
+      "extras": "Phụ thu",
+      "voids": "Huỷ bỏ",
+      "tips": "Tiền tip"
+    }
+  },
+  "tipDistribution": {
+    "shift": "Ca làm việc",
+    "date": "Ngày",
+    "loadTips": "Tải dữ liệu tip",
+    "submit": "Gửi",
+    "totalTips": "Tổng tiền tip: {{amount}}",
+    "columns": {
+      "user": "Người dùng",
+      "role": "Vai trò",
+      "weight": "Trọng số",
+      "amount": "Số tiền"
+    },
+    "empty": "Chưa tính khoản phân bổ nào."
+  }
+}

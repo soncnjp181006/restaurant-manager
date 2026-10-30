@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/pwa-192.png" />
+    <meta name="theme-color" content="#1a1a1a" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Restaurant point of sale — works offline after first load" />
+    <title>Restaurant POS</title>
+    <script>
+      (function () {
+        try {
+          var theme = 'dark';
+          var brand = 'sapphire';
+          var raw = localStorage.getItem('app-page');
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && (parsed.theme === 'light' || parsed.theme === 'dark' || parsed.theme === 'system')) {
+              theme = parsed.theme;
+            }
+            // Any brand slug is fine here; ThemeProvider validates against BRAND_IDS.
+            if (parsed && typeof parsed.brand === 'string' && /^[a-z][a-z0-9_-]{0,31}$/.test(parsed.brand)) {
+              brand = parsed.brand;
+            }
+          }
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = theme === 'dark' || (theme === 'system' && prefersDark);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.dataset.theme = 'dark';
+          } else {
+            document.documentElement.dataset.theme = 'light';
+          }
+          document.documentElement.dataset.brand = brand;
+        } catch (e) {}
+      })();
+    </script>
+    <script>
+      (function () {
+        var gaId = '%VITE_GA4_ID%';
+        if (!gaId) return;
+
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', gaId);
+      })();
+    </script>
+  </head>
+  <body class="bg-canvas">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

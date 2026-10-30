@@ -1,0 +1,34 @@
+{
+  "actions": {
+    "completeAllOpen": "Hoàn tất tất cả đơn đang chờ",
+    "completedOrders": "Đơn đã hoàn tất",
+    "viewAllDishes": "Xem tất cả món ăn",
+    "recall": "Gọi lại",
+    "ready": "Sẵn sàng",
+    "reprint": "In lại"
+  },
+  "labels": {
+    "avgTime": "Thời gian trung bình: {{time}}",
+    "avgTimeMins": "{{count}} phút",
+    "addon": "THÊM",
+    "original": "ĐƠN GỐC",
+    "completed": "Hoàn tất: {{time}}",
+    "items": "Món: {{count}}",
+    "continued": "ĐƠN TIẾP"
+  },
+  "announcements": {
+    "newOrder": "Đơn mới. {{context}}. {{number}}.",
+    "addon": "Thêm món. {{context}}. {{number}}.",
+    "itemAdded": "Đã thêm món. {{item}}. {{context}}. {{number}}.",
+    "itemRemoved": "Đã huỷ món. {{item}}. {{context}}. {{number}}.",
+    "itemFallback": "Món"
+  },
+  "modal": {
+    "completedOrdersTitle": "Đơn đã hoàn tất hôm nay của {{kitchen}}",
+    "noCompletedOrders": "Không tìm thấy đơn đã hoàn tất trong hôm nay."
+  },
+  "confirm": {
+    "title": "Xác nhận",
+    "completeAll": "Hoàn tất tất cả đơn đang chờ trong bếp này?"
+  }
+}

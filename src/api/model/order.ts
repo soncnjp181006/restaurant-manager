@@ -1,0 +1,152 @@
+import { ID } from "@/api/model/common.ts";
+import { Customer } from "@/api/model/customer.ts";
+import { Discount, DiscountType } from "@/api/model/discount.ts";
+import { Floor } from "@/api/model/floor.ts";
+import { Tax } from "@/api/model/tax.ts";
+import { OrderItem } from "@/api/model/order_item.ts";
+import { OrderType } from "@/api/model/order_type.ts";
+import { User } from "@/api/model/user.ts";
+import { Table } from "@/api/model/table.ts";
+import { OrderPayment } from "@/api/model/order_payment.ts";
+import { OrderCoupon } from "@/api/model/order_coupon.ts";
+import { OrderDiscount } from "@/api/model/order_discount.ts";
+import { OrderTax } from "@/api/model/order_tax.ts";
+import { DateTime } from "surrealdb";
+import { buildModifierFetches, MODIFIER_FETCH_DEPTH } from '@/api/model/order_fetches.ts';
+
+export interface Order extends ID{
+  covers?: number
+  created_at: DateTime
+  completed_at?: DateTime
+  customer?: Customer
+  floor: Floor
+  table: Table
+  auto_id: number
+  invoice_number: number
+  /** Snapshot of the formatted invoice label at mint (policy template). */
+  invoice_display?: string | null
+  invoice_prefix?: string | null
+  /** Dexie-only until gateway assigns `invoice_number`. */
+  local_invoice_code?: string
+  split?: number
+  items: OrderItem[]
+  order_type: OrderType
+  status: string
+  notes?: string
+
+  discount?: Discount
+  discount_amount?: number
+  discount_rate?: number
+
+  tax?: Tax
+  tax_amount?: number
+  order_taxes?: OrderTax[]
+
+  service_charge_type?: string
+  service_charge?: number
+  service_charge_amount?: number
+
+  tip?: number
+  tip_amount?: number
+  tip_type?: DiscountType
+
+  user: User
+  cashier?: User
+  tags?: string[]
+
+  delivery?: any
+
+  extras?: OrderExtra[]
+
+  payments?: OrderPayment[]
+
+  coupon?: OrderCoupon
+  order_discounts?: OrderDiscount[]
+
+  /** PosStore terminal ownership (see ADR 0001). */
+  owner_terminal_id?: string | null
+  owner_heartbeat_at?: DateTime | string | null
+  server_version?: number | null
+
+  /** Cloud master only — stamped by sync-service from SYNC_CLIENT_ID. */
+  branch_id?: string | null
+}
+
+export interface OrderExtra extends ID{
+  name: string
+  value: number
+}
+
+export enum OrderStatus {
+  'In Progress' = 'In Progress',
+  Paid = 'Paid',
+  Cancelled = 'Cancelled',
+  Spilt = 'Spilt',
+  Merged = 'Merged',
+  Refunded = 'Refunded',
+  Pending = 'Pending'
+}
+
+/** Core fetches for payment / POS — avoids deep modifier dish FETCH on embedded cart data. */
+export const ORDER_PAYMENT_FETCHES = [
+  'items',
+  'items.item',
+  'items.item.categories',
+  'items.taxes',
+  'items.tax_mode',
+  'items.modifiers',
+  'table',
+  'user',
+  'cashier',
+  'order_type',
+  'customer',
+  'discount',
+  'tax',
+  'order_taxes',
+  'order_taxes.tax',
+  'payments',
+  'payments.payment_type',
+  'extras',
+  'extras.order_extras',
+  'coupon',
+  'coupon.coupon',
+  'order_discounts',
+  'order_discounts.discount',
+];
+
+/** Light list snapshot for Orders screen (headers / filters / table row shells). */
+export const ORDER_LIST_FETCHES = [
+  'table',
+  'user',
+  'cashier',
+  'order_type',
+  'extras',
+  'extras.order_extras',
+  'tax',
+];
+
+/** Card body when an order scrolls into view — items + payments, no deep modifier dishes. */
+export const ORDER_CARD_FETCHES = ORDER_PAYMENT_FETCHES;
+
+export const ORDER_FETCHES = [
+  ...ORDER_PAYMENT_FETCHES,
+  ...buildModifierFetches(MODIFIER_FETCH_DEPTH),
+];
+
+/** Normalize SurrealDB SELECT result (FROM id vs FROM ONLY id). */
+export const parseOrderQueryResult = (result: unknown): Order | undefined => {
+  if (!Array.isArray(result) || result.length === 0) {
+    return undefined;
+  }
+
+  const row = result[0];
+  if (Array.isArray(row)) {
+    return row[0] as Order | undefined;
+  }
+
+  if (row && typeof row === 'object' && 'id' in row) {
+    return row as Order;
+  }
+
+  return undefined;
+};

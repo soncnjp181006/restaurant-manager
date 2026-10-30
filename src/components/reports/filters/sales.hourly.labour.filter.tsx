@@ -1,0 +1,35 @@
+import { useTranslation } from 'react-i18next';
+import {REPORTS_SALES_HOURLY_LABOUR} from "@/routes/posr.ts";
+import {DateRange} from "@/components/reports/filters/date.range.tsx";
+import {Button} from "@/components/common/input/button.tsx";
+import {ReactSelect} from "@/components/common/input/custom.react.select.tsx";
+import {BranchScopeFilter} from "@/components/reports/filters/branch.scope.filter.tsx";
+
+export const SalesHourlyLabourFilter = () => {
+  const { t } = useTranslation('reports');
+  return (
+    <form
+      action={REPORTS_SALES_HOURLY_LABOUR}
+      className="flex flex-col gap-3 items-start"
+      target="_blank"
+    >
+      <DateRange isRequired label="Select a range"/>
+
+      <BranchScopeFilter />
+
+      <div>
+        <label htmlFor="hours" className="form-label">{t('metrics.hours')}</label>
+        <ReactSelect name="hours[]" isMulti options={Array.from({length: 23}, (_, i) => i).map(item => ({
+          label: item,
+          value: item
+        }))} id="hours" className="flex-1 self-stretch" />
+      </div>
+
+      <Button
+        variant="primary"
+        filled
+        type="submit"
+      >{t('filters.generate')}</Button>
+    </form>
+  );
+}

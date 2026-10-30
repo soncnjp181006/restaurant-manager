@@ -1,0 +1,24 @@
+{
+  "name": "posr-api-server",
+  "version": "1.0.0",
+  "license": "SEE LICENSE IN LICENSE",
+  "description": "POS general-purpose backend API service (extensible modules). Keeps third-party secrets server-side.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.22.2",
+    "jose": "^5.9.6",
+    "surrealdb": "^2.0.3",
+    "ws": "^8.21.3"
+  },
+  "overrides": {
+    "qs": "^6.16.0",
+    "body-parser": "^1.20.6",
+    "path-to-regexp": "0.1.13"
+  }
+}

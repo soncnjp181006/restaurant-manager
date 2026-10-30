@@ -1,0 +1,252 @@
+import { Modal } from "@/components/common/react-aria/modal.tsx";
+import { Button } from "@/components/common/input/button.tsx";
+import { Controller, useForm } from "react-hook-form";
+import { useDB } from "@/api/db/db.ts";
+import { Tables } from "@/api/db/tables.ts";
+import { Menu } from "@/api/model/menu.ts";
+import { toast } from 'sonner';
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useMemo,  useEffect } from "react";
+import { Switch } from "@/components/common/input/switch.tsx";
+import {useTranslation} from 'react-i18next';
+import i18n from '@/lib/i18n.ts';
+import { nowSurrealDateTime, toJsDate, toSurrealDateTime } from "@/lib/datetime.ts";
+import { InputField, TimeField } from "@/components/common/form/rhf-fields.tsx";
+
+import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+import { useHqCatalogBranchEdit } from '@/hooks/useHqCatalogBranchEdit.ts';
+
+interface Props {
+  open: boolean
+  onClose: () => void;
+  data?: Menu
+}
+
+const validationSchema = yup.object({
+  name: yup.string().required(i18n.t('validation:required')),
+  start_from: yup.string().nullable(),
+  end_time: yup.string().nullable(),
+  ends_on_next_day: yup.boolean(),
+  active: yup.boolean()
+});
+
+export const MenuForm = ({
+  open, onClose, data
+}: Props) => {
+  const { t } = useTranslation(['admin', 'common', 'validation', 'toast']);
+  const { isBranchEditMode, loadMerged, save, soleBranchId, lockStructuralFields, canCreateEntities, isBranchOwnedBy } = useHqCatalogBranchEdit(Tables.menus);
+  const structuralLocked = lockStructuralFields(data);
+
+  // Helper function to convert Date to time string (HH:mm)
+  const dateToTimeString = (date: unknown): string | null => {
+    if (!date) return null;
+    const dateObj = toJsDate(date as any);
+    if (isNaN(dateObj.getTime())) return null;
+    const hours = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
+  // Helper function to convert time string (HH:mm) to Date (using today's date)
+  const timeStringToDate = (timeString: string | null | undefined) => {
+    if (!timeString) return null;
+    const [hours, minutes] = timeString.split(':').map(Number);
+    if (isNaN(hours) || isNaN(minutes)) return null;
+    const date = toJsDate(nowSurrealDateTime());
+    date.setHours(hours, minutes, 0, 0);
+    return toSurrealDateTime(date);
+  };
+
+  const closeModal = () => {
+    onClose();
+    reset({
+      name: null,
+      start_from: null,
+      end_time: null,
+      ends_on_next_day: false,
+      active: false
+    });
+  }
+
+  const { control, handleSubmit, formState: {errors}, reset } = useForm({
+    resolver: yupResolver(validationSchema)
+  });
+
+  useEffect(() => {
+    if (!data) return;
+    let cancelled = false;
+    (async () => {
+      const merged = isBranchEditMode ? await loadMerged(data.id) : null;
+      if (cancelled) return;
+      const src: any = merged || data;
+      reset({
+        ...data,
+        name: data.name,
+        start_from: dateToTimeString(data.start_from),
+        end_time: dateToTimeString(data.end_time),
+        ends_on_next_day: data.ends_on_next_day || false,
+        active: src.active !== undefined ? src.active : (data.active !== undefined ? data.active : true),
+      });
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, isBranchEditMode]);
+
+  const db = useDB();
+
+
+
+  const onSubmit = async (values: any) => {
+    const vals = {...values};
+    
+    // Convert time strings to Date objects
+    if(vals.start_from) {
+      vals.start_from = timeStringToDate(vals.start_from);
+    }
+    if(vals.end_time) {
+      vals.end_time = timeStringToDate(vals.end_time);
+    }
+
+    try {
+      if (!canCreateEntities && !data?.id) {
+        toast.error(
+          isBranchEditMode && !soleBranchId
+            ? t('admin:hqBranchEdit.createMultiBlocked')
+            : t('admin:hqBranchEdit.createBlocked')
+        );
+        return;
+      }
+
+      const active = vals.active !== undefined ? vals.active : true;
+
+      await save({
+        id: data?.id,
+        existing: data,
+        nextValues: {
+          active,
+        },
+        structuralWrite: async () => {
+          const stamp =
+            soleBranchId && (!data?.id || isBranchOwnedBy(data))
+              ? { branch_id: soleBranchId }
+              : {};
+          if (data?.id) {
+            await db.merge(data.id, {
+              name: vals.name,
+              start_from: vals.start_from,
+              end_time: vals.end_time,
+              ends_on_next_day: vals.ends_on_next_day,
+              active,
+              ...stamp,
+            });
+          } else {
+            await db.create(Tables.menus, {
+              name: vals.name,
+              start_from: vals.start_from,
+              end_time: vals.end_time,
+              ends_on_next_day: vals.ends_on_next_day,
+              active,
+              items: [],
+              ...stamp,
+            });
+          }
+
+          await emitEntityCrudSave({
+            domain: 'manage',
+            table: Tables.menus,
+            entityId: data?.id ? String(data.id) : Tables.menus,
+            isUpdate: Boolean(data?.id),
+            source: 'settings-form',
+          });
+        },
+      });
+
+      closeModal();
+      toast.success(
+        isBranchEditMode
+          ? t('admin:hqBranchEdit.overrideSaved')
+          : t('toast:admin.menuSaved', { name: values.name })
+      );
+    }catch(e){
+      toast.error(e);
+      console.log(e)
+    }
+  }
+
+  return (
+    <>
+      <Modal
+        testId="admin-form-menu"
+        title={data ? t('forms.updateMenu', { name: data?.name }) : t('forms.createMenu')}
+        open={open}
+        onClose={closeModal}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {isBranchEditMode && (
+            <p className="text-xs text-muted mb-3">{t('admin:hqBranchEdit.structuralLocked')}</p>
+          )}
+          <div className="flex gap-3 mb-3">
+            <div className="flex-1">
+              <InputField name="name" control={control} label={t('columns.name')} autoFocus error={errors?.name?.message} disabled={structuralLocked} />
+            </div>
+          </div>
+          <fieldset className="border-0 p-0 m-0 min-w-0" disabled={structuralLocked}>
+            <div className="flex gap-3 mb-3">
+              <div className="flex-1">
+                <TimeField
+                  name="start_from"
+                  control={control}
+                  label={t('columns.startTime')}
+                  error={errors?.start_from?.message}
+                />
+              </div>
+              <div className="flex-1">
+                <TimeField
+                  name="end_time"
+                  control={control}
+                  label={t('columns.endTime')}
+                  error={errors?.end_time?.message}
+                />
+              </div>
+            </div>
+            <div className="mb-3">
+              <div className="flex-1">
+                <Controller
+                  name={`ends_on_next_day`}
+                  control={control}
+                  render={({ field }) => (
+                    <div>
+                      <Switch checked={field.value || false} onChange={field.onChange}>
+                        Ends on next day
+                      </Switch>
+                    </div>
+                  )}
+                />
+              </div>
+            </div>
+          </fieldset>
+          <div className="mb-3">
+            <div className="flex-1">
+              <Controller
+                name={`active`}
+                control={control}
+                render={({ field }) => (
+                  <div>
+                    <Switch checked={field.value !== undefined ? field.value : true} onChange={field.onChange}>
+                      Active
+                    </Switch>
+                  </div>
+                )}
+              />
+            </div>
+          </div>
+          <div>
+            <Button type="submit" variant="primary">{t('common:actions.save')}</Button>
+          </div>
+        </form>
+      </Modal>
+    </>
+  )
+}
+

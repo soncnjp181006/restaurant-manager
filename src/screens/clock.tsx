@@ -1,0 +1,570 @@
+import { Layout } from "@/screens/partials/layout.tsx";
+import { Button } from "@/components/common/input/button.tsx";
+import { useState, useEffect, useMemo } from "react";
+import { useAtom } from "jotai";
+import { appPage } from "@/store/jotai.ts";
+import { useDB } from "@/api/db/db.ts";
+import { Tables } from "@/api/db/tables.ts";
+import { DateTime } from "luxon";
+import { toast } from "sonner";
+import { useNavigate } from "react-router";
+import { LOGIN } from "@/routes/posr.ts";
+import { Countdown } from "@/components/floor/countdown.tsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBriefcase, faClock, faUser, faTriangleExclamation, faThumbsUp, faClipboardCheck, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { TimeEntry } from "@/api/model/time_entry.ts";
+import { EmployeePerformanceNote } from "@/api/model/employee_performance_note.ts";
+import { findEmployeeByUser } from "@/lib/labor-engine/employee.resolver.ts";
+import { StringRecordId } from "surrealdb";
+import { Order, OrderStatus } from "@/api/model/order.ts";
+import { calculateOrderItemPrice } from "@/lib/cart.ts";
+import { getOrderTaxAmount } from "@/lib/tax-calculator.ts";
+import { getOrderFilteredItems } from "@/lib/order.ts";
+import { toRecordId, withCurrency } from "@/lib/utils.ts";
+import type { UserShift } from "@/api/model/user.ts";
+import { nowSurrealDateTime, toJsDate, toLuxonDateTime } from "@/lib/datetime.ts";
+import { clockOut as laborClockOut } from "@/lib/labor-engine/attendance/attendance.service.ts";
+import {useTranslation} from "react-i18next";
+import {DocumentTitle} from "@/components/common/document-title.tsx";
+
+const formatShiftClock = (time: string) => {
+  const trimmed = time.trim();
+  const iso = trimmed.includes('T') ? trimmed : `1970-01-01T${trimmed}`;
+  const dt = DateTime.fromISO(iso);
+  return dt.isValid ? dt.toFormat('h:mm a') : trimmed;
+};
+
+const NOTE_STYLES: Record<string, {
+  icon: typeof faTriangleExclamation;
+  icon_color: string;
+  container: string;
+  badge: string;
+}> = {
+  warning: {
+    icon: faTriangleExclamation,
+    icon_color: 'text-warning-600 dark:text-warning-400',
+    container: 'border-warning-300 bg-warning-100 dark:border-warning-700 dark:bg-warning-900/30',
+    badge: 'bg-warning-200 text-warning-800 dark:bg-warning-800/60 dark:text-warning-200',
+  },
+  compliment: {
+    icon: faThumbsUp,
+    icon_color: 'text-success-600 dark:text-success-400',
+    container: 'border-success-300 bg-success-100 dark:border-success-700 dark:bg-success-900/30',
+    badge: 'bg-success-200 text-success-800 dark:bg-success-800/60 dark:text-success-200',
+  },
+  incident: {
+    icon: faCircleExclamation,
+    icon_color: 'text-danger-600 dark:text-danger-400',
+    container: 'border-danger-300 bg-danger-100 dark:border-danger-700 dark:bg-danger-900/30',
+    badge: 'bg-danger-200 text-danger-800 dark:bg-danger-800/60 dark:text-danger-200',
+  },
+  review: {
+    icon: faClipboardCheck,
+    icon_color: 'text-info-600 dark:text-info-400',
+    container: 'border-info-300 bg-info-100 dark:border-info-700 dark:bg-info-900/30',
+    badge: 'bg-info-200 text-info-800 dark:bg-info-800/60 dark:text-info-200',
+  },
+};
+
+export const Clock = () => {
+  const {t} = useTranslation(["summary", "toast"]);
+  const {t: tNav} = useTranslation('navigation');
+  const [page, setPage] = useAtom(appPage);
+  const db = useDB();
+  const navigation = useNavigate();
+  const [timeEntry, setTimeEntry] = useState<TimeEntry | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [resolvedShift, setResolvedShift] = useState<UserShift | null>(null);
+  const [visibleNotes, setVisibleNotes] = useState<EmployeePerformanceNote[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadVisibleNotes = async () => {
+      if (!page.user) {
+        if (!cancelled) setVisibleNotes([]);
+        return;
+      }
+
+      try {
+        const employee = await findEmployeeByUser(db, page.user);
+        if (!employee) {
+          if (!cancelled) setVisibleNotes([]);
+          return;
+        }
+
+        const result = await db.query(
+          `SELECT * FROM ${Tables.employee_performance_notes}
+           WHERE employee = $employeeId AND visible_to_employee = true AND deleted_at = NONE
+           ORDER BY created_at DESC
+           FETCH created_by`,
+          {employeeId: toRecordId(employee.id)},
+        );
+        const rows = (result?.[0] ?? []) as EmployeePerformanceNote[];
+        if (!cancelled) setVisibleNotes(rows);
+      } catch (error) {
+        console.error('Failed to load performance notes:', error);
+        if (!cancelled) setVisibleNotes([]);
+      }
+    };
+
+    void loadVisibleNotes();
+    return () => {
+      cancelled = true;
+    };
+    // `db` is deliberately omitted: useDB returns a new client object on every
+    // render, so including it re-runs this effect (and its query) in a loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page.user]);
+
+  const loadTimeEntry = async () => {
+    if (!page.user) {
+      navigation(LOGIN);
+      return;
+    }
+
+    try {
+      const timeEntryCheck: any = await db.query(`SELECT * from ${Tables.time_entries} where user = $userId and clock_out = NONE`, {
+        userId: new StringRecordId(page.user.id),
+      });
+
+      if (timeEntryCheck[0].length > 0) {
+        setTimeEntry(timeEntryCheck[0][0]);
+      } else {
+        toast.error(t("toast:clock.noActiveEntry"));
+        navigation(LOGIN);
+      }
+    } catch (error) {
+      toast.error(t("toast:clock.loadEntryFailed"));
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadTimeEntry();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadShift = async () => {
+      const u = page.user;
+      if (!u) {
+        setResolvedShift(null);
+        return;
+      }
+
+      const raw = u.user_shift;
+      if (raw && typeof raw === 'object' && 'name' in raw && typeof (raw as UserShift).name === 'string') {
+        if (!cancelled) setResolvedShift(raw as UserShift);
+        return;
+      }
+
+      const shiftId =
+        typeof raw === 'string'
+          ? raw
+          : raw && typeof raw === 'object' && 'id' in raw
+            ? String((raw as { id: unknown }).id)
+            : undefined;
+
+      if (!shiftId) {
+        if (!cancelled) setResolvedShift(null);
+        return;
+      }
+
+      try {
+        const result = await db.query(`SELECT * FROM ${Tables.shifts} WHERE id = $shiftId AND deleted_at = none LIMIT 1`, {
+          shiftId: toRecordId(shiftId),
+        });
+        const rows = result[0] as UserShift[] | undefined;
+        const row = Array.isArray(rows) ? rows[0] : undefined;
+        if (!cancelled) setResolvedShift(row ?? null);
+      } catch {
+        if (!cancelled) setResolvedShift(null);
+      }
+    };
+
+    void loadShift();
+    return () => {
+      cancelled = true;
+    };
+    // `db` is deliberately omitted: useDB returns a new client object on every
+    // render, so including it re-runs this effect (and its query) in a loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page.user]);
+
+  const loadOrders = async () => {
+    if (!timeEntry || !page.user) return;
+
+    try {
+      setOrdersLoading(true);
+      const clockInTime = timeEntry.clock_in;
+      // const clockInISO = clockInTime.toISOString();
+
+      const ordersQuery = `
+        SELECT * FROM ${Tables.orders}
+        WHERE user = $userId
+          AND created_at >= $clockInTime
+          AND created_at <= time::now()
+        FETCH items, items.item, items.taxes, items.tax_mode, items.modifiers, payments, payments.payment_type, discount, tax, order_taxes, order_taxes.tax, extras
+      `;
+
+      const result: any = await db.query(ordersQuery, {
+        userId: new StringRecordId(page.user.id),
+        clockInTime: clockInTime,
+      });
+
+      setOrders((result?.[0] ?? []) as Order[]);
+    } catch (error) {
+      console.error('Failed to load orders:', error);
+      toast.error(t("toast:clock.loadSaleSummaryFailed"));
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (timeEntry) {
+      loadOrders();
+      // Refresh orders every 30 seconds
+      // const interval = setInterval(loadOrders, 30000);
+      // return () => clearInterval(interval);
+    }
+  }, [timeEntry]);
+
+  // Calculate sale metrics - must be before any conditional returns
+  const safeNumber = (value: unknown) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const salePriceWithoutTax = useMemo(() => {
+    return safeNumber(
+      orders?.filter(order => order.status === OrderStatus.Paid).reduce((sum, order) => {
+        const itemsTotal = safeNumber(
+          order.items?.reduce((itemSum, item) => {
+            const price = calculateOrderItemPrice(item);
+            return itemSum + safeNumber(price);
+          }, 0) ?? 0
+        );
+        return sum + itemsTotal;
+      }, 0) ?? 0
+    );
+  }, [orders]);
+
+  const taxCollected = useMemo(() => {
+    return safeNumber(
+      orders?.filter(order => order.status === OrderStatus.Paid).reduce((sum, order) => sum + getOrderTaxAmount(order), 0) ?? 0
+    );
+  }, [orders]);
+
+  const serviceCharges = useMemo(() => {
+    return safeNumber(
+      orders?.filter(order => order.status === OrderStatus.Paid).reduce((sum, order) => sum + safeNumber(order.service_charge_amount), 0) ?? 0
+    );
+  }, [orders]);
+
+  const itemDiscounts = useMemo(() => {
+    return safeNumber(
+      orders?.filter(order => order.status === OrderStatus.Paid).reduce((sum, order) => {
+        return sum + safeNumber(order.items?.reduce((itemSum, item) => itemSum + safeNumber(item?.discount), 0) ?? 0);
+      }, 0) ?? 0
+    );
+  }, [orders]);
+
+  const subtotalDiscounts = useMemo(() => {
+    return safeNumber(
+      orders?.filter(order => order.status === OrderStatus.Paid).reduce((sum, order) => {
+        const lineDiscounts = safeNumber(
+          order.items?.reduce((itemSum, item) => itemSum + safeNumber(item?.discount), 0) ?? 0
+        );
+        const orderDiscount = safeNumber(order.discount_amount);
+        const extraDiscount = Math.max(0, safeNumber(orderDiscount - lineDiscounts));
+        return sum + extraDiscount;
+      }, 0) ?? 0
+    );
+  }, [orders]);
+
+  const discounts = useMemo(() => safeNumber(itemDiscounts + subtotalDiscounts), [itemDiscounts, subtotalDiscounts]);
+
+  const totalExtras = useMemo(() => {
+    return safeNumber(
+      orders?.filter(order => order.status === OrderStatus.Paid).reduce((sum, order) => {
+        return sum + safeNumber(
+          order?.extras?.reduce((extraSum, extra) => extraSum + safeNumber(extra?.value), 0) ?? 0
+        );
+      }, 0) ?? 0
+    );
+  }, [orders]);
+
+  const refunds = useMemo(() => {
+    return safeNumber(
+      orders?.reduce((sum, order) => {
+        if (order.status === OrderStatus.Cancelled) {
+          return sum + safeNumber(
+            order.payments?.reduce((paySum, payment) => {
+              const amount = safeNumber(payment?.amount);
+              return paySum + Math.abs(Math.min(0, amount));
+            }, 0) ?? 0
+          );
+        }
+        return sum + safeNumber(
+          order.payments?.reduce((paySum, payment) => {
+            const amount = safeNumber(payment?.amount);
+            return paySum + (amount < 0 ? Math.abs(amount) : 0);
+          }, 0) ?? 0
+        );
+      }, 0) ?? 0
+    );
+  }, [orders]);
+
+  const voids = useMemo(() => {
+    return safeNumber(
+      orders?.reduce((sum, order) => {
+        const allItems = order.items || [];
+        const filteredItems = getOrderFilteredItems(order);
+        const voidedItems = allItems.filter(item => 
+          !filteredItems.some(filtered => filtered.id === item.id)
+        );
+        return sum + safeNumber(
+          voidedItems.reduce((itemSum, item) => {
+            const price = calculateOrderItemPrice(item);
+            return itemSum + safeNumber(price);
+          }, 0)
+        );
+      }, 0) ?? 0
+    );
+  }, [orders]);
+
+  const tips = useMemo(() => {
+    return safeNumber(
+      orders?.filter(order => order.status === OrderStatus.Paid).reduce((prev, item) => prev + safeNumber(item.tip_amount), 0) ?? 0
+    );
+  }, [orders]);
+
+  const handleClockOut = async () => {
+    if (!timeEntry || !page.user) return;
+
+    try {
+      await laborClockOut(db, {
+        timeEntryId: timeEntry.id,
+        user: page.user,
+      });
+
+      toast.success(t("toast:clock.clockedOut"));
+
+      // Log out user
+      setPage(prev => ({
+        ...prev,
+        page: 'Login',
+        user: undefined
+      }));
+
+      navigation(LOGIN);
+    } catch (error) {
+      toast.error(t("toast:clock.clockOutFailed"));
+      console.error(error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Layout containerClassName="p-5">
+        <DocumentTitle parts={[tNav('sidebar.clock')]} />
+        <div className="bg-surface-elevated shadow p-5 rounded-lg">
+          <p>{t("summary:clock.loading")}</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!timeEntry) {
+    return null;
+  }
+
+  const clockInDate = toJsDate(timeEntry.clock_in);
+  const formattedClockInTime = toLuxonDateTime(timeEntry.clock_in).toFormat('hh:mm a');
+  const formattedClockInDate = toLuxonDateTime(timeEntry.clock_in).toFormat('MMMM dd, yyyy');
+
+  const user = page.user;
+  const userDisplayName = user
+    ? [user.first_name, user.last_name].map(s => s?.trim()).filter(Boolean).join(' ') || user.login
+    : '';
+
+  return (
+    <Layout containerClassName="p-5">
+      <DocumentTitle parts={[tNav('sidebar.clock')]} />
+      {/* Sale Summary Widgets */}
+      <div className="bg-surface-elevated p-5 rounded-lg shadow" data-testid="clock-page">
+        <h2 className="text-2xl font-bold mb-4 text-foreground">{t("summary:clock.saleSummary")}</h2>
+        {ordersLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <p className="text-muted">{t("summary:clock.loadingSaleData")}</p>
+          </div>
+        ) : (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4" data-testid="clock-sale-summary">
+          {/* Total Sales Widget */}
+          <div className="bg-gradient-to-br from-success-100 to-success-200 dark:from-success-900/50 dark:to-success-800/40 p-2 rounded-lg border border-success-300 dark:border-success-700">
+            <p className="text-sm text-success-700 dark:text-success-300 font-medium mb-1">{t("summary:clock.metrics.totalSales")}</p>
+            <p className="text-2xl font-bold text-success-900 dark:text-success-400">{withCurrency(salePriceWithoutTax)}</p>
+          </div>
+
+          {/* Refunds Widget */}
+          <div className="bg-gradient-to-br from-danger-100 to-danger-200 dark:from-danger-900/50 dark:to-danger-800/40 p-2 rounded-lg border border-danger-300 dark:border-danger-700">
+            <p className="text-sm text-danger-700 dark:text-danger-300 font-medium mb-1">{t("summary:clock.metrics.refunds")}</p>
+            <p className="text-2xl font-bold text-danger-900 dark:text-danger-400">{withCurrency(refunds)}</p>
+          </div>
+
+          {/* Service Charges Widget */}
+          <div className="bg-gradient-to-br from-info-100 to-info-200 dark:from-info-900/50 dark:to-info-800/40 p-2 rounded-lg border border-info-300 dark:border-info-700">
+            <p className="text-sm text-info-700 dark:text-info-300 font-medium mb-1">{t("summary:clock.metrics.serviceCharges")}</p>
+            <p className="text-2xl font-bold text-info-900 dark:text-info-400">{withCurrency(serviceCharges)}</p>
+          </div>
+
+          {/* Discounts Widget */}
+          <div className="bg-gradient-to-br from-warning-100 to-warning-200 dark:from-warning-900/50 dark:to-warning-800/40 p-2 rounded-lg border border-warning-300 dark:border-warning-700">
+            <p className="text-sm text-warning-700 dark:text-warning-300 font-medium mb-1">{t("summary:clock.metrics.discounts")}</p>
+            <p className="text-2xl font-bold text-warning-900 dark:text-warning-400">{withCurrency(discounts)}</p>
+          </div>
+
+          {/* Taxes Widget */}
+          <div className="bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 p-2 rounded-lg border border-border">
+            <p className="text-sm text-muted font-medium mb-1">{t("summary:clock.metrics.taxes")}</p>
+            <p className="text-2xl font-bold text-foreground">{withCurrency(taxCollected)}</p>
+          </div>
+
+          {/* Extras Widget */}
+          <div className="bg-gradient-to-br from-info-100 to-info-200 dark:from-info-900/50 dark:to-info-800/40 p-2 rounded-lg border border-info-300 dark:border-info-700">
+            <p className="text-sm text-info-700 dark:text-info-300 font-medium mb-1">{t("summary:clock.metrics.extras")}</p>
+            <p className="text-2xl font-bold text-info-900 dark:text-info-400">{withCurrency(totalExtras)}</p>
+          </div>
+
+          {/* Voids Widget */}
+          <div className="bg-gradient-to-br from-danger-100 to-danger-200 dark:from-danger-900/50 dark:to-danger-800/40 p-2 rounded-lg border border-danger-300 dark:border-danger-700">
+            <p className="text-sm text-danger-700 dark:text-danger-300 font-medium mb-1">{t("summary:clock.metrics.voids")}</p>
+            <p className="text-2xl font-bold text-danger-900 dark:text-danger-400">{withCurrency(voids)}</p>
+          </div>
+
+          {/* Tips Widget */}
+          <div className="bg-gradient-to-br from-success-100 to-success-200 dark:from-success-900/50 dark:to-success-800/40 p-2 rounded-lg border border-success-300 dark:border-success-700">
+            <p className="text-sm text-success-700 dark:text-success-300 font-medium mb-1">{t("summary:clock.metrics.tips")}</p>
+            <p className="text-2xl font-bold text-success-900 dark:text-success-400">{withCurrency(tips)}</p>
+          </div>
+        </div>
+        )}
+      </div>
+
+      <div className="bg-surface-elevated shadow p-5 rounded-lg mt-5" data-testid="clock-session">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-5">
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="p-4 rounded-full bg-warning-100 dark:bg-warning-900/40">
+              <FontAwesomeIcon icon={faClock} size="2x" className="text-warning-600 dark:text-warning-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">{t("summary:clock.title")}</h1>
+              <p className="text-sm text-muted">{t("summary:clock.subtitle")}</p>
+            </div>
+          </div>
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:max-w-3xl sm:flex-row sm:flex-wrap lg:flex-nowrap">
+            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3" data-testid="clock-in-time">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-400">
+                <FontAwesomeIcon icon={faClock} className="text-lg" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted">{t("summary:clock.clockInTime")}</p>
+                <p className="truncate text-lg font-semibold text-foreground">{formattedClockInTime}</p>
+                <p className="mt-0.5 text-sm text-muted">{formattedClockInDate}</p>
+              </div>
+            </div>
+            {user && (
+              <div className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3" data-testid="clock-user-card">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface dark:bg-neutral-700 text-muted">
+                  <FontAwesomeIcon icon={faUser} className="text-lg" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted">{t("summary:clock.signedInAs")}</p>
+                  <p className="truncate text-lg font-semibold text-foreground">{userDisplayName}</p>
+                  {user.user_role?.name && (
+                    <p className="mt-0.5 text-xs text-muted">{user.user_role.name}</p>
+                  )}
+                </div>
+              </div>
+            )}
+            {resolvedShift && (
+              <div className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3" data-testid="clock-shift-card">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-400">
+                  <FontAwesomeIcon icon={faBriefcase} className="text-lg" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted">{t("summary:clock.shift")}</p>
+                  <p className="truncate text-lg font-semibold text-foreground">{resolvedShift.name}</p>
+                  <p className="mt-0.5 text-sm text-muted">
+                    {formatShiftClock(resolvedShift.start_time)} – {formatShiftClock(resolvedShift.end_time)}
+                    {resolvedShift.ends_next_day ? ` · ${t("summary:clock.endsNextDay")}` : ''}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {visibleNotes.length > 0 && (
+          <div className="mb-5 space-y-3" data-testid="clock-performance-notes">
+            {visibleNotes.map((note) => {
+              const style = NOTE_STYLES[note.type] ?? NOTE_STYLES.review;
+              return (
+                <div
+                  key={note.id}
+                  className={`flex items-start gap-3 rounded-lg border p-4 ${style.container}`}
+                >
+                  <FontAwesomeIcon icon={style.icon} className={`mt-0.5 text-lg ${style.icon_color}`} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-semibold text-foreground">{note.title}</p>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${style.badge}`}>
+                        {t(`hr:performanceTypes.${note.type}`, {defaultValue: note.type})}
+                      </span>
+                    </div>
+                    {note.content && (
+                      <p className="mt-1 text-sm text-foreground whitespace-pre-wrap">{note.content}</p>
+                    )}
+                    <p className="mt-1 text-xs text-muted">
+                      {note.created_at ? toLuxonDateTime(note.created_at).toFormat('MMMM dd, yyyy') : ''}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="space-y-4">
+          <div className="bg-surface border border-border p-5 rounded-lg text-center dark:bg-neutral-800" data-testid="clock-elapsed">
+            <p className="text-sm text-muted mb-1">{t("summary:clock.timeElapsed")}</p>
+            <div className="text-4xl font-bold text-warning-600 dark:text-warning-400 mb-1">
+              <Countdown time={clockInDate} showAll={true} />
+            </div>
+            <p className="text-sm text-muted">{t("summary:clock.sinceClockIn")}</p>
+          </div>
+
+          <div className="flex justify-center gap-3">
+            <Button
+              variant="danger"
+              onClick={handleClockOut}
+              size="xl"
+              icon={faClock}
+              data-testid="clock-out"
+            >
+              {t("summary:clock.clockOut")}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+

@@ -1,0 +1,223 @@
+import { Order } from '@/api/model/order.ts';
+import { IntegrationExecutionResponse, ProviderManifest } from '@/integrations/core/types.ts';
+import { IntegrationManager } from '@/integrations/core/integration-manager.ts';
+import { getIntegrationProviderConfig } from '@/integrations/configuration/configuration-store.ts';
+import {
+  collectFiscalQrsForPrint,
+  FiscalQrPrintItem,
+  getFiscalProviderReceiptLogo,
+  pickPreferredFiscalQr,
+  parseFiscalRuntimeConfig,
+} from '@/integrations/providers/fiscal/shared/runtime-config.ts';
+import { getFiscalProviderPrintDescription } from '@/integrations/storage/order-fiscal-repository.ts';
+import { nowSurrealDateTime, toJsDate } from '@/lib/datetime.ts';
+
+export {
+  pickPreferredFiscalQr,
+  collectFiscalQrsForPrint,
+  getFiscalProviderReceiptLogo,
+  attachFiscalReceiptLogos,
+} from '@/integrations/providers/fiscal/shared/runtime-config.ts';
+export type { FiscalQrPrintItem } from '@/integrations/providers/fiscal/shared/runtime-config.ts';
+
+export interface FiscalSubmissionRecord {
+  invoiceNumber?: string;
+  code?: number | string;
+  status: 'completed' | 'failed' | 'skipped';
+  error?: string;
+  submittedAt: string;
+  requestPayload?: unknown;
+  responsePayload?: unknown;
+  qrPriority?: number;
+}
+
+export interface FiscalSettlementResult {
+  qrcode?: string;
+  qrcodes?: FiscalQrPrintItem[];
+  fiscalInvoiceNumber?: string;
+  fiscalProviderId?: string;
+  resultsByProvider: Record<string, FiscalSubmissionRecord>;
+  blocked: boolean;
+  blockedError?: string;
+  blockedCode?: 'INVOICE_PENDING';
+}
+
+type ConfigDb = Parameters<typeof getIntegrationProviderConfig>[0];
+
+const schemaFieldDefaults = (manifest: ProviderManifest): Record<string, unknown> => {
+  const fields = [
+    ...(manifest.configurationSchema.fields ?? []),
+    ...(manifest.configurationSchema.sections ?? []).flatMap((section) => section.fields),
+  ];
+  const defaults: Record<string, unknown> = {};
+  for (const field of fields) {
+    if (field.defaultValue !== undefined) {
+      defaults[field.key] = field.defaultValue;
+    }
+  }
+  return defaults;
+};
+
+export const shouldBlockSettlementForFiscal = async (
+  manager: IntegrationManager,
+  getConfig: (providerId: string) => Promise<Record<string, unknown>>
+): Promise<boolean> => {
+  const fiscalProviders = manager.getEnabledProvidersByCategory('fiscal');
+  for (const manifest of fiscalProviders) {
+    const config = {
+      ...schemaFieldDefaults(manifest),
+      ...(await getConfig(manifest.id)),
+    };
+    if (parseFiscalRuntimeConfig(config).blockSettlementOnFailure) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const submitFiscalInvoices = async (
+  manager: IntegrationManager,
+  order: Order,
+  options?: {
+    getConfig?: (providerId: string) => Promise<Record<string, unknown>>;
+    db?: ConfigDb;
+    /** When set, only these enabled fiscal provider ids are submitted. */
+    providerIds?: string[];
+  }
+): Promise<FiscalSettlementResult> => {
+  const allowedIds = options?.providerIds?.length
+    ? new Set(options.providerIds)
+    : undefined;
+  const fiscalProviders = manager
+    .getEnabledProvidersByCategory('fiscal')
+    .filter((manifest) => !allowedIds || allowedIds.has(manifest.id));
+  if (fiscalProviders.length === 0) {
+    return {
+      resultsByProvider: {},
+      blocked: false,
+    };
+  }
+
+  const getConfig =
+    options?.getConfig ??
+    (options?.db
+      ? (providerId: string) => getIntegrationProviderConfig(options.db!, providerId)
+      : async () => ({}));
+
+  const resultsByProvider: Record<string, FiscalSubmissionRecord> = {};
+  const successMap: Record<
+    string,
+    {
+      invoiceNumber?: string;
+      qrcode?: string;
+      success: boolean;
+      qrPriority: number;
+      logo?: string;
+    }
+  > = {};
+  let blocked = false;
+  let blockedError: string | undefined;
+  const submittedAt = toJsDate(nowSurrealDateTime()).toISOString();
+  const invoiceReady = order.invoice_number != null && Number.isFinite(Number(order.invoice_number));
+  if (!invoiceReady) {
+    return {
+      resultsByProvider: {},
+      blocked: await shouldBlockSettlementForFiscal(manager, getConfig),
+      blockedCode: 'INVOICE_PENDING',
+      blockedError: 'Invoice number is pending sync — fiscal submit waits until the gateway assigns it',
+    };
+  }
+
+  for (const manifest of fiscalProviders) {
+    const providerId = manifest.id;
+    const config = {
+      ...schemaFieldDefaults(manifest),
+      ...(await getConfig(providerId)),
+    };
+    const runtime = parseFiscalRuntimeConfig(config);
+    const blockOnFailure = runtime.blockSettlementOnFailure;
+    const receiptLogo = getFiscalProviderReceiptLogo(config);
+
+    try {
+      const response: IntegrationExecutionResponse<{
+        invoiceNumber?: string;
+        qrcode?: string;
+        code?: number | string;
+        request?: unknown;
+        response?: unknown;
+      }> = await manager.executeImmediate(providerId, {
+        action: 'invoiceSubmission',
+        payload: { order },
+        idempotencyKey: `fiscal:${String(order.id)}:${providerId}`,
+      });
+
+      const invoiceNumber = response.data?.invoiceNumber ?? response.data?.qrcode;
+      const qrcode = response.data?.qrcode ?? response.data?.invoiceNumber;
+      resultsByProvider[providerId] = {
+        invoiceNumber,
+        code: response.data?.code,
+        status: response.success ? 'completed' : 'failed',
+        error: response.error,
+        submittedAt,
+        requestPayload: response.data?.request,
+        responsePayload: response.data?.response,
+        qrPriority: runtime.qrPriority,
+      };
+      successMap[providerId] = {
+        invoiceNumber,
+        qrcode,
+        success: Boolean(response.success && (qrcode || invoiceNumber)),
+        qrPriority: runtime.qrPriority,
+        ...(receiptLogo ? { logo: receiptLogo } : {}),
+      };
+
+      if (!response.success && blockOnFailure) {
+        blocked = true;
+        blockedError = response.error ?? `Fiscal submission failed for ${providerId}`;
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      resultsByProvider[providerId] = {
+        status: 'failed',
+        error: message,
+        submittedAt,
+        qrPriority: runtime.qrPriority,
+      };
+      successMap[providerId] = {
+        success: false,
+        qrPriority: runtime.qrPriority,
+        ...(receiptLogo ? { logo: receiptLogo } : {}),
+      };
+      if (blockOnFailure) {
+        blocked = true;
+        blockedError = message;
+      }
+    }
+  }
+
+  const preferred = pickPreferredFiscalQr(successMap);
+  const qrcodes = collectFiscalQrsForPrint(
+    Object.fromEntries(
+      Object.entries(successMap).map(([providerId, candidate]) => [
+        providerId,
+        {
+          ...candidate,
+          description: getFiscalProviderPrintDescription(
+            providerId,
+            candidate.invoiceNumber ?? candidate.qrcode
+          ),
+        },
+      ])
+    )
+  );
+
+  return {
+    qrcode: preferred.qrcode,
+    qrcodes,
+    fiscalInvoiceNumber: preferred.qrcode,
+    fiscalProviderId: preferred.providerId,
+    resultsByProvider,
+    blocked,
+    blockedError,
+  };
+};

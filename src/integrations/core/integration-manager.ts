@@ -1,0 +1,596 @@
+import { IntegrationProvider } from '@/integrations/core/provider.ts';
+import {
+  IntegrationCategory,
+  IntegrationEvent,
+  IntegrationExecutionRequest,
+  IntegrationExecutionResponse,
+  ProviderManifest,
+} from '@/integrations/core/types.ts';
+import { ProviderNotFoundError } from '@/integrations/core/errors.ts';
+import { nowSurrealDateTime } from '@/lib/datetime.ts';
+import { ProviderRegistry } from '@/integrations/registry/provider-registry.ts';
+import { IntegrationEventBus } from '@/integrations/events/event-bus.ts';
+import { IntegrationQueueEngine } from '@/integrations/queue/queue-engine.ts';
+import { SchedulerEngine } from '@/integrations/scheduler/scheduler-engine.ts';
+import { HealthMonitor } from '@/integrations/health/health-monitor.ts';
+import { IntegrationAuditLogger } from '@/integrations/audit/audit-logger.ts';
+import { ProviderCatalog } from '@/integrations/registry/provider-catalog.ts';
+import { parseFiscalRuntimeConfig } from '@/integrations/providers/fiscal/shared/runtime-config.ts';
+
+export interface AvailableProviderEntry {
+  manifest: ProviderManifest;
+  enabled: boolean;
+}
+
+export type ProviderConfigLoader = (providerId: string) => Promise<Record<string, unknown>>;
+
+type ConfigurableProvider = IntegrationProvider & {
+  setConfigLoader?: (loader: () => Promise<Record<string, unknown>>) => void;
+  setDbLoader?: (loader: () => any) => void;
+  setJobEnqueuer?: (enqueuer: (request: IntegrationExecutionRequest) => Promise<unknown>) => void;
+  setConfigSaver?: (saver: (values: Record<string, unknown>) => Promise<void>) => void;
+};
+
+export class IntegrationManager {
+  private catalog: ProviderCatalog | null = null;
+  private readonly enabledProviderIds = new Set<string>();
+  private configLoader: ProviderConfigLoader = async () => ({});
+  private configSaver: (providerId: string, values: Record<string, unknown>) => Promise<void> = async () => {};
+
+  constructor(
+    private readonly registry: ProviderRegistry,
+    private readonly eventBus: IntegrationEventBus,
+    private readonly queue: IntegrationQueueEngine,
+    private readonly scheduler: SchedulerEngine,
+    private readonly healthMonitor: HealthMonitor,
+    private readonly auditLogger: IntegrationAuditLogger
+  ) {}
+
+  setConfigLoader(loader: ProviderConfigLoader) {
+    this.configLoader = loader;
+  }
+
+  setConfigSaver(saver: (providerId: string, values: Record<string, unknown>) => Promise<void>) {
+    this.configSaver = saver;
+  }
+
+  private dbLoader: (() => any) | null = null;
+
+  setDbLoader(loader: () => any) {
+    this.dbLoader = loader;
+  }
+
+  private wireProviderConfig(provider: IntegrationProvider) {
+    const configurable = provider as ConfigurableProvider;
+    const providerId = provider.getManifest().id;
+    if (typeof configurable.setConfigLoader === 'function') {
+      configurable.setConfigLoader(() => this.configLoader(providerId));
+    }
+    if (typeof configurable.setDbLoader === 'function' && this.dbLoader) {
+      configurable.setDbLoader(this.dbLoader);
+    }
+    if (typeof configurable.setJobEnqueuer === 'function') {
+      // External accounting providers (QBO, Xero) always go through the queue
+      // so the sale settlement thread is never blocked by external API calls.
+      if (provider.getManifest().category === 'accounting' && provider.getManifest().id !== 'provider:internal-accounting') {
+        configurable.setJobEnqueuer((request) =>
+          this.queue.enqueue({
+            providerId,
+            action: request.action,
+            payload: request.payload ?? {},
+            dedupeKey: request.idempotencyKey,
+            priority: 0,
+            maxRetries: 5,
+          })
+        );
+      } else {
+        configurable.setJobEnqueuer((request) => this.executeImmediate(providerId, request));
+      }
+    }
+    if (typeof configurable.setConfigSaver === 'function') {
+      configurable.setConfigSaver((values) => this.configSaver(providerId, values));
+    }
+  }
+
+  async bootstrapFromCatalog(catalog: ProviderCatalog, enabledProviderIds: string[]) {
+    this.catalog = catalog;
+    this.enabledProviderIds.clear();
+
+    for (const providerId of enabledProviderIds) {
+      if (!catalog.isKnownProvider(providerId)) {
+        continue;
+      }
+      try {
+        await this.enableProviderInternal(providerId, false);
+      } catch (error) {
+        console.warn(`Failed enabling provider ${providerId} during bootstrap`, error);
+      }
+    }
+  }
+
+  async installProviders(providers: IntegrationProvider[]) {
+    for (const provider of providers) {
+      this.wireProviderConfig(provider);
+      await provider.initialize();
+      this.registry.register(provider);
+      this.enabledProviderIds.add(provider.getManifest().id);
+      await this.auditLogger.log({
+        action: 'ProviderInstalled',
+        providerId: provider.getManifest().id,
+      });
+    }
+  }
+
+  async shutdown() {
+    for (const provider of this.registry.getAll()) {
+      await provider.shutdown();
+    }
+    this.scheduler.shutdown();
+  }
+
+  isProviderEnabled(providerId: string) {
+    return this.enabledProviderIds.has(providerId);
+  }
+
+  getEnabledProviderIds() {
+    return Array.from(this.enabledProviderIds);
+  }
+
+  getEnabledProviders() {
+    return this.registry
+      .getInstalledManifests()
+      .filter((manifest) => this.enabledProviderIds.has(manifest.id));
+  }
+
+  getEnabledProvidersByCategory(category: IntegrationCategory) {
+    return this.getEnabledProviders().filter((provider) => provider.category === category);
+  }
+
+  /** Returns the raw provider instance so callers can use connect/disconnect/sync directly. */
+  getProvider(providerId: string) {
+    return this.registry.get(providerId);
+  }
+
+  /**
+   * Wire and enable a provider for the first time, skipping validation
+   * (mappings don't exist yet — the initial sync creates them).
+   * Use this when the user clicks "Run Initial Sync" after OAuth connect.
+   */
+  async prepareAndEnableForSync(providerId: string): Promise<IntegrationProvider> {
+    if (!this.catalog?.isKnownProvider(providerId)) {
+      throw new ProviderNotFoundError(providerId);
+    }
+
+    // If already enabled, just return it
+    const existing = this.registry.get(providerId);
+    if (existing) return existing;
+
+    if (!this.catalog) {
+      throw new Error('Provider catalog is not initialized');
+    }
+
+    const provider = this.catalog.createProvider(providerId);
+    this.wireProviderConfig(provider);
+    await provider.initialize();
+    this.registry.register(provider);
+    this.enabledProviderIds.add(providerId);
+
+    await this.auditLogger.log({
+      action: 'ProviderUpdated',
+      providerId,
+      payload: { enabled: true },
+    });
+
+    return provider;
+  }
+
+  /**
+   * Returns the enabled provider instance, or creates a temporary one from the catalog.
+   * OAuth connect/disconnect needs to work even before the provider is enabled.
+   */
+  getOrCreateProvider(providerId: string): IntegrationProvider | undefined {
+    const existing = this.registry.get(providerId);
+    if (existing) return existing;
+    if (!this.catalog?.isKnownProvider(providerId)) return undefined;
+    return this.catalog.createProvider(providerId);
+  }
+
+  async setProviderEnabled(providerId: string, enabled: boolean) {
+    if (!this.catalog?.isKnownProvider(providerId)) {
+      throw new ProviderNotFoundError(providerId);
+    }
+
+    if (enabled) {
+      await this.enableProviderInternal(providerId, true);
+      return;
+    }
+
+    await this.disableProviderInternal(providerId, true);
+  }
+
+  private async enableProviderInternal(providerId: string, emitAudit: boolean) {
+    if (this.enabledProviderIds.has(providerId)) {
+      return;
+    }
+
+    if (!this.catalog) {
+      throw new Error('Provider catalog is not initialized');
+    }
+
+    const provider = this.catalog.createProvider(providerId);
+    this.wireProviderConfig(provider);
+    const validation = await provider.validate();
+    if (!validation.valid) {
+      const message = validation.errors?.join(', ') || 'Provider validation failed';
+      throw new Error(message);
+    }
+
+    await provider.initialize();
+    this.registry.register(provider);
+    this.enabledProviderIds.add(providerId);
+
+    if (emitAudit) {
+      await this.auditLogger.log({
+        action: 'ProviderUpdated',
+        providerId,
+        payload: { enabled: true },
+      });
+    }
+  }
+
+  private async disableProviderInternal(providerId: string, emitAudit: boolean) {
+    const provider = this.registry.get(providerId);
+
+    if (provider) {
+      await provider.shutdown();
+      this.registry.unregister(providerId);
+    }
+
+    this.enabledProviderIds.delete(providerId);
+
+    if (emitAudit) {
+      await this.auditLogger.log({
+        action: 'ProviderUpdated',
+        providerId,
+        payload: { enabled: false },
+      });
+    }
+  }
+
+  listAvailableProviders(): AvailableProviderEntry[] {
+    if (!this.catalog) {
+      return this.registry.getInstalledManifests().map((manifest) => ({
+        manifest,
+        enabled: this.enabledProviderIds.has(manifest.id),
+      }));
+    }
+
+    return this.catalog.listCatalogManifests().map((manifest) => ({
+      manifest,
+      enabled: this.enabledProviderIds.has(manifest.id),
+    }));
+  }
+
+  async execute(providerId: string, request: IntegrationExecutionRequest) {
+    if (!this.isProviderEnabled(providerId)) {
+      throw new Error(`Provider "${providerId}" is disabled`);
+    }
+
+    const provider = this.registry.get(providerId);
+    if (!provider) throw new ProviderNotFoundError(providerId);
+    if (!provider.execute) {
+      throw new Error(`Provider "${providerId}" does not support execute capability`);
+    }
+
+    const job = await this.queue.enqueue({
+      providerId,
+      action: request.action,
+      payload: JSON.parse(JSON.stringify(request.payload ?? {})) as Record<string, unknown>,
+      priority: 0,
+      maxRetries: 5,
+      dedupeKey: request.idempotencyKey,
+    });
+
+    await this.auditLogger.log({
+      action: 'Request',
+      providerId,
+      payload: { jobId: job.id, request },
+    });
+
+    return job;
+  }
+
+  async executeImmediate(
+    providerId: string,
+    request: IntegrationExecutionRequest
+  ): Promise<IntegrationExecutionResponse> {
+    if (!this.isProviderEnabled(providerId)) {
+      throw new Error(`Provider "${providerId}" is disabled`);
+    }
+
+    const provider = this.registry.get(providerId);
+    if (!provider) throw new ProviderNotFoundError(providerId);
+    if (!provider.execute) {
+      throw new Error(`Provider "${providerId}" does not support execute capability`);
+    }
+
+    await this.auditLogger.log({
+      action: 'Request',
+      providerId,
+      payload: { request, mode: 'immediate' },
+    });
+
+    const enqueueOfflineRetry = async () => {
+      const config = await this.configLoader(providerId);
+      const runtime = parseFiscalRuntimeConfig(config);
+      if (!runtime.offlineBuffering) return;
+      // Plain JSON so RecordId/DateTime survive IndexedDB structured clone.
+      const payload = JSON.parse(JSON.stringify(request.payload ?? {})) as Record<string, unknown>;
+      await this.queue.enqueue({
+        providerId,
+        action: request.action,
+        payload,
+        priority: 0,
+        maxRetries: 5,
+        dedupeKey: request.idempotencyKey,
+      });
+    };
+
+    try {
+      const response = await provider.execute(request, {
+        providerId,
+        now: nowSurrealDateTime(),
+      });
+
+      await this.auditLogger.log({
+        action: response.success ? 'Response' : 'Failure',
+        providerId,
+        payload: { response, mode: 'immediate' },
+        severity: response.success ? 'info' : 'error',
+      });
+
+      if (!response.success) {
+        await enqueueOfflineRetry();
+      }
+
+      return response;
+    } catch (error) {
+      await this.auditLogger.log({
+        action: 'Failure',
+        providerId,
+        payload: { error: error instanceof Error ? error.message : String(error), mode: 'immediate' },
+        severity: 'error',
+      });
+      await enqueueOfflineRetry();
+      throw error;
+    }
+  }
+
+  async processQueue() {
+    return this.queue.processNext(async (job) => {
+      if (!this.isProviderEnabled(job.providerId)) {
+        await this.auditLogger.log({
+          action: 'Failure',
+          providerId: job.providerId,
+          payload: { reason: 'Provider disabled; skipped queue job', jobId: job.id },
+          severity: 'warning',
+        });
+        return;
+      }
+
+      const provider = this.registry.get(job.providerId);
+      if (!provider?.execute) throw new ProviderNotFoundError(job.providerId);
+      const response = await provider.execute(
+        {
+          action: job.action,
+          payload: job.payload,
+          idempotencyKey: job.dedupeKey,
+        },
+        {
+          providerId: job.providerId,
+          now: nowSurrealDateTime(),
+        }
+      );
+
+      if (!response.success) {
+        throw new Error(response.error ?? 'Provider execution failed');
+      }
+
+      await this.auditLogger.log({
+        action: 'Response',
+        providerId: job.providerId,
+        payload: { jobId: job.id, response },
+      });
+
+      await this.persistFiscalQueueSuccess(job.providerId, job.action, job.payload, response);
+    });
+  }
+
+  /**
+   * When offline fiscal buffering eventually succeeds, write a completed
+   * integration_order_fiscal row so reports/print QR catch up.
+   */
+  private async persistFiscalQueueSuccess(
+    providerId: string,
+    action: string,
+    payload: Record<string, unknown>,
+    response: IntegrationExecutionResponse
+  ) {
+    if (action !== 'invoiceSubmission') return;
+
+    const provider = this.registry.get(providerId);
+    if (!provider || provider.getManifest().category !== 'fiscal') return;
+
+    const db = this.dbLoader?.();
+    if (!db) return;
+
+    const order = payload?.order as { id?: unknown } | undefined;
+    if (!order?.id) return;
+
+    const {
+      listOrderFiscalSubmissions,
+      persistFiscalSubmissionsForOrder,
+    } = await import('@/integrations/storage/order-fiscal-repository.ts');
+
+    const existing = await listOrderFiscalSubmissions(db, order.id);
+    const alreadyCompleted = existing.some(
+      (row) =>
+        row.provider_id === providerId &&
+        row.status === 'completed' &&
+        Boolean(row.qrcode || row.invoice_number)
+    );
+    if (alreadyCompleted) return;
+
+    const config = await this.configLoader(providerId);
+    const runtime = parseFiscalRuntimeConfig(config);
+    const data = (response.data ?? {}) as {
+      invoiceNumber?: string;
+      qrcode?: string;
+      code?: number | string;
+      request?: unknown;
+      response?: unknown;
+    };
+    const invoiceNumber = data.invoiceNumber ?? data.qrcode;
+
+    await persistFiscalSubmissionsForOrder(
+      db,
+      order.id,
+      {
+        [providerId]: {
+          invoiceNumber,
+          code: data.code,
+          status: 'completed',
+          requestPayload: data.request,
+          responsePayload: data.response,
+          qrPriority: runtime.qrPriority,
+        },
+      },
+      providerId
+    );
+  }
+
+  private providerSupportsEvent(
+    supportedEvents: string[] | undefined,
+    eventName: string
+  ): boolean {
+    if (!supportedEvents || supportedEvents.length === 0) {
+      return false;
+    }
+    return supportedEvents.includes('*') || supportedEvents.includes(eventName);
+  }
+
+  async publish(event: IntegrationEvent<any>) {
+    await this.eventBus.publish(event);
+
+    for (const provider of this.registry.getAll()) {
+      if (!provider.handleEvent) continue;
+      const manifest = provider.getManifest();
+      if (!this.enabledProviderIds.has(manifest.id)) continue;
+      if (!this.providerSupportsEvent(manifest.supportedEvents, event.name)) {
+        continue;
+      }
+      try {
+        await provider.handleEvent(event);
+      } catch (error) {
+        console.warn(
+          `Integration provider ${manifest.id} failed handling ${event.name}`,
+          error
+        );
+        try {
+          await this.auditLogger.log({
+            action: 'Failure',
+            providerId: manifest.id,
+            payload: {
+              eventName: event.name,
+              eventId: event.id,
+              error: error instanceof Error ? error.message : String(error),
+            },
+          });
+        } catch {
+          // ignore audit secondary failures
+        }
+      }
+    }
+  }
+
+  getInstalledProviders() {
+    return this.getEnabledProviders();
+  }
+
+  async refreshHealth() {
+    const providers = this.registry
+      .getAll()
+      .filter((provider) => this.enabledProviderIds.has(provider.getManifest().id));
+    for (const provider of providers) {
+      await this.healthMonitor.collect(provider);
+    }
+    return this.healthMonitor.list();
+  }
+
+  getHealth() {
+    return this.healthMonitor.list();
+  }
+
+  async getQueueSnapshot() {
+    return this.queue.listActiveJobs();
+  }
+
+  /**
+   * Manual retry from Integrations → Queue.
+   * Fiscal invoiceSubmission jobs call the fiscal retry path immediately;
+   * other DeadLetter jobs are re-queued for background processing.
+   */
+  async retryDeadLetterJob(
+    jobId: string,
+    db?: {
+      query: <R extends unknown[] = any[]>(sql: string, parameters?: Record<string, unknown>) => Promise<R>;
+      create: (thing: string, data: Record<string, unknown>) => Promise<unknown>;
+      merge: (thing: unknown, data: Record<string, unknown>) => Promise<unknown>;
+    }
+  ): Promise<{ success: boolean; skipped?: boolean; reason?: string; error?: string }> {
+    const job = await this.queue.getJob(jobId);
+    if (!job) {
+      return { success: false, error: 'Job not found' };
+    }
+    if (job.status !== 'DeadLetter') {
+      return { success: false, skipped: true, reason: 'not_dead_letter' };
+    }
+
+    if (job.action === 'invoiceSubmission' && db) {
+      const order = job.payload?.order as { id?: unknown } | undefined;
+      if (!order?.id) {
+        return { success: false, error: 'Order payload missing from queue job' };
+      }
+
+      const { retryFiscalSubmissionForOrder } = await import(
+        '@/integrations/providers/fiscal/settlement.ts'
+      );
+      const outcome = await retryFiscalSubmissionForOrder(this, db, order.id, job.providerId);
+
+      // FiscalRetryResult is discriminated by `skipped`; compare explicitly so the
+      // non-skipped branch (success/result) is narrowed even without strictNullChecks.
+      if (outcome.skipped === true) {
+        if (outcome.reason === 'already_completed') {
+          await this.queue.markJobCompleted(jobId);
+          return { success: true, skipped: true, reason: 'already_completed' };
+        }
+        return { success: false, skipped: true, reason: outcome.reason };
+      }
+
+      if (outcome.success) {
+        await this.queue.markJobCompleted(jobId);
+        return { success: true };
+      }
+
+      const error =
+        outcome.result.resultsByProvider[job.providerId]?.error ||
+        outcome.result.blockedError ||
+        'Fiscal retry failed';
+      await this.queue.markJobRetryFailed(jobId, error);
+      return { success: false, error };
+    }
+
+    await this.queue.requeueDeadLetter(jobId);
+    return { success: true };
+  }
+}

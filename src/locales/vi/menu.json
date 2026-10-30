@@ -1,0 +1,34 @@
+{
+  "actions": {
+    "repeat": "Lặp lại",
+    "modify": "Sửa",
+    "delete": "Xoá",
+    "deleteAll": "Xoá tất cả",
+    "search": "Tìm kiếm",
+    "split": "Tách"
+  },
+  "search": {
+    "placeholderNumber": "Nhập số món",
+    "placeholderBoth": "Tìm theo số hoặc tên",
+    "backspace": "Xoá lùi"
+  },
+  "header": {
+    "newOrder": "Đơn mới",
+    "orderNumber": "Đơn# {{number}}",
+    "customer": "Khách hàng",
+    "clear": "Xoá",
+    "selectCustomer": "Chọn khách hàng",
+    "confirmTitle": "Vui lòng xác nhận",
+    "confirmCartMessage_one": "Giỏ có {{count}} món, hãy chọn thao tác",
+    "confirmCartMessage_other": "Giỏ có {{count}} món, hãy chọn thao tác",
+    "pax": "{{count}} khách"
+  },
+  "modifiers": {
+    "modifyTitle": "Sửa {{name}}",
+    "cancel": "Huỷ",
+    "replacedWarning": "Tuỳ chọn thêm cuối cùng đã được thay thế, muốn thay thế tuỳ chọn khác hãy xoá nó khỏi thanh bên phải rồi chọn lại."
+  },
+  "persons": {
+    "chooseCount": "Chọn số người"
+  }
+}

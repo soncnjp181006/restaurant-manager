@@ -1,0 +1,951 @@
+import {DateTime} from "luxon";
+import {Tables} from "@/api/db/tables.ts";
+import {
+  getIssuanceSummary,
+  getRecipeConsumptionSummary,
+  getRecipeConsumptionTimeSeries,
+} from "@/api/reports/inventory/consumption.ts";
+import {getPerItemDailyConsumption} from "@/api/reports/inventory/consumption-daily.ts";
+import {fetchPaidOrders, SALES_SUMMARY_FETCHES} from "@/api/reports/sales/fetch.ts";
+import {formatDateTimeForQuery} from "@/api/reports/shared/filters.ts";
+import {unwrapQueryResult} from "@/api/reports/shared/query.ts";
+import {recordIdToString, recordToString} from "@/api/reports/shared/records.ts";
+import type {DateRangeFilter, DbClient} from "@/api/reports/shared/types.ts";
+import {getAppTimezone, toJsDate} from "@/lib/datetime.ts";
+import {forecastInventoryConsumption} from "@/lib/ai/forecast.ts";
+import {
+  fetchLedgerMovements,
+  fetchLedgerNetsByStore,
+} from "@/lib/inventory/ledger.service.ts";
+import {calculateOrderNetSales} from "@/lib/order.ts";
+import {safeNumber} from "@/lib/utils.ts";
+import {getReorderLevelForStore} from "@/utils/inventory.ts";
+import { DATE_FORMAT, DATE_TIME_FORMAT } from '@/lib/date-format';
+
+const normalizeKey = (id: unknown): string => {
+  const str = recordIdToString(id) || String(id ?? "");
+  const colon = str.lastIndexOf(":");
+  return colon >= 0 ? str.slice(colon + 1) : str;
+};
+
+const unitCostOf = (item?: {average_price?: number; price?: number}): number => {
+  const avg = safeNumber(item?.average_price);
+  if (avg > 0) return avg;
+  return safeNumber(item?.price);
+};
+
+/** Ledger business_date is yyyy-MM-dd; report filters often send date-times. */
+export const toBusinessDate = (value?: string | null): string | undefined => {
+  if (!value?.trim()) return undefined;
+  const trimmed = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+  const zone = getAppTimezone();
+  const queryFmt = DATE_TIME_FORMAT;
+  const dateFmt = DATE_FORMAT;
+  for (const fmt of [queryFmt, dateFmt]) {
+    const parsed = DateTime.fromFormat(trimmed, fmt, {zone});
+    if (parsed.isValid) return parsed.toISODate() ?? undefined;
+  }
+  const iso = DateTime.fromISO(trimmed, {zone});
+  if (iso.isValid) return iso.toISODate() ?? undefined;
+  if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return trimmed.slice(0, 10);
+  return undefined;
+};
+
+const dayFractionElapsed = (): number => {
+  const now = DateTime.now().setZone(getAppTimezone());
+  const hours = now.diff(now.startOf("day"), "hours").hours;
+  return Math.max(0.1, Math.min(1, hours / 24));
+};
+
+/** Parse report filter wall-clock strings in the app timezone. */
+const parseFilterWallTime = (
+  value: string | undefined,
+  bound: "start" | "end",
+): DateTime | undefined => {
+  if (!value?.trim()) return undefined;
+  const zone = getAppTimezone();
+  const trimmed = value.trim();
+  const queryFmt = DATE_TIME_FORMAT;
+  const dateFmt = DATE_FORMAT;
+  for (const fmt of [queryFmt, dateFmt]) {
+    const parsed = DateTime.fromFormat(trimmed, fmt, {zone});
+    if (parsed.isValid) {
+      if (fmt === dateFmt) {
+        return bound === "start" ? parsed.startOf("day") : parsed.endOf("day");
+      }
+      return bound === "end" ? parsed.endOf("minute") : parsed;
+    }
+  }
+  const iso = DateTime.fromISO(trimmed, {zone});
+  if (iso.isValid) {
+    return bound === "end" && trimmed.length <= 10 ? iso.endOf("day") : iso;
+  }
+  return undefined;
+};
+
+/** Resolve filter range for created_at queries + business-date ledger queries. */
+export const resolveDashboardDateRange = (options: DateRangeFilter = {}) => {
+  const zone = getAppTimezone();
+  const today = DateTime.now().setZone(zone);
+  const todayBiz = today.toISODate() ?? "";
+  const startBiz = toBusinessDate(options.startDate) ?? todayBiz;
+  const endBiz = toBusinessDate(options.endDate) ?? todayBiz;
+  const queryStart =
+    options.startDate?.trim()
+    || formatDateTimeForQuery(DateTime.fromISO(startBiz, {zone}).startOf("day"));
+  const queryEnd =
+    options.endDate?.trim()
+    || formatDateTimeForQuery(DateTime.fromISO(endBiz, {zone}).endOf("day"));
+  const startDt = DateTime.fromISO(startBiz, {zone});
+  const endDt = DateTime.fromISO(endBiz, {zone});
+  const dayCount = Math.max(1, Math.floor(endDt.diff(startDt, "days").days) + 1);
+  const isLiveToday = startBiz === todayBiz && endBiz === todayBiz;
+
+  // UTC ISO bounds for created_at (only when filter dates are present)
+  const createdAtStartIso = options.startDate?.trim()
+    ? (parseFilterWallTime(options.startDate, "start")?.toUTC().toISO() ?? undefined)
+    : undefined;
+  const createdAtEndIso = options.endDate?.trim()
+    ? (parseFilterWallTime(options.endDate, "end")?.toUTC().toISO() ?? undefined)
+    : undefined;
+
+  return {
+    startBiz,
+    endBiz,
+    queryStart,
+    queryEnd,
+    dayCount,
+    isLiveToday,
+    todayBiz,
+    createdAtStartIso,
+    createdAtEndIso,
+  };
+};
+
+/** created_at range conditions using UTC datetime binds (app-timezone wall clock → UTC). */
+export const buildCreatedAtDatetimeConditions = (
+  options: DateRangeFilter = {},
+): {conditions: string[]; params: Record<string, string>} => {
+  const conditions: string[] = [];
+  const params: Record<string, string> = {};
+  if (options.startDate?.trim()) {
+    const start = parseFilterWallTime(options.startDate, "start")?.toUTC().toISO();
+    if (start) {
+      conditions.push("created_at >= <datetime>$startDate");
+      params.startDate = start;
+    }
+  }
+  if (options.endDate?.trim()) {
+    const end = parseFilterWallTime(options.endDate, "end")?.toUTC().toISO();
+    if (end) {
+      conditions.push("created_at <= <datetime>$endDate");
+      params.endDate = end;
+    }
+  }
+  return {conditions, params};
+};
+
+export type IssuanceVsConsumptionRow = {
+  itemId: string;
+  name: string;
+  code?: string;
+  uom?: string;
+  issuedQty: number;
+  consumedQty: number;
+  variance: number;
+  costAverage: number;
+};
+
+export type LocationStockItem = {
+  id: string;
+  name: string;
+  code: string;
+  quantity: number;
+  uom: string;
+  unitCost: number;
+  value: number;
+  reorderLevel?: number;
+  belowReorder: boolean;
+};
+
+export type LocationStockGroup = {
+  locationId: string;
+  locationName: string;
+  items: LocationStockItem[];
+};
+
+export type NeededTodayRow = {
+  itemId: string;
+  name: string;
+  code?: string;
+  uom?: string;
+  onHand: number;
+  todayConsumed: number;
+  projectedNeed: number;
+  shortfall: number;
+  unitCost: number;
+  shortfallCost: number;
+};
+
+export type RunoutForecastRow = {
+  itemId: string;
+  name: string;
+  code?: string;
+  uom?: string;
+  onHand: number;
+  avgDailyConsumption: number;
+  daysOfCover: number | null;
+  estimatedStockoutDays?: number;
+  suggestedReorderQty?: number;
+  reorderLevel?: number;
+  insufficientData?: boolean;
+  confidenceNote: string;
+};
+
+export type PeriodMovementTotals = {
+  purchaseValue: number;
+  purchaseReturnValue: number;
+  issueValue: number;
+  issueReturnQty: number;
+  wasteQty: number;
+  transferQty: number;
+  productionOutputQty: number;
+  buffetConsumptionQty: number;
+  adjustmentQty: number;
+  purchaseCount: number;
+  purchaseReturnCount: number;
+  issueCount: number;
+  issueReturnCount: number;
+  wasteCount: number;
+  transferCount: number;
+  productionCount: number;
+  buffetCount: number;
+  adjustmentCount: number;
+};
+
+export type TodayPulse = {
+  date: string;
+  orderCount: number;
+  netSales: number;
+  consumptionQty: number;
+  consumptionCost: number;
+  issuedQty: number;
+  purchaseValue: number;
+  wasteQty: number;
+  transferQty: number;
+  productionOutputQty: number;
+  buffetConsumptionQty: number;
+  adjustmentQty: number;
+  sameWeekdayAvgSales: number;
+  sameWeekdayAvgConsumption: number;
+  salesTrendPercent: number | null;
+  consumptionTrendPercent: number | null;
+  trendSummaryKey: "higher" | "lower" | "similar" | "insufficient";
+};
+
+const sumDocumentLineValue = (
+  docs: Array<{
+    items?: Array<{
+      quantity?: number;
+      price?: number;
+      item?: {price?: number; average_price?: number};
+    }>;
+    tax_amount?: number;
+    extras?: Array<{amount?: number}>;
+  }>,
+): number =>
+  docs.reduce((sum, doc) => {
+    const itemsTotal = (doc.items ?? []).reduce(
+      (itemSum, item) => {
+        const price =
+          safeNumber(item.price) ||
+          safeNumber(item.item?.price) ||
+          safeNumber(item.item?.average_price);
+        return itemSum + safeNumber(item.quantity) * price;
+      },
+      0,
+    );
+    const extras = (doc.extras ?? []).reduce(
+      (extraSum, extra) => extraSum + safeNumber(extra.amount),
+      0,
+    );
+    return sum + itemsTotal + safeNumber(doc.tax_amount) + extras;
+  }, 0);
+
+const sumDocumentLineQty = (
+  docs: Array<{items?: Array<{quantity?: number; quantity_change?: number}>}>,
+  field: "quantity" | "quantity_change" = "quantity",
+): number =>
+  docs.reduce((sum, doc) => {
+    return sum + (doc.items ?? []).reduce((itemSum, item) => {
+      return itemSum + Math.abs(safeNumber(field === "quantity_change" ? item.quantity_change : item.quantity));
+    }, 0);
+  }, 0);
+
+export const getIssuanceVsConsumption = async (
+  db: DbClient,
+  options: DateRangeFilter & {limit?: number} = {},
+): Promise<{
+  rows: IssuanceVsConsumptionRow[];
+  totals: {issuedQty: number; consumedQty: number; variance: number; costAverage: number};
+}> => {
+  const limit = options.limit ?? 50;
+  const [issuance, consumption] = await Promise.all([
+    getIssuanceSummary(db, {...options, limit: 500}),
+    getRecipeConsumptionSummary(db, {...options, limit: 500}),
+  ]);
+
+  const byKey = new Map<string, IssuanceVsConsumptionRow>();
+
+  consumption.byItem.forEach((item) => {
+    const key = normalizeKey(item.id);
+    byKey.set(key, {
+      itemId: item.id,
+      name: item.name,
+      code: item.code,
+      uom: item.uom,
+      issuedQty: 0,
+      consumedQty: item.quantity,
+      variance: -item.quantity,
+      costAverage: item.costAverage,
+    });
+  });
+
+  issuance.byItem.forEach((item) => {
+    const key = normalizeKey(item.itemId);
+    const existing = byKey.get(key);
+    if (existing) {
+      existing.issuedQty = item.quantity;
+      existing.variance = existing.issuedQty - existing.consumedQty;
+    } else {
+      byKey.set(key, {
+        itemId: item.itemId,
+        name: item.name,
+        issuedQty: item.quantity,
+        consumedQty: 0,
+        variance: item.quantity,
+        costAverage: 0,
+      });
+    }
+  });
+
+  const allRows = Array.from(byKey.values())
+    .sort((a, b) => Math.abs(b.variance) - Math.abs(a.variance) || b.consumedQty - a.consumedQty);
+
+  const totals = allRows.reduce(
+    (acc, row) => {
+      acc.issuedQty += row.issuedQty;
+      acc.consumedQty += row.consumedQty;
+      acc.variance += row.variance;
+      acc.costAverage += row.costAverage;
+      return acc;
+    },
+    {issuedQty: 0, consumedQty: 0, variance: 0, costAverage: 0},
+  );
+
+  return {rows: allRows.slice(0, limit), totals};
+};
+
+export const getDashboardStockByLocation = async (
+  db: DbClient,
+): Promise<{
+  locations: LocationStockGroup[];
+  totalStockValue: number;
+  belowReorderCount: number;
+  onHandByItem: Map<string, number>;
+  maxReorderByItem: Map<string, number>;
+  itemMetaByKey: Map<string, {id: string; name: string; code?: string; uom?: string; unitCost: number}>;
+}> => {
+  const [items, locations, ledgerNets] = await Promise.all([
+    unwrapQueryResult<{
+      id: unknown;
+      name?: string;
+      code?: string;
+      uom?: string;
+      average_price?: number;
+      price?: number;
+      reorder_levels?: Record<string, number>;
+    }>(await db.query(`SELECT id, name, code, uom, average_price, price, reorder_levels FROM ${Tables.inventory_items}`)),
+    unwrapQueryResult<{id: unknown; name?: string}>(
+      await db.query(`SELECT id, name FROM ${Tables.inventory_locations}`),
+    ),
+    fetchLedgerNetsByStore(db as any),
+  ]);
+
+  const itemByKey = new Map<string, (typeof items)[0]>();
+  const itemMetaByKey = new Map<string, {id: string; name: string; code?: string; uom?: string; unitCost: number}>();
+  items.forEach((item) => {
+    const full = recordToString(item.id);
+    itemByKey.set(full, item);
+    itemByKey.set(normalizeKey(full), item);
+    itemMetaByKey.set(normalizeKey(full), {
+      id: full,
+      name: item.name ?? "Unknown",
+      code: item.code,
+      uom: item.uom,
+      unitCost: unitCostOf(item),
+    });
+  });
+
+  const locationByKey = new Map<string, {id: string; name: string}>();
+  locations.forEach((location) => {
+    const full = recordToString(location.id);
+    locationByKey.set(full, {id: full, name: location.name ?? "Unknown"});
+    locationByKey.set(normalizeKey(full), {id: full, name: location.name ?? "Unknown"});
+  });
+
+  const stockMap = new Map<string, Map<string, number>>();
+  locations.forEach((location) => {
+    stockMap.set(normalizeKey(location.id), new Map());
+  });
+
+  const onHandByItem = new Map<string, number>();
+  const maxReorderByItem = new Map<string, number>();
+  let belowReorderCount = 0;
+  let totalStockValue = 0;
+
+  ledgerNets.forEach((row) => {
+    const locationKey = normalizeKey(row.locationId);
+    const itemKey = normalizeKey(row.itemId);
+    const locationItemMap = stockMap.get(locationKey);
+    if (!locationItemMap) return;
+    locationItemMap.set(itemKey, (locationItemMap.get(itemKey) || 0) + row.net);
+    onHandByItem.set(itemKey, (onHandByItem.get(itemKey) || 0) + row.net);
+  });
+
+  const groups: LocationStockGroup[] = locations.map((location) => {
+    const locationId = recordToString(location.id);
+    const locationKey = normalizeKey(locationId);
+    const locationItemMap = stockMap.get(locationKey) || new Map();
+    const itemsList: LocationStockItem[] = Array.from(locationItemMap.entries())
+      .map(([itemKey, quantity]) => {
+        const item = itemByKey.get(itemKey);
+        const unitCost = unitCostOf(item);
+        const reorderLevel = getReorderLevelForStore(item, locationId);
+        const belowReorder = reorderLevel > 0 && quantity < reorderLevel;
+        if (belowReorder) belowReorderCount += 1;
+        if (reorderLevel > 0) {
+          maxReorderByItem.set(itemKey, Math.max(maxReorderByItem.get(itemKey) || 0, reorderLevel));
+        }
+        const value = quantity * unitCost;
+        totalStockValue += value;
+        return {
+          id: itemKey,
+          name: item?.name || "Unknown Item",
+          code: item?.code || "-",
+          quantity,
+          uom: item?.uom || "",
+          unitCost,
+          value,
+          reorderLevel: reorderLevel || undefined,
+          belowReorder,
+        };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return {
+      locationId,
+      locationName: location.name ?? "Unknown",
+      items: itemsList,
+    };
+  });
+
+  // Add all remaining inventory items to every location (zero-stock display)
+  items.forEach((item) => {
+    const itemId = recordToString(item.id);
+    const itemKey = normalizeKey(itemId);
+    locations.forEach((location) => {
+      const locationId = recordToString(location.id);
+      const locationKey = normalizeKey(locationId);
+      const group = groups.find((g) => normalizeKey(g.locationId) === locationKey);
+      if (!group) return;
+      if (group.items.some((row) => row.id === itemKey)) return;
+      const reorderLevel = getReorderLevelForStore(item, locationId);
+      const belowReorder = reorderLevel > 0;
+      if (belowReorder) {
+        belowReorderCount += 1;
+        maxReorderByItem.set(itemKey, Math.max(maxReorderByItem.get(itemKey) || 0, reorderLevel));
+      }
+      group.items.push({
+        id: itemKey,
+        name: item.name ?? "Unknown",
+        code: item.code || "-",
+        quantity: 0,
+        uom: item.uom || "",
+        unitCost: unitCostOf(item),
+        value: 0,
+        reorderLevel: reorderLevel || undefined,
+        belowReorder,
+      });
+      group.items.sort((a, b) => a.name.localeCompare(b.name));
+    });
+  });
+
+  return {locations: groups, totalStockValue, belowReorderCount, onHandByItem, maxReorderByItem, itemMetaByKey};
+};
+
+const getLedgerCostByTypes = async (
+  db: DbClient,
+  options: DateRangeFilter,
+  referenceTypes: string[],
+): Promise<number> => {
+  const movements = await fetchLedgerMovements(db as any, {
+    from: toBusinessDate(options.startDate) ?? options.startDate,
+    to: toBusinessDate(options.endDate) ?? options.endDate,
+    referenceTypes,
+    excludeReversals: false,
+  });
+  const voidedOriginalIds = new Set<string>();
+  movements.forEach((row) => {
+    if (row.reversal_of) voidedOriginalIds.add(row.reversal_of);
+  });
+  const activeMovements = movements.filter(
+    (row) => !row.reversal_of && !voidedOriginalIds.has(row.id),
+  );
+  return activeMovements.reduce((sum, row) => sum + Math.abs(safeNumber(row.total_cost)), 0);
+};
+
+export const getPeriodDocumentBundles = async (
+  db: DbClient,
+  options: DateRangeFilter,
+) => {
+  const {conditions, params} = buildCreatedAtDatetimeConditions(options);
+  const allConditions = ["status != 'voided'", ...conditions];
+  const where = `WHERE ${allConditions.join(" AND ")}`;
+
+  const [
+    purchases,
+    purchaseReturns,
+    issues,
+    issueReturns,
+    wastes,
+    transfers,
+    productionBatches,
+    buffetSessions,
+    adjustments,
+  ] = await Promise.all([
+    unwrapQueryResult<any>(
+      await db.query(
+        `SELECT * FROM ${Tables.inventory_purchases} ${where} ORDER BY created_at DESC FETCH items, items.item, supplier, location, created_by`,
+        params,
+      ),
+    ),
+    unwrapQueryResult<any>(
+      await db.query(
+        `SELECT * FROM ${Tables.inventory_purchase_returns} ${where} ORDER BY created_at DESC FETCH items, items.item, purchase, location, created_by`,
+        params,
+      ),
+    ),
+    unwrapQueryResult<any>(
+      await db.query(
+        `SELECT * FROM ${Tables.inventory_issues} ${where} ORDER BY created_at DESC FETCH items, items.item, location, created_by, issued_to`,
+        params,
+      ),
+    ),
+    unwrapQueryResult<any>(
+      await db.query(
+        `SELECT * FROM ${Tables.inventory_issue_returns} ${where} ORDER BY created_at DESC FETCH items, items.item, location, created_by, issuance`,
+        params,
+      ),
+    ),
+    unwrapQueryResult<any>(
+      await db.query(
+        `SELECT * FROM ${Tables.inventory_wastes} ${where} ORDER BY created_at DESC FETCH items, items.item, created_by, purchase, issue`,
+        params,
+      ),
+    ),
+    unwrapQueryResult<any>(
+      await db.query(
+        `SELECT * FROM ${Tables.stock_transfers} ${where} ORDER BY created_at DESC FETCH items, items.item, from_location, to_location, created_by`,
+        params,
+      ),
+    ),
+    unwrapQueryResult<any>(
+      await db.query(
+        `SELECT * FROM ${Tables.production_batches} ${where} ORDER BY created_at DESC FETCH recipe, location, created_by, outputs, outputs.item`,
+        params,
+      ),
+    ),
+    unwrapQueryResult<any>(
+      await db.query(
+        `SELECT * FROM ${Tables.buffet_sessions} ${where} ORDER BY created_at DESC FETCH menu, location, created_by, consumption_logs, consumption_logs.item`,
+        params,
+      ),
+    ),
+    unwrapQueryResult<any>(
+      await db.query(
+        `SELECT * FROM ${Tables.inventory_adjustments} ${where} ORDER BY created_at DESC FETCH items, items.item, location, created_by`,
+        params,
+      ),
+    ),
+  ]);
+
+  const buffetConsumptionQty = buffetSessions.reduce((sum, session) => {
+    return sum + (session.consumption_logs ?? []).reduce(
+      (logSum: number, log: any) => logSum + Math.abs(safeNumber(log.total_consumed ?? log.quantity)),
+      0,
+    );
+  }, 0);
+
+  const productionOutputQty = productionBatches.reduce((sum, batch) => {
+    return sum + (batch.outputs ?? []).reduce(
+      (outSum: number, out: any) => outSum + safeNumber(out.quantity),
+      0,
+    );
+  }, 0);
+
+  // Compute issue value and issue return qty from the ledger (more reliable than document line prices/quantities).
+  const [issueTotalCost, issueReturnTotalQty] = await Promise.all([
+    getLedgerCostByTypes(db, options, ["issue"]),
+    getLedgerQtyByTypes(db, options, ["issue_return"]),
+  ]);
+
+  const totals: PeriodMovementTotals = {
+    purchaseValue: sumDocumentLineValue(purchases),
+    purchaseReturnValue: sumDocumentLineValue(purchaseReturns),
+    issueValue: issueTotalCost,
+    issueReturnQty: issueReturnTotalQty,
+    wasteQty: sumDocumentLineQty(wastes),
+    transferQty: sumDocumentLineQty(transfers),
+    productionOutputQty,
+    buffetConsumptionQty,
+    adjustmentQty: sumDocumentLineQty(adjustments, "quantity_change"),
+    purchaseCount: purchases.length,
+    purchaseReturnCount: purchaseReturns.length,
+    issueCount: issues.length,
+    issueReturnCount: issueReturns.length,
+    wasteCount: wastes.length,
+    transferCount: transfers.length,
+    productionCount: productionBatches.length,
+    buffetCount: buffetSessions.length,
+    adjustmentCount: adjustments.length,
+  };
+
+  return {
+    purchases,
+    purchaseReturns,
+    issues,
+    issueReturns,
+    wastes,
+    transfers,
+    productionBatches,
+    buffetSessions,
+    adjustments,
+    totals,
+  };
+};
+
+const getLedgerQtyByTypes = async (
+  db: DbClient,
+  options: DateRangeFilter,
+  referenceTypes: string[],
+): Promise<number> => {
+  const movements = await fetchLedgerMovements(db as any, {
+    from: toBusinessDate(options.startDate) ?? options.startDate,
+    to: toBusinessDate(options.endDate) ?? options.endDate,
+    referenceTypes,
+    excludeReversals: false,
+  });
+  // Exclude both reversal entries and the original rows they reverse (voided).
+  const voidedOriginalIds = new Set<string>();
+  movements.forEach((row) => {
+    if (row.reversal_of) {
+      voidedOriginalIds.add(row.reversal_of);
+    }
+  });
+  const activeMovements = movements.filter(
+    (row) => !row.reversal_of && !voidedOriginalIds.has(row.id),
+  );
+  return activeMovements.reduce((sum, row) => sum + Math.abs(safeNumber(row.quantity_change)), 0);
+};
+
+export const getTodayPulse = async (
+  db: DbClient,
+  options: DateRangeFilter = {},
+): Promise<TodayPulse> => {
+  const {startBiz, endBiz, queryStart, queryEnd, isLiveToday} = resolveDashboardDateRange(options);
+  const historyStart =
+    DateTime.fromISO(endBiz, {zone: getAppTimezone()}).minus({days: 28}).toISODate() ?? endBiz;
+  const historyQueryStart = formatDateTimeForQuery(
+    DateTime.fromISO(historyStart, {zone: getAppTimezone()}).startOf("day"),
+  );
+
+  const [
+    periodOrders,
+    periodConsumption,
+    periodIssuance,
+    historyOrders,
+    historySeries,
+    purchaseValue,
+    wasteQty,
+    transferQty,
+    productionOutputQty,
+    buffetConsumptionQty,
+    adjustmentQty,
+  ] = await Promise.all([
+    fetchPaidOrders(db, {startDate: queryStart, endDate: queryEnd, fetches: SALES_SUMMARY_FETCHES}),
+    getRecipeConsumptionSummary(db, {startDate: queryStart, endDate: queryEnd}),
+    getIssuanceSummary(db, {startDate: queryStart, endDate: queryEnd, limit: 500}),
+    fetchPaidOrders(db, {startDate: historyQueryStart, endDate: queryEnd, fetches: SALES_SUMMARY_FETCHES}),
+    getRecipeConsumptionTimeSeries(db, {startDate: historyQueryStart, endDate: queryEnd, granularity: "daily"}),
+    (async () => {
+      const {conditions, params} = buildCreatedAtDatetimeConditions({startDate: queryStart, endDate: queryEnd});
+      const rows = unwrapQueryResult<{
+        items?: Array<{quantity?: number; price?: number}>;
+        tax_amount?: number;
+        extras?: Array<{amount?: number}>;
+      }>(
+        await db.query(
+          `SELECT * FROM ${Tables.inventory_purchases} ${conditions.length ? `WHERE ${conditions.join(" AND ")}` : ""} FETCH items`,
+          params,
+        ),
+      );
+      return sumDocumentLineValue(rows);
+    })(),
+    getLedgerQtyByTypes(db, {startDate: queryStart, endDate: queryEnd}, ["waste"]),
+    getLedgerQtyByTypes(db, {startDate: queryStart, endDate: queryEnd}, ["transfer_in", "transfer_out"]),
+    getLedgerQtyByTypes(db, {startDate: queryStart, endDate: queryEnd}, ["production_output"]),
+    getLedgerQtyByTypes(db, {startDate: queryStart, endDate: queryEnd}, ["buffet_consumption"]),
+    getLedgerQtyByTypes(db, {startDate: queryStart, endDate: queryEnd}, ["adjustment"]),
+  ]);
+
+  const netSales = periodOrders.reduce((sum, order) => sum + calculateOrderNetSales(order), 0);
+  const issuedQty = periodIssuance.byItem.reduce((sum, row) => sum + row.quantity, 0);
+
+  const weekday = DateTime.fromISO(endBiz, {zone: getAppTimezone()}).weekday;
+  const sameWeekdaySales: number[] = [];
+  const salesByDay = new Map<string, number>();
+  historyOrders.forEach((order) => {
+    const jsDate = toJsDate(order.created_at as Parameters<typeof toJsDate>[0]);
+    const dt = DateTime.fromJSDate(jsDate).setZone(getAppTimezone());
+    const key = dt.toISODate() ?? "";
+    if (!key || (key >= startBiz && key <= endBiz)) return;
+    if (dt.weekday !== weekday) return;
+    salesByDay.set(key, (salesByDay.get(key) || 0) + calculateOrderNetSales(order));
+  });
+  salesByDay.forEach((value) => sameWeekdaySales.push(value));
+
+  const sameWeekdayConsumption: number[] = [];
+  historySeries.forEach((point) => {
+    if (point.period >= startBiz && point.period <= endBiz) return;
+    const dt = DateTime.fromISO(point.period);
+    if (!dt.isValid || dt.weekday !== weekday) return;
+    sameWeekdayConsumption.push(point.value);
+  });
+
+  const sameWeekdayAvgSales =
+    sameWeekdaySales.length > 0
+      ? sameWeekdaySales.reduce((a, b) => a + b, 0) / sameWeekdaySales.length
+      : 0;
+  const sameWeekdayAvgConsumption =
+    sameWeekdayConsumption.length > 0
+      ? sameWeekdayConsumption.reduce((a, b) => a + b, 0) / sameWeekdayConsumption.length
+      : 0;
+
+  // For multi-day ranges, compare average daily figures to same-weekday daily averages.
+  const periodDays = Math.max(
+    1,
+    Math.floor(
+      DateTime.fromISO(endBiz).diff(DateTime.fromISO(startBiz), "days").days,
+    ) + 1,
+  );
+  const avgDailySales = netSales / periodDays;
+  const avgDailyConsumption = periodConsumption.totals.quantity / periodDays;
+
+  const salesTrendPercent =
+    sameWeekdayAvgSales > 0 ? ((avgDailySales - sameWeekdayAvgSales) / sameWeekdayAvgSales) * 100 : null;
+  const consumptionTrendPercent =
+    sameWeekdayAvgConsumption > 0
+      ? ((avgDailyConsumption - sameWeekdayAvgConsumption) / sameWeekdayAvgConsumption) * 100
+      : null;
+
+  let trendSummaryKey: TodayPulse["trendSummaryKey"] = "insufficient";
+  const basis = salesTrendPercent ?? consumptionTrendPercent;
+  if (basis != null) {
+    if (basis > 8) trendSummaryKey = "higher";
+    else if (basis < -8) trendSummaryKey = "lower";
+    else trendSummaryKey = "similar";
+  }
+
+  return {
+    date: isLiveToday ? endBiz : `${startBiz} → ${endBiz}`,
+    orderCount: periodOrders.length,
+    netSales,
+    consumptionQty: periodConsumption.totals.quantity,
+    consumptionCost: periodConsumption.totals.costAverage,
+    issuedQty,
+    purchaseValue,
+    wasteQty,
+    transferQty,
+    productionOutputQty,
+    buffetConsumptionQty,
+    adjustmentQty,
+    sameWeekdayAvgSales,
+    sameWeekdayAvgConsumption,
+    salesTrendPercent,
+    consumptionTrendPercent,
+    trendSummaryKey,
+  };
+};
+
+export const getNeededForToday = async (
+  db: DbClient,
+  onHandByItem: Map<string, number>,
+  itemMetaByKey: Map<string, {id: string; name: string; code?: string; uom?: string; unitCost: number}>,
+  options: DateRangeFilter = {},
+): Promise<{
+  rows: NeededTodayRow[];
+  coveredCount: number;
+  shortCount: number;
+  totalProjectedNeedCost: number;
+  totalShortfallCost: number;
+  dayFraction: number;
+}> => {
+  const {queryStart, queryEnd, dayCount, isLiveToday} = resolveDashboardDateRange(options);
+  const fraction = isLiveToday ? dayFractionElapsed() : 1;
+  const consumption = await getRecipeConsumptionSummary(db, {
+    startDate: queryStart,
+    endDate: queryEnd,
+    limit: 500,
+  });
+
+  const rows: NeededTodayRow[] = consumption.byItem.map((item) => {
+    const key = normalizeKey(item.id);
+    const meta = itemMetaByKey.get(key);
+    const onHand = onHandByItem.get(key) || 0;
+    const todayConsumed = item.quantity;
+    // Live today: extrapolate full-day need. Otherwise: average daily need over the filtered range.
+    const projectedNeed = isLiveToday
+      ? todayConsumed / fraction
+      : todayConsumed / dayCount;
+    const shortfall = Math.max(0, projectedNeed - onHand);
+    const unitCost = meta?.unitCost ?? (item.quantity > 0 ? item.costAverage / item.quantity : 0);
+    return {
+      itemId: item.id,
+      name: item.name,
+      code: item.code ?? meta?.code,
+      uom: item.uom ?? meta?.uom,
+      onHand,
+      todayConsumed,
+      projectedNeed,
+      shortfall,
+      unitCost,
+      shortfallCost: shortfall * unitCost,
+    };
+  }).sort((a, b) => b.shortfall - a.shortfall || b.projectedNeed - a.projectedNeed);
+
+  const shortCount = rows.filter((r) => r.shortfall > 0.001).length;
+  const coveredCount = rows.length - shortCount;
+  const totalProjectedNeedCost = rows.reduce((sum, r) => sum + r.projectedNeed * r.unitCost, 0);
+  const totalShortfallCost = rows.reduce((sum, r) => sum + r.shortfallCost, 0);
+
+  return {
+    rows: rows.slice(0, 40),
+    coveredCount,
+    shortCount,
+    totalProjectedNeedCost,
+    totalShortfallCost,
+    dayFraction: isLiveToday ? fraction : 1,
+  };
+};
+
+export const getRunoutForecast = async (
+  db: DbClient,
+  onHandByItem: Map<string, number>,
+  maxReorderByItem: Map<string, number>,
+  itemMetaByKey: Map<string, {id: string; name: string; code?: string; uom?: string; unitCost: number}>,
+  options: DateRangeFilter = {},
+  forecastDays = 14,
+): Promise<{
+  rows: RunoutForecastRow[];
+  overallSeries: Array<{period: string; value: number}>;
+}> => {
+  const {endBiz, queryEnd} = resolveDashboardDateRange(options);
+  const startBiz =
+    DateTime.fromISO(endBiz, {zone: getAppTimezone()}).minus({days: 28}).toISODate() ?? endBiz;
+  const queryStart = formatDateTimeForQuery(
+    DateTime.fromISO(startBiz, {zone: getAppTimezone()}).startOf("day"),
+  );
+
+  const [perItem, overallSeries] = await Promise.all([
+    getPerItemDailyConsumption(db, {startDate: queryStart, endDate: queryEnd}),
+    getRecipeConsumptionTimeSeries(db, {startDate: queryStart, endDate: queryEnd, granularity: "daily"}),
+  ]);
+
+  const rows: RunoutForecastRow[] = [];
+  perItem.forEach((entry, key) => {
+    const onHand = onHandByItem.get(key) || 0;
+    const meta = itemMetaByKey.get(key);
+    const reorderLevel = maxReorderByItem.get(key);
+    const forecast = forecastInventoryConsumption(
+      onHand,
+      entry.points,
+      forecastDays,
+      reorderLevel,
+    );
+    const avgDaily = forecast.avgDailyConsumption;
+    const daysOfCover = avgDaily > 0 ? onHand / avgDaily : null;
+    const stockoutMatch = forecast.estimatedStockoutDate?.match(/day\+(\d+)/);
+    rows.push({
+      itemId: meta?.id || key,
+      name: entry.name || meta?.name || "Unknown",
+      code: entry.code ?? meta?.code,
+      uom: entry.uom ?? meta?.uom,
+      onHand,
+      avgDailyConsumption: avgDaily,
+      daysOfCover,
+      estimatedStockoutDays: stockoutMatch ? Number(stockoutMatch[1]) : undefined,
+      suggestedReorderQty: forecast.suggestedReorderQty,
+      reorderLevel,
+      insufficientData: forecast.insufficientData,
+      confidenceNote: forecast.confidenceNote,
+    });
+  });
+
+  rows.sort((a, b) => {
+    const aDays = a.daysOfCover ?? Number.POSITIVE_INFINITY;
+    const bDays = b.daysOfCover ?? Number.POSITIVE_INFINITY;
+    return aDays - bDays;
+  });
+
+  return {
+    rows: rows.filter((r) => r.avgDailyConsumption > 0 || r.insufficientData).slice(0, 40),
+    overallSeries,
+  };
+};
+
+export type InventoryDashboardPayload = {
+  documents: Awaited<ReturnType<typeof getPeriodDocumentBundles>>;
+  stock: Awaited<ReturnType<typeof getDashboardStockByLocation>>;
+  issuanceVsConsumption: Awaited<ReturnType<typeof getIssuanceVsConsumption>>;
+  today: TodayPulse;
+  neededToday: Awaited<ReturnType<typeof getNeededForToday>>;
+  runout: Awaited<ReturnType<typeof getRunoutForecast>>;
+};
+
+export const loadInventoryDashboard = async (
+  db: DbClient,
+  options: DateRangeFilter = {},
+): Promise<InventoryDashboardPayload> => {
+  const [documents, stock, issuanceVsConsumption, today] = await Promise.all([
+    getPeriodDocumentBundles(db, options),
+    getDashboardStockByLocation(db),
+    getIssuanceVsConsumption(db, {...options, limit: 50}),
+    getTodayPulse(db, options),
+  ]);
+
+  const [neededToday, runout] = await Promise.all([
+    getNeededForToday(db, stock.onHandByItem, stock.itemMetaByKey, options),
+    getRunoutForecast(db, stock.onHandByItem, stock.maxReorderByItem, stock.itemMetaByKey, options),
+  ]);
+
+  return {
+    documents,
+    stock,
+    issuanceVsConsumption,
+    today,
+    neededToday,
+    runout,
+  };
+};

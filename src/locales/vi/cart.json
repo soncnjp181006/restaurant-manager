@@ -1,0 +1,10 @@
+{
+  "seats": {
+    "seat": "Chỗ ngồi",
+    "noSeat": "Không có chỗ",
+    "seatNumber": "Chỗ# {{number}}",
+    "newSeat": "Chỗ mới",
+    "deleteSeat": "Xoá chỗ?",
+    "addComment": "Thêm ghi chú"
+  }
+}

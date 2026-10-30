@@ -1,0 +1,560 @@
+'use strict';
+
+const { rows, first, ensureTerminal, applyOperation, toRecord } = require('./sync-store');
+
+const PROTOCOL_VERSION = 1;
+const SCHEMA_VERSION = 1;
+
+/** Serialize pushes on the shared Surreal WS — overlapping applies stall each other. */
+let pushChain = Promise.resolve();
+function withPushLock(fn) {
+  const run = pushChain.then(fn, fn);
+  // Keep the chain alive even if this push fails.
+  pushChain = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
+/** Catalog tables first so the terminal can project the menu before orders. */
+const SNAPSHOT_TABLES = [
+  'order_type',
+  'category',
+  'menu_item',
+  'modifier_group',
+  'modifier',
+  'menu_item_modifier_group',
+  'floor',
+  'floor_table',
+  'kitchen',
+  'workflow',
+  'workflow_stage',
+  'payment_type',
+  'tax',
+  'menu',
+  'menu_menu_item',
+  'setting',
+  // Roles before users so FETCH user_role / offline permissions see modules.
+  'user_role',
+  'user',
+  'extra',
+  'discount',
+  'discount_reason',
+  'coupon',
+  'printer',
+  'customer',
+  'coupon_redemption',
+  'order',
+  'order_item',
+  'order_item_kitchen',
+  'order_void',
+  'order_refund',
+  'order_print',
+];
+
+/** Last index that is pure catalog (menu/floors/payments). Operational tables follow. */
+const LAST_CATALOG_TABLE_INDEX = SNAPSHOT_TABLES.indexOf('printer');
+
+/** Surreal duration literals only — blocks SurrealQL injection via env. */
+const SURREAL_DURATION_RE = /^\d+[smhdw]$/;
+
+/**
+ * @param {string | undefined} raw
+ * @param {string} fallback
+ * @returns {string}
+ */
+function parseSnapshotDuration(raw, fallback) {
+  const value = String(raw ?? '').trim().toLowerCase();
+  if (SURREAL_DURATION_RE.test(value)) return value;
+  if (value) {
+    console.warn(
+      `[sync] invalid snapshot duration "${raw}"; using default ${fallback}`,
+    );
+  }
+  return fallback;
+}
+
+/**
+ * Operational tables are snapshotted for open + recent orders only; history is
+ * served by SurrealDB reports, not the terminal cache.
+ *
+ * Env (gateway):
+ * - POS_SNAPSHOT_OPERATIONAL_DURATION — default `3d` (on-prem LAN often `12h`)
+ * - POS_SNAPSHOT_COUPON_REDEMPTION_DURATION — default `90d` (on-prem often `7d`)
+ *
+ * @param {NodeJS.ProcessEnv} [env]
+ */
+function resolveSnapshotDurations(env = process.env) {
+  return {
+    operational: parseSnapshotDuration(env.POS_SNAPSHOT_OPERATIONAL_DURATION, '3d'),
+    couponRedemption: parseSnapshotDuration(
+      env.POS_SNAPSHOT_COUPON_REDEMPTION_DURATION,
+      '90d',
+    ),
+  };
+}
+
+/**
+ * @param {{ operational: string, couponRedemption: string }} durations
+ */
+function buildSnapshotFilters(durations) {
+  const op = durations.operational;
+  const coupon = durations.couponRedemption;
+  return {
+    order: `(status = 'In Progress' OR created_at > time::now() - ${op})`,
+    order_item: `(order.status = 'In Progress' OR created_at > time::now() - ${op})`,
+    order_item_kitchen: `(order_item.order.status = 'In Progress' OR created_at > time::now() - ${op})`,
+    order_void: `(order.status = 'In Progress' OR created_at > time::now() - ${op})`,
+    order_refund: `(order.status = 'In Progress' OR created_at > time::now() - ${op})`,
+    order_print: `(order.status = 'In Progress' OR printed_at > time::now() - ${op})`,
+    coupon_redemption: `(created_at > time::now() - ${coupon})`,
+  };
+}
+
+const SNAPSHOT_DURATIONS = resolveSnapshotDurations();
+const SNAPSHOT_FILTERS = buildSnapshotFilters(SNAPSHOT_DURATIONS);
+
+/**
+ * Order child relations are embedded in the `order` page (FETCH) — the client
+ * explodes them into its child stores. `order_payment` / `order_extras` have no
+ * back-link to the order, so this is the only way to page them.
+ */
+const SNAPSHOT_FETCH = {
+  order: 'payments, order_taxes, order_discounts, extras, coupon',
+};
+
+function snapshotQuery(table, hasAfter) {
+  const where = [hasAfter ? 'id > $after' : null, SNAPSHOT_FILTERS[table] || null]
+    .filter(Boolean)
+    .join(' AND ');
+  const fetch = SNAPSHOT_FETCH[table] ? ` FETCH ${SNAPSHOT_FETCH[table]}` : '';
+  return `SELECT * FROM type::table($table)${where ? ` WHERE ${where}` : ''} ORDER BY id ASC LIMIT $limit${fetch}`;
+}
+
+function encodeToken(payload) {
+  return Buffer.from(JSON.stringify(payload), 'utf8').toString('base64url');
+}
+
+function decodeToken(token) {
+  if (!token) return null;
+  try {
+    return JSON.parse(Buffer.from(String(token), 'base64url').toString('utf8'));
+  } catch {
+    return null;
+  }
+}
+
+async function highWatermark(db) {
+  const row = first(
+    await db.query(`SELECT math::max(event_id) AS max FROM sync_event GROUP ALL`),
+  );
+  const max = Number(row?.max);
+  return Number.isFinite(max) ? max : 0;
+}
+
+async function handshake(db, body) {
+  const protocolVersion = Number(body.protocolVersion ?? 0);
+  const schemaVersion = Number(body.schemaVersion ?? 0);
+  if (protocolVersion !== PROTOCOL_VERSION || schemaVersion !== SCHEMA_VERSION) {
+    const err = new Error('Unsupported sync protocol or schema version');
+    err.status = 426;
+    throw err;
+  }
+  const terminalId = String(body.terminalId || '');
+  if (!terminalId || terminalId.length < 8) {
+    const err = new Error('terminalId is required');
+    err.status = 400;
+    throw err;
+  }
+  const terminal = await ensureTerminal(
+    db,
+    terminalId,
+    String(body.scopeId || 'default'),
+    body.metadata || {},
+    body.actorId || body.actor_id || null,
+  );
+  const cursor = await highWatermark(db);
+  return {
+    ok: true,
+    protocolVersion: PROTOCOL_VERSION,
+    minimumProtocolVersion: PROTOCOL_VERSION,
+    schemaVersion: SCHEMA_VERSION,
+    minimumSchemaVersion: SCHEMA_VERSION,
+    lastSequence: Number(terminal.last_sequence ?? 0),
+    cursor,
+  };
+}
+
+/**
+ * @param {unknown} raw
+ * @returns {'catalog' | 'full'}
+ */
+function resolveSnapshotScope(raw) {
+  return String(raw ?? '').trim().toLowerCase() === 'catalog' ? 'catalog' : 'full';
+}
+
+async function snapshotPage(db, body) {
+  const terminalId = String(body.terminalId || '');
+  const limit = Math.min(Number(body.limit || 200), 500);
+  const scope = resolveSnapshotScope(body.scope ?? body.resumeScope);
+  const token = decodeToken(body.resumeToken);
+  // Resume tokens from a catalog-only run must stay catalog-scoped.
+  const effectiveScope =
+    token?.scope === 'catalog' || scope === 'catalog' ? 'catalog' : 'full';
+  const hw = token?.highWatermark ?? (await highWatermark(db));
+  let tableIndex = Number(token?.tableIndex ?? 0);
+  let afterId = token?.afterId ?? null;
+  const phase = token?.phase || 'records';
+  const catalogOnly = effectiveScope === 'catalog';
+  // Catalog refresh stops after printer; full snapshot walks every table.
+  const endExclusive = catalogOnly
+    ? LAST_CATALOG_TABLE_INDEX + 1
+    : SNAPSHOT_TABLES.length;
+
+  // Legacy resume tokens from the old events phase: records are already truth
+  // at snapshot time — jump the cursor to the watermark without replaying.
+  if (phase === 'events') {
+    return {
+      ok: true,
+      schemaVersion: SCHEMA_VERSION,
+      highWatermark: hw,
+      page: { kind: 'records', table: null, records: [] },
+      complete: true,
+      catalogComplete: true,
+      resumeToken: null,
+    };
+  }
+
+  while (tableIndex < endExclusive) {
+    const table = SNAPSHOT_TABLES[tableIndex];
+    // Surreal compares record ids only when $after is a RecordId — a
+    // "table:id" string makes `id > $after` match the first page forever.
+    const afterRecord = afterId ? toRecord(table, afterId) : null;
+    let records = [];
+    try {
+      records = rows(
+        await db.query(snapshotQuery(table, !!afterRecord), {
+          table,
+          after: afterRecord,
+          limit,
+        }),
+      );
+    } catch (err) {
+      const message = String(err?.message || err);
+      // Missing catalog tables should not stall snapshot forever.
+      if (/does not exist|not found/i.test(message)) {
+        tableIndex += 1;
+        afterId = null;
+        continue;
+      }
+      throw err;
+    }
+    if (records.length === 0) {
+      tableIndex += 1;
+      afterId = null;
+      continue;
+    }
+    const lastId = String(records[records.length - 1].id);
+    const advanceTable = records.length < limit;
+    const nextTableIndex = advanceTable ? tableIndex + 1 : tableIndex;
+    const nextAfterId = advanceTable ? null : lastId;
+    const finishedTables = advanceTable && nextTableIndex >= endExclusive;
+    const catalogComplete =
+      finishedTables || nextTableIndex > LAST_CATALOG_TABLE_INDEX;
+    return {
+      ok: true,
+      schemaVersion: SCHEMA_VERSION,
+      highWatermark: hw,
+      page: { kind: 'records', table, records },
+      complete: finishedTables,
+      catalogComplete,
+      resumeToken: finishedTables
+        ? null
+        : encodeToken({
+            phase: 'records',
+            scope: effectiveScope,
+            tableIndex: nextTableIndex,
+            afterId: nextAfterId,
+            highWatermark: hw,
+          }),
+    };
+  }
+
+  // Every table was empty (or missing) — still finish with the watermark.
+  return {
+    ok: true,
+    schemaVersion: SCHEMA_VERSION,
+    highWatermark: hw,
+    page: { kind: 'records', table: null, records: [] },
+    complete: true,
+    catalogComplete: true,
+    resumeToken: null,
+  };
+}
+
+const SERIES_SEED_FIELD = { invoice: 'invoice_number', auto_id: 'auto_id' };
+/** Invoice (and receipt) counters reset per business day; auto_id stays global. */
+const DAY_SCOPED_SERIES = new Set(['invoice', 'receipt']);
+
+async function seedCounterValue(db, series, dayRange) {
+  const field = SERIES_SEED_FIELD[series];
+  if (!field) return 0;
+  try {
+    if (
+      DAY_SCOPED_SERIES.has(series) &&
+      dayRange &&
+      Number.isFinite(dayRange.startUnix) &&
+      Number.isFinite(dayRange.endUnix)
+    ) {
+      const row = first(
+        await db.query(
+          `SELECT math::max(${field}) AS max FROM order
+           WHERE time::unix(created_at) >= $startUnix
+             AND time::unix(created_at) < $endUnix
+           GROUP ALL`,
+          { startUnix: dayRange.startUnix, endUnix: dayRange.endUnix },
+        ),
+      );
+      const max = Number(row?.max);
+      return Number.isFinite(max) && max > 0 ? Math.floor(max) : 0;
+    }
+    const row = first(
+      await db.query(`SELECT math::max(${field}) AS max FROM order GROUP ALL`),
+    );
+    const max = Number(row?.max);
+    return Number.isFinite(max) && max > 0 ? Math.floor(max) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function counterRecordId(series, scopeId) {
+  if (DAY_SCOPED_SERIES.has(series)) {
+    const dayKey = String(scopeId || '').replace(/-/g, '');
+    if (!dayKey) {
+      const err = new Error('scopeId (business day) is required for invoice reservations');
+      err.status = 400;
+      throw err;
+    }
+    return toRecord('sync_number_counter', `${series}_${dayKey}`);
+  }
+  return toRecord('sync_number_counter', series);
+}
+
+async function reserveNumberRange(db, body) {
+  return withPushLock(async () => {
+    const terminalId = String(body.terminalId || '');
+    const series = String(body.series || body.kind || 'invoice');
+    const count = Math.min(Math.max(Number(body.count || 1), 1), 1000);
+    const reservationId = String(body.reservationId || '');
+    if (!terminalId || !reservationId) {
+      const err = new Error('terminalId and reservationId are required');
+      err.status = 400;
+      throw err;
+    }
+
+    const scopeId = DAY_SCOPED_SERIES.has(series)
+      ? String(body.scopeId || body.businessDay || '')
+      : 'global';
+    if (DAY_SCOPED_SERIES.has(series) && !scopeId) {
+      const err = new Error('scopeId (business day yyyy-MM-dd) is required for invoice reservations');
+      err.status = 400;
+      throw err;
+    }
+
+    const dayRange = DAY_SCOPED_SERIES.has(series)
+      ? {
+          startUnix: Number(body.dayStartUnix),
+          endUnix: Number(body.dayEndUnix),
+        }
+      : null;
+
+    const existing = first(
+      await db.query(
+        `SELECT * FROM sync_number_reservation WHERE reservation_id = $reservationId LIMIT 1`,
+        { reservationId },
+      ),
+    );
+    if (existing) {
+      if (
+        existing.series !== series ||
+        Number(existing.count) !== count ||
+        String(existing.scope_id || '') !== scopeId
+      ) {
+        const err = new Error('Reservation id reused with different parameters');
+        err.status = 409;
+        throw err;
+      }
+      return {
+        ok: true,
+        start: Number(existing.start),
+        end: Number(existing.end),
+        reservationId,
+        scopeId,
+      };
+    }
+
+    const counterId = counterRecordId(series, scopeId);
+    let counter = first(await db.query(`SELECT * FROM $id`, { id: counterId }));
+    if (!counter) {
+      // Day-scoped series seed from today's max so each business day starts at 1
+      // when there are no orders yet; auto_id seeds from the global max.
+      const seed = await seedCounterValue(db, series, dayRange);
+      await db.query(
+        `CREATE $id SET series = $series, scope_id = $scopeId, value = $seed, updated_at = time::now()`,
+        { id: counterId, series, scopeId, seed },
+      );
+      counter = { value: seed };
+    }
+    const start = Number(counter.value || 0) + 1;
+    const end = start + count - 1;
+    await db.query(
+      `UPDATE $id SET value = $end, updated_at = time::now()`,
+      { id: counterId, end },
+    );
+    await db.query(
+      `CREATE sync_number_reservation SET
+      reservation_id = $reservationId,
+      terminal_id = $terminalId,
+      scope_id = $scopeId,
+      series = $series,
+      start = $start,
+      end = $end,
+      first_number = $start,
+      last_number = $end,
+      count = $count,
+      created_at = time::now()`,
+      { reservationId, terminalId, scopeId, series, start, end, count },
+    );
+    return { ok: true, start, end, reservationId, scopeId };
+  });
+}
+
+async function push(db, body) {
+  const terminalId = String(body.terminalId || '');
+  const operations = Array.isArray(body.operations) ? body.operations : [];
+  if (!terminalId) {
+    const err = new Error('terminalId is required');
+    err.status = 400;
+    throw err;
+  }
+  if (operations.length === 0 || operations.length > 100) {
+    const err = new Error('operations must contain 1-100 items');
+    err.status = 400;
+    throw err;
+  }
+
+  await ensureTerminal(
+    db,
+    terminalId,
+    String(body.scopeId || 'default'),
+    body.metadata || {},
+    body.actorId || body.actor_id || null,
+  );
+
+  const accepted = [];
+  const assignments = [];
+  const conflicts = [];
+  let lastSeq = 0;
+  // One shared Surreal WS client: never overlap pushes or aborted retries pile
+  // up queries and every apply looks like a ~20s failure.
+  return withPushLock(async () => {
+    for (const op of operations) {
+      const sequence = Number(op.sequence ?? 0);
+      if (sequence <= lastSeq) {
+        conflicts.push({
+          operationId: op.operationId,
+          code: 'SEQUENCE_GAP',
+          message: 'Sequences must be strictly increasing',
+        });
+        continue;
+      }
+      lastSeq = sequence;
+      const started = Date.now();
+      const result = await applyOperation(db, op, terminalId, body.scopeId || 'default');
+      const elapsed = Date.now() - started;
+      if (elapsed >= 2000) {
+        console.warn(
+          `[sync/push] slow apply ${elapsed}ms type=${op.operationType || op.type} id=${op.operationId}`,
+        );
+      }
+      if (result.status === 'accepted') {
+        accepted.push(op.operationId);
+        if (result.invoiceNumber != null) {
+          assignments.push({
+            operationId: op.operationId,
+            aggregateId: String(op.aggregateId || op.payload?.recordId || ''),
+            invoiceNumber: result.invoiceNumber,
+            ...(result.invoiceDisplay ? { invoiceDisplay: result.invoiceDisplay } : {}),
+            ...(result.invoicePrefix ? { invoicePrefix: result.invoicePrefix } : {}),
+          });
+        }
+      } else {
+        conflicts.push({
+          operationId: op.operationId,
+          code: result.code || 'CONFLICT',
+          message: result.message || 'Conflict',
+        });
+        await db.query(
+          `CREATE sync_conflict SET
+            operation_id = $operationId,
+            terminal_id = $terminalId,
+            code = $code,
+            message = $message,
+            created_at = time::now()`,
+          {
+            operationId: op.operationId,
+            terminalId,
+            code: result.code,
+            message: result.message,
+          },
+        );
+      }
+    }
+
+    return { ok: true, protocolVersion: PROTOCOL_VERSION, accepted, assignments, conflicts };
+  });
+}
+
+async function pull(db, query) {
+  const terminalId = String(query.terminalId || '');
+  const cursor = Number(query.cursor || 0);
+  const limit = Math.min(Number(query.limit || 200), 500);
+  const hw = await highWatermark(db);
+  const events = rows(
+    await db.query(
+      `SELECT * FROM sync_event WHERE event_id > $cursor ORDER BY event_id ASC LIMIT $limit`,
+      { cursor, limit },
+    ),
+  );
+  const nextCursor = events.length
+    ? Number(events[events.length - 1].event_id)
+    : cursor;
+  return {
+    ok: true,
+    protocolVersion: PROTOCOL_VERSION,
+    events,
+    cursor: nextCursor,
+    highWatermark: hw,
+    hasMore: nextCursor < hw && events.length === limit,
+  };
+}
+
+module.exports = {
+  PROTOCOL_VERSION,
+  SCHEMA_VERSION,
+  SNAPSHOT_TABLES,
+  LAST_CATALOG_TABLE_INDEX,
+  SNAPSHOT_DURATIONS,
+  SNAPSHOT_FILTERS,
+  parseSnapshotDuration,
+  resolveSnapshotDurations,
+  resolveSnapshotScope,
+  buildSnapshotFilters,
+  handshake,
+  snapshotPage,
+  reserveNumberRange,
+  push,
+  pull,
+};
