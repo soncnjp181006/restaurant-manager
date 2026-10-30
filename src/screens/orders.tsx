@@ -137,11 +137,11 @@ export const Orders = () => {
   useEffect(() => {
     void refreshLocalOrders();
     const onWrite = () => void refreshLocalOrders();
-    window.addEventListener('posr-posstore-write', onWrite);
-    window.addEventListener('posr-operational-orders-updated', onWrite);
+    window.addEventListener('restaurant-manager-posstore-write', onWrite);
+    window.addEventListener('restaurant-manager-operational-orders-updated', onWrite);
     return () => {
-      window.removeEventListener('posr-posstore-write', onWrite);
-      window.removeEventListener('posr-operational-orders-updated', onWrite);
+      window.removeEventListener('restaurant-manager-posstore-write', onWrite);
+      window.removeEventListener('restaurant-manager-operational-orders-updated', onWrite);
     };
   }, [refreshLocalOrders]);
 

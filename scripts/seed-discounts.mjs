@@ -6,8 +6,8 @@
 import { connect } from 'surrealdb'
 
 const url = process.env.SURREAL_URL || 'ws://127.0.0.1:8000/rpc'
-const namespace = process.env.SURREAL_NS || 'posr'
-const database = process.env.SURREAL_DB || 'posr'
+const namespace = process.env.SURREAL_NS || 'restaurant_manager'
+const database = process.env.SURREAL_DB || 'restaurant_manager'
 const user = process.env.SURREAL_USER
 const pass = process.env.SURREAL_PASS
 

@@ -41,7 +41,7 @@ try {
     await printHtml(
       browser,
       path.join(langDir, 'index.html'),
-      path.join(langDir, 'posr-documentation-hub.pdf')
+      path.join(langDir, 'restaurant-manager-documentation-hub.pdf')
     );
 
     for (const guide of GUIDES) {
@@ -56,7 +56,7 @@ try {
     await printHtml(
       browser,
       path.join(langDir, 'user-guide.html'),
-      path.join(langDir, 'posr-user-guide.pdf')
+      path.join(langDir, 'restaurant-manager-user-guide.pdf')
     );
   }
 } finally {

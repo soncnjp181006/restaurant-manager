@@ -58,7 +58,7 @@ class RazorpayGateway extends BaseGateway {
       invoiceNumber: payload.metadata?.invoiceNumber
         ? String(payload.metadata.invoiceNumber)
         : undefined,
-      source: payload.metadata?.source ? String(payload.metadata.source) : 'posr-react',
+      source: payload.metadata?.source ? String(payload.metadata.source) : 'restaurant-manager',
     };
 
     const order = await createOrder({

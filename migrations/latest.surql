@@ -763,13 +763,13 @@ DEFINE TABLE integration_entity_mapping TYPE ANY SCHEMALESS PERMISSIONS NONE;
 DEFINE FIELD entity_type ON integration_entity_mapping TYPE string PERMISSIONS FULL;
 DEFINE FIELD external_id ON integration_entity_mapping TYPE string PERMISSIONS FULL;
 DEFINE FIELD external_payload ON integration_entity_mapping TYPE any DEFAULT {  } PERMISSIONS FULL;
-DEFINE FIELD posr_id ON integration_entity_mapping TYPE string PERMISSIONS FULL;
+DEFINE FIELD local_id ON integration_entity_mapping TYPE string PERMISSIONS FULL;
 DEFINE FIELD provider_id ON integration_entity_mapping TYPE string PERMISSIONS FULL;
 DEFINE FIELD tenant_id ON integration_entity_mapping TYPE string PERMISSIONS FULL;
 DEFINE FIELD updated_at ON integration_entity_mapping TYPE datetime DEFAULT time::now() PERMISSIONS FULL;
 
 DEFINE INDEX idx_entity_mapping_external ON integration_entity_mapping FIELDS provider_id, tenant_id, entity_type, external_id UNIQUE;
-DEFINE INDEX idx_entity_mapping_posr ON integration_entity_mapping FIELDS provider_id, tenant_id, entity_type, posr_id UNIQUE;
+DEFINE INDEX idx_entity_mapping_local ON integration_entity_mapping FIELDS provider_id, tenant_id, entity_type, local_id UNIQUE;
 
 
 -- ------------------------------
@@ -1003,7 +1003,7 @@ DEFINE FIELD created_at ON integration_sync_failure TYPE datetime DEFAULT time::
 DEFINE FIELD entity_type ON integration_sync_failure TYPE string PERMISSIONS FULL;
 DEFINE FIELD error ON integration_sync_failure TYPE string PERMISSIONS FULL;
 DEFINE FIELD error_category ON integration_sync_failure TYPE string PERMISSIONS FULL;
-DEFINE FIELD posr_id ON integration_sync_failure TYPE string PERMISSIONS FULL;
+DEFINE FIELD local_id ON integration_sync_failure TYPE string PERMISSIONS FULL;
 DEFINE FIELD provider_id ON integration_sync_failure TYPE string PERMISSIONS FULL;
 DEFINE FIELD retriable ON integration_sync_failure TYPE bool DEFAULT true PERMISSIONS FULL;
 DEFINE FIELD retry_count ON integration_sync_failure TYPE int DEFAULT 0 PERMISSIONS FULL;

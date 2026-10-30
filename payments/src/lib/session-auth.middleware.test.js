@@ -176,7 +176,7 @@ test('session middleware: accepts a valid token signed with the same secret', as
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
         .setExpirationTime('1h')
-        .setIssuer('posr-gateway')
+        .setIssuer('restaurant-manager-gateway')
         .sign(key);
 
       const { createSessionAuthMiddleware } = loadFresh();

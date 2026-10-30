@@ -16,9 +16,9 @@
  *   SKIP_CLOSING=1 leave day_closing and tip distribution
  *
  * After a live wipe, clear each terminal's local WASM store (IndexedDB
- * `posr-terminal`) so stale outbox rows / sequence counters / conflicts cannot
+ * `restaurant-terminal`) so stale outbox rows / sequence counters / conflicts cannot
  * push corrupted orders back. DevTools → Application → IndexedDB → delete
- * `posr-terminal`, then hard-refresh. A soft refresh is not enough if the
+ * `restaurant-terminal`, then hard-refresh. A soft refresh is not enough if the
  * local next_sequence is still ahead of the wiped server.
  */
 
@@ -30,8 +30,8 @@ if (typeof global.WebSocket === 'undefined') {
 }
 
 const DB_URL = process.env.SURREAL_URL || 'ws://localhost:8000/rpc';
-const DB_NS = process.env.SURREAL_NS || 'posr';
-const DB_NAME = process.env.SURREAL_DB || 'posr';
+const DB_NS = process.env.SURREAL_NS || 'restaurant_manager';
+const DB_NAME = process.env.SURREAL_DB || 'restaurant_manager';
 const DB_USER = process.env.SURREAL_USER;
 const DB_PASS = process.env.SURREAL_PASS;
 const DRY_RUN = process.env.DRY_RUN === '1';
@@ -206,7 +206,7 @@ async function main() {
     }
   }
 
-  console.log('Done. Clear each browser IndexedDB posr-terminal store before logging in again.');
+  console.log('Done. Clear each browser IndexedDB restaurant-terminal store before logging in again.');
   await db.close();
 }
 

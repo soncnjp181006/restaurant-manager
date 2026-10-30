@@ -68,10 +68,10 @@ export const Lock = () => {
       }
       // Success — update the session tokens (gateway returned new JWT + surrealToken).
       if (data.token) {
-        localStorage.setItem("posr_session_token", data.token);
+        localStorage.setItem("restaurant_manager_session_token", data.token);
       }
       if (data.surrealToken) {
-        localStorage.setItem("posr_surreal_token", data.surrealToken);
+        localStorage.setItem("restaurant_manager_surreal_token", data.surrealToken);
       }
       // Unlock the session.
       setPage((prev: any) => ({ ...prev, lock: false }));

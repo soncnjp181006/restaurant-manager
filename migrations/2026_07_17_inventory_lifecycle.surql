@@ -1,9 +1,9 @@
 -- Inventory document lifecycle (Phase 1)
 -- Existing rows default to 'posted' so historical documents keep affecting stock.
 -- Compatible with SurrealDB 3.x. Apply with the server CLI (not host surreal 2.x):
---   docker exec -i posr-react-surrealdb-1 /surreal sql \
+--   docker exec -i restaurant-manager-surrealdb-1 /surreal sql \
 --     --endpoint http://127.0.0.1:8000 --username root --password root \
---     --namespace posr --database posr < migrations/2026_07_17_inventory_lifecycle.surql
+--     --namespace restaurant_manager --database restaurant_manager < migrations/2026_07_17_inventory_lifecycle.surql
 
 -- inventory_purchase
 DEFINE FIELD OVERWRITE status ON inventory_purchase TYPE string DEFAULT 'posted' PERMISSIONS FULL;

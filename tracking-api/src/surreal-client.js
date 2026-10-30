@@ -1,8 +1,8 @@
 'use strict';
 
 const DB_URL = process.env.TRACKING_DB_URL || 'ws://surrealdb:8001/rpc';
-const DB_NS = process.env.TRACKING_DB_NS || 'posr';
-const DB_NAME = process.env.TRACKING_DB_NAME || 'posr';
+const DB_NS = process.env.TRACKING_DB_NS || 'restaurant_manager';
+const DB_NAME = process.env.TRACKING_DB_NAME || 'restaurant_manager';
 const DB_USER = process.env.TRACKING_DB_USER;
 const DB_PASS = process.env.TRACKING_DB_PASS;
 if (!DB_USER || !DB_PASS) {

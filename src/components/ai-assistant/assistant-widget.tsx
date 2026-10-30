@@ -33,7 +33,7 @@ import {WriteProposalPreview} from "@/components/ai-assistant/write-proposal-pre
 import {AssistantExamplesPanel} from "@/components/ai-assistant/assistant-examples-panel.tsx";
 import {AI_ASSISTANT_NAME} from "@/lib/ai/assistant-config.ts";
 import {isAssistantWidgetPath} from "@/lib/ai/assistant-widget-visibility.ts";
-import {LOGIN} from "@/routes/posr.ts";
+import {LOGIN} from "@/routes/restaurant-manager.ts";
 import {AiQuotaError} from "@/lib/openai.service.ts";
 import {
   clearAssistantConversation,

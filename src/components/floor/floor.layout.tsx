@@ -64,13 +64,13 @@ export const FloorLayout = () => {
   useEffect(() => {
     const onCatalogReady = () => { void loadCatalog(); };
     const onOrdersUpdated = () => { void loadCatalog(); };
-    window.addEventListener('posr-catalog-ready', onCatalogReady);
-    window.addEventListener('posr-operational-orders-updated', onOrdersUpdated);
-    window.addEventListener('posr-posstore-write', onOrdersUpdated);
+    window.addEventListener('restaurant-manager-catalog-ready', onCatalogReady);
+    window.addEventListener('restaurant-manager-operational-orders-updated', onOrdersUpdated);
+    window.addEventListener('restaurant-manager-posstore-write', onOrdersUpdated);
     return () => {
-      window.removeEventListener('posr-catalog-ready', onCatalogReady);
-      window.removeEventListener('posr-operational-orders-updated', onOrdersUpdated);
-      window.removeEventListener('posr-posstore-write', onOrdersUpdated);
+      window.removeEventListener('restaurant-manager-catalog-ready', onCatalogReady);
+      window.removeEventListener('restaurant-manager-operational-orders-updated', onOrdersUpdated);
+      window.removeEventListener('restaurant-manager-posstore-write', onOrdersUpdated);
     };
   }, [loadCatalog]);
 
@@ -228,11 +228,11 @@ export const FloorLayout = () => {
       void fetchTables();
       void refreshOrders();
     };
-    window.addEventListener('posr-posstore-write', onLocalWrite);
-    window.addEventListener('posr-operational-orders-updated', onLocalWrite);
+    window.addEventListener('restaurant-manager-posstore-write', onLocalWrite);
+    window.addEventListener('restaurant-manager-operational-orders-updated', onLocalWrite);
     return () => {
-      window.removeEventListener('posr-posstore-write', onLocalWrite);
-      window.removeEventListener('posr-operational-orders-updated', onLocalWrite);
+      window.removeEventListener('restaurant-manager-posstore-write', onLocalWrite);
+      window.removeEventListener('restaurant-manager-operational-orders-updated', onLocalWrite);
     };
   }, [refreshOrders]);
 

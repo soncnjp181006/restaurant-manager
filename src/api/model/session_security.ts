@@ -1,7 +1,7 @@
 export const SESSION_SECURITY_KEY = 'session_security';
 
 /** Dispatched after session security settings are saved so the idle provider reloads immediately. */
-export const SESSION_SECURITY_CHANGED_EVENT = 'posr:session-security-changed';
+export const SESSION_SECURITY_CHANGED_EVENT = 'restaurant-manager:session-security-changed';
 
 /** Smallest allowed idle timeout (0.1 minutes = 6 seconds). */
 export const MIN_IDLE_MINUTES = 0.1;

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import {REPORTS_ORDER_LIFECYCLE} from "@/routes/posr.ts";
+import {REPORTS_ORDER_LIFECYCLE} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {BranchScopeFilter} from "@/components/reports/filters/branch.scope.filter.tsx";
 

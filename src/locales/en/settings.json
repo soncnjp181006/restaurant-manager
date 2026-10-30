@@ -299,7 +299,7 @@
       "composite": "Composite",
       "pool": "Range / pool",
       "hybrid": "Hybrid online + offline pool",
-      "fiscal_plus_posr": "Fiscal + Restaurant Manager display",
+      "fiscal_plus_brand": "Fiscal + Restaurant Manager display",
       "provider_defined": "Provider-defined (store only)"
     },
     "mint": {
@@ -332,7 +332,7 @@
       "composite": "Pros: LHR-T02-2026-00125 from tokens. Cons: longer labels; fiscal still uses the integer.",
       "pool": "Pros: works fully offline with reserved ints. Cons: the 200-block jump problem; fiscal-unsafe.",
       "hybrid": "Pros: offline creates still get ints. Cons: leftover reserved numbers become holes after reconnect.",
-      "fiscal_plus_posr": "Pros: POS display plus authority fiscal number. Cons: two numbers on a receipt is an evasion risk — show fiscal when present.",
+      "fiscal_plus_brand": "Pros: POS display plus authority fiscal number. Cons: two numbers on a receipt is an evasion risk — show fiscal when present.",
       "provider_defined": "Pros: Restaurant Manager stores what FBR/PRA return. Cons: not a Restaurant Manager minter — use with fiscal integrations."
     }
   },

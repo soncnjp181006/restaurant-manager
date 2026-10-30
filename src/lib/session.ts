@@ -1,5 +1,5 @@
-const SESSION_TOKEN_KEY = 'posr_session_token';
-const SURREAL_TOKEN_KEY = 'posr_surreal_token';
+const SESSION_TOKEN_KEY = 'restaurant_manager_session_token';
+const SURREAL_TOKEN_KEY = 'restaurant_manager_surreal_token';
 
 function readStorage(key: string): string | null {
   try {
@@ -198,7 +198,7 @@ export function isSurrealAuthError(error: unknown): boolean {
 export function invalidateGatewaySession(): void {
   clearSessionTokens();
   try {
-    window.dispatchEvent(new Event('posr-session'));
+    window.dispatchEvent(new Event('restaurant-manager-session'));
   } catch {
     // ignore
   }

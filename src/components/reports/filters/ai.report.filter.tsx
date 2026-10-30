@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {REPORTS_AI} from "@/routes/posr.ts";
+import {REPORTS_AI} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {Textarea} from "@/components/common/input/textarea.tsx";
 import {AiExamplePrompts} from "@/components/reports/ai/ai.example.prompts.tsx";

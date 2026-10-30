@@ -16,7 +16,7 @@ import { terminalSyncService } from "@/infrastructure/sync/sync-service.ts";
 import { posStore } from "@/infrastructure/pos-store/pos-store.ts";
 import type { SyncConflictRow } from "@/infrastructure/pos-store/types.ts";
 import { cn } from "@/lib/utils.ts";
-import { REPORTS, ADMIN } from "@/routes/posr.ts";
+import { REPORTS, ADMIN } from "@/routes/restaurant-manager.ts";
 import { HqCatalogBranchToolbarSlot } from "@/components/settings/hq_catalog_branch_banner.tsx";
 import { UomConverterToolbar } from "@/components/inventory/common/uom.converter.toolbar.tsx";
 
@@ -67,8 +67,8 @@ function SyncConflictPanel({ onChanged }: { onChanged: () => void }) {
 
   useEffect(() => {
     load();
-    window.addEventListener("posr-posstore-write", load);
-    return () => window.removeEventListener("posr-posstore-write", load);
+    window.addEventListener("restaurant-manager-posstore-write", load);
+    return () => window.removeEventListener("restaurant-manager-posstore-write", load);
   }, [load]);
 
   const act = async (operationId: string, action: "retry" | "discard") => {
@@ -224,7 +224,7 @@ export function AppToolbar() {
       setShowConflicts((prev) => !prev);
       return;
     }
-    window.dispatchEvent(new CustomEvent("posr-db-reconnect"));
+    window.dispatchEvent(new CustomEvent("restaurant-manager-db-reconnect"));
     void terminalSyncService.synchronize({ force: true }).catch(() => undefined);
   };
 

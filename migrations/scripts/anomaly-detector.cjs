@@ -25,7 +25,7 @@
  * Env vars:
  *   SURREAL_USER / SURREAL_PASS (required, no root/root fallback)
  *   SURREAL_URL (default ws://surrealdb:8000/rpc)
- *   SURREAL_NS / SURREAL_DB (default posr)
+ *   SURREAL_NS / SURREAL_DB (default restaurant_manager)
  *   ANOMALY_DETECTOR_INTERVAL_MS (default 300000 = 5 min)
  *   DRY_RUN=1 (report without writing)
  *
@@ -35,8 +35,8 @@
 
 const { Surreal } = require('surrealdb');
 
-const DB_NS = process.env.SURREAL_NS || 'posr';
-const DB_NAME = process.env.SURREAL_DB || 'posr';
+const DB_NS = process.env.SURREAL_NS || 'restaurant_manager';
+const DB_NAME = process.env.SURREAL_DB || 'restaurant_manager';
 const DB_URL = process.env.SURREAL_URL || 'ws://surrealdb:8000/rpc';
 const DB_USER = process.env.SURREAL_USER;
 const DB_PASS = process.env.SURREAL_PASS;

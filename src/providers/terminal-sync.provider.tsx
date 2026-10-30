@@ -59,8 +59,8 @@ export function TerminalSyncProvider({ children }: { children: ReactNode }) {
     const onCatalogReady = () => {
       void refreshCatalogIntoSettings(setAppSettings);
     };
-    window.addEventListener('posr-catalog-ready', onCatalogReady);
-    return () => window.removeEventListener('posr-catalog-ready', onCatalogReady);
+    window.addEventListener('restaurant-manager-catalog-ready', onCatalogReady);
+    return () => window.removeEventListener('restaurant-manager-catalog-ready', onCatalogReady);
   }, [isReady, hasSession, setAppSettings]);
 
   useEffect(() => {
@@ -100,9 +100,9 @@ export function TerminalSyncProvider({ children }: { children: ReactNode }) {
           .catch(() => undefined);
       }, LOCAL_WRITE_SYNC_DEBOUNCE_MS);
     };
-    window.addEventListener('posr-posstore-write', onLocalWrite);
+    window.addEventListener('restaurant-manager-posstore-write', onLocalWrite);
     return () => {
-      window.removeEventListener('posr-posstore-write', onLocalWrite);
+      window.removeEventListener('restaurant-manager-posstore-write', onLocalWrite);
       if (debounce) clearTimeout(debounce);
     };
   }, [isReady, hasSession, isEffectivelyConnected, setAppSettings]);
@@ -153,6 +153,6 @@ export function TerminalSyncProvider({ children }: { children: ReactNode }) {
 
 export function notifyPosStoreWrite(): void {
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('posr-posstore-write'));
+    window.dispatchEvent(new CustomEvent('restaurant-manager-posstore-write'));
   }
 }

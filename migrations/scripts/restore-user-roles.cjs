@@ -9,7 +9,7 @@
  * Modes:
  *   1) Copy roles from cloud master (preferred):
  *        CONFIRM=1 MASTER_URL=ws://... MASTER_NS=... MASTER_DB=... \
- *        SURREAL_URL=ws://... SURREAL_NS=posr SURREAL_DB=posr \
+ *        SURREAL_URL=ws://... SURREAL_NS=restaurant_manager SURREAL_DB=restaurant_manager \
  *        SURREAL_USER=root SURREAL_PASS=root \
  *        node migrations/scripts/restore-user-roles.cjs
  *
@@ -28,8 +28,8 @@ if (typeof global.WebSocket === 'undefined') {
 }
 
 const DB_URL = process.env.SURREAL_URL || 'ws://localhost:8000/rpc';
-const DB_NS = process.env.SURREAL_NS || 'posr';
-const DB_NAME = process.env.SURREAL_DB || 'posr';
+const DB_NS = process.env.SURREAL_NS || 'restaurant_manager';
+const DB_NAME = process.env.SURREAL_DB || 'restaurant_manager';
 const DB_USER = process.env.SURREAL_USER;
 const DB_PASS = process.env.SURREAL_PASS;
 
@@ -173,7 +173,7 @@ async function unlockLogin(branch) {
       modules: [...EMERGENCY_MODULES],
     },
   );
-  console.log('Unlocked. Log in again (hard-refresh / clear posr-terminal IndexedDB if needed).');
+  console.log('Unlocked. Log in again (hard-refresh / clear restaurant-terminal IndexedDB if needed).');
 }
 
 async function main() {

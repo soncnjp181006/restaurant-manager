@@ -1,5 +1,5 @@
 /**
- * Serialize a POSR completed sale into a QuickBooks SalesReceipt.
+ * Serialize a Restaurant Manager completed sale into a QuickBooks SalesReceipt.
  * Produces the JSON body for the Intuit Accounting API v3.
  */
 
@@ -101,7 +101,7 @@ export const serializeSalesReceipt = (input: QboSalesReceiptInput): QboSalesRece
     Line: lines,
     TxnDate: input.txnDate ?? new Date().toISOString().slice(0, 10),
     ApplyTaxAfterDiscount: true,
-    PrivateNote: `POSR order ${input.salesReceiptNumber ?? input.docNumber ?? ''} — auto-generated`,
+    PrivateNote: `Restaurant Manager order ${input.salesReceiptNumber ?? input.docNumber ?? ''} — auto-generated`,
   };
 
   if (input.docNumber) {

@@ -8,7 +8,7 @@ import { Tables } from "@/api/db/tables.ts";
 import { DateTime } from "luxon";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
-import { LOGIN } from "@/routes/posr.ts";
+import { LOGIN } from "@/routes/restaurant-manager.ts";
 import { Countdown } from "@/components/floor/countdown.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBriefcase, faClock, faUser, faTriangleExclamation, faThumbsUp, faClipboardCheck, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";

@@ -12,15 +12,15 @@
  *
  * Env vars (required — same as other migration scripts):
  *   SURREAL_URL    ws://surrealdb:8000/rpc
- *   SURREAL_NS     posr
- *   SURREAL_DB     posr
+ *   SURREAL_NS     restaurant_manager
+ *   SURREAL_DB     restaurant_manager
  *   SURREAL_USER   (required — no root/root fallback)
  *   SURREAL_PASS   (required)
  *   PAYMENT_CREDENTIAL_ENCRYPTION_KEY  (64 hex chars — required)
  *   DRY_RUN=1      (optional — report what would change without writing)
  *
  * Usage:
- *   SURREAL_USER=posr SURREAL_PASS=... \
+ *   SURREAL_USER=restaurant SURREAL_PASS=... \
  *   PAYMENT_CREDENTIAL_ENCRYPTION_KEY=<64-hex> \
  *   node migrations/scripts/encrypt-existing-payment-credentials.cjs
  *
@@ -36,8 +36,8 @@ if (typeof global.WebSocket === 'undefined') {
   global.WebSocket = WS;
 }
 
-const DB_NS = process.env.SURREAL_NS || 'posr';
-const DB_NAME = process.env.SURREAL_DB || 'posr';
+const DB_NS = process.env.SURREAL_NS || 'restaurant_manager';
+const DB_NAME = process.env.SURREAL_DB || 'restaurant_manager';
 const DB_URL = process.env.SURREAL_URL || 'ws://surrealdb:8000/rpc';
 const DB_USER = process.env.SURREAL_USER;
 const DB_PASS = process.env.SURREAL_PASS;

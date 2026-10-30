@@ -1,5 +1,5 @@
 import {useTranslation} from "react-i18next";
-import {REPORTS_ORDER_RECEIPT} from "@/routes/posr.ts";
+import {REPORTS_ORDER_RECEIPT} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {Input} from "@/components/common/input/input.tsx";
 import {BranchScopeFilter} from "@/components/reports/filters/branch.scope.filter.tsx";

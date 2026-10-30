@@ -1,4 +1,4 @@
-import {REPORTS_SALES_HOURLY_LABOUR_WEEKLY} from "@/routes/posr.ts";
+import {REPORTS_SALES_HOURLY_LABOUR_WEEKLY} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {useEffect, useMemo, useRef, useState} from "react";
 import { useTranslation } from 'react-i18next';

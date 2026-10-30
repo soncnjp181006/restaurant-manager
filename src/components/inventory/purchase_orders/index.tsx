@@ -12,7 +12,7 @@ import {InventoryPurchaseOrderForm} from "@/components/inventory/purchase_orders
 import {DeleteConfirm} from "@/components/common/table/delete.confirm.tsx";
 import {useDB} from "@/api/db/db.ts";
 import {InventoryPurchaseOrderViewModal} from "@/components/inventory/purchase_orders/view.modal.tsx";
-import {inventoryPrintUrl} from "@/routes/posr.ts";
+import {inventoryPrintUrl} from "@/routes/restaurant-manager.ts";
 import {useSecurity} from "@/hooks/useSecurity.ts";
 import {formatDateTime} from "@/lib/datetime.ts";
 import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";

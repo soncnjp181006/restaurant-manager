@@ -18,8 +18,8 @@ export const DB_REST_USER = import.meta.env.VITE_DB_USER as string | undefined;
 /** See DB_REST_USER above. */
 export const DB_REST_PASS = import.meta.env.VITE_DB_PASS as string | undefined;
 
-export const DB_REST_DB = (import.meta.env.VITE_DB_DATABASE as string | undefined) || 'posr';
-export const DB_REST_NS = (import.meta.env.VITE_DB_NAMESPACE as string | undefined) || 'posr';
+export const DB_REST_DB = (import.meta.env.VITE_DB_DATABASE as string | undefined) || 'restaurant_manager';
+export const DB_REST_NS = (import.meta.env.VITE_DB_NAMESPACE as string | undefined) || 'restaurant_manager';
 
 export const withApi = (path: string) => {
   return (DB_REST_API || '') + path;

@@ -2,7 +2,7 @@ import {useTranslation} from 'react-i18next';
 import {Modal} from '@/components/common/react-aria/modal.tsx';
 import {DateRange} from '@/components/reports/filters/date.range.tsx';
 import {Button} from '@/components/common/input/button.tsx';
-import {REPORTS_LABOR_SCHEDULE_ROSTER} from '@/routes/posr.ts';
+import {REPORTS_LABOR_SCHEDULE_ROSTER} from '@/routes/restaurant-manager.ts';
 import {formatDateTimeForQuery} from '@/api/reports/shared/filters.ts';
 import {toLuxonDateTime} from '@/lib/datetime.ts';
 import {recordIdToString} from '@/api/reports/shared/records.ts';

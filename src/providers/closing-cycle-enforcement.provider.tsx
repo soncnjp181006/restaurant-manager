@@ -7,7 +7,7 @@ import {
   getClosingEnforcementState,
   getClosingEnforcementStateLocal,
 } from "@/lib/closing.guard.ts";
-import { CLOSING } from "@/routes/posr.ts";
+import { CLOSING } from "@/routes/restaurant-manager.ts";
 import {useTranslation} from "react-i18next";
 
 const CHECK_INTERVAL_MS = 30_000;

@@ -9,9 +9,9 @@
 #   ./migrations/scripts/apply-migration.sh migrations/2026_07_17_inventory_ledger.surql
 #
 # Env overrides:
-#   SURREAL_CONTAINER   default: posr-react-surrealdb-1
-#   SURREAL_NS          default: posr
-#   SURREAL_DB          default: posr
+#   SURREAL_CONTAINER   default: restaurant-manager-surrealdb-1
+#   SURREAL_NS          default: restaurant_manager
+#   SURREAL_DB          default: restaurant_manager
 #   SURREAL_USER        (required — no default; must match the existing SurrealDB root user)
 #   SURREAL_PASS        (required — no default)
 
@@ -34,9 +34,9 @@ if [[ ! -f "$FILE" ]]; then
   fi
 fi
 
-CONTAINER="${SURREAL_CONTAINER:-posr-react-surrealdb-1}"
-NS="${SURREAL_NS:-posr}"
-DB="${SURREAL_DB:-posr}"
+CONTAINER="${SURREAL_CONTAINER:-restaurant-manager-surrealdb-1}"
+NS="${SURREAL_NS:-restaurant_manager}"
+DB="${SURREAL_DB:-restaurant_manager}"
 USER="${SURREAL_USER:-}"
 PASS="${SURREAL_PASS:-}"
 if [[ -z "$USER" || -z "$PASS" ]]; then

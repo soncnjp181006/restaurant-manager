@@ -18,6 +18,11 @@ const ACCOUNT_KEYS: LogicalAccountCode[] = [
   'INVENTORY_ADJUSTMENT',
 ];
 
+/** giá trị cũ đã lưu trong DB, chỉ dùng khi đọc — ghi xuống luôn dùng tên mới */
+const LEGACY_SYNC_DIRECTION_VALUES: Record<string, ExternalAccountingConfig['syncDirection']> = {
+  posr_to_external: 'local_to_external',
+};
+
 export const parseExternalAccountingConfig = (raw: Record<string, unknown>): ExternalAccountingConfig => {
   const accounts: Record<LogicalAccountCode, string> = {} as Record<LogicalAccountCode, string>;
 
@@ -44,9 +49,11 @@ export const parseExternalAccountingConfig = (raw: Record<string, unknown>): Ext
     }
   }
 
+  const syncDirection = (raw.syncDirection ?? 'local_to_external') as ExternalAccountingConfig['syncDirection'];
+
   return {
     tenantId: String(raw.tenantId ?? raw.realmId ?? ''),
-    syncDirection: (raw.syncDirection as ExternalAccountingConfig['syncDirection']) ?? 'posr_to_external',
+    syncDirection: LEGACY_SYNC_DIRECTION_VALUES[syncDirection] ?? syncDirection,
     syncIntervalMinutes: Number(raw.syncIntervalMinutes ?? raw.syncInterval ?? 60),
     saleDocumentType: (raw.saleDocumentType as ExternalAccountingConfig['saleDocumentType']) ?? 'sales_receipt',
     enableClasses: Boolean(raw.enableClasses),

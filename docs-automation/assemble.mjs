@@ -583,7 +583,7 @@ function writeBrowseCopies() {
   structureLines.push('|------|-------------|');
   structureLines.push('| `dist/{lang}/index.html` | Documentation hub |');
   structureLines.push('| `dist/{lang}/{guide}/user-guide.html` | Role guide HTML |');
-  structureLines.push('| `dist/{lang}/{guide}/posr-*-guide.pdf` | Role guide PDF |');
+  structureLines.push('| `dist/{lang}/{guide}/restaurant-manager-*-guide.pdf` | Role guide PDF |');
   structureLines.push('');
   fs.writeFileSync(path.join(GUIDE_ROOT, 'STRUCTURE.md'), structureLines.join('\n'), 'utf8');
 

@@ -29,15 +29,15 @@ export const QBO_SCHEMA: ProviderConfigurationSchema = {
     {
       id: 'sync',
       title: 'Sync',
-      description: 'Control what and how POSR synchronises with QuickBooks.',
+      description: 'Control what and how Restaurant Manager synchronises with QuickBooks.',
       fields: [
         {
           key: 'syncDirection',
           label: 'Sync Direction',
           type: 'dropdown',
-          defaultValue: 'posr_to_external',
+          defaultValue: 'local_to_external',
           options: [
-            { label: 'POSR → QuickBooks', value: 'posr_to_external' },
+            { label: 'Restaurant Manager → QuickBooks', value: 'local_to_external' },
             { label: 'Bidirectional', value: 'bidirectional' },
           ],
         },
@@ -91,14 +91,14 @@ export const QBO_SCHEMA: ProviderConfigurationSchema = {
           type: 'externalEntity',
           entityType: 'item',
           required: true,
-          helpText: 'QBO Product/Service used on every sales receipt line (ItemRef). Run Initial Sync to import items and auto-create "POSR Sale".',
+          helpText: 'QBO Product/Service used on every sales receipt line (ItemRef). Run Initial Sync to import items and auto-create "Restaurant Manager Sale".',
         },
         {
           key: 'defaultCustomerId',
           label: 'Default Customer',
           type: 'externalEntity',
           entityType: 'customer',
-          helpText: 'Fallback customer for sales without a mapped POSR customer.',
+          helpText: 'Fallback customer for sales without a mapped Restaurant Manager customer.',
         },
         {
           key: 'defaultRevenueAccount',
@@ -133,7 +133,7 @@ export const QBO_SCHEMA: ProviderConfigurationSchema = {
     {
       id: 'accounts',
       title: 'Account Mapping',
-      description: 'Map POSR logical accounts to QuickBooks account IDs. Import Chart of Accounts first.',
+      description: 'Map Restaurant Manager logical accounts to QuickBooks account IDs. Import Chart of Accounts first.',
       fields: [
         { key: 'SALES_REVENUE', label: 'Sales Revenue', type: 'externalEntity', entityType: 'account', required: true },
         { key: 'VAT_OUTPUT', label: 'VAT / Tax Payable', type: 'externalEntity', entityType: 'account' },

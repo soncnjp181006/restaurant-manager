@@ -47,12 +47,12 @@ export const useFetchDeliveryOrders = (options: UseFetchDeliveryOrdersOptions = 
     const onWrite = () => {
       void fetchDeliveryOrders();
     };
-    window.addEventListener("posr-posstore-write", onWrite);
-    window.addEventListener("posr-operational-orders-updated", onWrite);
+    window.addEventListener("restaurant-manager-posstore-write", onWrite);
+    window.addEventListener("restaurant-manager-operational-orders-updated", onWrite);
     const pollId = window.setInterval(() => void fetchDeliveryOrders(), 5_000);
     return () => {
-      window.removeEventListener("posr-posstore-write", onWrite);
-      window.removeEventListener("posr-operational-orders-updated", onWrite);
+      window.removeEventListener("restaurant-manager-posstore-write", onWrite);
+      window.removeEventListener("restaurant-manager-operational-orders-updated", onWrite);
       window.clearInterval(pollId);
     };
   }, [enabled, fetchDeliveryOrders]);

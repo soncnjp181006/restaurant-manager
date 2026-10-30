@@ -1,5 +1,5 @@
 /**
- * Serialize a POSR completed sale into a QuickBooks Invoice.
+ * Serialize a Restaurant Manager completed sale into a QuickBooks Invoice.
  */
 
 export interface QboInvoiceInput {
@@ -91,7 +91,7 @@ export const serializeInvoice = (input: QboInvoiceInput): QboInvoicePayload => {
     TxnDate: input.txnDate ?? new Date().toISOString().slice(0, 10),
     DueDate: input.dueDate ?? getDefaultDueDate(),
     ApplyTaxAfterDiscount: true,
-    PrivateNote: `POSR order ${input.invoiceNumber ?? ''} — auto-generated`,
+    PrivateNote: `Restaurant Manager order ${input.invoiceNumber ?? ''} — auto-generated`,
   };
 
   if (input.invoiceNumber) {

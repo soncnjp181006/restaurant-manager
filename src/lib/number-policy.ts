@@ -15,7 +15,7 @@ export type NumberPolicyPreset =
   | 'composite'
   | 'pool'
   | 'hybrid'
-  | 'fiscal_plus_posr'
+  | 'fiscal_plus_brand'
   | 'provider_defined';
 
 export type NumberPolicyMint = 'gateway' | 'terminal' | 'hybrid';
@@ -151,7 +151,7 @@ const PRESET_DEFAULTS: Record<NumberPolicyPreset, Partial<NumberPolicy>> = {
     template: '{seq}',
     fiscal: 'none',
   },
-  fiscal_plus_posr: {
+  fiscal_plus_brand: {
     mint: 'gateway',
     reset: 'day',
     scope: 'restaurant',
@@ -188,12 +188,20 @@ export function policyFromPreset(preset: NumberPolicyPreset): NumberPolicy {
   });
 }
 
+const LEGACY_PRESET_ALIASES: Record<string, string> = { fiscal_plus_posr: 'fiscal_plus_brand' };
+
 /** Coerce raw setting.values into a safe NumberPolicy. */
 export function normalizeNumberPolicy(raw: unknown): NumberPolicy {
   const src = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+  // Rows saved before the brand rename still carry `fiscal_plus_posr`; without
+  // the alias a fiscal+POS terminal would silently drop to date_reset, which
+  // changes invoice numbering.
+  const requested = typeof src.preset === 'string'
+    ? (LEGACY_PRESET_ALIASES[src.preset] ?? src.preset)
+    : null;
   const preset = (
-    typeof src.preset === 'string' && src.preset in PRESET_DEFAULTS
-      ? src.preset
+    requested && requested in PRESET_DEFAULTS
+      ? requested
       : DEFAULT_NUMBER_POLICY.preset
   ) as NumberPolicyPreset;
 

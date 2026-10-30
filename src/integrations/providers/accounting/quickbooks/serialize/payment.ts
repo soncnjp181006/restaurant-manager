@@ -1,5 +1,5 @@
 /**
- * Serialize a POSR payment into a QuickBooks Payment.
+ * Serialize a Restaurant Manager payment into a QuickBooks Payment.
  */
 
 export interface QboPaymentInput {
@@ -41,7 +41,7 @@ export const serializePayment = (input: QboPaymentInput): QboPaymentPayload => {
   const payload: QboPaymentPayload = {
     TotalAmt: input.total,
     TxnDate: input.paymentDate ?? new Date().toISOString().slice(0, 10),
-    PrivateNote: input.privateNote ?? 'POSR payment — auto-generated',
+    PrivateNote: input.privateNote ?? 'Restaurant Manager payment — auto-generated',
   };
 
   if (input.customerId) {

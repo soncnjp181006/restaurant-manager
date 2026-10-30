@@ -10,7 +10,7 @@ import {
   mapStockTransferToInvoice,
   mapWasteToInvoice,
 } from "@/lib/inventory/invoice.mapper.ts";
-import type {InventoryPrintDocType} from "@/routes/posr.ts";
+import type {InventoryPrintDocType} from "@/routes/restaurant-manager.ts";
 import {getStockTransfer} from "@/lib/inventory/stock_transfer.service.ts";
 
 type DbClient = {

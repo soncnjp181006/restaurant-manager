@@ -1,6 +1,6 @@
 import { NavigateFunction } from 'react-router';
 import { AppPageInterface } from '@/store/jotai.ts';
-import { LOGIN } from '@/routes/posr.ts';
+import { LOGIN } from '@/routes/restaurant-manager.ts';
 import {
   clearSessionTokens,
   gatewayLogout,
@@ -12,7 +12,7 @@ type SetAppPage = (
   updater: AppPageInterface | ((prev: AppPageInterface) => AppPageInterface)
 ) => void;
 
-const SESSION_EVENT = 'posr-session';
+const SESSION_EVENT = 'restaurant-manager-session';
 
 async function clearGatewaySession(): Promise<void> {
   if (!isGatewayAuthEnabled()) {

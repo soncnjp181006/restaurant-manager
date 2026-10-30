@@ -73,7 +73,7 @@ import {
   INTEGRATIONS,
   SUMMARY,
   TIP_DISTRIBUTION, ACCOUNTS,
-} from "@/routes/posr.ts";
+} from "@/routes/restaurant-manager.ts";
 import {
   AccountsScreen,
   ActivityReport,

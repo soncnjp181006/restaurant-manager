@@ -203,15 +203,15 @@ async function applyPullEvent(event: any, terminalId: string): Promise<boolean> 
 
 function notifyRemoteChange(): void {
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('posr-posstore-write'));
-    window.dispatchEvent(new CustomEvent('posr-operational-orders-updated'));
+    window.dispatchEvent(new CustomEvent('restaurant-manager-posstore-write'));
+    window.dispatchEvent(new CustomEvent('restaurant-manager-operational-orders-updated'));
   }
 }
 
 /** Catalog tables finished; UI may project menu/floors while orders still hydrate. */
 function notifyCatalogReady(): void {
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('posr-catalog-ready'));
+    window.dispatchEvent(new CustomEvent('restaurant-manager-catalog-ready'));
   }
 }
 
@@ -291,7 +291,7 @@ export class TerminalSyncService {
         syncAgain = false;
         if (typeof navigator !== 'undefined' && navigator.locks?.request) {
           await navigator.locks.request(
-            'posr-terminal-sync-leader',
+            'restaurant-terminal-sync-leader',
             { mode: 'exclusive', ifAvailable: true },
             async (lock) => {
               if (!lock) {

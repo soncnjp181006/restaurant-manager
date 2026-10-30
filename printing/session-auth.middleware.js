@@ -64,7 +64,7 @@ function createSessionAuthMiddleware(options = {}) {
 
     try {
       const { payload } = await jwtVerify(token, key, {
-        issuer: 'posr-gateway',
+        issuer: 'restaurant-manager-gateway',
         algorithms: ['HS256'],
       });
       if (payload.typ !== 'pos_session') {

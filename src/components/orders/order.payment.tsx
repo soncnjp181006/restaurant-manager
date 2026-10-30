@@ -105,12 +105,12 @@ export const OrderPayment = ({
       })();
     };
     syncInvoiceFields();
-    window.addEventListener('posr-posstore-write', syncInvoiceFields);
-    window.addEventListener('posr-operational-orders-updated', syncInvoiceFields);
+    window.addEventListener('restaurant-manager-posstore-write', syncInvoiceFields);
+    window.addEventListener('restaurant-manager-operational-orders-updated', syncInvoiceFields);
     return () => {
       cancelled = true;
-      window.removeEventListener('posr-posstore-write', syncInvoiceFields);
-      window.removeEventListener('posr-operational-orders-updated', syncInvoiceFields);
+      window.removeEventListener('restaurant-manager-posstore-write', syncInvoiceFields);
+      window.removeEventListener('restaurant-manager-operational-orders-updated', syncInvoiceFields);
     };
   }, [orderProp.id]);
 

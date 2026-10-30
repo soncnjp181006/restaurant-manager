@@ -97,7 +97,7 @@ mirror" helpers. All of them now go through `PosStore` commands:
   `skipKitchenStage`, `recallKitchenStage`, `cancelItemKitchenStages`,
   `lockTable` / `unlockTable` / `heartbeatTableLock`, `createCustomer`,
   `recordOrderPrint`. Each is one Dexie transaction (projection + domain
-  operation + outbox row) followed by a `posr-posstore-write` event.
+  operation + outbox row) followed by a `restaurant-manager-posstore-write` event.
 - **Dexie v2** stores every order child relation (payments, voids, refunds,
   taxes, discounts, coupons, extras, redemptions, splits, merges, prints),
   customers and table locks, so reads (floor, orders, order card, payment

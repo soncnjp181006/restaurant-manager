@@ -6,7 +6,7 @@ import {
   getSessionToken,
   isGatewayAuthEnabled,
 } from '@/lib/session.ts';
-import { LOGIN } from '@/routes/posr.ts';
+import { LOGIN } from '@/routes/restaurant-manager.ts';
 
 /**
  * When tokens are cleared (sync 401, Surreal refresh failure, etc.), force the
@@ -35,9 +35,9 @@ export function SessionExpiryBridge() {
       navigate(LOGIN, { replace: true });
     };
 
-    window.addEventListener('posr-session', onSession);
+    window.addEventListener('restaurant-manager-session', onSession);
     return () => {
-      window.removeEventListener('posr-session', onSession);
+      window.removeEventListener('restaurant-manager-session', onSession);
     };
   }, [navigate, setPage]);
 

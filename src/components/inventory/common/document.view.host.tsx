@@ -11,7 +11,7 @@ import {
   isInventoryPrintDocType,
   loadInventoryPrintDoc,
 } from "@/lib/inventory/document.print.loader.ts";
-import type {InventoryPrintDocType} from "@/routes/posr.ts";
+import type {InventoryPrintDocType} from "@/routes/restaurant-manager.ts";
 import {toRecordId} from "@/lib/utils.ts";
 import {Tables} from "@/api/db/tables.ts";
 

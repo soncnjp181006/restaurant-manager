@@ -109,7 +109,7 @@ describe('formatSyncFailure', () => {
     expect(result.provider_id).toBe('provider:quickbooks');
     expect(result.tenant_id).toBe('realm-123');
     expect(result.entity_type).toBe('sales_receipt');
-    expect(result.posr_id).toBe('order:42');
+    expect(result.local_id).toBe('order:42');
     expect(result.action).toBe('syncSale');
     expect(result.error).toBe('Validation failed');
     expect(result.error_category).toBe('validation');

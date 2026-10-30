@@ -23,8 +23,8 @@ if (typeof global.WebSocket === 'undefined') {
 }
 
 const DB_URL = process.env.SURREAL_URL || 'ws://surrealdb:8000/rpc';
-const DB_NS = process.env.SURREAL_NS || 'posr';
-const DB_NAME = process.env.SURREAL_DB || 'posr';
+const DB_NS = process.env.SURREAL_NS || 'restaurant_manager';
+const DB_NAME = process.env.SURREAL_DB || 'restaurant_manager';
 const DB_USER = process.env.SURREAL_USER;
 const DB_PASS = process.env.SURREAL_PASS;
 if (!DB_USER || !DB_PASS) {
@@ -131,6 +131,7 @@ const MIGRATION_PLAN = [
   { id: '2026_10_20_inventory_uom_catalog', file: '2026_10_20_inventory_uom_catalog.surql' },
   { id: '2026_10_21_printer_command_set', file: '2026_10_21_printer_command_set.surql' },
   { id: '2026_10_22_kitchen_recon_entered_uom', file: '2026_10_22_kitchen_recon_entered_uom.surql' },
+  { id: '2026_10_31_brand_rename', file: '2026_10_31_brand_rename.surql' },
 ];
 
 const rows = (result) => {

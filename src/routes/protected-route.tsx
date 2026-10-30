@@ -2,7 +2,7 @@ import {useAtomValue, useSetAtom} from "jotai";
 import {Navigate, Outlet, useLocation} from "react-router";
 import {useEffect, useState} from "react";
 import {appPage} from "@/store/jotai.ts";
-import {LOGIN} from "@/routes/posr.ts";
+import {LOGIN} from "@/routes/restaurant-manager.ts";
 import {WhatsNewDialog} from "@/components/whats-new/whats-new.dialog.tsx";
 import {getSessionToken, isGatewayAuthEnabled} from "@/lib/session.ts";
 import {useHydrateCurrencySymbol} from "@/hooks/useCurrencySymbol.ts";
@@ -16,8 +16,8 @@ export const ProtectedRoute = () => {
 
   useEffect(() => {
     const onSession = () => setSessionTick((tick) => tick + 1);
-    window.addEventListener('posr-session', onSession);
-    return () => window.removeEventListener('posr-session', onSession);
+    window.addEventListener('restaurant-manager-session', onSession);
+    return () => window.removeEventListener('restaurant-manager-session', onSession);
   }, []);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export const ProtectedRoute = () => {
     return <Navigate to={LOGIN} replace state={{from: location}}/>;
   }
 
-  // sessionTick forces re-read of localStorage after posr-session.
+  // sessionTick forces re-read of localStorage after restaurant-manager-session.
   void sessionTick;
   if (isGatewayAuthEnabled() && !getSessionToken()) {
     return <Navigate to={LOGIN} replace state={{from: location}}/>;

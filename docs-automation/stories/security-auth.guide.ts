@@ -18,10 +18,10 @@ test('capture security re-authentication', async ({ page }) => {
 
   await page.evaluate(() => {
     const api = (window as Window & {
-      __POSR_DOCS_SECURITY__?: { open: (description?: string) => void };
-    }).__POSR_DOCS_SECURITY__;
+      __RESTAURANT_MANAGER_DOCS_SECURITY__?: { open: (description?: string) => void };
+    }).__RESTAURANT_MANAGER_DOCS_SECURITY__;
     if (!api?.open) {
-      throw new Error('__POSR_DOCS_SECURITY__ not available — SecurityProvider must expose docs hook');
+      throw new Error('__RESTAURANT_MANAGER_DOCS_SECURITY__ not available — SecurityProvider must expose docs hook');
     }
     api.open('Approve protected action');
   });
@@ -45,7 +45,7 @@ test('capture security re-authentication', async ({ page }) => {
   await clearHighlights(page);
 
   await page.evaluate(() => {
-    (window as Window & { __POSR_DOCS_SECURITY__?: { close: () => void } }).__POSR_DOCS_SECURITY__?.close();
+    (window as Window & { __RESTAURANT_MANAGER_DOCS_SECURITY__?: { close: () => void } }).__RESTAURANT_MANAGER_DOCS_SECURITY__?.close();
   });
   await page.waitForTimeout(300);
 });

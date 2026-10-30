@@ -1,4 +1,4 @@
-import {REPORTS_CASH_CLOSING} from "@/routes/posr.ts";
+import {REPORTS_CASH_CLOSING} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {DatePicker} from "@/components/common/antd/datepicker.tsx";
 import {getLocalTimeZone, today} from "@internationalized/date";

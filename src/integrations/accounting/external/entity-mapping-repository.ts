@@ -15,18 +15,18 @@ export type EntityMappingDbClient = {
 export class EntityMappingRepository {
   constructor(private readonly db: EntityMappingDbClient) {}
 
-  async findByPosrId(
+  async findByLocalId(
     providerId: string,
     tenantId: string,
     entityType: ExternalEntityType,
-    posrId: string
+    localId: string
   ): Promise<EntityMapping | null> {
     const [rows] = await this.db.query<[EntityMapping[]]>(
       `SELECT * FROM ${Tables.integration_entity_mappings}
        WHERE provider_id = $providerId AND tenant_id = $tenantId
-         AND entity_type = $entityType AND posr_id = $posrId
+         AND entity_type = $entityType AND local_id = $localId
        LIMIT 1`,
-      { providerId, tenantId, entityType, posrId }
+      { providerId, tenantId, entityType, localId }
     );
     return rows?.[0] ?? null;
   }
@@ -48,13 +48,13 @@ export class EntityMappingRepository {
   }
 
   async save(mapping: Omit<EntityMapping, 'id' | 'updatedAt'>): Promise<EntityMapping> {
-    const existing = await this.findByPosrId(mapping.providerId, mapping.tenantId, mapping.entityType, mapping.posrId);
+    const existing = await this.findByLocalId(mapping.providerId, mapping.tenantId, mapping.entityType, mapping.localId);
 
     const data = {
       provider_id: mapping.providerId,
       tenant_id: mapping.tenantId,
       entity_type: mapping.entityType,
-      posr_id: mapping.posrId,
+      local_id: mapping.localId,
       external_id: mapping.externalId,
       external_payload: mapping.externalPayload ?? {},
       updated_at: nowSurrealDateTime(),
@@ -89,18 +89,18 @@ export class EntityMappingRepository {
       params.entityType = entityType;
     }
 
-    sql += ' ORDER BY entity_type, posr_id';
+    sql += ' ORDER BY entity_type, local_id';
 
     const [rows] = await this.db.query<[EntityMapping[]]>(sql, params);
     return rows ?? [];
   }
 
-  async delete(providerId: string, tenantId: string, entityType: ExternalEntityType, posrId: string): Promise<void> {
+  async delete(providerId: string, tenantId: string, entityType: ExternalEntityType, localId: string): Promise<void> {
     await this.db.query(
       `DELETE FROM ${Tables.integration_entity_mappings}
        WHERE provider_id = $providerId AND tenant_id = $tenantId
-         AND entity_type = $entityType AND posr_id = $posrId`,
-      { providerId, tenantId, entityType, posrId }
+         AND entity_type = $entityType AND local_id = $localId`,
+      { providerId, tenantId, entityType, localId }
     );
   }
 

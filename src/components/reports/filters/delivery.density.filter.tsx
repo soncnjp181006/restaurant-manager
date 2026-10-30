@@ -1,4 +1,4 @@
-import {REPORTS_DELIVERY_DENSITY} from "@/routes/posr.ts";
+import {REPORTS_DELIVERY_DENSITY} from "@/routes/restaurant-manager.ts";
 import {DateRange} from "@/components/reports/filters/date.range.tsx";
 import {Button} from "@/components/common/input/button.tsx";
 import {ReactSelect} from "@/components/common/input/custom.react.select.tsx";

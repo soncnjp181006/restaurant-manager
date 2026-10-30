@@ -1,7 +1,7 @@
 import {createStore, del, get, set} from "idb-keyval";
 import type {OpenAIChatMessage} from "@/lib/openai.service.ts";
 
-const assistantConversationStore = createStore("posr-react-ai-assistant", "keyval");
+const assistantConversationStore = createStore("restaurant-manager-ai-assistant", "keyval");
 
 export type AssistantDisplayEntry = {
   role: "user" | "assistant" | "system";

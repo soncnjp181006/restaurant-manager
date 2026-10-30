@@ -12,7 +12,7 @@ import {AiMarkdown} from "@/components/reports/ai/ai.markdown.tsx";
 import type {DbClient} from "@/api/reports/shared/types.ts";
 import {runAiReportAgent, type AiReportAgentResult} from "@/lib/ai/agent.ts";
 import type {AiOrderRef} from "@/lib/ai/order-refs.ts";
-import {orderReceiptUrl} from "@/routes/posr.ts";
+import {orderReceiptUrl} from "@/routes/restaurant-manager.ts";
 import {AI_EXAMPLE_PROMPTS} from "@/lib/ai/example.prompts.ts";
 import {
   type AiReportFormat,

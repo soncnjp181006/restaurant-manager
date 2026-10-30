@@ -1,19 +1,19 @@
 -- External accounting integration tables (provider-agnostic).
 -- Shared by QuickBooks Online, Xero, and future cloud accounting providers.
 
--- Maps POSR entity IDs to external accounting system IDs.
+-- Maps local entity IDs to external accounting system IDs.
 DEFINE TABLE IF NOT EXISTS integration_entity_mapping SCHEMALESS;
 
 DEFINE FIELD IF NOT EXISTS provider_id ON integration_entity_mapping TYPE string;
 DEFINE FIELD IF NOT EXISTS tenant_id ON integration_entity_mapping TYPE string;
 DEFINE FIELD IF NOT EXISTS entity_type ON integration_entity_mapping TYPE string;
-DEFINE FIELD IF NOT EXISTS posr_id ON integration_entity_mapping TYPE string;
+DEFINE FIELD IF NOT EXISTS local_id ON integration_entity_mapping TYPE string;
 DEFINE FIELD IF NOT EXISTS external_id ON integration_entity_mapping TYPE string;
 DEFINE FIELD IF NOT EXISTS external_payload ON integration_entity_mapping TYPE any DEFAULT {};
 DEFINE FIELD IF NOT EXISTS updated_at ON integration_entity_mapping TYPE datetime DEFAULT time::now();
 
-DEFINE INDEX IF NOT EXISTS idx_entity_mapping_posr ON integration_entity_mapping
-  FIELDS provider_id, tenant_id, entity_type, posr_id UNIQUE;
+DEFINE INDEX IF NOT EXISTS idx_entity_mapping_local ON integration_entity_mapping
+  FIELDS provider_id, tenant_id, entity_type, local_id UNIQUE;
 
 DEFINE INDEX IF NOT EXISTS idx_entity_mapping_external ON integration_entity_mapping
   FIELDS provider_id, tenant_id, entity_type, external_id UNIQUE;
@@ -67,7 +67,7 @@ DEFINE TABLE IF NOT EXISTS integration_sync_failure SCHEMAFULL;
 DEFINE FIELD IF NOT EXISTS provider_id ON integration_sync_failure TYPE string;
 DEFINE FIELD IF NOT EXISTS tenant_id ON integration_sync_failure TYPE string;
 DEFINE FIELD IF NOT EXISTS entity_type ON integration_sync_failure TYPE string;
-DEFINE FIELD IF NOT EXISTS posr_id ON integration_sync_failure TYPE string;
+DEFINE FIELD IF NOT EXISTS local_id ON integration_sync_failure TYPE string;
 DEFINE FIELD IF NOT EXISTS action ON integration_sync_failure TYPE string;
 DEFINE FIELD IF NOT EXISTS error ON integration_sync_failure TYPE string;
 DEFINE FIELD IF NOT EXISTS error_category ON integration_sync_failure TYPE string;

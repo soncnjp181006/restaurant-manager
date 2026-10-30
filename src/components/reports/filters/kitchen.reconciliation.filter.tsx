@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {REPORTS_KITCHEN_RECONCILIATION} from "@/routes/posr.ts";
+import {REPORTS_KITCHEN_RECONCILIATION} from "@/routes/restaurant-manager.ts";
 import {DateRange} from "@/components/reports/filters/date.range.tsx";
 import {Button} from "@/components/common/input/button.tsx";
 import {ReactSelect} from "@/components/common/input/custom.react.select.tsx";

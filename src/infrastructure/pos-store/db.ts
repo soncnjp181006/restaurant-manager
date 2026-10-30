@@ -29,7 +29,7 @@ import type {
 import { CHILD_TABLE_STORES, type ChildTableName } from './types.ts';
 
 /** Dedicated IndexedDB — never reuse jotai or write-queue DB names. */
-export const POS_STORE_DB_NAME = 'posr-terminal-posstore';
+export const POS_STORE_DB_NAME = 'restaurant-terminal-posstore';
 
 export class PosStoreDatabase extends Dexie {
   identity!: Table<TerminalIdentity & { id: 'singleton' }, string>;

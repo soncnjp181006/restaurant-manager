@@ -21,9 +21,9 @@ import { PageLoader } from "@/components/common/loader/page-loader.tsx";
 import { useTranslation } from "react-i18next";
 import { setPosStoreEffectivelyConnected } from "@/infrastructure/pos-store/connectivity.ts";
 
-const SESSION_EVENT = "posr-session";
+const SESSION_EVENT = "restaurant-manager-session";
 /** Durable across tabs/sessions — allows offline cold boot after a prior connect. */
-const CONNECTED_ONCE_KEY = "posr-db-connected-once";
+const CONNECTED_ONCE_KEY = "restaurant-manager-db-connected-once";
 
 function readBrowserOnline(): boolean {
   return typeof navigator === "undefined" || navigator.onLine;
@@ -377,8 +377,8 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
     const onReconnect = () => {
       void connect({ silent: hasConnectedOnce.current }).catch(() => {});
     };
-    window.addEventListener('posr-db-reconnect', onReconnect);
-    return () => window.removeEventListener('posr-db-reconnect', onReconnect);
+    window.addEventListener('restaurant-manager-db-reconnect', onReconnect);
+    return () => window.removeEventListener('restaurant-manager-db-reconnect', onReconnect);
   }, [connect]);
 
   useEffect(() => {

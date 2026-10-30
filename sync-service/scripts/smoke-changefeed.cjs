@@ -67,12 +67,12 @@ async function main() {
   process.stdout.write(`smoke: url=${resolvedUrl}\n`);
   const user = env('SYNC_SOURCE_USER', env('SURREAL_USER', 'root'));
   const pass = env('SYNC_SOURCE_PASS', env('SURREAL_PASS', 'root'));
-  const sourceNs = env('SYNC_SOURCE_NS', env('SURREAL_NS', 'posr'));
-  const sourceDb = env('SYNC_SOURCE_DB', env('SURREAL_DB', 'posr'));
+  const sourceNs = env('SYNC_SOURCE_NS', env('SURREAL_NS', 'restaurant_manager'));
+  const sourceDb = env('SYNC_SOURCE_DB', env('SURREAL_DB', 'restaurant_manager'));
   const clientId = env('SYNC_CLIENT_ID', 'smoke-branch');
 
-  const masterNs = env('SYNC_SMOKE_MASTER_NS', 'posr_sync_smoke');
-  const masterDb = env('SYNC_SMOKE_MASTER_DB', 'posr_sync_smoke');
+  const masterNs = env('SYNC_SMOKE_MASTER_NS', 'restaurant_manager_sync_smoke');
+  const masterDb = env('SYNC_SMOKE_MASTER_DB', 'restaurant_manager_sync_smoke');
 
   process.stdout.write('smoke: connecting source\n');
   const source = await connect('source', {
@@ -83,7 +83,7 @@ async function main() {
   // Apply migration statements (idempotent DEFINE TABLE … CHANGEFEED).
   const migrationCandidates = [
     path.resolve(__dirname, '../../migrations/2026_09_24_foh_changefeed.surql'),
-    path.resolve('/var/www/html/posr-react/migrations/2026_09_24_foh_changefeed.surql'),
+    path.resolve('/var/www/html/restaurant-manager/migrations/2026_09_24_foh_changefeed.surql'),
     process.env.SYNC_SMOKE_MIGRATION || '',
   ].filter(Boolean);
   const migrationPath = migrationCandidates.find((p) => fs.existsSync(p));

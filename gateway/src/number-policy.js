@@ -95,7 +95,7 @@ const PRESET_DEFAULTS = {
     template: '{seq}',
     fiscal: 'none',
   },
-  fiscal_plus_posr: {
+  fiscal_plus_brand: {
     mint: 'gateway',
     reset: 'day',
     scope: 'restaurant',
@@ -131,10 +131,19 @@ function policyFromPreset(preset) {
   });
 }
 
+/** Preset names stored before the brand rename. */
+const LEGACY_PRESET_ALIASES = { fiscal_plus_posr: 'fiscal_plus_brand' };
+
 function normalizeNumberPolicy(raw) {
   const src = raw && typeof raw === 'object' ? raw : {};
-  const preset = typeof src.preset === 'string' && PRESET_DEFAULTS[src.preset]
-    ? src.preset
+  // Rows saved before the brand rename still carry `fiscal_plus_posr`. Without
+  // this alias an existing fiscal+POS terminal would silently fall back to
+  // date_reset, which changes invoice numbering — a money-adjacent behaviour.
+  const requested = typeof src.preset === 'string'
+    ? (LEGACY_PRESET_ALIASES[src.preset] ?? src.preset)
+    : null;
+  const preset = requested && PRESET_DEFAULTS[requested]
+    ? requested
     : DEFAULT_NUMBER_POLICY.preset;
 
   const pendingRaw = src.pending && typeof src.pending === 'object' ? src.pending : {};

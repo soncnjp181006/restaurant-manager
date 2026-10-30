@@ -80,7 +80,7 @@ cd ../printing && (same env) node --test session-auth.middleware.test.js
 cd ../tracking-api && (same env) node --test src/session-auth.middleware.test.js src/surreal-client.test.js
 
 # 3. Apply the new migration
-SURREAL_USER=posr SURREAL_PASS=<your-pass> ./migrations/scripts/apply-migration.sh \
+SURREAL_USER=restaurant SURREAL_PASS=<your-pass> ./migrations/scripts/apply-migration.sh \
   migrations/2026_08_27_revoked_session_store.surql
 ```
 

@@ -253,7 +253,7 @@ export const Login = () => {
     // Finish clock-in status check while Login is still mounted (session not announced yet).
     const ok = await afterUserAuthenticated(normalizedUser);
     // Sync provider with token presence (cleared on connection failure).
-    window.dispatchEvent(new Event('posr-session'));
+    window.dispatchEvent(new Event('restaurant-manager-session'));
     return ok;
   };
 
@@ -422,9 +422,9 @@ export const Login = () => {
           )}
           <img
             src="/pwa-512.png"
-            alt={t('login.posrLogoAlt')}
+            alt={t('login.brandLogoAlt')}
             className="w-28 h-28 sm:w-36 sm:h-36 object-contain rounded-2xl"
-            data-testid="login-posr-logo"
+            data-testid="login-brand-logo"
           />
         </aside>
         <div className="relative isolate flex-1 flex justify-center items-center flex-col gap-8 px-4 py-10 overflow-hidden">

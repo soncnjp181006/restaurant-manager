@@ -3,7 +3,7 @@
 --
 --   NODE_PATH=./payments/node_modules \
 --   SURREAL_URL=ws://YOUR_SURREAL_HOST:8000/rpc \
---   SURREAL_NS=posr SURREAL_DB=posr SURREAL_USER=root SURREAL_PASS=root \
+--   SURREAL_NS=restaurant_manager SURREAL_DB=restaurant_manager SURREAL_USER=root SURREAL_PASS=root \
 --   node migrations/scripts/apply-migration.cjs migrations/2026_07_18_location_stock_cutover.surql
 --
 -- Then data remap (same env):

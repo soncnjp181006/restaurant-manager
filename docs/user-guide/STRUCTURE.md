@@ -73,4 +73,4 @@ Restaurant Manager Documentation
 |------|-------------|
 | `dist/{lang}/index.html` | Documentation hub |
 | `dist/{lang}/{guide}/user-guide.html` | Role guide HTML |
-| `dist/{lang}/{guide}/posr-*-guide.pdf` | Role guide PDF |
+| `dist/{lang}/{guide}/restaurant-manager-*-guide.pdf` | Role guide PDF |

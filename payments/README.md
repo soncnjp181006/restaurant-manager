@@ -62,7 +62,7 @@ Request:
   "returnUrl": "https://example.com/payment/success",
   "cancelUrl": "https://example.com/payment/cancel",
   "metadata": {
-    "source": "posr-react"
+    "source": "restaurant-manager"
   }
 }
 ```
@@ -333,8 +333,8 @@ M-Pesa uses **real Safaricom Daraja API** calls. Credentials are loaded from Sur
 
 ```
 SURREAL_URL=ws://localhost:8001/rpc
-SURREAL_NS=posr
-SURREAL_DB=posr
+SURREAL_NS=restaurant_manager
+SURREAL_DB=restaurant_manager
 SURREAL_USER=root
 SURREAL_PASS=root
 ```

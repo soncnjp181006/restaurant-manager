@@ -3,7 +3,7 @@
 /**
  * Regression tests for the fail-open JWT-secret defect: this module used to
  * fall back to a hardcoded, publicly-known secret ('dev-only-change-me-
- * posr-gateway') when GATEWAY_JWT_SECRET was unset, letting anyone forge a
+ * restaurant-manager-gateway') when GATEWAY_JWT_SECRET was unset, letting anyone forge a
  * valid session token. It must now refuse to start at all without a real
  * secret configured.
  *
@@ -44,7 +44,7 @@ test('the removed hardcoded secret is never accepted as if it were a real value'
   } catch (err) {
     output = String(err.stderr || err.message || '');
   }
-  assert.ok(!output.includes('dev-only-change-me-posr-gateway'));
+  assert.ok(!output.includes('dev-only-change-me-restaurant-manager-gateway'));
 });
 
 test('throws at load time when GATEWAY_JWT_SECRET is shorter than 32 characters', () => {

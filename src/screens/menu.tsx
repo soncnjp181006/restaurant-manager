@@ -38,10 +38,10 @@ export const Menu = () => {
       return;
     }
     try {
-      if (localStorage.getItem('posr_docs_tableless_leak_recovered') === '1') {
+      if (localStorage.getItem('restaurant_manager_docs_tableless_leak_recovered') === '1') {
         return;
       }
-      localStorage.setItem('posr_docs_tableless_leak_recovered', '1');
+      localStorage.setItem('restaurant_manager_docs_tableless_leak_recovered', '1');
     } catch {
       return;
     }
@@ -121,8 +121,8 @@ export const Menu = () => {
     };
 
     void fetchTablelessOrders();
-    window.addEventListener('posr-posstore-write', onWrite);
-    window.addEventListener('posr-operational-orders-updated', onWrite);
+    window.addEventListener('restaurant-manager-posstore-write', onWrite);
+    window.addEventListener('restaurant-manager-operational-orders-updated', onWrite);
     const pollId = window.setInterval(() => void fetchTablelessOrders(), 5_000);
 
     // Online-only sync wake — never the data source.
@@ -140,8 +140,8 @@ export const Menu = () => {
 
     return () => {
       cancelled = true;
-      window.removeEventListener('posr-posstore-write', onWrite);
-      window.removeEventListener('posr-operational-orders-updated', onWrite);
+      window.removeEventListener('restaurant-manager-posstore-write', onWrite);
+      window.removeEventListener('restaurant-manager-operational-orders-updated', onWrite);
       window.clearInterval(pollId);
       tablelessOrdersLiveRef.current?.kill().catch(() => undefined);
       tablelessOrdersLiveRef.current = null;

@@ -52,12 +52,12 @@ async function main() {
 
   const user = env('SYNC_SOURCE_USER', env('SURREAL_USER', 'root'));
   const pass = env('SYNC_SOURCE_PASS', env('SURREAL_PASS', 'root'));
-  // Throwaway NS/DB on both sides so smoke never touches live posr data.
-  const sourceNs = env('SYNC_SMOKE_SOURCE_NS', 'posr_catalog_smoke_src');
-  const sourceDb = env('SYNC_SMOKE_SOURCE_DB', 'posr_catalog_smoke_src');
+  // Throwaway NS/DB on both sides so smoke never touches live restaurant_manager data.
+  const sourceNs = env('SYNC_SMOKE_SOURCE_NS', 'restaurant_manager_catalog_smoke_src');
+  const sourceDb = env('SYNC_SMOKE_SOURCE_DB', 'restaurant_manager_catalog_smoke_src');
   const clientId = env('SYNC_CLIENT_ID', 'smoke-branch');
-  const masterNs = env('SYNC_SMOKE_MASTER_NS', 'posr_catalog_smoke');
-  const masterDb = env('SYNC_SMOKE_MASTER_DB', 'posr_catalog_smoke');
+  const masterNs = env('SYNC_SMOKE_MASTER_NS', 'restaurant_manager_catalog_smoke');
+  const masterDb = env('SYNC_SMOKE_MASTER_DB', 'restaurant_manager_catalog_smoke');
 
   process.env.SYNC_DISTRIBUTION_MODE = 'full';
   process.env.SYNC_CLIENT_ID = clientId;

@@ -177,7 +177,7 @@ export const systemPrinterSettings = atomWithStorage<SystemPrinterSettings>(
   {getOnInit: true}
 );
 
-const appStorageStore = createStore('posr-react', 'jotai-storage')
+const appStorageStore = createStore('restaurant-manager', 'jotai-storage')
 
 export const indexedDBStorage = {
   getItem: async (key: string) => {

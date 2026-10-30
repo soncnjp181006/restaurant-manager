@@ -23,7 +23,7 @@
  * After a live wipe on a branch:
  *   1. Restart sync-service (or wait for next poll) with SYNC_DISTRIBUTION_MODE=full
  *   2. Settings → Sync catalog now
- *   3. Settings → Reload cache (and/or delete IndexedDB `posr-terminal`)
+ *   3. Settings → Reload cache (and/or delete IndexedDB `restaurant-terminal`)
  */
 
 const WS = require('ws');
@@ -34,8 +34,8 @@ if (typeof global.WebSocket === 'undefined') {
 }
 
 const DB_URL = process.env.SURREAL_URL || 'ws://localhost:8000/rpc';
-const DB_NS = process.env.SURREAL_NS || 'posr';
-const DB_NAME = process.env.SURREAL_DB || 'posr';
+const DB_NS = process.env.SURREAL_NS || 'restaurant_manager';
+const DB_NAME = process.env.SURREAL_DB || 'restaurant_manager';
 const DB_USER = process.env.SURREAL_USER;
 const DB_PASS = process.env.SURREAL_PASS;
 const DRY_RUN = process.env.DRY_RUN === '1';
@@ -179,7 +179,7 @@ async function main() {
   }
 
   console.log('Done.');
-  console.log('Next on this branch: Sync catalog now, then Reload cache (clear IndexedDB posr-terminal if needed).');
+  console.log('Next on this branch: Sync catalog now, then Reload cache (clear IndexedDB restaurant-terminal if needed).');
   if (!INCLUDE_USERS) {
     console.log('Users were kept. After sync, cloud users may merge on top of local logins.');
   }

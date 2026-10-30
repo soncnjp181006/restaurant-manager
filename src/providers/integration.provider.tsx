@@ -29,7 +29,7 @@ interface IntegrationContextValue {
 }
 
 const FRAMEWORK_VERSION = '1.0.0';
-const SESSION_EVENT = 'posr-session';
+const SESSION_EVENT = 'restaurant-manager-session';
 
 const IntegrationContext = createContext<IntegrationContextValue | null>(null);
 

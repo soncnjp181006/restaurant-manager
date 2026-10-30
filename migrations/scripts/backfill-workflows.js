@@ -19,7 +19,7 @@
  *
  * Usage (from a context that has `surrealdb` + `ws` installed, e.g. ./payments):
  *   SURREAL_URL=ws://localhost:8000/rpc \
- *   SURREAL_NS=posr SURREAL_DB=posr \
+ *   SURREAL_NS=restaurant_manager SURREAL_DB=restaurant_manager \
  *   SURREAL_USER=root SURREAL_PASS=root \
  *   node ../migrations/scripts/backfill-workflows.js
  */
@@ -32,8 +32,8 @@ if (typeof global.WebSocket === 'undefined') {
 }
 
 const DB_URL = process.env.SURREAL_URL || 'ws://localhost:8000/rpc';
-const DB_NS = process.env.SURREAL_NS || 'posr';
-const DB_NAME = process.env.SURREAL_DB || 'posr';
+const DB_NS = process.env.SURREAL_NS || 'restaurant_manager';
+const DB_NAME = process.env.SURREAL_DB || 'restaurant_manager';
 const DB_USER = process.env.SURREAL_USER;
 const DB_PASS = process.env.SURREAL_PASS;
 if (!DB_USER || !DB_PASS) {

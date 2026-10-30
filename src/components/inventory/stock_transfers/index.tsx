@@ -8,7 +8,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faFile, faPencil, faPlus, faPrint} from "@fortawesome/free-solid-svg-icons";
 import {StockTransferForm} from "@/components/inventory/stock_transfers/form.tsx";
 import {StockTransferViewModal} from "@/components/inventory/stock_transfers/view.modal.tsx";
-import {inventoryPrintUrl} from "@/routes/posr.ts";
+import {inventoryPrintUrl} from "@/routes/restaurant-manager.ts";
 import {useStockTransferList} from "@/hooks/useStockTransferList.ts";
 import {useSecurity} from "@/hooks/useSecurity.ts";
 import {formatDateTime} from "@/lib/datetime.ts";

@@ -69,7 +69,7 @@ jobs:
       - name: Build Windows NSIS installer
         shell: pwsh
         env:
-          POSR_REPO_ROOT: ${{ github.workspace }}
+          RESTAURANT_MANAGER_REPO_ROOT: ${{ github.workspace }}
         run: |
           bun run desktop:build:windows
 

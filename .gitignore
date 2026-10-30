@@ -31,11 +31,11 @@ dist-ssr
 *.sw?
 *.idea
 *.vscode
-posr.db*
+restaurant_manager.db*
 .cursor
 cert
-posr.db
-posr.db1
+restaurant_manager.db
+restaurant_manager.db1
 
 database/clog
 database/manifest

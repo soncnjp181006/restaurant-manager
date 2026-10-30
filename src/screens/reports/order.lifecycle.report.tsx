@@ -18,7 +18,7 @@ import {
   faUtensils,
 } from "@fortawesome/free-solid-svg-icons";
 import {Tracking} from "@/api/model/tracking.ts";
-import {orderReceiptUrl} from "@/routes/posr.ts";
+import {orderReceiptUrl} from "@/routes/restaurant-manager.ts";
 
 import {useReportBranchScope} from "@/hooks/useReportBranchScope.ts";
 import {buildBranchInsideCondition} from "@/api/reports/shared/query.ts";

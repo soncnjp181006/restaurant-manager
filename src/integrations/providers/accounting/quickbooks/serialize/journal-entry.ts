@@ -1,5 +1,5 @@
 /**
- * Serialize a POSR journal draft into a QuickBooks JournalEntry.
+ * Serialize a Restaurant Manager journal draft into a QuickBooks JournalEntry.
  * Converts debits/credits with mapped account references.
  */
 
@@ -58,7 +58,7 @@ export const serializeJournalEntry = (input: QboJournalEntryInput): QboJournalEn
   const payload: QboJournalEntryPayload = {
     Line: lines,
     TxnDate: input.txnDate ?? new Date().toISOString().slice(0, 10),
-    PrivateNote: input.privateNote ?? 'POSR — auto-generated journal entry',
+    PrivateNote: input.privateNote ?? 'Restaurant Manager — auto-generated journal entry',
   };
 
   if (input.docNumber) {

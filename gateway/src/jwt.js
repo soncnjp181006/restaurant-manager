@@ -42,7 +42,7 @@ async function signSession({ userId, login }) {
     .setIssuedAt()
     .setExpirationTime(TTL)
     .setJti(jti)
-    .setIssuer('posr-gateway')
+    .setIssuer('restaurant-manager-gateway')
     .sign(key);
 
   return { token, jti, expiresIn: parseTtlSeconds(TTL) };
@@ -58,7 +58,7 @@ async function verifySession(token) {
   let payload;
   try {
     ({ payload } = await jwtVerify(token, key, {
-      issuer: 'posr-gateway',
+      issuer: 'restaurant-manager-gateway',
       algorithms: ['HS256'],
     }));
   } catch {

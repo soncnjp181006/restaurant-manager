@@ -81,9 +81,9 @@ See also [`STRUCTURE.md`](STRUCTURE.md) (refreshed on every `docs:guide:assemble
 | `dist/{lang}/index.md` | Hub markdown |
 | `dist/{lang}/{guide}/user-guide.html` | Role guide (e.g. `employee`, `manager`) |
 | `dist/{lang}/{guide}/user-guide.md` | Role guide markdown |
-| `dist/{lang}/{guide}/posr-*-guide.pdf` | One PDF per role |
-| `dist/{lang}/posr-documentation-hub.pdf` | Hub PDF |
-| `dist/{lang}/user-guide.html` + `posr-user-guide.pdf` | **Legacy** employee-ready chapters only |
+| `dist/{lang}/{guide}/restaurant-manager-*-guide.pdf` | One PDF per role |
+| `dist/{lang}/restaurant-manager-documentation-hub.pdf` | Hub PDF |
+| `dist/{lang}/user-guide.html` + `restaurant-manager-user-guide.pdf` | **Legacy** employee-ready chapters only |
 
 Guide titles/intros: `locales/{lang}/guides.json`. Chapter body: `locales/{lang}/{chapter}.json`. Chapter membership: `guide-catalog.mjs`.
 
@@ -187,7 +187,7 @@ npm run docs:guide
 # same as: npm run docs:guide:assemble && npm run docs:guide:pdf
 ```
 
-Open: `docs/user-guide/dist/en/index.html` (hub). Role PDFs: `dist/en/employee/posr-employee-guide.pdf`, etc.
+Open: `docs/user-guide/dist/en/index.html` (hub). Role PDFs: `dist/en/employee/restaurant-manager-employee-guide.pdf`, etc.
 
 If capture fails with “No floor tables”, “No dishes”, or “No payment types”, fix demo data and reload cache, then re-run. Until a language is re-captured, assemble falls back to English UI images and notes that in the PDF.
 

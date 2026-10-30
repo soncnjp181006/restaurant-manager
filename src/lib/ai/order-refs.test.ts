@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {collectOrderRefs} from "@/lib/ai/order-refs.ts";
 import {resolveReceiptHref} from "@/lib/ai/order-receipt-links.tsx";
-import {orderReceiptUrl} from "@/routes/posr.ts";
+import {orderReceiptUrl} from "@/routes/restaurant-manager.ts";
 
 describe("collectOrderRefs", () => {
   it("collects refs from get_orders rows", () => {

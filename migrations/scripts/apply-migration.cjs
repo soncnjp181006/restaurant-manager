@@ -11,8 +11,8 @@
  *
  * Env (required for production):
  *   SURREAL_URL   e.g. ws://surrealdb:8000/rpc  or  wss://db.example.com/rpc
- *   SURREAL_NS    default posr
- *   SURREAL_DB    default posr
+ *   SURREAL_NS    default restaurant_manager
+ *   SURREAL_DB    default restaurant_manager
  *   SURREAL_USER  (required — no default; must match the existing SurrealDB root user)
  *   SURREAL_PASS  (required — no default)
  *
@@ -20,7 +20,7 @@
  *   docker run --rm --network <compose_network> \
  *     -v "$PWD:/work" -w /work \
  *     -e SURREAL_URL=ws://surrealdb:8000/rpc \
- *     -e SURREAL_NS=posr -e SURREAL_DB=posr \
+ *     -e SURREAL_NS=restaurant_manager -e SURREAL_DB=restaurant_manager \
  *     -e SURREAL_USER=root -e SURREAL_PASS=root \
  *     node:20-alpine \
  *     sh -c "npm i surrealdb@2 ws --prefix /tmp/m && NODE_PATH=/tmp/m/node_modules \
@@ -42,8 +42,8 @@ if (typeof global.WebSocket === 'undefined') {
 }
 
 const DB_URL = process.env.SURREAL_URL || 'ws://localhost:8000/rpc';
-const DB_NS = process.env.SURREAL_NS || 'posr';
-const DB_NAME = process.env.SURREAL_DB || 'posr';
+const DB_NS = process.env.SURREAL_NS || 'restaurant_manager';
+const DB_NAME = process.env.SURREAL_DB || 'restaurant_manager';
 const DB_USER = process.env.SURREAL_USER;
 const DB_PASS = process.env.SURREAL_PASS;
 if (!DB_USER || !DB_PASS) {

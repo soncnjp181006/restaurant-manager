@@ -5,7 +5,7 @@ describe('parseExternalAccountingConfig', () => {
   it('parses basic config with all fields', () => {
     const raw = {
       tenantId: 'realm-123',
-      syncDirection: 'posr_to_external',
+      syncDirection: 'local_to_external',
       syncIntervalMinutes: 30,
       saleDocumentType: 'invoice',
       enableClasses: true,
@@ -21,7 +21,7 @@ describe('parseExternalAccountingConfig', () => {
     const config = parseExternalAccountingConfig(raw);
 
     expect(config.tenantId).toBe('realm-123');
-    expect(config.syncDirection).toBe('posr_to_external');
+    expect(config.syncDirection).toBe('local_to_external');
     expect(config.syncIntervalMinutes).toBe(30);
     expect(config.saleDocumentType).toBe('invoice');
     expect(config.enableClasses).toBe(true);
@@ -38,12 +38,24 @@ describe('parseExternalAccountingConfig', () => {
     const config = parseExternalAccountingConfig({});
 
     expect(config.tenantId).toBe('');
-    expect(config.syncDirection).toBe('posr_to_external');
+    expect(config.syncDirection).toBe('local_to_external');
     expect(config.syncIntervalMinutes).toBe(60);
     expect(config.saleDocumentType).toBe('sales_receipt');
     expect(config.enableClasses).toBe(false);
     expect(config.enableDepartments).toBe(false);
     expect(config.enableInventoryJournals).toBe(true);
+  });
+
+  it('normalizes the legacy syncDirection value saved before the rename', () => {
+    // 'posr_to_external' là giá trị đã lưu trong DB của người dùng, chỉ xuất hiện khi đọc
+    const config = parseExternalAccountingConfig({ syncDirection: 'posr_to_external' });
+
+    expect(config.syncDirection).toBe('local_to_external');
+  });
+
+  it('keeps non-legacy syncDirection values unchanged', () => {
+    expect(parseExternalAccountingConfig({ syncDirection: 'bidirectional' }).syncDirection).toBe('bidirectional');
+    expect(parseExternalAccountingConfig({ syncDirection: 'local_to_external' }).syncDirection).toBe('local_to_external');
   });
 
   it('supports realmId as fallback for tenantId', () => {

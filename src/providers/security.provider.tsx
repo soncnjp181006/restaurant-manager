@@ -105,9 +105,9 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({
         closeModal();
       },
     };
-    (window as Window & { __POSR_DOCS_SECURITY__?: typeof api }).__POSR_DOCS_SECURITY__ = api;
+    (window as Window & { __RESTAURANT_MANAGER_DOCS_SECURITY__?: typeof api }).__RESTAURANT_MANAGER_DOCS_SECURITY__ = api;
     return () => {
-      delete (window as Window & { __POSR_DOCS_SECURITY__?: typeof api }).__POSR_DOCS_SECURITY__;
+      delete (window as Window & { __RESTAURANT_MANAGER_DOCS_SECURITY__?: typeof api }).__RESTAURANT_MANAGER_DOCS_SECURITY__;
     };
   }, [requestSecurity, closeModal]);
 

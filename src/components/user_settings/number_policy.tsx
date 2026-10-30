@@ -54,7 +54,7 @@ const PRESETS: NumberPolicyPreset[] = [
   'composite',
   'pool',
   'hybrid',
-  'fiscal_plus_posr',
+  'fiscal_plus_brand',
   'provider_defined',
 ];
 

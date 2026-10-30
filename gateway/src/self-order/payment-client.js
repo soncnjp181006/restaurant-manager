@@ -49,7 +49,7 @@ function createIntent({ gateway, amount, currency, orderId, paymentTypeId, check
       amount,
       currency,
       orderId,
-      metadata: { paymentTypeId, orderId, source: 'posr-self-order', checkoutId },
+      metadata: { paymentTypeId, orderId, source: 'restaurant-manager-self-order', checkoutId },
     },
     `self-order-${checkoutId}`,
   );

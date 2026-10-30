@@ -40,7 +40,7 @@ export const GUIDES = [
     id: 'employee',
     emoji: '📘',
     folder: 'employee',
-    pdfName: 'posr-employee-guide.pdf',
+    pdfName: 'restaurant-manager-employee-guide.pdf',
     defaultTitle: 'Employee Guide',
     defaultIntro:
       'Day-to-day POS work for floor staff: sign-in, take orders, cart and payment, manage open checks, lock the terminal, and clock out.',
@@ -60,7 +60,7 @@ export const GUIDES = [
     id: 'manager',
     emoji: '📗',
     folder: 'manager',
-    pdfName: 'posr-manager-guide.pdf',
+    pdfName: 'restaurant-manager-manager-guide.pdf',
     defaultTitle: 'Manager Guide',
     defaultIntro:
       'Shift leadership screens: sales summary, kitchen board, delivery, closing, and operational reports.',
@@ -78,7 +78,7 @@ export const GUIDES = [
     id: 'inventory',
     emoji: '📙',
     folder: 'inventory',
-    pdfName: 'posr-inventory-guide.pdf',
+    pdfName: 'restaurant-manager-inventory-guide.pdf',
     defaultTitle: 'Inventory Guide',
     defaultIntro: 'Stock, purchases, issues, wastes, counts, kitchen reconciliation, production, and buffet.',
     chapters: [
@@ -97,7 +97,7 @@ export const GUIDES = [
     id: 'accounts',
     emoji: '📕',
     folder: 'accounts',
-    pdfName: 'posr-accounts-guide.pdf',
+    pdfName: 'restaurant-manager-accounts-guide.pdf',
     defaultTitle: 'Accounts Guide',
     defaultIntro: 'Financial ledgers, expenses, and accounting-related POS tools.',
     chapters: [
@@ -110,7 +110,7 @@ export const GUIDES = [
     id: 'hr',
     emoji: '📒',
     folder: 'hr',
-    pdfName: 'posr-hr-guide.pdf',
+    pdfName: 'restaurant-manager-hr-guide.pdf',
     defaultTitle: 'HR Guide',
     defaultIntro: 'People operations: employees, attendance, leave, payroll, documents, performance, and tip distribution.',
     chapters: [
@@ -130,7 +130,7 @@ export const GUIDES = [
     id: 'admin',
     emoji: '📓',
     folder: 'admin',
-    pdfName: 'posr-administrator-guide.pdf',
+    pdfName: 'restaurant-manager-administrator-guide.pdf',
     defaultTitle: 'Administrator Guide',
     defaultIntro:
       'Venue configuration: Manage (menus, floors, users, taxes…), integrations, and advanced settings.',

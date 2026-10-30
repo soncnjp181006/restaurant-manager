@@ -24,11 +24,11 @@ export const useDiscountCache = () => {
     const onLocalWrite = () => {
       void refreshDiscountCache()
     }
-    window.addEventListener('posr-posstore-write', onLocalWrite)
+    window.addEventListener('restaurant-manager-posstore-write', onLocalWrite)
     void refreshDiscountCache()
 
     return () => {
-      window.removeEventListener('posr-posstore-write', onLocalWrite)
+      window.removeEventListener('restaurant-manager-posstore-write', onLocalWrite)
     }
   }, [])
 }

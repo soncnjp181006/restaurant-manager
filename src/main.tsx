@@ -1,7 +1,13 @@
 import { i18nReady } from '@/lib/i18n.ts'
+import { migrateLegacyStorage } from '@/lib/legacy-storage.ts'
 import { registerSW } from 'virtual:pwa-register'
 
 registerSW({ immediate: true })
+
+// Browser state written under the old brand is copied to the new names before
+// anything reads it: i18n has no storage reads at module scope, and PosStore /
+// jotai only load through the dynamic app import below.
+await migrateLegacyStorage()
 
 await i18nReady
 

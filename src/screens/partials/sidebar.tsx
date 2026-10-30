@@ -38,7 +38,7 @@ import {
   INTEGRATIONS,
   SUMMARY,
   TIP_DISTRIBUTION, ACCOUNTS
-} from "@/routes/posr.ts";
+} from "@/routes/restaurant-manager.ts";
 import { getAccessRuleChildLabel } from "@/lib/access.rules.i18n.ts";
 import { getUserModules, moduleMatchCandidates } from "@/lib/access.rules.ts";
 import { filterByBuildModule, isBuildModuleEnabled } from "@/lib/build-modules.ts";

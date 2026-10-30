@@ -12,7 +12,7 @@ import {InventoryWasteForm} from "@/components/inventory/wastes/form.tsx";
 import {useDB} from "@/api/db/db.ts";
 import {DeleteConfirm} from "@/components/common/table/delete.confirm.tsx";
 import {InventoryWasteViewModal} from "@/components/inventory/wastes/view.modal.tsx";
-import {inventoryPrintUrl} from "@/routes/posr.ts";
+import {inventoryPrintUrl} from "@/routes/restaurant-manager.ts";
 import {useSecurity} from "@/hooks/useSecurity.ts";
 import {formatDateTime} from "@/lib/datetime.ts";
 import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";

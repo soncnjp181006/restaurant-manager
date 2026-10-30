@@ -69,7 +69,7 @@ export class PosStore {
    * the gateway. Never call this while offline — there is no warm path without
    * the server.
    *
-   * @param options.silent  Skip posr-posstore-write — Reload cache uses this so
+   * @param options.silent  Skip restaurant-manager-posstore-write — Reload cache uses this so
    *   the wipe does not schedule a concurrent sync/refresh that can race the
    *   new snapshot (empty dishes flashing over a good catalog project).
    */

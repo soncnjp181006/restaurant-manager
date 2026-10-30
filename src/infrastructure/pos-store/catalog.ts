@@ -510,8 +510,8 @@ export async function pruneGhostOperationalOrders(): Promise<number> {
   });
 
   if (removed > 0 && typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('posr-posstore-write'));
-    window.dispatchEvent(new CustomEvent('posr-operational-orders-updated'));
+    window.dispatchEvent(new CustomEvent('restaurant-manager-posstore-write'));
+    window.dispatchEvent(new CustomEvent('restaurant-manager-operational-orders-updated'));
   }
   return removed;
 }

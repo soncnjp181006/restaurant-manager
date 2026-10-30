@@ -9,7 +9,7 @@ import {
   REPORTS,
   REPORTS_AI,
   TIP_DISTRIBUTION,
-} from "@/routes/posr.ts";
+} from "@/routes/restaurant-manager.ts";
 
 /**
  * Routes where the floating AI assistant should appear. Hidden on cashier-facing

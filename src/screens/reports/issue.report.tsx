@@ -13,7 +13,7 @@ import {
   buildNestedRecordAnyCondition,
   buildRecordInsideCondition,
 } from "@/api/reports/shared/query.ts";
-import {inventoryPrintUrl} from "@/routes/posr.ts";
+import {inventoryPrintUrl} from "@/routes/restaurant-manager.ts";
 import { DATE_FORMAT } from '@/lib/date-format';
 
 const safeNumber = (value: unknown) => {

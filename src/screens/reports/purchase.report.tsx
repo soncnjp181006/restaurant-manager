@@ -14,7 +14,7 @@ import {
   buildRecordInsideCondition,
 } from "@/api/reports/shared/query.ts";
 import {extrasTotal} from "@/lib/inventory/purchase.totals.ts";
-import {inventoryPrintUrl} from "@/routes/posr.ts";
+import {inventoryPrintUrl} from "@/routes/restaurant-manager.ts";
 import {purchaseReportQuantity} from "@/lib/inventory/unit.convert.ts";
 import { DATE_FORMAT } from '@/lib/date-format';
 

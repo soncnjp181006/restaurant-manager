@@ -69,7 +69,7 @@ export class SyncOrchestrator {
       provider_id: failure.providerId,
       tenant_id: failure.tenantId,
       entity_type: failure.entityType,
-      posr_id: failure.posrId,
+      local_id: failure.localId,
       action: failure.action,
       error: failure.error,
       error_category: failure.errorCategory,
@@ -101,7 +101,7 @@ export class SyncOrchestrator {
           providerId: this.providerId,
           tenantId,
           entityType: 'account',
-          posrId: a.id,
+          localId: a.id,
           externalId: a.id,
           externalPayload: { name: a.name, code: a.code, type: a.type },
         });
@@ -112,7 +112,7 @@ export class SyncOrchestrator {
           providerId: this.providerId,
           tenantId,
           entityType: 'customer',
-          posrId: c.id,
+          localId: c.id,
           externalId: c.id,
           externalPayload: { name: c.name, email: c.email },
         });
@@ -123,7 +123,7 @@ export class SyncOrchestrator {
           providerId: this.providerId,
           tenantId,
           entityType: 'vendor',
-          posrId: v.id,
+          localId: v.id,
           externalId: v.id,
           externalPayload: { name: v.name, email: v.email },
         });
@@ -134,7 +134,7 @@ export class SyncOrchestrator {
           providerId: this.providerId,
           tenantId,
           entityType: 'tax_code',
-          posrId: t.id,
+          localId: t.id,
           externalId: t.id,
           externalPayload: { name: t.name, rate: t.rate },
         });
@@ -145,7 +145,7 @@ export class SyncOrchestrator {
           providerId: this.providerId,
           tenantId,
           entityType: 'payment_method',
-          posrId: p.id,
+          localId: p.id,
           externalId: p.id,
           externalPayload: { name: p.name },
         });
@@ -156,7 +156,7 @@ export class SyncOrchestrator {
           providerId: this.providerId,
           tenantId,
           entityType: 'item',
-          posrId: item.id,
+          localId: item.id,
           externalId: item.id,
           externalPayload: { name: item.name, type: item.type },
         });
@@ -168,7 +168,7 @@ export class SyncOrchestrator {
             providerId: this.providerId,
             tenantId,
             entityType: 'class',
-            posrId: c.id,
+            localId: c.id,
             externalId: c.id,
             externalPayload: { name: c.name },
           });
@@ -181,7 +181,7 @@ export class SyncOrchestrator {
             providerId: this.providerId,
             tenantId,
             entityType: 'department',
-            posrId: d.id,
+            localId: d.id,
             externalId: d.id,
             externalPayload: { name: d.name },
           });
@@ -219,7 +219,7 @@ export class SyncOrchestrator {
             providerId: this.providerId,
             tenantId,
             entityType: entity.entityType,
-            posrId: entity.externalId,
+            localId: entity.externalId,
             action: 'incrementalSync',
             error: syncErr?.message ?? 'Sync error',
             errorCategory: categorizeExternalError(syncErr),

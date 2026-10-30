@@ -16,7 +16,7 @@ import {
 } from "@/api/reports/shared/query.ts";
 import {purchaseOrderListTotal} from "@/lib/inventory/document.list.total.ts";
 import {resolveInventoryLineUnitCost, lineAmount} from "@/lib/inventory/line.cost.ts";
-import {inventoryPrintUrl} from "@/routes/posr.ts";
+import {inventoryPrintUrl} from "@/routes/restaurant-manager.ts";
 import { DATE_FORMAT } from '@/lib/date-format';
 
 interface ReportFilters {

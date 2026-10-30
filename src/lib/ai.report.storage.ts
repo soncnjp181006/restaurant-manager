@@ -1,6 +1,6 @@
-export const AI_REPORT_PROMPT_KEY = "posr-ai-report-prompt";
-export const AI_REPORT_FORMAT_KEY = "posr-ai-report-format";
-export const AI_REPORT_HISTORY_KEY = "posr-ai-report-history";
+export const AI_REPORT_PROMPT_KEY = "restaurant-manager-ai-report-prompt";
+export const AI_REPORT_FORMAT_KEY = "restaurant-manager-ai-report-format";
+export const AI_REPORT_HISTORY_KEY = "restaurant-manager-ai-report-history";
 
 export type AiReportFormat = "list" | "table" | "chart" | "analysis";
 

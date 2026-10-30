@@ -114,7 +114,7 @@ export async function resetSession(page: Page): Promise<void> {
 export async function ensureFloorMenuMode(page: Page): Promise<void> {
   await page.evaluate(() => {
     try {
-      localStorage.setItem('posr_docs_tableless_leak_recovered', '1');
+      localStorage.setItem('restaurant_manager_docs_tableless_leak_recovered', '1');
       const key = 'app-state';
       let data: Record<string, unknown> = {};
       try {

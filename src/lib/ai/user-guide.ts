@@ -7,7 +7,7 @@ import {
   INVENTORY,
   REPORTS,
   TIP_DISTRIBUTION,
-} from "@/routes/posr.ts";
+} from "@/routes/restaurant-manager.ts";
 
 /** Chapter keys that have locale JSON (excludes meta files common/guides). */
 export const USER_GUIDE_CHAPTER_KEYS = [

@@ -1,4 +1,4 @@
-import {REPORTS_PRODUCT_MIX_WEEKLY} from "@/routes/posr.ts";
+import {REPORTS_PRODUCT_MIX_WEEKLY} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {ReactSelect} from "@/components/common/input/custom.react.select.tsx";
 import useApi, {SettingsData} from "@/api/db/use.api.ts";

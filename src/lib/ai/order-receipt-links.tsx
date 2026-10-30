@@ -1,5 +1,5 @@
 import {isValidElement, type ReactNode} from "react";
-import {orderReceiptUrl} from "@/routes/posr.ts";
+import {orderReceiptUrl} from "@/routes/restaurant-manager.ts";
 import type {AiOrderRef} from "@/lib/ai/order-refs.ts";
 
 const ORDER_RECORD_RE = /\border:[A-Za-z0-9_-]+\b/g;

@@ -106,11 +106,11 @@ export function useOrderCardHydrate(snapshot: Order) {
       }
       void hydrate({ force: true });
     };
-    window.addEventListener('posr-posstore-write', onLocalWrite);
-    window.addEventListener('posr-operational-orders-updated', onLocalWrite);
+    window.addEventListener('restaurant-manager-posstore-write', onLocalWrite);
+    window.addEventListener('restaurant-manager-operational-orders-updated', onLocalWrite);
     return () => {
-      window.removeEventListener('posr-posstore-write', onLocalWrite);
-      window.removeEventListener('posr-operational-orders-updated', onLocalWrite);
+      window.removeEventListener('restaurant-manager-posstore-write', onLocalWrite);
+      window.removeEventListener('restaurant-manager-operational-orders-updated', onLocalWrite);
     };
   }, [hydrate]);
 

@@ -4,7 +4,7 @@ import { IntegrationExecutionRequest } from '@/integrations/core/types.ts';
 /** Provider-agnostic external accounting configuration. */
 export interface ExternalAccountingConfig {
   tenantId: string;
-  syncDirection: 'posr_to_external' | 'bidirectional';
+  syncDirection: 'local_to_external' | 'bidirectional';
   syncIntervalMinutes: number;
   saleDocumentType: 'sales_receipt' | 'invoice';
   enableClasses: boolean;
@@ -17,19 +17,19 @@ export interface ExternalAccountingConfig {
   defaultExpenseAccount?: string;
   /** Logical account codes → external account IDs */
   accounts: Record<LogicalAccountCode, string>;
-  /** POSR payment method id → external payment method reference */
+  /** Restaurant Manager payment method id → external payment method reference */
   paymentMappings: Record<string, string>;
-  /** POSR payment method id → external deposit account ID */
+  /** Restaurant Manager payment method id → external deposit account ID */
   paymentAccountMappings: Record<string, string>;
 }
 
-/** An entity mapping between POSR and an external accounting system. */
+/** An entity mapping between Restaurant Manager and an external accounting system. */
 export interface EntityMapping {
   id?: string;
   providerId: string;
   tenantId: string;
   entityType: ExternalEntityType;
-  posrId: string;
+  localId: string;
   externalId: string;
   externalPayload?: Record<string, unknown>;
   updatedAt?: string;
@@ -73,7 +73,7 @@ export interface SyncFailure {
   providerId: string;
   tenantId: string;
   entityType: ExternalEntityType;
-  posrId: string;
+  localId: string;
   action: string;
   error: string;
   errorCategory: ExternalErrorCategory;
@@ -101,35 +101,35 @@ export interface AccountingRemoteAdapter {
   /** Upsert a sale (SalesReceipt or Invoice) to the external system. Returns the external ID. */
   upsertSale(params: {
     tenantId: string;
-    posrOrderId: string;
+    localOrderId: string;
     payload: Record<string, unknown>;
   }): Promise<{ externalId: string }>;
 
   /** Upsert a payment to the external system. */
   upsertPayment(params: {
     tenantId: string;
-    posrPaymentId: string;
+    localPaymentId: string;
     payload: Record<string, unknown>;
   }): Promise<{ externalId: string }>;
 
   /** Upsert a customer to the external system. */
   upsertCustomer(params: {
     tenantId: string;
-    posrCustomerId: string;
+    localCustomerId: string;
     payload: Record<string, unknown>;
   }): Promise<{ externalId: string }>;
 
   /** Upsert a refund to the external system. */
   upsertRefund(params: {
     tenantId: string;
-    posrRefundId: string;
+    localRefundId: string;
     payload: Record<string, unknown>;
   }): Promise<{ externalId: string }>;
 
   /** Post a journal entry. */
   postJournal(params: {
     tenantId: string;
-    posrJournalId: string;
+    localJournalId: string;
     payload: Record<string, unknown>;
   }): Promise<{ externalId: string }>;
 

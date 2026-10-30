@@ -11,7 +11,7 @@ import {faBan, faCheck, faCodeBranch, faFile, faPencil, faPlus, faPrint, faUploa
 import {InventoryPurchaseForm} from "@/components/inventory/purchases/form.tsx";
 import {InventoryPurchaseViewModal} from "@/components/inventory/purchases/view.modal.tsx";
 import {InventoryDocumentStatusBadge} from "@/components/inventory/common/document.status.badge.tsx";
-import {inventoryPrintUrl} from "@/routes/posr.ts";
+import {inventoryPrintUrl} from "@/routes/restaurant-manager.ts";
 import {DeleteConfirm} from "@/components/common/table/delete.confirm.tsx";
 import {useDB} from "@/api/db/db.ts";
 import {useSecurity} from "@/hooks/useSecurity.ts";

@@ -33,7 +33,7 @@ export async function projectSplitIntoPosStore(input: {
     server_version: Number(existing.server_version ?? 0) + 1,
   });
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('posr-posstore-write'));
-    window.dispatchEvent(new CustomEvent('posr-operational-orders-updated'));
+    window.dispatchEvent(new CustomEvent('restaurant-manager-posstore-write'));
+    window.dispatchEvent(new CustomEvent('restaurant-manager-operational-orders-updated'));
   }
 }

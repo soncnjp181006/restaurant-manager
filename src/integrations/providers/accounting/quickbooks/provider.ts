@@ -43,6 +43,12 @@ const readEventPayload = (request: IntegrationExecutionRequest): Record<string, 
     : {};
 };
 
+/** Sale item name always written to QuickBooks. */
+const SALE_ITEM_NAME = 'Restaurant Manager Sale';
+/** Legacy item name that already exists on real customer ledgers; used read-only when
+ *  looking up, so we reuse the existing item instead of creating a duplicate. */
+const LEGACY_SALE_ITEM_NAME = 'POSR Sale';
+
 /**
  * QuickBooks Online accounting provider.
  * Implements IntegrationProvider and delegates all QBO-specific logic
@@ -313,74 +319,74 @@ export class QuickBooksProvider implements IntegrationProvider {
 
   private async handleSyncSale(config: QuickBooksConfig, request: IntegrationExecutionRequest): Promise<IntegrationExecutionResponse> {
     const payload = readEventPayload(request);
-    const posrOrderId = String(payload.orderId ?? payload.id ?? '');
-    if (!posrOrderId) {
+    const localOrderId = String(payload.orderId ?? payload.id ?? '');
+    if (!localOrderId) {
       return { success: false, status: 'failed', providerId: QBO_MANIFEST.id, error: 'Missing order id', retriable: false };
     }
 
     // Check idempotency
     if (this.mappingRepo) {
-      const existing = await this.mappingRepo.findByPosrId(QBO_MANIFEST.id, config.tenantId, 'sales_receipt', posrOrderId);
+      const existing = await this.mappingRepo.findByLocalId(QBO_MANIFEST.id, config.tenantId, 'sales_receipt', localOrderId);
       if (existing) {
         return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId: existing.externalId } };
       }
     }
 
-    const { externalId } = await this.adapter.upsertSale({ tenantId: config.tenantId, posrOrderId, payload });
+    const { externalId } = await this.adapter.upsertSale({ tenantId: config.tenantId, localOrderId, payload });
     return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId } };
   }
 
   private async handleSyncPayment(config: QuickBooksConfig, request: IntegrationExecutionRequest): Promise<IntegrationExecutionResponse> {
     const payload = readEventPayload(request);
-    const posrPaymentId = String(payload.paymentId ?? payload.id ?? '');
-    if (!posrPaymentId) {
+    const localPaymentId = String(payload.paymentId ?? payload.id ?? '');
+    if (!localPaymentId) {
       return { success: false, status: 'failed', providerId: QBO_MANIFEST.id, error: 'Missing payment id', retriable: false };
     }
 
     if (this.mappingRepo) {
-      const existing = await this.mappingRepo.findByPosrId(QBO_MANIFEST.id, config.tenantId, 'payment', posrPaymentId);
+      const existing = await this.mappingRepo.findByLocalId(QBO_MANIFEST.id, config.tenantId, 'payment', localPaymentId);
       if (existing) {
         return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId: existing.externalId } };
       }
     }
 
-    const { externalId } = await this.adapter.upsertPayment({ tenantId: config.tenantId, posrPaymentId, payload });
+    const { externalId } = await this.adapter.upsertPayment({ tenantId: config.tenantId, localPaymentId, payload });
     return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId } };
   }
 
   private async handleSyncCustomer(config: QuickBooksConfig, request: IntegrationExecutionRequest): Promise<IntegrationExecutionResponse> {
     const payload = readEventPayload(request);
-    const posrCustomerId = String(payload.customerId ?? payload.id ?? '');
-    if (!posrCustomerId) {
+    const localCustomerId = String(payload.customerId ?? payload.id ?? '');
+    if (!localCustomerId) {
       return { success: false, status: 'failed', providerId: QBO_MANIFEST.id, error: 'Missing customer id', retriable: false };
     }
 
     if (this.mappingRepo) {
-      const existing = await this.mappingRepo.findByPosrId(QBO_MANIFEST.id, config.tenantId, 'customer', posrCustomerId);
+      const existing = await this.mappingRepo.findByLocalId(QBO_MANIFEST.id, config.tenantId, 'customer', localCustomerId);
       if (existing) {
         return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId: existing.externalId } };
       }
     }
 
-    const { externalId } = await this.adapter.upsertCustomer({ tenantId: config.tenantId, posrCustomerId, payload });
+    const { externalId } = await this.adapter.upsertCustomer({ tenantId: config.tenantId, localCustomerId, payload });
     return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId } };
   }
 
   private async handleSyncRefund(config: QuickBooksConfig, request: IntegrationExecutionRequest): Promise<IntegrationExecutionResponse> {
     const payload = readEventPayload(request);
-    const posrRefundId = String(payload.refundId ?? payload.id ?? '');
-    if (!posrRefundId) {
+    const localRefundId = String(payload.refundId ?? payload.id ?? '');
+    if (!localRefundId) {
       return { success: false, status: 'failed', providerId: QBO_MANIFEST.id, error: 'Missing refund id', retriable: false };
     }
 
     if (this.mappingRepo) {
-      const existing = await this.mappingRepo.findByPosrId(QBO_MANIFEST.id, config.tenantId, 'refund_receipt', posrRefundId);
+      const existing = await this.mappingRepo.findByLocalId(QBO_MANIFEST.id, config.tenantId, 'refund_receipt', localRefundId);
       if (existing) {
         return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId: existing.externalId } };
       }
     }
 
-    const { externalId } = await this.adapter.upsertRefund({ tenantId: config.tenantId, posrRefundId, payload });
+    const { externalId } = await this.adapter.upsertRefund({ tenantId: config.tenantId, localRefundId, payload });
     return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId } };
   }
 
@@ -392,13 +398,13 @@ export class QuickBooksProvider implements IntegrationProvider {
     }
 
     if (this.mappingRepo) {
-      const existing = await this.mappingRepo.findByPosrId(QBO_MANIFEST.id, config.tenantId, 'journal_entry', id);
+      const existing = await this.mappingRepo.findByLocalId(QBO_MANIFEST.id, config.tenantId, 'journal_entry', id);
       if (existing) {
         return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId: existing.externalId } };
       }
     }
 
-    const { externalId } = await this.adapter.postJournal({ tenantId: config.tenantId, posrJournalId: id, payload: payload as Record<string, unknown> });
+    const { externalId } = await this.adapter.postJournal({ tenantId: config.tenantId, localJournalId: id, payload: payload as Record<string, unknown> });
     return { success: true, status: 'completed', providerId: QBO_MANIFEST.id, data: { externalId } };
   }
 
@@ -458,11 +464,14 @@ export class QuickBooksProvider implements IntegrationProvider {
 
     const items = extract(itemsR, 'Item') as any[];
 
-    // Find or create a generic "POSR Sale" service item for sales receipts
+    // Find or create a generic "Restaurant Manager Sale" service item for sales receipts
     let saleItemId: string | undefined;
-    const existingSaleItem = items.find(
-      (i: any) => i.Name === 'POSR Sale' && (i.Type === 'Service' || i.Type === 'NonInventory')
-    );
+    const isServiceItem = (i: any) => i.Type === 'Service' || i.Type === 'NonInventory';
+    // New name first, then the legacy one: ledgers that were synced before the rename
+    // already hold an item under the old name — reuse it instead of creating a duplicate.
+    const existingSaleItem =
+      items.find((i: any) => i.Name === SALE_ITEM_NAME && isServiceItem(i))
+      ?? items.find((i: any) => i.Name === LEGACY_SALE_ITEM_NAME && isServiceItem(i));
     if (existingSaleItem) {
       saleItemId = String(existingSaleItem.Id);
     } else {
@@ -471,7 +480,7 @@ export class QuickBooksProvider implements IntegrationProvider {
           extract(accountsR, 'Account').find((a: any) => a.AccountType === 'Income')
           ?? extract(accountsR, 'Account')[0];
         const newItem: any = {
-          Name: 'POSR Sale',
+          Name: SALE_ITEM_NAME,
           Type: 'Service',
           IncomeAccountRef: incomeAccount ? { value: String(incomeAccount.Id) } : undefined,
         };
@@ -481,10 +490,10 @@ export class QuickBooksProvider implements IntegrationProvider {
         });
         saleItemId = String(created?.Item?.Id ?? '');
         if (saleItemId) {
-          items.push({ Id: saleItemId, Name: 'POSR Sale', Type: 'Service' });
+          items.push({ Id: saleItemId, Name: SALE_ITEM_NAME, Type: 'Service' });
         }
       } catch (err) {
-        console.warn('[QuickBooksProvider] Failed to create POSR Sale item:', err);
+        console.warn('[QuickBooksProvider] Failed to create Restaurant Manager Sale item:', err);
         saleItemId = undefined;
       }
     }
@@ -525,13 +534,13 @@ export class QuickBooksProvider implements IntegrationProvider {
     };
   }
 
-  private async upsertSale(params: { tenantId: string; posrOrderId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
+  private async upsertSale(params: { tenantId: string; localOrderId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
     const config = await this.getConfigParsed();
 
     // QBO SalesReceipt requires ItemRef on every SalesItemLineDetail line
     const saleItemId = await this.resolveSaleItemId(params.tenantId, config);
 
-    // Extract POSR fields and map to QBO SalesReceipt
+    // Extract Restaurant Manager fields and map to QBO SalesReceipt
     const p = params.payload ?? {};
     const totalAmt = Number(p.totalCollected ?? p.total ?? p.amount ?? 0);
     const txnDate = typeof p.completedAt === 'string' ? p.completedAt.slice(0, 10) : new Date().toISOString().slice(0, 10);
@@ -552,30 +561,30 @@ export class QuickBooksProvider implements IntegrationProvider {
       : [{
           DetailType: 'SalesItemLineDetail',
           Amount: totalAmt,
-          Description: 'POSR Sale',
+          Description: SALE_ITEM_NAME,
           SalesItemLineDetail: {
             ItemRef: { value: saleItemId },
           },
         }];
 
     // QBO DocNumber max 21 chars — truncate and use short order-id suffix
-    const shortOrderId = params.posrOrderId.replace(/^order:/, '').slice(0, 10);
-    const docNumber = `POSR-${shortOrderId}`;
+    const shortOrderId = params.localOrderId.replace(/^order:/, '').slice(0, 10);
+    const docNumber = `RM-${shortOrderId}`;
 
     const salePayload: Record<string, unknown> = {
       DocNumber: docNumber,
       TxnDate: txnDate,
       Line: lines,
       TotalAmt: totalAmt,
-      PrivateNote: `POSR order ${params.posrOrderId}`,
+      PrivateNote: `Restaurant Manager order ${params.localOrderId}`,
     };
 
-    // CustomerRef: prefer mapped POSR customer, else config default (dropdown value is already a QBO Id)
-    const posrCustomerId = String(p.customerId ?? '');
+    // CustomerRef: prefer mapped Restaurant Manager customer, else config default (dropdown value is already a QBO Id)
+    const localCustomerId = String(p.customerId ?? '');
     let customerExternalId: string | undefined;
 
-    if (posrCustomerId && this.mappingRepo) {
-      const customerMapping = await this.mappingRepo.findByPosrId(QBO_MANIFEST.id, params.tenantId, 'customer', posrCustomerId);
+    if (localCustomerId && this.mappingRepo) {
+      const customerMapping = await this.mappingRepo.findByLocalId(QBO_MANIFEST.id, params.tenantId, 'customer', localCustomerId);
       if (customerMapping) customerExternalId = customerMapping.externalId;
     }
 
@@ -587,8 +596,8 @@ export class QuickBooksProvider implements IntegrationProvider {
       try {
         const newCustomer = await this.adapter.upsertCustomer({
           tenantId: params.tenantId,
-          posrCustomerId: `guest-${params.posrOrderId}`,
-          payload: { displayName: 'POSR Walk-in Customer' },
+          localCustomerId: `guest-${params.localOrderId}`,
+          payload: { displayName: 'Restaurant Manager Walk-in Customer' },
         });
         customerExternalId = newCustomer.externalId;
       } catch {
@@ -608,7 +617,7 @@ export class QuickBooksProvider implements IntegrationProvider {
         providerId: QBO_MANIFEST.id,
         tenantId: params.tenantId,
         entityType: config.saleDocumentType === 'invoice' ? 'invoice' : 'sales_receipt',
-        posrId: params.posrOrderId,
+        localId: params.localOrderId,
         externalId,
         externalPayload: result,
       });
@@ -616,7 +625,7 @@ export class QuickBooksProvider implements IntegrationProvider {
     return { externalId };
   }
 
-  /** Resolve QBO Item id for SalesReceipt lines (config, mapping, or find/create POSR Sale). */
+  /** Resolve QBO Item id for SalesReceipt lines (config, mapping, or find/create Restaurant Manager Sale). */
   private async resolveSaleItemId(tenantId: string, config: QuickBooksConfig): Promise<string> {
     if (config.saleItemId) return String(config.saleItemId);
 
@@ -629,10 +638,14 @@ export class QuickBooksProvider implements IntegrationProvider {
           { providerId: QBO_MANIFEST.id }
         );
         const items = Array.isArray(rows) ? rows : [];
-        const posrSale = items.find((r: any) => r.external_payload?.name === 'POSR Sale');
-        if (posrSale?.external_id) {
-          await this.persistConfigField('saleItemId', String(posrSale.external_id));
-          return String(posrSale.external_id);
+        // New name first, then the legacy one: mapping rows imported before the rename
+        // stored the old item name, and that QuickBooks item must be reused, not recreated.
+        const saleItemRow =
+          items.find((r: any) => r.external_payload?.name === SALE_ITEM_NAME)
+          ?? items.find((r: any) => r.external_payload?.name === LEGACY_SALE_ITEM_NAME);
+        if (saleItemRow?.external_id) {
+          await this.persistConfigField('saleItemId', String(saleItemRow.external_id));
+          return String(saleItemRow.external_id);
         }
         if (items[0]?.external_id) {
           await this.persistConfigField('saleItemId', String(items[0].external_id));
@@ -653,7 +666,12 @@ export class QuickBooksProvider implements IntegrationProvider {
         },
       });
       const items = itemsR?.QueryResponse?.Item ?? [];
-      const existing = items.find((i: any) => i.Name === 'POSR Sale') ?? items[0];
+      // New name first, then the legacy one already on the customer's ledger, before
+      // falling back to an arbitrary item — a legacy match must not create a duplicate.
+      const existing =
+        items.find((i: any) => i.Name === SALE_ITEM_NAME)
+        ?? items.find((i: any) => i.Name === LEGACY_SALE_ITEM_NAME)
+        ?? items[0];
       if (existing?.Id) {
         const id = String(existing.Id);
         await this.persistConfigField('saleItemId', id);
@@ -676,22 +694,22 @@ export class QuickBooksProvider implements IntegrationProvider {
         method: 'POST',
         path: '/item',
         body: {
-          Name: 'POSR Sale',
+          Name: SALE_ITEM_NAME,
           Type: 'Service',
           IncomeAccountRef: incomeAccount ? { value: String(incomeAccount.Id) } : undefined,
         },
       });
       const id = String(created?.Item?.Id ?? '');
-      if (!id) throw new Error('Failed to create POSR Sale item in QuickBooks');
+      if (!id) throw new Error('Failed to create Restaurant Manager Sale item in QuickBooks');
       await this.persistConfigField('saleItemId', id);
       if (this.mappingRepo) {
         await this.mappingRepo.save({
           providerId: QBO_MANIFEST.id,
           tenantId,
           entityType: 'item',
-          posrId: id,
+          localId: id,
           externalId: id,
-          externalPayload: { name: 'POSR Sale', type: 'Service' },
+          externalPayload: { name: SALE_ITEM_NAME, type: 'Service' },
         });
       }
       return id;
@@ -730,7 +748,7 @@ export class QuickBooksProvider implements IntegrationProvider {
     }
   }
 
-  private async upsertPayment(params: { tenantId: string; posrPaymentId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
+  private async upsertPayment(params: { tenantId: string; localPaymentId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
     const config = await this.getConfigParsed();
     const p = params.payload ?? {};
     const amount = Number(p.amount ?? p.totalCollected ?? p.total ?? 0);
@@ -740,7 +758,7 @@ export class QuickBooksProvider implements IntegrationProvider {
     // Look up the sale receipt or invoice to link this payment to
     let linkedTxn: { TxnId: string; TxnType: string } | undefined;
     if (orderId && this.mappingRepo) {
-      const saleMapping = await this.mappingRepo.findByPosrId(
+      const saleMapping = await this.mappingRepo.findByLocalId(
         QBO_MANIFEST.id, params.tenantId,
         config.saleDocumentType === 'invoice' ? 'invoice' : 'sales_receipt',
         orderId
@@ -753,7 +771,7 @@ export class QuickBooksProvider implements IntegrationProvider {
     const paymentPayload: Record<string, unknown> = {
       TotalAmt: amount,
       TxnDate: txnDate,
-      PrivateNote: `POSR payment ${params.posrPaymentId}`,
+      PrivateNote: `Restaurant Manager payment ${params.localPaymentId}`,
     };
 
     if (linkedTxn) {
@@ -765,7 +783,7 @@ export class QuickBooksProvider implements IntegrationProvider {
 
     const customerId = String(p.customerId ?? '');
     if (customerId && this.mappingRepo) {
-      const customerMapping = await this.mappingRepo.findByPosrId(QBO_MANIFEST.id, params.tenantId, 'customer', customerId);
+      const customerMapping = await this.mappingRepo.findByLocalId(QBO_MANIFEST.id, params.tenantId, 'customer', customerId);
       if (customerMapping) {
         paymentPayload.CustomerRef = { value: customerMapping.externalId };
       }
@@ -778,7 +796,7 @@ export class QuickBooksProvider implements IntegrationProvider {
         providerId: QBO_MANIFEST.id,
         tenantId: params.tenantId,
         entityType: 'payment',
-        posrId: params.posrPaymentId,
+        localId: params.localPaymentId,
         externalId,
         externalPayload: result,
       });
@@ -786,9 +804,9 @@ export class QuickBooksProvider implements IntegrationProvider {
     return { externalId };
   }
 
-  private async upsertCustomer(params: { tenantId: string; posrCustomerId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
+  private async upsertCustomer(params: { tenantId: string; localCustomerId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
     const p = params.payload ?? {};
-    const displayName = String(p.name ?? p.displayName ?? p.customerName ?? `POSR Customer ${params.posrCustomerId}`);
+    const displayName = String(p.name ?? p.displayName ?? p.customerName ?? `Restaurant Manager Customer ${params.localCustomerId}`);
     const customerPayload: Record<string, unknown> = {
       DisplayName: displayName,
       GivenName: String(p.firstName ?? p.givenName ?? ''),
@@ -804,7 +822,7 @@ export class QuickBooksProvider implements IntegrationProvider {
         providerId: QBO_MANIFEST.id,
         tenantId: params.tenantId,
         entityType: 'customer',
-        posrId: params.posrCustomerId,
+        localId: params.localCustomerId,
         externalId,
         externalPayload: result,
       });
@@ -812,7 +830,7 @@ export class QuickBooksProvider implements IntegrationProvider {
     return { externalId };
   }
 
-  private async upsertRefund(params: { tenantId: string; posrRefundId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
+  private async upsertRefund(params: { tenantId: string; localRefundId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
     const config = await this.getConfigParsed();
     const p = params.payload ?? {};
     const amount = Number(p.amount ?? p.totalRefunded ?? p.totalCollected ?? 0);
@@ -821,8 +839,8 @@ export class QuickBooksProvider implements IntegrationProvider {
     const refundPayload: Record<string, unknown> = {
       TotalAmt: amount,
       TxnDate: txnDate,
-      Line: [{ DetailType: 'SalesItemLineDetail', Amount: amount, Description: 'POSR Refund', SalesItemLineDetail: {} }],
-      PrivateNote: `POSR refund ${params.posrRefundId}`,
+      Line: [{ DetailType: 'SalesItemLineDetail', Amount: amount, Description: 'Restaurant Manager Refund', SalesItemLineDetail: {} }],
+      PrivateNote: `Restaurant Manager refund ${params.localRefundId}`,
     };
 
     const result = await proxyQboRequest({ realmId: params.tenantId, method: 'POST', path: '/refundreceipt', body: refundPayload });
@@ -832,7 +850,7 @@ export class QuickBooksProvider implements IntegrationProvider {
         providerId: QBO_MANIFEST.id,
         tenantId: params.tenantId,
         entityType: 'refund_receipt',
-        posrId: params.posrRefundId,
+        localId: params.localRefundId,
         externalId,
         externalPayload: result,
       });
@@ -840,7 +858,7 @@ export class QuickBooksProvider implements IntegrationProvider {
     return { externalId };
   }
 
-  private async postJournal(params: { tenantId: string; posrJournalId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
+  private async postJournal(params: { tenantId: string; localJournalId: string; payload: Record<string, unknown> }): Promise<{ externalId: string }> {
     const result = await proxyQboRequest({ realmId: params.tenantId, method: 'POST', path: '/journalentry', body: params.payload });
     const externalId = String(result?.JournalEntry?.Id ?? result?.Id ?? '');
     if (externalId && this.mappingRepo) {
@@ -848,7 +866,7 @@ export class QuickBooksProvider implements IntegrationProvider {
         providerId: QBO_MANIFEST.id,
         tenantId: params.tenantId,
         entityType: 'journal_entry',
-        posrId: params.posrJournalId,
+        localId: params.localJournalId,
         externalId,
         externalPayload: result,
       });

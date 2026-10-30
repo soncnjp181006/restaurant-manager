@@ -186,10 +186,10 @@ export const KitchenScreen = () => {
     };
     void load();
     const onWrite = () => void load();
-    window.addEventListener('posr-posstore-write', onWrite);
+    window.addEventListener('restaurant-manager-posstore-write', onWrite);
     return () => {
       cancelled = true;
-      window.removeEventListener('posr-posstore-write', onWrite);
+      window.removeEventListener('restaurant-manager-posstore-write', onWrite);
     };
   }, []);
 
@@ -481,12 +481,12 @@ export const KitchenScreen = () => {
     const onLocalWrite = () => {
       if (kitchenId) scheduleLoadOrders(kitchenId);
     };
-    window.addEventListener('posr-posstore-write', onLocalWrite);
-    window.addEventListener('posr-operational-orders-updated', onLocalWrite);
+    window.addEventListener('restaurant-manager-posstore-write', onLocalWrite);
+    window.addEventListener('restaurant-manager-operational-orders-updated', onLocalWrite);
 
     return () => {
-      window.removeEventListener('posr-posstore-write', onLocalWrite);
-      window.removeEventListener('posr-operational-orders-updated', onLocalWrite);
+      window.removeEventListener('restaurant-manager-posstore-write', onLocalWrite);
+      window.removeEventListener('restaurant-manager-operational-orders-updated', onLocalWrite);
       if (loadOrdersTimerRef.current) {
         clearTimeout(loadOrdersTimerRef.current);
       }

@@ -186,11 +186,25 @@ bun install
 docker compose up -d
 ```
 
-Copied `.env` files include **local-dev** Surreal credentials (`posr` / `CHANGE_ME_BEFORE_DEPLOY`). Change `SURREAL_USER`, `SURREAL_PASS`, and `GATEWAY_JWT_SECRET` before any non-localhost deploy — `GATEWAY_JWT_SECRET` ships **blank** on purpose, so generate one (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`). `root`/`root` is rejected.
+Copied `.env` files include **local-dev** Surreal credentials (`restaurant` / `CHANGE_ME_BEFORE_DEPLOY`). Change `SURREAL_USER`, `SURREAL_PASS`, and `GATEWAY_JWT_SECRET` before any non-localhost deploy — `GATEWAY_JWT_SECRET` ships **blank** on purpose, so generate one (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`). `root`/`root` is rejected.
 
 **Auth gateway (default):** SPA uses port **3142**, not Surreal **8000**. Set `VITE_GATEWAY_URL` / `VITE_DB_WEBDOCKET` to the gateway; do **not** set `VITE_DB_USER` / `VITE_DB_PASS` in the browser bundle. Details and rollback: [docs/security/GATEWAY.md](docs/security/GATEWAY.md).
 
 **Optional PostgreSQL mirror:** the tracking / activity log can additionally be copied into PostgreSQL for SQL analytics. SurrealDB stays the store every report reads, and nothing is required — leave the `TRACKING_PG_*` variables blank and no Postgres is contacted. Design, limits, and how to enable it: [docs/adr/0006-postgres-tracking-mirror.md](docs/adr/0006-postgres-tracking-mirror.md).
+
+### Upgrading a database that still uses the old namespace
+
+SurrealDB's namespace and database are now `restaurant_manager`. An existing install keeps its data under the previous names, so `docker compose up` would open an **empty** database. Move it deliberately (there is no `RENAME NAMESPACE` in SurrealDB, so this is a data copy, and it does not delete the source):
+
+```bash
+# 1. build the schema under the new names
+SURREAL_NS=restaurant_manager SURREAL_DB=restaurant_manager node migrations/scripts/run-prod-migrations.cjs
+# 2. copy the records
+SURREAL_URL=ws://127.0.0.1:8000/rpc SURREAL_USER=<user> SURREAL_PASS=<pass> node scripts/rename-surreal-namespace.mjs
+# 3. check the printed per-table counts, then set SURREAL_NS / SURREAL_DB in .env
+```
+
+Browser-side offline data (PosStore, integration queue/secrets, AI history) is copied automatically on first launch by `src/lib/legacy-storage.ts`, which leaves the old store in place as a fallback. Active sessions end once, because the gateway's JWT issuer and the session cookie names changed. Full rationale: [docs/adr/0007-full-brand-rename.md](docs/adr/0007-full-brand-rename.md).
 
 ---
 
@@ -214,7 +228,7 @@ Fork → feature branch → PR. Stars help visibility.
 
 ## License
 
-**POSR Source Available License (PSAL) v1.0** — no `LICENSE` file is committed in this repository yet, so the summary below is the only licence text available; `package.json` still says `SEE LICENSE IN LICENSE` and that file has to be added (or the claim rewritten) before publishing.
+**Restaurant Manager Source Available License (RMSAL) v1.0** — no `LICENSE` file is committed in this repository yet, so the summary below is the only licence text available; `package.json` still says `SEE LICENSE IN LICENSE` and that file has to be added (or the claim rewritten) before publishing.
 
 Restaurant Manager is **source-available** (not OSI “open source”): you may view, study, clone, fork, modify; build plugins/connectors; run your own business (any locations); hire contractors to maintain it.
 

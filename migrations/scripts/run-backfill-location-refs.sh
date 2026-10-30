@@ -12,8 +12,8 @@ if [[ ! -d "$PAYMENTS_DIR/node_modules/surrealdb" ]]; then
 fi
 
 export SURREAL_URL="${SURREAL_URL:-ws://localhost:8000/rpc}"
-export SURREAL_NS="${SURREAL_NS:-posr}"
-export SURREAL_DB="${SURREAL_DB:-posr}"
+export SURREAL_NS="${SURREAL_NS:-restaurant_manager}"
+export SURREAL_DB="${SURREAL_DB:-restaurant_manager}"
 export SURREAL_USER="${SURREAL_USER:-root}"
 export SURREAL_PASS="${SURREAL_PASS:-root}"
 export NODE_PATH="$PAYMENTS_DIR/node_modules${NODE_PATH:+:$NODE_PATH}"

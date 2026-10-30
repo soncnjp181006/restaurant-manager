@@ -70,7 +70,7 @@ export const formatSyncFailure = (
   providerId: string,
   tenantId: string,
   entityType: string,
-  posrId: string,
+  localId: string,
   action: string,
   err: unknown
 ): Record<string, unknown> => {
@@ -81,7 +81,7 @@ export const formatSyncFailure = (
     provider_id: providerId,
     tenant_id: tenantId,
     entity_type: entityType,
-    posr_id: posrId,
+    local_id: localId,
     action,
     error: String(error?.message ?? 'Unknown error'),
     error_category: category,

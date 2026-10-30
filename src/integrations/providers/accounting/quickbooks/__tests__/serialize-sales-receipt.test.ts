@@ -3,7 +3,7 @@ import { serializeSalesReceipt, QboSalesReceiptInput } from '@/integrations/prov
 
 describe('serializeSalesReceipt', () => {
   const baseInput: QboSalesReceiptInput = {
-    docNumber: 'POSR-42',
+    docNumber: 'RM-42',
     customerId: 'CUST-1',
     customerName: 'Test Customer',
     lines: [
@@ -28,7 +28,7 @@ describe('serializeSalesReceipt', () => {
   it('serializes basic sale receipt', () => {
     const result = serializeSalesReceipt(baseInput);
 
-    expect(result.DocNumber).toBe('POSR-42');
+    expect(result.DocNumber).toBe('RM-42');
     expect(result.CustomerRef?.value).toBe('CUST-1');
     expect(result.CustomerRef?.name).toBe('Test Customer');
     expect(result.TxnDate).toBe('2026-08-03');

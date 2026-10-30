@@ -21,7 +21,7 @@ import {
 import { getAppTimezone } from "@/lib/datetime.ts";
 
 
-export const PRINT_EVENT = 'posr:print';
+export const PRINT_EVENT = 'restaurant-manager:print';
 
 export type PrintEventDetail<Payload = any> = {
   template: string;

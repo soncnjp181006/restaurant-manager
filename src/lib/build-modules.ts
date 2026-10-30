@@ -21,7 +21,7 @@ import {
   SETTINGS,
   SUMMARY,
   TIP_DISTRIBUTION,
-} from '@/routes/posr.ts';
+} from '@/routes/restaurant-manager.ts';
 
 const ALLOW = parseModuleList(import.meta.env.VITE_APP_MODULES);
 const EXCLUDE = parseModuleList(import.meta.env.VITE_APP_MODULES_EXCLUDE);

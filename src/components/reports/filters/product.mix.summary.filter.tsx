@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import {REPORTS_PRODUCT_MIX_SUMMARY} from "@/routes/posr.ts";
+import {REPORTS_PRODUCT_MIX_SUMMARY} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {ReactSelect} from "@/components/common/input/custom.react.select.tsx";
 import useApi, {SettingsData} from "@/api/db/use.api.ts";

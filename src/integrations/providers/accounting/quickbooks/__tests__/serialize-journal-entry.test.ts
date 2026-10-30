@@ -5,7 +5,7 @@ describe('serializeJournalEntry', () => {
   const baseInput: QboJournalEntryInput = {
     txnDate: '2026-08-03',
     docNumber: 'JE-42',
-    privateNote: 'POSR payroll posting',
+    privateNote: 'Restaurant Manager payroll posting',
     lines: [
       {
         description: 'Wages',
@@ -27,7 +27,7 @@ describe('serializeJournalEntry', () => {
 
     expect(result.TxnDate).toBe('2026-08-03');
     expect(result.DocNumber).toBe('JE-42');
-    expect(result.PrivateNote).toBe('POSR payroll posting');
+    expect(result.PrivateNote).toBe('Restaurant Manager payroll posting');
     expect(result.Line).toHaveLength(2);
 
     const debitLine = result.Line?.[0];

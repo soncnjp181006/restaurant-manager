@@ -151,7 +151,7 @@ export const QrCodeAuth: React.FC<QrCodeAuthProps> = ({
 
         <div className="mx-auto flex items-center justify-center mb-4">
           {token && (
-            <ReactQrCode value={`posr-auth://${token}`}/>
+            <ReactQrCode value={`restaurant-manager-auth://${token}`}/>
           )}
         </div>
       </div>

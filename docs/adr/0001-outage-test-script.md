@@ -8,14 +8,14 @@ SurrealDB down**; the terminal must never show a Surreal error toast.
 ## Setup
 
 1. Both terminals logged in, hydrated (`sync banner` hidden, no pending count).
-2. Open DevTools → Application → IndexedDB → `posr-terminal-posstore` on terminal A so
+2. Open DevTools → Application → IndexedDB → `restaurant-terminal-posstore` on terminal A so
    the outbox is visible (`syncOutbox`, `domainOperations`, `syncConflicts`).
 3. Note the current max `invoice_number` and `auto_id` in Surreal:
    `SELECT math::max(invoice_number), math::max(auto_id) FROM order GROUP ALL;`
 
 ## Kill the backend
 
-- Cloud: stop the gateway container (`docker stop posr-gateway`) **or** block
+- Cloud: stop the gateway container (`docker stop restaurant-manager-gateway`) **or** block
   its host in the browser (DevTools → Network → block request URL).
 - On-prem: additionally stop SurrealDB (`systemctl stop surreal`).
 
