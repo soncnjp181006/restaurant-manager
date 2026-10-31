@@ -43,15 +43,15 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
   type: yup.object().shape({
     label: yup.string(),
     value: yup.string()
-  }).default(undefined).required(i18n.t('validation:required')),
-  min_rate: yup.number().required(i18n.t('validation:required')),
-  max_rate: yup.number().required(i18n.t('validation:required')),
+  }).default(undefined).required(() => i18n.t('validation:required')),
+  min_rate: yup.number().required(() => i18n.t('validation:required')),
+  max_rate: yup.number().required(() => i18n.t('validation:required')),
   max_cap: yup.number().nullable(),
-  priority: yup.string().required(i18n.t('validation:required')),
+  priority: yup.string().required(() => i18n.t('validation:required')),
 });
 
 const SCOPES = ['item', 'category', 'cart', 'customer', 'floor'] as const;

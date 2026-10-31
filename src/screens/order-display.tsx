@@ -182,7 +182,12 @@ export const OrderDisplayScreen = () => {
               }))}
               isMulti
               placeholder={t('order-display:filters.status')}
-              value={selectedFilters.statuses}
+              // Persisted selections keep the label from pick time — resolve it
+              // from the current language so a raw enum never shows in the UI.
+              value={selectedFilters.statuses.map((item) => ({
+                ...item,
+                label: translateOrderStatus(t, String(item.value)),
+              }))}
               onChange={(value: LabelValue[]) => updateFilter('statuses', value)}
             />
           </div>

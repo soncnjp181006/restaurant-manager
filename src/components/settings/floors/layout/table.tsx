@@ -204,7 +204,7 @@ export const FloorTable = ({
     >
       {isSelected && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs bg-primary text-white px-2 py-[2px] rounded-full">
-          Selected
+          {t('ui.selectedLabel')}
         </span>
       )}
       {isLocked && (
@@ -325,7 +325,7 @@ export const FloorTable = ({
                     }}/>
                   </div>
                 </div>
-                {/*<Button variant="danger" onClick={removeTable}>Remove</Button>*/}
+                {/*<Button variant="danger" onClick={removeTable}> {t('common:actions.remove')}</Button>*/}
               </div>
             </Popover>
           </DialogTrigger>

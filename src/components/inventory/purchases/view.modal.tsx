@@ -65,7 +65,7 @@ export const InventoryPurchaseViewModal = ({open, purchase, onClose}: Props) => 
 
   return (
     <Modal
-      title={viewPurchase ? `Purchase #${viewPurchase.invoice_number}` : "Purchase"}
+      title={viewPurchase ? t('forms.viewPurchase', { number: viewPurchase.invoice_number }) : t('purchase')}
       open={open}
       onClose={onClose}
       size="xl"

@@ -27,23 +27,25 @@ const parseFilters = () => {
   return {startDate, endDate};
 };
 
-const SplitTable = ({rows}: {rows: SplitOrderRow[]}) => (
+const SplitTable = ({rows}: {rows: SplitOrderRow[]}) => {
+  const {t} = useTranslation('reports');
+  return (
   <div className="overflow-hidden rounded-lg border border-border">
     <table className="min-w-full divide-y divide-neutral-200">
       <thead className="bg-surface">
       <tr>
-        <th className="py-3 pl-6 pr-3 text-left text-sm font-semibold text-foreground">Created at</th>
-        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Order</th>
-        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Split #</th>
-        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Status</th>
-        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Table</th>
-        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">User</th>
+        <th className="py-3 pl-6 pr-3 text-left text-sm font-semibold text-foreground">{t('labels.createdAt')}</th>
+        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('columns.order')}</th>
+        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.split')}</th>
+        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('filters.status')}</th>
+        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('filters.table')}</th>
+        <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('filters.user')}</th>
       </tr>
       </thead>
       <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
       {rows.length === 0 ? (
         <tr>
-          <td colSpan={6} className="py-6 text-center text-sm text-muted">No split orders for selected range.</td>
+          <td colSpan={6} className="py-6 text-center text-sm text-muted">{t('labels.noSplitOrdersForSelectedRange')}</td>
         </tr>
       ) : rows.map((row) => (
         <tr key={row.id}>
@@ -58,7 +60,8 @@ const SplitTable = ({rows}: {rows: SplitOrderRow[]}) => (
       </tbody>
     </table>
   </div>
-);
+  );
+};
 
 export const SplitOrdersReport = () => {
   const { t } = useTranslation('reports');
@@ -69,7 +72,7 @@ export const SplitOrdersReport = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;

@@ -52,11 +52,11 @@ interface Props {
 const numberField = yup
   .number()
   .transform((value, originalValue) => (originalValue === "" || originalValue === null ? undefined : value))
-  .typeError(i18n.t('validation:mustBeNumber'));
+  .typeError(() => i18n.t('validation:mustBeNumber'));
 
 const validationSchema = yup.object({
-  price: numberField.min(0, i18n.t('forms.greaterThanOrEqualZero')).optional(),
-  cost: numberField.min(0, i18n.t('forms.greaterThanOrEqualZero')).optional(),
+  price: numberField.min(0, () => i18n.t('forms.greaterThanOrEqualZero')).optional(),
+  cost: numberField.min(0, () => i18n.t('forms.greaterThanOrEqualZero')).optional(),
   replace_workflow: yup.boolean().default(false),
   workflow: yup.object({
     label: yup.string(),
@@ -72,30 +72,30 @@ const validationSchema = yup.object({
     modifier_group: yup.object({
       label: yup.string(),
       value: yup.string()
-    }).required(i18n.t('validation:required')),
+    }).required(() => i18n.t('validation:required')),
     has_required_modifiers: yup.boolean(),
     required_modifiers: yup.number().when("has_required_modifiers", (hasRequiredModifiers, schema) => {
       if (hasRequiredModifiers[0]) {
-        return schema.min(1, i18n.t('validation:mustBeGreaterThanZero')).required(i18n.t('validation:required'));
+        return schema.min(1, () => i18n.t('validation:mustBeGreaterThanZero')).required(() => i18n.t('validation:required'));
       }
 
       return schema;
     }),
     should_auto_open: yup.boolean(),
     should_auto_select: yup.boolean(),
-    priority: yup.number().required(i18n.t('validation:required')),
+    priority: yup.number().required(() => i18n.t('validation:required')),
   })).default([]),
   replace_recipes: yup.boolean().default(false),
   recipes: yup.array(yup.object({
     item: yup.object({
       label: yup.string(),
       value: yup.string()
-    }).required(i18n.t('validation:required')),
-    quantity: yup.number().required(i18n.t('validation:required')).min(0.01, i18n.t('validation:quantityMin')),
+    }).required(() => i18n.t('validation:required')),
+    quantity: yup.number().required(() => i18n.t('validation:required')).min(0.01, () => i18n.t('validation:quantityMin')),
     entered_uom: yup.string().nullable().optional(),
-    cost: yup.number().required(i18n.t('validation:required')).min(0, i18n.t('validation:costMin')),
+    cost: yup.number().required(() => i18n.t('validation:required')).min(0, () => i18n.t('validation:costMin')),
     is_price_locked: yup.boolean().optional(),
-  })).default([]).test('unique-items', i18n.t('validation:uniqueItems'), function (recipes) {
+  })).default([]).test('unique-items', () => i18n.t('validation:uniqueItems'), function (recipes) {
     if (!recipes || recipes.length === 0) return true;
     const itemValues = recipes.map((recipe) => recipe?.item?.value).filter(Boolean);
     return itemValues.length === new Set(itemValues).size;
@@ -403,7 +403,7 @@ export const DishBulkForm = ({ open, onClose, data }: Props) => {
                   control={control}
                   render={({field}) => (
                     <Switch checked={field.value} onChange={field.onChange}>
-                      Set workflow for selected dishes
+                      {t('ui.setWorkflowForSelected')}
                     </Switch>
                   )}
                 />
@@ -445,7 +445,7 @@ export const DishBulkForm = ({ open, onClose, data }: Props) => {
               control={control}
               render={({field}) => (
                 <Switch checked={field.value} onChange={field.onChange}>
-                  Replace categories for selected dishes
+                  {t('ui.replaceCategoriesForSelected')}
                 </Switch>
               )}
             />
@@ -513,7 +513,7 @@ export const DishBulkForm = ({ open, onClose, data }: Props) => {
                   control={control}
                   render={({field}) => (
                     <Switch checked={field.value} onChange={field.onChange}>
-                      Replace modifier groups for selected dishes
+                      {t('ui.replaceModifierGroupsForSelected')}
                     </Switch>
                   )}
                 />
@@ -577,7 +577,7 @@ export const DishBulkForm = ({ open, onClose, data }: Props) => {
                       control={control}
                       render={({field}) => (
                         <Switch checked={field.value} onChange={field.onChange} disabled={!replaceModifierGroups}>
-                          Auto select modifiers?
+                          {t('ui.autoSelectModifiers')}
                         </Switch>
                       )}
                     />
@@ -588,7 +588,7 @@ export const DishBulkForm = ({ open, onClose, data }: Props) => {
                       control={control}
                       render={({field}) => (
                         <Switch checked={field.value} onChange={field.onChange} disabled={!replaceModifierGroups}>
-                          Auto open modifiers?
+                          {t('ui.autoOpenModifiers')}
                         </Switch>
                       )}
                     />
@@ -599,7 +599,7 @@ export const DishBulkForm = ({ open, onClose, data }: Props) => {
                       control={control}
                       render={({field}) => (
                         <Switch checked={field.value} onChange={field.onChange} disabled={!replaceModifierGroups}>
-                          Has required modifiers
+                          {t('ui.hasRequiredModifiers')}
                         </Switch>
                       )}
                     />
@@ -653,7 +653,7 @@ export const DishBulkForm = ({ open, onClose, data }: Props) => {
                   control={control}
                   render={({field}) => (
                     <Switch checked={field.value} onChange={field.onChange}>
-                      Replace recipe for selected dishes
+                      {t('ui.replaceRecipeForSelected')}
                     </Switch>
                   )}
                 />
@@ -673,7 +673,7 @@ export const DishBulkForm = ({ open, onClose, data }: Props) => {
                   })}
                   disabled={!replaceRecipes}
                 >
-                  Add recipe item
+                  {t('ui.addRecipeItem')}
                 </Button>
               </div>
 

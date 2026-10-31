@@ -11,7 +11,7 @@ export const SaleVsConsumptionFilter = () => {
       className="flex flex-col gap-4 items-start w-full"
       target="_blank"
     >
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <Button
         variant="primary"

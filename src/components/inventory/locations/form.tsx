@@ -20,6 +20,7 @@ import {
   updateLocation,
 } from "@/lib/inventory/location.service.ts";
 import { recordIdToString } from "@/api/reports/shared/records.ts";
+import i18n from '@/lib/i18n.ts';
 
 interface LocationFormValues {
   name: string;
@@ -35,8 +36,8 @@ interface Props {
 
 const validationSchema = yup
   .object({
-    name: yup.string().required("This is required"),
-    type: yup.string().required("This is required"),
+    name: yup.string().required(() => i18n.t('validation:required')),
+    type: yup.string().required(() => i18n.t('validation:required')),
     is_active: yup.boolean().required(),
   })
   .required();

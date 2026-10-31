@@ -39,6 +39,7 @@ import {
   QuantityUomFields,
 } from "@/components/inventory/common/quantity.uom.fields.tsx";
 import {normalizeUom} from "@/utils/inventoryUom.ts";
+import i18n from '@/lib/i18n.ts';
 
 interface PurchaseOrderItemFormValue {
   item: { label: string; value: string } | null;
@@ -64,9 +65,9 @@ interface Props {
 }
 
 const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string) => yup.object({
-  po_number: yup.number().typeError("This should be a number").required("This is required").test(
+  po_number: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')).test(
     "unique-po-number",
-    "PO number already exists",
+    () => i18n.t('validation:poNumberExists'),
     async function (value) {
       if (value === undefined || value === null) {
         return true;
@@ -82,7 +83,7 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
 
       if (!isUnique) {
         return this.createError({
-          message: "PO number already exists",
+          message: i18n.t('validation:poNumberExists'),
           path: "po_number"
         });
       }
@@ -101,16 +102,16 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
       item: yup.object({
         label: yup.string(),
         value: yup.string()
-      }).required("This is required"),
-      quantity: yup.number().typeError("This should be a number").required("This is required"),
-      price: yup.number().typeError("This should be a number").optional(),
+      }).required(() => i18n.t('validation:required')),
+      quantity: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')),
+      price: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).optional(),
       entered_uom: yup.string().nullable().optional(),
       supplier: yup.object({
         label: yup.string(),
         value: yup.string()
       }).nullable().optional(),
     })
-  ).min(1, "Add at least one item"),
+  ).min(1, () => i18n.t('validation:addAtLeastOneItem')),
 }).required();
 
 export const InventoryPurchaseOrderForm = ({open, onClose, data}: Props) => {
@@ -210,9 +211,10 @@ export const InventoryPurchaseOrderForm = ({open, onClose, data}: Props) => {
     }
 
     let isMounted = true;
+    const initialSeqNumber = getValues("po_number");
     fetchNextSequentialNumber(db, Tables.inventory_purchase_orders, "po_number")
       .then((nextNumber) => {
-        if (isMounted) {
+        if (isMounted && getValues("po_number") === initialSeqNumber) {
           setValue("po_number", nextNumber);
         }
       })
@@ -431,7 +433,7 @@ export const InventoryPurchaseOrderForm = ({open, onClose, data}: Props) => {
   return (
     <>
       <Modal
-        title={data ? `Update PO #${data?.po_number}` : "Create new purchase order"}
+        title={data ? t('forms.updatePurchaseOrder', { number: data.po_number }) : t('forms.createPurchaseOrder')}
         open={open}
         onClose={closeModal}
         size="xl"
@@ -458,7 +460,7 @@ export const InventoryPurchaseOrderForm = ({open, onClose, data}: Props) => {
               <div className="flex-1 flex gap-3 items-end">
                 <div className="flex-1 flex gap-2 items-end">
                   <div className="flex-1">
-                    <label>Supplier</label>
+                    <label>{t('supplier')}</label>
                     <Controller
                       name="supplier"
                       control={control}
@@ -499,7 +501,7 @@ export const InventoryPurchaseOrderForm = ({open, onClose, data}: Props) => {
 
             <div className="flex gap-3">
               <div className="flex-1">
-                <label>Documents</label>
+                <label>{t('documents')}</label>
                 <input
                   type="file"
                   multiple
@@ -519,7 +521,7 @@ export const InventoryPurchaseOrderForm = ({open, onClose, data}: Props) => {
                   variant="primary"
                   onClick={() => append({item: null, quantity: 1, price: 0, entered_uom: "", supplier: null})}
                 >
-                  Add item
+                  {t('buttons.addItem')}
                 </Button>
                 <Button
                   type="button"
@@ -615,7 +617,7 @@ export const InventoryPurchaseOrderForm = ({open, onClose, data}: Props) => {
                         </div>
                       </div>
                       <div className="flex-1">
-                        <label>Supplier override</label>
+                        <label>{t('forms.supplierOverride')}</label>
                         <Controller
                           name={`items.${index}.supplier`}
                           control={control}

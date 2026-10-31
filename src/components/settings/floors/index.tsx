@@ -79,7 +79,7 @@ export const AdminFloors = () => {
                 });
               }}
             >
-              Layout
+              {t('ui.layoutLabel')}
             </Button>
             <div className="separator"></div>
             <DeleteConfirm

@@ -96,7 +96,7 @@ export const SalesWeeklyReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const {weekStart, weekStartISO, weekEndISO, queryStart, queryEnd} = useMemo(parseWeekParams, []);
-  const subtitle = `${weekStartISO} to ${weekEndISO}`;
+  const subtitle = t('labels.rangeSubtitle', { start: weekStartISO, end: weekEndISO });
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -445,14 +445,14 @@ const SalesWeeklyBody = ({
         <table className="min-w-full divide-y divide-neutral-200 border border-border">
           <thead className="bg-surface">
             <tr>
-              <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">Metric</th>
+              <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('labels.metric')}</th>
               {dayHeaders.map(({day, dateLabel}) => (
                 <th key={day} className="py-3 px-3 text-center text-xs font-semibold text-foreground">
                   <div>{day}</div>
                   <div className="text-xs text-muted font-normal">{dateLabel}</div>
                 </th>
               ))}
-              <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">Weekly Total</th>
+              <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">{t('labels.weeklyTotal')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-100 bg-surface-elevated">

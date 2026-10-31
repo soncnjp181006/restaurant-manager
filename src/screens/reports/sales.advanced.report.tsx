@@ -137,7 +137,7 @@ export const SalesAdvancedReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -568,25 +568,25 @@ const SalesAdvancedBody = ({
       <div className="space-y-8">
         {/* Summary Totals */}
         <div className="overflow-hidden rounded-lg border border-border">
-          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Summary</h3>
+          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.summary')}</h3>
           <div className="p-4">
             <table className="min-w-full text-sm table-hover">
               <tbody className="divide-y divide-neutral-100">
               <tr>
-                <td className="py-2 text-foreground">Total Orders</td>
+                <td className="py-2 text-foreground">{t('labels.totalOrders')}</td>
                 <td className="py-2 text-right font-semibold text-foreground">{formatNumber(totals.ordersCount)}</td>
               </tr>
               <tr>
-                <td className="py-2 text-foreground">Sale Price w/o Tax</td>
+                <td className="py-2 text-foreground">{t('labels.salePriceWithoutTax')}</td>
                 <td
                   className="py-2 text-right font-semibold text-foreground">{withCurrency(totals.salePriceWithoutTax)}</td>
               </tr>
               <tr>
-                <td className="py-2 text-foreground">Taxes</td>
+                <td className="py-2 text-foreground">{t('labels.taxes')}</td>
                 <td className="py-2 text-right font-semibold text-foreground">{withCurrency(totals.taxes)}</td>
               </tr>
               <tr>
-                <td className="py-2 text-foreground">Service Charges</td>
+                <td className="py-2 text-foreground">{t('labels.serviceCharges')}</td>
                 <td
                   className="py-2 text-right font-semibold text-foreground">{withCurrency(totals.serviceCharges)}</td>
               </tr>
@@ -616,7 +616,7 @@ const SalesAdvancedBody = ({
                   className="py-2 text-right font-semibold text-foreground">{withCurrency(totals.amountCollected)}</td>
               </tr>
               <tr>
-                <td className="py-2 text-foreground">Rounding</td>
+                <td className="py-2 text-foreground">{t('labels.rounding')}</td>
                 <td className="py-2 text-right font-semibold text-foreground">{withCurrency(totals.rounding)}</td>
               </tr>
               <tr className="border-t-2 border-border">
@@ -636,7 +636,7 @@ const SalesAdvancedBody = ({
                 type="button"
                 onClick={toggleAllOrderItems}
                 className="print:hidden h-6 w-6 rounded border border-border text-xs font-bold text-foreground hover:bg-surface"
-                aria-label={areAllExpanded ? 'Hide menu items' : 'Show menu items'}
+                aria-label={areAllExpanded ? t('labels.hideMenuItems') : t('labels.showMenuItems')}
               >
                 {areAllExpanded ? '-' : '+'}
               </button>
@@ -651,9 +651,9 @@ const SalesAdvancedBody = ({
                   <th className="py-3 pl-6 pr-2 text-left text-xs font-semibold text-foreground print:hidden">{t('columns.items')}</th>
                 )}
                 <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('columns.date')}</th>
-                <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Order #</th>
+                <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('orderFiscal.order')}</th>
                 <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('columns.invoice')}</th>
-                <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Order Taker</th>
+                <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.orderTaker')}</th>
                 <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('metrics.cashier')}</th>
                 <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('filters.table')}</th>
                 <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('filters.floor')}</th>
@@ -663,18 +663,18 @@ const SalesAdvancedBody = ({
                   <>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.items')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.covers')}</th>
-                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Sale w/o Tax</th>
-                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Taxes</th>
-                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Tip</th>
-                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Service Charges</th>
+                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.saleWithoutTax')}</th>
+                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.taxes')}</th>
+                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.tip')}</th>
+                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.serviceCharges')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.discounts')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.coupons')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.amountDue')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.amountCollected')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.changeDue')}</th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Payment Breakdown</th>
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.paymentBreakdown')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.net')}</th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Notes</th>
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.notes')}</th>
                   </>
                 )}
                 {!filters.showDetails && (
@@ -714,7 +714,7 @@ const SalesAdvancedBody = ({
                               type="button"
                               onClick={() => toggleOrderItems(orderId)}
                               className="h-6 w-6 rounded border border-border text-xs font-bold text-foreground hover:bg-surface"
-                              aria-label={isExpanded ? 'Hide menu items' : 'Show menu items'}
+                              aria-label={isExpanded ? t('labels.hideMenuItems') : t('labels.showMenuItems')}
                             >
                               {isExpanded ? '-' : '+'}
                             </button>
@@ -786,7 +786,7 @@ const SalesAdvancedBody = ({
                       <tr key={`${order.id}-items`} className="bg-surface">
                         <td colSpan={tableColSpan} className="py-3 pl-6 pr-6">
                           <div className="space-y-2">
-                            {/*<div className="text-xs font-semibold text-foreground mb-2">Menu Items:</div>*/}
+                            {/*<div className="text-xs font-semibold text-foreground mb-2">{t('labels.menuItems')}</div>*/}
                             <table className="w-full text-xs">
                               <thead>
                               <tr className="border-b border-border">
@@ -834,7 +834,7 @@ const SalesAdvancedBody = ({
               {filteredOrders.length === 0 && (
                 <tr>
                   <td colSpan={tableColSpan} className="py-6 text-center text-sm text-muted">
-                    No orders found for the selected filters.
+                    {t('labels.noOrdersFoundForFilters')}
                   </td>
                 </tr>
               )}

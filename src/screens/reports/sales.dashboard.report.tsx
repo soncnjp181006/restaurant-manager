@@ -33,7 +33,7 @@ import {
 import {TabList, Tabs} from "react-aria-components";
 import {Tab, TabPanel} from "@/components/common/react-aria/tabs.tsx";
 import { toJsDate, toLuxonDateTime } from "@/lib/datetime.ts";
-import {DAY_PARTS, getDayPartLabel, getDayPartTimeRangeLabel, type DayPartLabel} from "@/utils/dayParts";
+import {DAY_PARTS, getDayPartLabel, getDayPartTimeRangeLabel, translateDayPartLabel, type DayPartLabel} from "@/utils/dayParts";
 import {getOrderFilteredItems, getOrderPaymentTotals} from "@/lib/order.ts";
 import {detectBrowser, detectOS, displayValue} from "@/screens/reports/activity.report.tsx";
 
@@ -188,8 +188,8 @@ const SalesLineChart = ({
     <div className="bg-surface-elevated p-5 rounded-lg shadow-xl border">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Sales Trend</h2>
-          <p className="text-sm text-muted">Revenue over time</p>
+          <h2 className="text-2xl font-bold text-foreground">{t('labels.salesTrend')}</h2>
+          <p className="text-sm text-muted">{t('labels.revenueOverTime')}</p>
         </div>
       </div>
       <div className="h-[300px] relative">
@@ -255,7 +255,7 @@ const SalesLineChart = ({
           />
         ) : (
           <div className="h-full flex items-center justify-center text-muted">
-            No sales data for this period
+            {t('labels.noSalesData')}
           </div>
         )}
       </div>
@@ -284,8 +284,8 @@ const OrdersPerHourChart = ({
     <div className="bg-surface-elevated p-5 rounded-lg shadow-xl border">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Orders Per Hour</h2>
-          <p className="text-sm text-muted">Order volume by hour</p>
+          <h2 className="text-2xl font-bold text-foreground">{t('labels.ordersPerHour')}</h2>
+          <p className="text-sm text-muted">{t('labels.orderVolumeByHour')}</p>
         </div>
       </div>
       <div className="h-[300px] relative">
@@ -349,7 +349,7 @@ const OrdersPerHourChart = ({
           />
         ) : (
           <div className="h-full flex items-center justify-center text-muted">
-            No orders data
+            {t('labels.noOrdersData')}
           </div>
         )}
       </div>
@@ -358,6 +358,7 @@ const OrdersPerHourChart = ({
 };
 
 const DayPartsWidget = ({dayParts}: {dayParts: {label: string; orders: number; revenue: number}[]}) => {
+  const {t} = useTranslation('reports');
   const DAY_PART_COLORS = [
     '#FFA514', // breakfast - warning
     '#3DE567', // lunch - success
@@ -369,14 +370,14 @@ const DayPartsWidget = ({dayParts}: {dayParts: {label: string; orders: number; r
     {
       id: 'Day Parts',
       data: dayParts.map((part) => ({
-        x: part.label,
+        x: translateDayPartLabel(t, part.label),
         y: part.revenue,
       })),
     },
   ], [dayParts]);
   const dayPartSummary = useMemo(
-    () => DAY_PARTS.map(part => `${part.label} (${getDayPartTimeRangeLabel(part.label)})`).join(', '),
-    [],
+    () => DAY_PARTS.map(part => `${translateDayPartLabel(t, part.label)} (${getDayPartTimeRangeLabel(part.label)})`).join(', '),
+    [t],
   );
 
   return (
@@ -386,7 +387,7 @@ const DayPartsWidget = ({dayParts}: {dayParts: {label: string; orders: number; r
           <Clock className="w-5 h-5 text-warning-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Sales by Day Part</h2>
+          <h2 className="text-xl font-bold text-foreground">{t('labels.salesByDayPart')}</h2>
           <p className="text-xs text-muted">{dayPartSummary}</p>
         </div>
       </div>
@@ -395,7 +396,7 @@ const DayPartsWidget = ({dayParts}: {dayParts: {label: string; orders: number; r
           <ResponsivePie
             data={dayParts.map((part, idx) => ({
               id: part.label,
-              label: part.label,
+              label: translateDayPartLabel(t, part.label),
               value: part.revenue,
               color: DAY_PART_COLORS[idx % DAY_PART_COLORS.length],
             }))}
@@ -445,7 +446,7 @@ const DayPartsWidget = ({dayParts}: {dayParts: {label: string; orders: number; r
           />
         ) : (
           <div className="h-full flex items-center justify-center text-muted">
-            No day part data
+            {t('labels.noDayPartData')}
           </div>
         )}
       </div>
@@ -463,7 +464,7 @@ const CategoryPieWidget = ({categories}: {categories: CategorySales[]}) => {
           <Tag className="w-5 h-5 text-success-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Sales by Category</h2>
+          <h2 className="text-xl font-bold text-foreground">{t('labels.salesByCategory')}</h2>
           <p className="text-xs text-muted">{t('labels.distribution')}</p>
         </div>
       </div>
@@ -514,7 +515,7 @@ const CategoryPieWidget = ({categories}: {categories: CategorySales[]}) => {
           />
         ) : (
           <div className="h-full flex items-center justify-center text-muted">
-            No category data
+            {t('labels.noCategoryData')}
           </div>
         )}
       </div>
@@ -606,7 +607,7 @@ const BreakdownTabsWidget = ({
                 ]}
               />
             ) : (
-              <div className="h-full flex items-center justify-center text-muted">No data available</div>
+              <div className="h-full flex items-center justify-center text-muted">{t('labels.noDataAvailable')}</div>
             )}
           </div>
         </TabPanel>
@@ -629,7 +630,7 @@ const BreakdownTabsWidget = ({
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan={3} className="py-6 text-center text-sm text-muted">No data available</td>
+                    <td colSpan={3} className="py-6 text-center text-sm text-muted">{t('labels.noDataAvailable')}</td>
                   </tr>
                 )}
               </tbody>
@@ -650,7 +651,7 @@ const PeriodComparisonSection = ({periodSales}: {periodSales: PeriodSalesItem[]}
           <TrendingUp className="w-5 h-5 text-info-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Period Comparison</h2>
+          <h2 className="text-xl font-bold text-foreground">{t('labels.periodComparison')}</h2>
           <p className="text-xs text-muted">{t('labels.databaseSnapshots')}</p>
         </div>
       </div>
@@ -701,12 +702,12 @@ const ActivitySection = () => {
   return (
     <div className="bg-surface-elevated p-5 shadow-xl xl:col-span-1 rounded-lg border border-border">
       <h3 className="text-lg font-semibold text-foreground">{t('labels.latestActivity')}</h3>
-      <p className="text-xs text-muted mb-3">Top 100 records from tracking</p>
+      <p className="text-xs text-muted mb-3">{t('labels.top100RecordsFromTracking')}</p>
       <div className="max-h-[420px] overflow-y-auto rounded-md border border-border bg-surface-elevated">
         {trackingLoading ? (
           <div className="p-4 text-sm text-muted">{t('loading.latestActivity')}</div>
         ) : trackingRows.length === 0 ? (
-          <div className="p-4 text-sm text-muted">No activity found</div>
+          <div className="p-4 text-sm text-muted">{t('labels.noActivityFound')}</div>
         ) : (
           
           <table className="table table-xs">
@@ -848,8 +849,8 @@ const DeliverySection = ({orders}: {orders: Order[]}) => {
           <table className="min-w-full divide-y divide-neutral-200">
             <thead className="bg-surface">
               <tr>
-                <th className="py-3 pl-4 pr-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Order #</th>
-                <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Customer</th>
+                <th className="py-3 pl-4 pr-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('orderFiscal.order')}</th>
+                <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('labels.customer')}</th>
                 <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('common:actions.type')}</th>
                 <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('filters.status')}</th>
                 <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('common:actions.time')}</th>
@@ -887,7 +888,7 @@ const DeliverySection = ({orders}: {orders: Order[]}) => {
               )) : (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-sm text-muted">
-                    No active delivery orders
+                    {t('labels.noActiveDeliveryOrders')}
                   </td>
                 </tr>
               )}
@@ -906,7 +907,7 @@ const DeliverySection = ({orders}: {orders: Order[]}) => {
             <Truck className="w-5 h-5 text-primary-600" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-foreground">Delivery Orders</h2>
+            <h2 className="text-xl font-bold text-foreground">{t('labels.deliveryOrders')}</h2>
             <p className="text-xs text-muted">{t('labels.activeDeliveries')}</p>
           </div>
         </div>
@@ -920,7 +921,7 @@ const DeliverySection = ({orders}: {orders: Order[]}) => {
         selectedKey={selectedTab}
         onSelectionChange={(key: string) => setSelectedTab(key as 'map' | 'table')}
       >
-        <TabList aria-label="Delivery tabs" className="flex flex-row gap-3 mb-4">
+        <TabList aria-label={t('labels.deliveryTabs')} className="flex flex-row gap-3 mb-4">
           <Tab activeClass="bg-neutral-900 text-warning" id="map" key="map">{t('labels.mapView')}</Tab>
           <Tab activeClass="bg-neutral-900 text-warning" id="table" key="table">{t('labels.tableView')}</Tab>
         </TabList>
@@ -1029,7 +1030,7 @@ const UserSessionsWidget = () => {
             <UserCheck className="w-5 h-5 text-info-600" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-foreground">User Sessions</h2>
+            <h2 className="text-xl font-bold text-foreground">{t('labels.userSessions')}</h2>
             <p className="text-xs text-muted">{t('labels.latestTimeEntries')}</p>
           </div>
         </div>
@@ -1042,10 +1043,10 @@ const UserSessionsWidget = () => {
           <thead className="bg-surface">
             <tr>
               <th className="py-3 pl-4 pr-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('filters.user')}</th>
-              <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Role</th>
-              <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Shift</th>
-              <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Clock In</th>
-              <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Clock Out</th>
+              <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('labels.role')}</th>
+              <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('labels.shift')}</th>
+              <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('labels.clockIn')}</th>
+              <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('labels.clockOut')}</th>
               <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('columns.duration')}</th>
               <th className="py-3 pr-4 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('filters.status')}</th>
             </tr>
@@ -1095,11 +1096,11 @@ const UserSessionsWidget = () => {
                   {session.isActive ? (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-700">
                       <span className="w-2 h-2 bg-success-500 rounded-full mr-1.5 animate-pulse"></span>
-                      Active
+                      {t('ui.activeLabel')}
                     </span>
                   ) : (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface dark:bg-neutral-700 text-muted">
-                      Completed
+                      {t('labels.completedLabel')}
                     </span>
                   )}
                 </td>
@@ -1107,7 +1108,7 @@ const UserSessionsWidget = () => {
             )) : (
               <tr>
                 <td colSpan={7} className="py-8 text-center text-sm text-muted">
-                  No user sessions found
+                  {t('labels.noUserSessions')}
                 </td>
               </tr>
             )}
@@ -1188,7 +1189,7 @@ const LatestOrdersTable = ({orders}: {orders: Order[]}) => {
             )) : (
               <tr>
                 <td colSpan={8} className="py-8 text-center text-sm text-muted">
-                  No orders yet
+                  {t('labels.noOrdersYet')}
                 </td>
               </tr>
             )}
@@ -1654,7 +1655,7 @@ const SalesDashboardBody = ({
               labelColor="text-success-700"
             />
             <KPIMetricWidget
-              title="Net Sale"
+              title={t('labels.netSale')}
               value={withCurrency(kpis.netSale)}
               icon={TrendingUp}
               gradientFrom="from-primary-100"
@@ -1664,7 +1665,7 @@ const SalesDashboardBody = ({
               labelColor="text-primary-700"
             />
             <KPIMetricWidget
-              title="Total Revenue"
+              title={t('labels.totalRevenue')}
               value={withCurrency(kpis.totalRevenue)}
               icon={ArrowLeftRight}
               gradientFrom="from-info-100"
@@ -1674,7 +1675,7 @@ const SalesDashboardBody = ({
               labelColor="text-info-700"
             />
             <KPIMetricWidget
-              title="Grand Total"
+              title={t('labels.grandTotal')}
               value={withCurrency(kpis.grandTotal)}
               icon={ShoppingCart}
               gradientFrom="from-primary-100"
@@ -1714,7 +1715,7 @@ const SalesDashboardBody = ({
               labelColor="text-danger-700"
             />
             <KPIMetricWidget
-              title="Service Charge"
+              title={t('labels.serviceChargeLabel')}
               value={withCurrency(kpis.serviceCharge)}
               icon={ArrowLeftRight}
               gradientFrom="from-primary-100"
@@ -1724,7 +1725,7 @@ const SalesDashboardBody = ({
               labelColor="text-primary-700"
             />
             <KPIMetricWidget
-              title="Total Order"
+              title={t('labels.totalOrder')}
               value={formatNumber(kpis.totalOrder)}
               icon={Package}
               gradientFrom="from-info-100"
@@ -1734,7 +1735,7 @@ const SalesDashboardBody = ({
               labelColor="text-info-700"
             />
             <KPIMetricWidget
-              title="Total Cover"
+              title={t('labels.totalCover')}
               value={formatNumber(kpis.totalCover)}
               icon={UserCheck}
               gradientFrom="from-success-100"
@@ -1744,7 +1745,7 @@ const SalesDashboardBody = ({
               labelColor="text-success-700"
             />
             <KPIMetricWidget
-              title="Avg Order"
+              title={t('labels.avgOrder')}
               value={withCurrency(kpis.avgOrder)}
               icon={TrendingUp}
               gradientFrom="from-warning-100"
@@ -1754,7 +1755,7 @@ const SalesDashboardBody = ({
               labelColor="text-warning-700"
             />
             <KPIMetricWidget
-              title="Avg Cover"
+              title={t('labels.avgCover')}
               value={withCurrency(kpis.avgCover)}
               icon={DollarSign}
               gradientFrom="from-success-100"
@@ -1764,7 +1765,7 @@ const SalesDashboardBody = ({
               labelColor="text-success-700"
             />
             <KPIMetricWidget
-              title="Refund Order"
+              title={t('labels.refundOrder')}
               value={formatNumber(kpis.refundOrder)}
               icon={ArrowLeftRight}
               gradientFrom="from-info-100"
@@ -1774,7 +1775,7 @@ const SalesDashboardBody = ({
               labelColor="text-info-700"
             />
             <KPIMetricWidget
-              title="Late Orders"
+              title={t('labels.lateOrders')}
               value={formatNumber(kpis.lateOrders)}
               icon={Clock}
               gradientFrom="from-warning-100"
@@ -1838,8 +1839,8 @@ const SalesDashboardBody = ({
         {/* Top Items and Day Parts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <BreakdownTabsWidget
-            title="Top Selling Items"
-            subtitle="Exclude deleted/refunded/suspended items"
+            title={t('labels.topSellingItems')}
+            subtitle={t('labels.excludeDeletedRefundedSuspendedItems')}
             rows={topItemsBreakdown}
             icon={Package}
             colorClass={{bg: 'bg-primary-100', text: 'text-primary-600'}}
@@ -1851,16 +1852,16 @@ const SalesDashboardBody = ({
         {/* Users and Tables */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <BreakdownTabsWidget
-            title="Top Cashiers"
-            subtitle="By total revenue"
+            title={t('labels.topCashiers')}
+            subtitle={t('labels.byTotalRevenue')}
             rows={topUsersBreakdown}
             icon={UserCheck}
             colorClass={{bg: 'bg-info-100', text: 'text-info-600'}}
             countLabel="Orders"
           />
           <BreakdownTabsWidget
-            title="Top Tables"
-            subtitle="By total revenue"
+            title={t('labels.topTables')}
+            subtitle={t('labels.byTotalRevenue')}
             rows={topTablesBreakdown}
             icon={TableIcon}
             colorClass={{bg: 'bg-warning-100', text: 'text-warning-600'}}
@@ -1871,16 +1872,16 @@ const SalesDashboardBody = ({
         {/* Order Types and Payment Methods */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <BreakdownTabsWidget
-            title="Top Order Types"
-            subtitle="By total revenue"
+            title={t('labels.topOrderTypes')}
+            subtitle={t('labels.byTotalRevenue')}
             rows={orderTypesBreakdown}
             icon={Package}
             colorClass={{bg: 'bg-primary-100', text: 'text-primary-600'}}
             countLabel="Orders"
           />
           <BreakdownTabsWidget
-            title="Payment Methods"
-            subtitle="Using getOrderPaymentTotals"
+            title={t('labels.paymentMethods')}
+            subtitle={t('labels.paymentBreakdown')}
             rows={paymentTypesBreakdown}
             icon={Tag}
             colorClass={{bg: 'bg-success-100', text: 'text-success-600'}}

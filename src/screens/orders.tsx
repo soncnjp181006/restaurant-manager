@@ -275,6 +275,44 @@ export const Orders = () => {
     data: users,
   } = useApi<SettingsData<User>>(Tables.users, ['deleted_at = none'], [], 0, 99999);
 
+  const statusOptions = useMemo(
+    () =>
+      [
+        OrderStatus['In Progress'],
+        OrderStatus.Paid,
+        OrderStatus.Cancelled,
+        OrderStatus.Spilt,
+        OrderStatus.Merged,
+      ].map((item) => ({ label: translateOrderStatus(t, item), value: item })),
+    [t]
+  );
+  const orderTypeOptions = useMemo(
+    () => settings.order_types.map((item) => ({ label: item.name, value: item.id })),
+    [settings.order_types]
+  );
+  const floorOptions = useMemo(
+    () => settings.floors.map((item) => ({ label: item.name, value: item.id })),
+    [settings.floors]
+  );
+  const userOptions = useMemo(
+    () =>
+      (users?.data ?? []).map((item) => ({
+        label: `${item.first_name} ${item.last_name}`,
+        value: item.id,
+      })),
+    [users?.data]
+  );
+
+  // The selection is persisted per device (app-state) and was historically stored
+  // with a label captured at pick time — or, for old defaults, the raw enum value.
+  // Resolve every chip from the current options so a stale or raw label can never
+  // leak into the UI.
+  const relabelSelection = useCallback(
+    (selected: LabelValue[], options: LabelValue[]) =>
+      selected.map((item) => options.find((option) => option.value === item.value) ?? item),
+    []
+  );
+
   useEffect(() => {
     let cancelled = false;
 
@@ -400,49 +438,37 @@ export const Orders = () => {
         <div className="h-[60px] shrink-0 rounded-xl bg-surface-elevated flex items-center px-3 gap-3" data-testid="orders-filters">
           <div className="min-w-[200px]">
             <ReactSelect
-              options={[OrderStatus["In Progress"], OrderStatus.Paid, OrderStatus.Cancelled, OrderStatus.Spilt, OrderStatus.Merged].map(item => ({
-                label: translateOrderStatus(t, item),
-                value: item
-              }))}
+              options={statusOptions}
               isMulti
               placeholder={t('filters.status')}
-              value={selectedOrderFilters.statuses}
+              value={relabelSelection(selectedOrderFilters.statuses, statusOptions)}
               onChange={(value: LabelValue[]) => updateOrderFilter('statuses', value)}
             />
           </div>
           <div className="min-w-[200px]">
             <ReactSelect
-              options={settings.order_types.map(item => ({
-                label: item.name,
-                value: item.id
-              }))}
+              options={orderTypeOptions}
               isMulti
               placeholder={t('filters.orderTypes')}
-              value={selectedOrderFilters.orderTypes}
+              value={relabelSelection(selectedOrderFilters.orderTypes, orderTypeOptions)}
               onChange={(value: LabelValue[]) => updateOrderFilter('orderTypes', value)}
             />
           </div>
           <div className="min-w-[200px]">
             <ReactSelect
-              options={settings.floors.map(item => ({
-                label: item.name,
-                value: item.id
-              }))}
+              options={floorOptions}
               isMulti
               placeholder={t('filters.floors')}
-              value={selectedOrderFilters.floors}
+              value={relabelSelection(selectedOrderFilters.floors, floorOptions)}
               onChange={(value: LabelValue[]) => updateOrderFilter('floors', value)}
             />
           </div>
           <div className="min-w-[200px]">
             <ReactSelect
-              options={users?.data?.map(item => ({
-                label: item.first_name + ' ' + item.last_name,
-                value: item.id
-              }))}
+              options={userOptions}
               isMulti
               placeholder={t('filters.users')}
-              value={selectedOrderFilters.users}
+              value={relabelSelection(selectedOrderFilters.users, userOptions)}
               onChange={(value: LabelValue[]) => updateOrderFilter('users', value)}
             />
           </div>
@@ -459,7 +485,7 @@ export const Orders = () => {
                   void dispatchPrint(db, PRINT_TYPE.pulse, {}, {userId: app?.user?.id});
                 }, {
                   module: 'orders.open_cash_drawer',
-                  description: 'Open cash drawer',
+                  description: t('actions.openCashDrawer'),
                 });
               }}
             >

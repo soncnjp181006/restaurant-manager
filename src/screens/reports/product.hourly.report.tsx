@@ -72,7 +72,7 @@ export const ProductHourlyReport = () => {
 
   const filters = useMemo(parseFilters, []);
   const subtitle = filters.startDate && filters.endDate
-    ? `${filters.startDate} to ${filters.endDate}`
+    ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate })
     : undefined;
 
   useEffect(() => {
@@ -147,7 +147,7 @@ export const ProductHourlyReport = () => {
 
   return (
     <ReportsLayout title={t('titles.productHourly')} subtitle={subtitle}>
-      <div className="alert alert-warning">This report doesn't include taxes, discounts, service charges, extras and tips</div>
+      <div className="alert alert-warning">{t('labels.thisReportDoesnTIncludeTaxesDiscountsServiceChargesExtrasAndNote')}</div>
       <BranchBreakdown
         enabled={branchScope.isByBranch}
         rows={orders}
@@ -290,7 +290,7 @@ const ProductHourlyBody = ({
           <thead className="bg-surface">
             <tr>
               <th rowSpan={2} className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground border-r border-border">
-                Menu Item
+                {t('labels.menuItem')}
               </th>
               {displayHours.map(hour => (
                 <th key={hour} colSpan={1} className="py-3 px-3 text-center text-xs font-semibold text-foreground border-r border-border">
@@ -300,16 +300,16 @@ const ProductHourlyBody = ({
                 </th>
               ))}
               <th rowSpan={2} className="py-3 px-3 text-center text-xs font-semibold text-foreground border-r border-border">
-                Total Qty
+                {t('labels.totalQty')}
               </th>
               <th rowSpan={2} className="py-3 px-3 text-center text-xs font-semibold text-foreground border-r border-border">
-                Subtotal
+                {t('labels.subtotalLabel')}
               </th>
               <th rowSpan={2} className="py-3 px-3 text-center text-xs font-semibold text-foreground border-r border-border">
-                Taxes
+                {t('labels.taxes')}
               </th>
               <th rowSpan={2} className="py-3 pr-6 text-center text-xs font-semibold text-foreground">
-                Final Total
+                {t('labels.finalTotal')}
               </th>
             </tr>
           </thead>
@@ -345,7 +345,7 @@ const ProductHourlyBody = ({
             {menuItemMetrics.length === 0 && (
               <tr>
                 <td colSpan={displayHours.length + 5} className="py-6 text-center text-sm text-muted">
-                  No data available for the selected filters
+                  {t('labels.noDataForFilters')}
                 </td>
               </tr>
             )}
@@ -353,7 +353,7 @@ const ProductHourlyBody = ({
           <tfoot className="bg-surface font-semibold">
             <tr>
               <td className="py-3 pl-6 pr-3 text-sm text-foreground border-r border-border">
-                Totals
+                {t('labels.totals')}
               </td>
               {displayHours.map(hour => {
                 const hourTotal = menuItemMetrics.reduce((sum, metrics) => {

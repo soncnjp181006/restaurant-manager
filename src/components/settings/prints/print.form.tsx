@@ -726,7 +726,7 @@ export const PrintForm = ({
                       checked={field.value}
                       onChange={field.onChange}
                     >
-                      Show item number
+                      {t('ui.showItemNumber')}
                     </Switch>
                   )}
                 />
@@ -740,7 +740,7 @@ export const PrintForm = ({
                       checked={field.value}
                       onChange={field.onChange}
                     >
-                      Show item name
+                      {t('ui.showItemName')}
                     </Switch>
                   )}
                 />
@@ -754,7 +754,7 @@ export const PrintForm = ({
                       checked={field.value}
                       onChange={field.onChange}
                     >
-                      Show quantity
+                      {t('ui.showQuantity')}
                     </Switch>
                   )}
                 />
@@ -768,7 +768,7 @@ export const PrintForm = ({
                       checked={field.value}
                       onChange={field.onChange}
                     >
-                      Show item price
+                      {t('ui.showItemPrice')}
                     </Switch>
                   )}
                 />
@@ -782,7 +782,7 @@ export const PrintForm = ({
                       checked={field.value}
                       onChange={field.onChange}
                     >
-                      Show item total
+                      {t('ui.showItemTotal')}
                     </Switch>
                   )}
                 />

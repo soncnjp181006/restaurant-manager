@@ -465,7 +465,7 @@ export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({
         {hasFile && (
           <div className="rounded border bg-surface p-4">
             <h3 className="mb-2 text-sm font-semibold text-foreground">
-              Column Mapping
+              {t('columnMapping')}
             </h3>
 
             <div className="grid gap-3 md:grid-cols-5">

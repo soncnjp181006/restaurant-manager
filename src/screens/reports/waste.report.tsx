@@ -55,7 +55,7 @@ export const WasteReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -153,22 +153,22 @@ export const WasteReport = () => {
         {/* Summary */}
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Waste Records</p>
+            <p className="text-sm text-muted">{t('labels.totalWasteRecords')}</p>
             <p className="text-2xl font-bold text-foreground">{formatInventoryNumber(wastes.length)}</p>
           </div>
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Items</p>
+            <p className="text-sm text-muted">{t('labels.totalItems')}</p>
             <p className="text-2xl font-bold text-foreground">{formatInventoryNumber(totals.totalItems)}</p>
           </div>
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Amount</p>
+            <p className="text-sm text-muted">{t('labels.totalAmount')}</p>
             <p className="text-2xl font-bold text-foreground">{withInventoryCurrency(totals.totalAmount)}</p>
           </div>
         </div>
 
         {/* Detailed table */}
         <div className="overflow-hidden rounded-lg border border-border">
-          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Waste Details</h3>
+          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.wasteDetails')}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-neutral-200">
               <thead className="bg-surface">
@@ -179,7 +179,7 @@ export const WasteReport = () => {
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.quantity')}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.price')}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
-                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Source</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.source')}</th>
                   <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('columns.createdBy')}</th>
                   <th className="py-3 pr-6 text-left text-xs font-semibold text-foreground">{t('columns.comments')}</th>
                 </tr>
@@ -188,7 +188,7 @@ export const WasteReport = () => {
                 {wastes.length === 0 ? (
                   <tr>
                     <td colSpan={9} className="py-6 text-center text-sm text-muted">
-                      No waste records found for the selected filters
+                      {t('labels.noWasteFound')}
                     </td>
                   </tr>
                 ) : (

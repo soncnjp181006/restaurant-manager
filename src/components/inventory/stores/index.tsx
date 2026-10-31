@@ -60,7 +60,7 @@ export const InventoryStores = () => {
             }}
             icon={faPlus}
           >
-            Store
+            {t('store')}
           </Button>
         ]}
       />

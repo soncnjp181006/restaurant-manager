@@ -8,10 +8,28 @@
     "accessTab": "Access {{module}}"
   },
   "map": {
+    "phone": "Phone",
+    "email": "Email",
+    "coordinates": "Coordinates",
+    "statusLabel": "Status:",
+    "createdLabel": "Created:",
+    "subtotal": "Subtotal:",
+    "discount": "Discount:",
+    "tax": "Tax:",
+    "extras": "Extras:",
+    "total": "Total:",
+    "selectRider": "Select Rider",
+    "loadingRiders": "Loading riders...",
+    "noRiders": "No riders available",
+    "noAddress": "No delivery address provided",
+    "orderDetails": "Order Details",
+    "serviceCharge": "Service Charge:",
     "loading": "Loading delivery map...",
     "loadingAreas": "Loading map areas...",
     "loadingMap": "Loading map...",
     "noOrders": "No delivery orders...",
+    "notConfigured": "Map is not configured",
+    "notConfiguredHint": "Add VITE_GOOGLE_MAPS_API_KEY to .env.local to show delivery areas on a map. Orders and areas still work without it.",
     "deliveryOrder": "Delivery Order",
     "drawPolygon": "Draw polygon",
     "drawRectangle": "Draw rectangle",
@@ -23,7 +41,17 @@
     "rectangleTooSmall": "Rectangle is too small. Drag a larger area.",
     "circleTooSmall": "Circle is too small. Drag a larger radius.",
     "polygonTooSmall": "Polygon is too small. Drag a larger outline.",
-    "areasSaved": "Map areas saved successfully"
+    "areasSaved": "Map areas saved successfully",
+    "dayOfWeek": "Day of Week",
+    "date": "Date",
+    "previous": "Previous",
+    "next": "Next",
+    "accept": "Accept",
+    "polygonLabel": "Polygon",
+    "rectangleLabel": "Rectangle",
+    "circleLabel": "Circle",
+    "deleteSelected": "Delete selected",
+    "addCustomDate": "Add Custom Date"
   },
   "settings": {
     "title": "Delivery Configuration",
@@ -113,5 +141,10 @@
     "friday": "Friday",
     "saturday": "Saturday",
     "sunday": "Sunday"
+  },
+  "ui": {
+    "sendForDelivery": "Send for delivery",
+    "paymentSection": "Payment",
+    "attachSelectedRider": "Attach Selected Rider"
   }
 }

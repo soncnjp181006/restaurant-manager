@@ -30,6 +30,7 @@ import {nowSurrealDateTime} from "@/lib/datetime.ts";
 import {assertFileWithinLimit, viewArrayBufferInNewTab} from "@/utils/files.ts";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye, faFile} from "@fortawesome/free-solid-svg-icons";
+import i18n from '@/lib/i18n.ts';
 
 const DOCUMENT_CATEGORIES: DocumentCategory[] = [
   "contract", "certificate", "license", "id_document", "medical", "warning", "other",
@@ -52,9 +53,9 @@ interface Props {
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required("Required"),
+  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required(() => i18n.t('validation:required')),
   category: yup.string().optional(),
-  title: yup.string().required("Required"),
+  title: yup.string().required(() => i18n.t('validation:required')),
   expires_at: yup.mixed().nullable().optional(),
   file: yup.mixed().nullable().optional(),
 }).required();
@@ -154,7 +155,7 @@ export const DocumentForm = ({open, onClose, data}: Props) => {
         });
       }
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

@@ -23,6 +23,7 @@ import {ShiftForm} from "@/components/settings/users/shifts/shift.form.tsx";
 import {DepartmentForm} from "@/components/hr/departments/form.tsx";
 import {PositionForm} from "@/components/hr/positions/form.tsx";
 import {CostCenterForm} from "@/components/hr/cost_centers/form.tsx";
+import i18n from '@/lib/i18n.ts';
 
 const WEEKDAYS = [1, 2, 3, 4, 5, 6, 7] as const;
 
@@ -50,14 +51,14 @@ const optionSchema = yup.object({label: yup.string().required(), value: yup.stri
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  name: yup.string().required("Required"),
+  name: yup.string().required(() => i18n.t('validation:required')),
   shift_template: optionSchema,
   department: optionSchema,
   position: optionSchema,
   cost_center: optionSchema,
-  days_of_week: yup.array().of(yup.number()).min(1, "Required").required("Required"),
-  start_time: yup.string().required("Required"),
-  end_time: yup.string().required("Required"),
+  days_of_week: yup.array().of(yup.number()).min(1, () => i18n.t('validation:required')).required(() => i18n.t('validation:required')),
+  start_time: yup.string().required(() => i18n.t('validation:required')),
+  end_time: yup.string().required(() => i18n.t('validation:required')),
   break_minutes: yup.number().optional(),
   is_active: yup.boolean().optional(),
 }).required();
@@ -175,7 +176,7 @@ export const ScheduleTemplateForm = ({open, onClose, data}: Props) => {
         await db.create(Tables.schedule_templates, payload);
       }
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

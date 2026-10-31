@@ -12,6 +12,7 @@ import {InputField} from "@/components/common/form/rhf-fields.tsx";
 import {Button} from "@/components/common/input/button.tsx";
 import {ensureLocationForStore} from "@/lib/inventory/location.service.ts";
 import {recordIdToString} from "@/api/reports/shared/records.ts";
+import i18n from '@/lib/i18n.ts';
 
 interface InventoryStoreFormValues {
   name: string;
@@ -24,7 +25,7 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required("This is required"),
+  name: yup.string().required(() => i18n.t('validation:required')),
 }).required();
 
 export const InventoryStoreForm = ({open, onClose, data}: Props) => {
@@ -78,7 +79,7 @@ export const InventoryStoreForm = ({open, onClose, data}: Props) => {
 
   return (
     <Modal
-      title={data ? `Update ${data?.name}` : "Create new store"}
+      title={data ? t('forms.updateStore', { name: data.name }) : t('forms.createStore')}
       open={open}
       onClose={closeModal}
       size="lg"

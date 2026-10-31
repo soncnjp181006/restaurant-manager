@@ -117,7 +117,7 @@ export const SalesHourlyLabourReport = () => {
   }, [branchScope.ready, branchScope.branchIds, params.startDate, params.endDate]);
 
   const subtitle = params.startDate && params.endDate 
-    ? `${params.startDate} to ${params.endDate}`
+    ? t('labels.rangeSubtitle', { start: params.startDate, end: params.endDate })
     : undefined;
 
 
@@ -323,7 +323,7 @@ const SalesHourlyLabourBody = ({
       <table className="table table-hover">
         <thead>
           <tr>
-            <th>Start Time</th>
+            <th>{t('labels.startTime')}</th>
             <th className="text-right">{t('labels.amountCollected')}</th>
             <th className="text-right">{t('labels.grossSale')}</th>
             <th className="text-right">{t('metrics.couponAmount')}</th>
@@ -351,14 +351,14 @@ const SalesHourlyLabourBody = ({
           {hourlyData.length === 0 && (
             <tr>
               <td colSpan={9} className="text-center p-8 text-muted">
-                No data available for the selected date range
+                {t('labels.noDataForDateRange')}
               </td>
             </tr>
           )}
         </tbody>
         <tfoot>
           <tr className="font-bold">
-            <td>Totals</td>
+            <td>{t('labels.totals')}</td>
             <td className="text-right">{withCurrency(totals.amountCollected)}</td>
             <td className="text-right">{withCurrency(totals.grossSale)}</td>
             <td className="text-right">{withCurrency(totals.couponAmount)}</td>

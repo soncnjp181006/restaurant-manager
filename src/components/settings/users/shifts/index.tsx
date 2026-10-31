@@ -105,7 +105,7 @@ export const AdminShifts = () => {
             icon={faPlus}
             data-testid="admin-add-shifts"
           >
-            Shift
+            {t('ui.shiftLabel')}
           </Button>,
         ]}
       />

@@ -25,6 +25,7 @@ import {createRequest} from "@/lib/labor-engine/leave/leave.service.ts";
 import {useAtom} from "jotai";
 import {appPage} from "@/store/jotai.ts";
 import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+import i18n from '@/lib/i18n.ts';
 
 interface LeaveTypeFormValues {
   id?: string;
@@ -61,8 +62,8 @@ interface LeaveRequestFormProps {
 
 const leaveTypeSchema = yup.object({
   id: yup.string().optional(),
-  code: yup.string().required("Required"),
-  name: yup.string().required("Required"),
+  code: yup.string().required(() => i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
   paid: yup.boolean().optional(),
   requires_approval: yup.boolean().optional(),
   max_days_per_year: yup.number().optional(),
@@ -72,10 +73,10 @@ const leaveTypeSchema = yup.object({
 
 const leaveRequestSchema = yup.object({
   id: yup.string().optional(),
-  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required("Required"),
-  leave_type: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required("Required"),
-  start_date: yup.mixed().nullable().required("Required"),
-  end_date: yup.mixed().nullable().required("Required"),
+  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required(() => i18n.t('validation:required')),
+  leave_type: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required(() => i18n.t('validation:required')),
+  start_date: yup.mixed().nullable().required(() => i18n.t('validation:required')),
+  end_date: yup.mixed().nullable().required(() => i18n.t('validation:required')),
   days: yup.number().optional(),
   reason: yup.string().optional(),
 }).required();
@@ -136,7 +137,7 @@ export const LeaveTypeForm = ({open, onClose, data}: LeaveTypeFormProps) => {
         source: 'entity-form',
       });
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

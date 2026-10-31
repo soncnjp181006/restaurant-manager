@@ -12,6 +12,7 @@ import {Input} from "@/components/common/input/input.tsx";
 import {InputField} from "@/components/common/form/rhf-fields.tsx";
 import {Button} from "@/components/common/input/button.tsx";
 import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+import i18n from '@/lib/i18n.ts';
 
 interface InventoryCategoryFormValues {
   name: string;
@@ -26,8 +27,8 @@ interface Props {
 
 const validationSchema: yup.ObjectSchema<InventoryCategoryFormValues> = yup.object({
   id: yup.string().optional(),
-  name: yup.string().required("This is required"),
-  priority: yup.number().typeError("This should be a number").required("This is required"),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  priority: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')),
 }).required();
 
 export const InventoryCategoryForm = ({open, onClose, data}: Props) => {
@@ -86,7 +87,7 @@ export const InventoryCategoryForm = ({open, onClose, data}: Props) => {
 
   return (
     <Modal
-      title={data ? `Update ${data?.name}` : "Create new category"}
+      title={data ? t('forms.updateCategory', { name: data.name }) : t('forms.createCategory')}
       open={open}
       onClose={closeModal}
       size="lg"

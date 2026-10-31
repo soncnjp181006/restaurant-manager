@@ -21,9 +21,9 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
-  start_time: yup.string().required(i18n.t('validation:required')),
-  end_time: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  start_time: yup.string().required(() => i18n.t('validation:required')),
+  end_time: yup.string().required(() => i18n.t('validation:required')),
 });
 
 export const ShiftForm = ({ open, onClose, data }: Props) => {

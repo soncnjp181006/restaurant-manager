@@ -65,6 +65,7 @@ import {
 } from "@/components/inventory/common/quantity.uom.fields.tsx";
 import {normalizeUom} from "@/utils/inventoryUom.ts";
 import {getLastPurchasePrice} from "@/lib/inventory/last.purchase.price.ts";
+import i18n from '@/lib/i18n.ts';
 
 type PurchaseMethod = "manual" | "csv" | "purchase_order";
 
@@ -109,9 +110,9 @@ interface Props {
 }
 
 const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string) => yup.object({
-  invoice_number: yup.number().typeError("This should be a number").required("This is required").test(
+  invoice_number: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')).test(
     "unique-invoice-number",
-    "Invoice number already exists",
+    () => i18n.t('validation:invoiceNumberExists'),
     async function (value) {
       if (value === undefined || value === null) {
         return true;
@@ -127,7 +128,7 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
 
       if (!isUnique) {
         return this.createError({
-          message: "Invoice number already exists",
+          message: i18n.t('validation:invoiceNumberExists'),
           path: "invoice_number"
         });
       }
@@ -138,7 +139,7 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
   method: yup.object({
     label: yup.string(),
     value: yup.string()
-  }).required('Please select a purchase method'),
+  }).required(() => i18n.t('validation:selectPurchaseMethod')),
   purchase_order: yup.object({
     label: yup.string(),
     value: yup.string()
@@ -147,13 +148,13 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
   documents: yup.mixed().optional(),
   date: yup.mixed().nullable().optional(),
   update_item_cost: yup.boolean().optional(),
-  tax_rate: yup.number().typeError("This should be a number").min(0).nullable().optional(),
-  discount: yup.number().typeError("This should be a number").min(0).nullable().optional(),
-  shipping: yup.number().typeError("This should be a number").min(0).nullable().optional(),
+  tax_rate: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).min(0).nullable().optional(),
+  discount: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).min(0).nullable().optional(),
+  shipping: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).min(0).nullable().optional(),
   extras: yup.array().of(
     yup.object({
-      name: yup.string().required("This is required"),
-      amount: yup.number().typeError("This should be a number").required("This is required"),
+      name: yup.string().required(() => i18n.t('validation:required')),
+      amount: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')),
       category: yup.object({ label: yup.string(), value: yup.string() }).nullable().optional(),
       allocation_method: yup.object({ label: yup.string(), value: yup.string() }).nullable().optional(),
       inventory_treatment: yup.object({ label: yup.string(), value: yup.string() }).nullable().optional(),
@@ -164,27 +165,27 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
       item: yup.object({
         label: yup.string(),
         value: yup.string()
-      }).required("This is required"),
-      quantity: yup.number().typeError("This should be a number").required("This is required"),
-      requested: yup.number().typeError("This should be a number").nullable().optional(),
-      price: yup.number().typeError("This should be a number").required("This is required"),
+      }).required(() => i18n.t('validation:required')),
+      quantity: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')),
+      requested: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).nullable().optional(),
+      price: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')),
       entered_uom: yup.string().nullable().optional(),
-      base_quantity: yup.number().typeError("This should be a number").optional().default(1),
+      base_quantity: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).optional().default(1),
       expiry_date: yup.mixed().nullable().optional(),
       manufacturing_date: yup.mixed().nullable().optional(),
       comments: yup.string().nullable().optional(),
       supplier: yup.object({
         label: yup.string(),
         value: yup.string()
-      }).required('Supplier is required'),
+      }).required(() => i18n.t('validation:supplierRequired')),
       location: yup.object({
         label: yup.string(),
         value: yup.string()
-      }).required('Location is required'),
+      }).required(() => i18n.t('validation:locationRequired')),
       code: yup.string().nullable().optional(),
       taxable: yup.boolean().optional(),
     })
-  ).min(1, "Add at least one item"),
+  ).min(1, () => i18n.t('validation:addAtLeastOneItem')),
 }).required();
 
 export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
@@ -423,9 +424,10 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
 
     let isMounted = true;
 
+    const initialSeqNumber = getValues("invoice_number");
     fetchNextSequentialNumber(db, Tables.inventory_purchases, "invoice_number")
       .then((nextNumber) => {
-        if (isMounted) {
+        if (isMounted && getValues("invoice_number") === initialSeqNumber) {
           setValue("invoice_number", nextNumber);
         }
       })
@@ -575,7 +577,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
         return;
       }
       if (!canEdit(data.status)) {
-        toast.error("Posted documents cannot be edited");
+        toast.error(t('inventory:postedCannotEdit'));
         return;
       }
     }
@@ -712,7 +714,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
         toast.success(
           result.skipped
             ? (result.reason || t('toast:inventory.purchaseSaved'))
-            : `Purchase posted (${result.ledgerEntryCount} ledger entries)`
+            : t('inventory:purchasePosted', {count: result.ledgerEntryCount})
         );
       } else {
         toast.success(t('toast:inventory.purchaseSaved'));
@@ -776,7 +778,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
   return (
     <>
       <Modal
-        title={data ? `Update invoice #${data?.invoice_number}` : "Create new purchase"}
+        title={data ? t('forms.updatePurchase', { number: data.invoice_number }) : t('forms.createPurchase')}
         open={open}
         onClose={closeModal}
         size="xl"
@@ -800,7 +802,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
                 />
               </div>
               <div className="flex-1">
-                <label>Method</label>
+                <label>{t('method')}</label>
                 <Controller
                   name="method"
                   control={control}
@@ -837,7 +839,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
             {isPurchaseOrderMethod && (
               <div className="flex gap-2 items-end">
                 <div className="flex-1">
-                  <label>Purchase order</label>
+                  <label>{t('purchaseMethods.purchaseOrder')}</label>
                   <Controller
                     name="purchase_order"
                     control={control}
@@ -891,7 +893,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
                 />
               </div>
               <div className="flex-1">
-                <label>Documents</label>
+                <label>{t('documents')}</label>
                 <input
                   type="file"
                   multiple
@@ -909,7 +911,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
                   control={control}
                   render={({field}) => (
                     <Switch checked={field.value || false} onChange={field.onChange}>
-                      Update cost of item itself
+                      {t('forms.updateItemCost')}
                     </Switch>
                   )}
                 />
@@ -947,7 +949,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
                     taxable: false,
                   })}
                 >
-                  Add item
+                  {t('buttons.addItem')}
                 </Button>
                 <InputError error={get(errors, ["items", "message"])}/>
               </div>
@@ -1138,7 +1140,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
                         />
                       </div>
                       <div className="flex-1">
-                        <label>Supplier</label>
+                        <label>{t('supplier')}</label>
                         <Controller
                           name={`items.${index}.supplier`}
                           control={control}
@@ -1412,7 +1414,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
             {!locked && (
               <>
                 <Button type="submit" variant="secondary" disabled={postingAfterSave}>
-                  {t('common:actions.save')} (Draft)
+                  {t('buttons.saveDraft')}
                 </Button>
                 <Button
                   type="button"
@@ -1424,7 +1426,7 @@ export const InventoryPurchaseForm = ({open, onClose, data}: Props) => {
                     void handleSubmit((values) => onSubmit(values, { postAfterSave: true }))();
                   }}
                 >
-                  Save &amp; Post
+                  {t('buttons.saveAndPost')}
                 </Button>
               </>
             )}

@@ -18,6 +18,7 @@ import {createBuffetSession} from "@/lib/inventory/buffet.service.ts";
 import {recordToString} from "@/api/reports/shared/records.ts";
 import {businessDateFromJsDate} from "@/lib/kitchen/business-date.ts";
 import {useInventoryLocations} from "@/hooks/useInventoryLocations.ts";
+import i18n from '@/lib/i18n.ts';
 
 type SelectOption = {label: string; value: string} | null;
 
@@ -47,8 +48,8 @@ const validationSchema = yup.object({
   location: selectOptionSchema.required().nullable(),
   businessDate: yup.string().required(),
   sessionType: selectOptionSchema.required().nullable(),
-  expectedGuests: yup.number().typeError("Number required").min(1).required(),
-  buffetPrice: yup.number().typeError("Number required").min(0).required(),
+  expectedGuests: yup.number().typeError(() => i18n.t('validation:numberRequired')).min(1).required(),
+  buffetPrice: yup.number().typeError(() => i18n.t('validation:numberRequired')).min(0).required(),
   notes: yup.string().nullable().optional(),
 });
 

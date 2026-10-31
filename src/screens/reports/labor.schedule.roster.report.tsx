@@ -50,7 +50,7 @@ export const LaborScheduleRosterReport = () => {
     void load();
   }, [filters.startDate, filters.endDate, filters.scheduleId]);
 
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
   const dateFormat = formatWithFallback(import.meta.env.VITE_DATE_FORMAT, 'dd MMM yyyy');
 
   return (

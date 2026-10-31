@@ -48,7 +48,10 @@ services:
     command: >
       start --user ${SURREAL_USER:?Set SURREAL_USER in .env} --pass ${SURREAL_PASS:?Set SURREAL_PASS in .env} surrealkv://database --bind 0.0.0.0:8000
     ports:
-      - "8000:8000"
+      # Overridable because 8000 is often taken on dev machines (another SurrealDB,
+      # a Jupyter/Python server). Set SURREAL_HOST_PORT in .env.local to move it; the
+      # containers keep reaching surrealdb:8000 on the compose network regardless.
+      - "${SURREAL_HOST_PORT:-8000}:8000"
     volumes:
       # Host /database -> container /database (surrealkv://database resolves to ./database = /database)
       - ./database:/database
@@ -77,9 +80,11 @@ services:
     command: sh -c "npm install && node server.js"
     ports:
       - "3132:3132"
-    # USB access for local USB printers
-    devices:
-      - /dev/bus/usb:/dev/bus/usb
+    # USB printer access needs /dev/bus/usb, which Docker Desktop on Windows and
+    # macOS cannot map — it aborts the whole `up` with "Devices for X are not
+    # supported". Keep the base file portable and add the device through
+    # docker-compose.usb.yml on Linux hosts:
+    #   docker compose -f docker-compose.yml -f docker-compose.usb.yml up -d
 
   payment:
     image: node:20-alpine

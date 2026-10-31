@@ -64,7 +64,7 @@ export const InventoryWasteViewModal = ({open, waste, onClose}: Props) => {
 
   return (
     <Modal
-      title={viewWaste ? `Waste #${viewWaste.invoice_number}` : "Waste"}
+      title={viewWaste ? t('forms.viewWaste', { number: viewWaste.invoice_number }) : t('waste')}
       open={open}
       onClose={onClose}
       size="xl"

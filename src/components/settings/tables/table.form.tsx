@@ -36,15 +36,19 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
-  number: yup.string().required(i18n.t('validation:required')),
-  priority: yup.string().required(i18n.t('validation:required')),
-  background: yup.string().required(i18n.t('validation:required')),
-  color: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  number: yup.string().required(() => i18n.t('validation:required')),
+  priority: yup.string().required(() => i18n.t('validation:required')),
+  // Both colours are nullable on floor_table and the floor layout falls back to
+  // its own styling, so they must not be required: an untouched colour input
+  // registers no value with react-hook-form, which made "new table" impossible to
+  // save. Same treatment as the floor form (its sibling screen).
+  background: yup.string(),
+  color: yup.string(),
   floor: yup.object({
     label: yup.string().required(),
     value: yup.string().required(),
-  }).default(undefined).required('This is required'),
+  }).default(undefined).required(() => i18n.t('validation:required')),
   categories: yup.array(yup.object({
     label: yup.string(),
     value: yup.string()
@@ -229,7 +233,7 @@ export const TableForm = ({
                 control={control}
                 render={({field}) => (
                   <Switch checked={field.value} onChange={field.onChange}>
-                    Ask for number of covers
+                    {t('columns.askForCovers')}
                   </Switch>
                 )}
               />
@@ -242,7 +246,7 @@ export const TableForm = ({
                      error={errors?.background?.message}/>
             </div>
             <div className="flex-1">
-              <InputField type="color" name="color" control={control} label={t('forms.fontColor')} error={errors?.background?.message}/>
+              <InputField type="color" name="color" control={control} label={t('forms.fontColor')} error={errors?.color?.message}/>
             </div>
           </div>
 

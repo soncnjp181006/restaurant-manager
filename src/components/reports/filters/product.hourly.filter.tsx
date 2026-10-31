@@ -38,7 +38,7 @@ export const ProductHourlyFilter = () => {
       className="flex flex-col gap-3 items-start"
       target="_blank"
     >
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <BranchScopeFilter />
 

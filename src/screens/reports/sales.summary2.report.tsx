@@ -263,7 +263,7 @@ export const SalesSummary2Report = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -947,7 +947,7 @@ const SalesSummary2Body = ({
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-1.5 text-foreground">Amount collected</td>
+                    <td className="py-1.5 text-foreground">{t('labels.amountCollectedLabel')}</td>
                     <td className="py-1.5 text-right font-semibold text-foreground">
                       {withCurrency(financialMetrics.amountCollected)}
                     </td>
@@ -986,7 +986,7 @@ const SalesSummary2Body = ({
               <table className="min-w-full ">
                 <tbody className="divide-y divide-neutral-100">
                   <tr>
-                    <td className="py-1.5 text-foreground">Refunds</td>
+                    <td className="py-1.5 text-foreground">{t('labels.refunds')}</td>
                     <td className="py-1.5 text-right font-semibold text-foreground">
                       {withCurrency(deletionMetrics.refunds)}
                     </td>
@@ -1006,7 +1006,7 @@ const SalesSummary2Body = ({
                     </tr>
                   ))}
                   <tr className="border-t-2 border-border">
-                    <td className="py-1.5 font-semibold text-foreground">Total deletion</td>
+                    <td className="py-1.5 font-semibold text-foreground">{t('labels.totalDeletion')}</td>
                     <td className="py-1.5 text-right font-bold text-foreground">
                       {withCurrency(deletionMetrics.totalDeletion)}
                     </td>
@@ -1111,7 +1111,7 @@ const SalesSummary2Body = ({
                 )}
                 {Object.keys(discountTypesBreakdown.serviceChargesBreakdown).length > 0 && (
                   <div>
-                    <h5 className="mb-2  font-semibold text-muted">Service Charges</h5>
+                    <h5 className="mb-2  font-semibold text-muted">{t('labels.serviceCharges')}</h5>
                     <table className="min-w-full ">
                       <tbody className="divide-y divide-neutral-100">
                         {Object.entries(discountTypesBreakdown.serviceChargesBreakdown).map(([type, amount]) => (
@@ -1126,7 +1126,7 @@ const SalesSummary2Body = ({
                 )}
                 {Object.keys(discountTypesBreakdown.taxesBreakdown).length > 0 && (
                   <div>
-                    <h5 className="mb-2  font-semibold text-muted">Taxes</h5>
+                    <h5 className="mb-2  font-semibold text-muted">{t('labels.taxes')}</h5>
                     <table className="min-w-full ">
                       <tbody className="divide-y divide-neutral-100">
                         {Object.entries(discountTypesBreakdown.taxesBreakdown).map(([type, amount]) => (
@@ -1164,7 +1164,7 @@ const SalesSummary2Body = ({
                 )}
                 {Object.keys(discountTypesBreakdown.extrasBreakdown).length > 0 && (
                   <div>
-                    <h5 className="mb-2  font-semibold text-muted">Order Extras</h5>
+                    <h5 className="mb-2  font-semibold text-muted">{t('labels.orderExtras')}</h5>
                     <table className="min-w-full ">
                       <tbody className="divide-y divide-neutral-100">
                         {Object.entries(discountTypesBreakdown.extrasBreakdown).map(([name, amount]) => (
@@ -1190,10 +1190,10 @@ const SalesSummary2Body = ({
               <thead className="bg-surface">
                 <tr>
                   <th className="py-3 pl-6 pr-3 text-left  font-semibold text-foreground">{t('filters.orderType')}</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">Sale Price w/o Tax</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">Taxes</th>
+                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.salePriceWithoutTax')}</th>
+                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.taxes')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.amountDue')}</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">Service Charges</th>
+                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.serviceCharges')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('reports.tips')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.discounts')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.coupons')}</th>
@@ -1239,7 +1239,7 @@ const SalesSummary2Body = ({
                 {orderTypeMetrics.length === 0 && (
                   <tr>
                     <td colSpan={15} className="py-6 text-center text-muted">
-                      No order type data available
+                      {t('labels.noOrderTypeData')}
                     </td>
                   </tr>
                 )}
@@ -1256,10 +1256,10 @@ const SalesSummary2Body = ({
               <thead className="bg-surface">
                 <tr>
                   <th className="py-3 pl-6 pr-3 text-left  font-semibold text-foreground">{t('columns.dayPart')}</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">Sale Price w/o Tax</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">Taxes</th>
+                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.salePriceWithoutTax')}</th>
+                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.taxes')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.amountDue')}</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">Service Charges</th>
+                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.serviceCharges')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('reports.tips')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.discounts')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.coupons')}</th>
@@ -1320,10 +1320,10 @@ const SalesSummary2Body = ({
               <thead className="bg-surface">
                 <tr>
                   <th className="py-3 pl-6 pr-3 text-left  font-semibold text-foreground">{t('columns.employee')}</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">Sale Price w/o Tax</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">Taxes</th>
+                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.salePriceWithoutTax')}</th>
+                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.taxes')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.amountDue')}</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">Service Charges</th>
+                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.serviceCharges')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('reports.tips')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.discounts')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.coupons')}</th>
@@ -1411,9 +1411,9 @@ const SalesSummary2Body = ({
                   <div className="border-b border-border py-2 text-xs font-semibold uppercase tracking-wide text-muted">
                     <div className="flex">
                       <span className="w-1/2">{t('filters.item')}</span>
-                      <span className="w-1/6 text-right">Qty</span>
+                      <span className="w-1/6 text-right">{t('labels.qty')}</span>
                       <span className="w-1/6 text-right">{t('columns.total')}</span>
-                      <span className="w-1/6 text-right">Share</span>
+                      <span className="w-1/6 text-right">{t('labels.share')}</span>
                     </div>
                   </div>
                   {breakdownMetrics.categoryMix.map(category => {
@@ -1488,7 +1488,7 @@ const SalesSummary2Body = ({
                   })}
                 </div>
               ) : (
-                <div className=" text-muted">No categories data</div>
+                <div className=" text-muted">{t('labels.noCategoriesData')}</div>
               )}
             </div>
 
@@ -1500,8 +1500,8 @@ const SalesSummary2Body = ({
                   <thead>
                     <tr>
                       <th className="py-1.5 text-left  font-semibold text-muted">{t('filters.user')}</th>
-                      <th className="py-1.5 text-right  font-semibold text-muted">Rate</th>
-                      <th className="py-1.5 text-right  font-semibold text-muted">Qty</th>
+                      <th className="py-1.5 text-right  font-semibold text-muted">{t('labels.rate')}</th>
+                      <th className="py-1.5 text-right  font-semibold text-muted">{t('labels.qty')}</th>
                       <th className="py-1.5 text-right  font-semibold text-muted">{t('columns.total')}</th>
                     </tr>
                   </thead>
@@ -1523,19 +1523,19 @@ const SalesSummary2Body = ({
                   </tbody>
                 </table>
               ) : (
-                <div className=" text-muted">No user discounts data</div>
+                <div className=" text-muted">{t('labels.noUserDiscountsData')}</div>
               )}
             </div>
 
             {/* 3rd subsection: Payment types */}
             <div className="p-4">
-              <h4 className="mb-3  font-semibold text-muted">Payment Types</h4>
+              <h4 className="mb-3  font-semibold text-muted">{t('filters.paymentTypes')}</h4>
               {breakdownMetrics.paymentTypes.length > 0 ? (
                 <table className="min-w-full ">
                   <thead>
                     <tr>
                       <th className="py-1.5 text-left  font-semibold text-muted">{t('filters.paymentType')}</th>
-                      <th className="py-1.5 text-right  font-semibold text-muted">Qty</th>
+                      <th className="py-1.5 text-right  font-semibold text-muted">{t('labels.qty')}</th>
                       <th className="py-1.5 text-right  font-semibold text-muted">{t('columns.total')}</th>
                     </tr>
                   </thead>
@@ -1554,7 +1554,7 @@ const SalesSummary2Body = ({
                   </tbody>
                 </table>
               ) : (
-                <div className=" text-muted">No payment types data</div>
+                <div className=" text-muted">{t('labels.noPaymentTypesData')}</div>
               )}
             </div>
           </div>

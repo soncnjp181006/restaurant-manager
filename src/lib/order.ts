@@ -399,13 +399,14 @@ export const getOrderRounding = (order: OrderModel): number => {
   return safeNumber(getOrderPaymentTotals(order).amountCollected - amountDue);
 };
 
-const ORDER_STATUS_I18N_KEY: Partial<Record<OrderStatus, string>> = {
+export const ORDER_STATUS_I18N_KEY: Partial<Record<OrderStatus, string>> = {
   [OrderStatus['In Progress']]: 'status.inProgress',
   [OrderStatus.Paid]: 'status.paid',
   [OrderStatus.Cancelled]: 'status.cancelled',
   [OrderStatus.Spilt]: 'status.spilt',
   [OrderStatus.Merged]: 'status.merged',
   [OrderStatus.Refunded]: 'status.refunded',
+  [OrderStatus.Pending]: 'status.pending',
 };
 
 export const translateOrderStatus = (t: TFunction<'orders'>, status: string) => {
@@ -413,7 +414,7 @@ export const translateOrderStatus = (t: TFunction<'orders'>, status: string) => 
   return key ? t(key) : status;
 };
 
-const VOID_REASON_I18N_KEY: Record<OrderVoidReason, string> = {
+export const VOID_REASON_I18N_KEY: Record<OrderVoidReason, string> = {
   [OrderVoidReason.FOHNotMade]: 'voidReasons.fohNotMade',
   [OrderVoidReason.BOHNotMade]: 'voidReasons.bohNotMade',
   [OrderVoidReason.GuestNotMade]: 'voidReasons.guestNotMade',

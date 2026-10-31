@@ -54,6 +54,7 @@ import { toRecordId } from "@/lib/utils.ts";
 import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
 import {DataImportModal} from "@/components/common/data-import/data-import-modal.tsx";
 import {createIssueImportConfig} from "@/components/inventory/issues/issue.import.config.ts";
+import i18n from '@/lib/i18n.ts';
 
 interface InventoryIssueItemFormValue {
   location: { label: string; value: string } | null;
@@ -84,9 +85,9 @@ interface Props {
 }
 
 const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string) => yup.object({
-  invoice_number: yup.number().required('This is required').test(
+  invoice_number: yup.number().required(() => i18n.t('validation:required')).test(
     "unique-issue-invoice",
-    "Invoice number already exists",
+    () => i18n.t('validation:invoiceNumberExists'),
     async function (value) {
       if (value === undefined || value === null) {
         return true;
@@ -102,7 +103,7 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
 
       if (!isUnique) {
         return this.createError({
-          message: "Invoice number already exists",
+          message: i18n.t('validation:invoiceNumberExists'),
           path: "invoice_number"
         });
       }
@@ -113,11 +114,11 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
   issued_to: yup.object({
     label: yup.string(),
     value: yup.string()
-  }).required('This is required'),
+  }).required(() => i18n.t('validation:required')),
   location: yup.object({
     label: yup.string(),
     value: yup.string()
-  }).required('This is required'),
+  }).required(() => i18n.t('validation:required')),
   date: yup.mixed().nullable().optional(),
   documents: yup.mixed().optional(),
   update_item_cost: yup.boolean().optional(),
@@ -127,18 +128,18 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
       location: yup.object({
         label: yup.string(),
         value: yup.string()
-      }).required("Location is required"),
+      }).required(() => i18n.t('validation:locationRequired')),
       item: yup.object({
         label: yup.string(),
         value: yup.string()
-      }).required("This is required").nullable(),
-      requested: yup.number().typeError("This should be a number").nullable().optional(),
-      quantity: yup.number().typeError("This should be a number").required("This is required"),
+      }).required(() => i18n.t('validation:required')).nullable(),
+      requested: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).nullable().optional(),
+      quantity: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')),
       entered_uom: yup.string().nullable().optional(),
-      price: yup.number().typeError("This should be a number").nullable().optional(),
+      price: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).nullable().optional(),
       comments: yup.string().nullable().optional(),
     })
-  ).min(1, "Add at least one item"),
+  ).min(1, () => i18n.t('validation:addAtLeastOneItem')),
 }).required();
 
 export const InventoryIssueForm = ({open, onClose, data}: Props) => {
@@ -334,9 +335,10 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
 
     let isMounted = true;
 
+    const initialSeqNumber = getValues("invoice_number");
     fetchNextSequentialNumber(db, Tables.inventory_issues, "invoice_number")
       .then((nextNumber) => {
-        if (isMounted) {
+        if (isMounted && getValues("invoice_number") === initialSeqNumber) {
           setValue("invoice_number", nextNumber);
         }
       })
@@ -494,7 +496,7 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
         return;
       }
       if (!canEdit(data.status)) {
-        toast.error("Posted documents cannot be edited");
+        toast.error(t('inventory:postedCannotEdit'));
         return;
       }
     }
@@ -615,7 +617,7 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
         toast.success(
           result.skipped
             ? (result.reason || t('toast:inventory.issueSaved'))
-            : `Issue posted (${result.ledgerEntryCount} ledger entries)`
+            : t('inventory:issuePosted', {count: result.ledgerEntryCount})
         );
       } else {
         toast.success(t('toast:inventory.issueSaved'));
@@ -654,7 +656,7 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
   return (
     <>
     <Modal
-      title={data ? `Update issue# ${data?.invoice_number}` : "Create new issue"}
+      title={data ? t('forms.updateIssue', { number: data.invoice_number }) : t('forms.createIssue')}
       open={open}
       onClose={closeModal}
       size="xl"
@@ -725,7 +727,7 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
 
           <div className="flex gap-3">
             <div className="flex-1">
-              <label>Documents</label>
+              <label>{t('documents')}</label>
               <input
                 type="file"
                 multiple
@@ -743,7 +745,7 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
                 control={control}
                 render={({field}) => (
                   <Switch checked={field.value || false} onChange={field.onChange}>
-                    Update cost of item itself
+                    {t('forms.updateItemCost')}
                   </Switch>
                 )}
               />
@@ -754,7 +756,7 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
                 control={control}
                 render={({field}) => (
                   <Switch checked={field.value || false} onChange={field.onChange}>
-                    Update recipe cost
+                    {t('ui.updateRecipeCost')}
                   </Switch>
                 )}
               />
@@ -770,7 +772,7 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
                 variant="primary"
                 onClick={() => append(createEmptyItem())}
               >
-                Add item
+                {t('buttons.addItem')}
               </Button>
               <Button
                 type="button"
@@ -911,7 +913,7 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
           {!locked && (
             <>
               <Button type="submit" variant="secondary" disabled={postingAfterSave}>
-                {t('common:actions.save')} (Draft)
+                {t('buttons.saveDraft')}
               </Button>
               <Button
                 type="button"
@@ -923,7 +925,7 @@ export const InventoryIssueForm = ({open, onClose, data}: Props) => {
                   void handleSubmit((values) => onSubmit(values, { postAfterSave: true }))();
                 }}
               >
-                Save &amp; Post
+                {t('ui.saveAndPostButton')}
               </Button>
             </>
           )}

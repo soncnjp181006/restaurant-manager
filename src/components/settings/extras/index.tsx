@@ -142,7 +142,7 @@ export const AdminExtras = () => {
             icon={faPlus}
           >
             {" "}
-            Extra
+            {t('ui.extraLabel')}
           </Button></HqCatalogBaseOnlyAction>,
         ]}
       />

@@ -14,6 +14,24 @@ export const DAY_PARTS = [
 
 export const DAY_PART_LABELS: DayPartLabel[] = DAY_PARTS.map(part => part.label);
 
+/** Locale keys for the four day-part names (reports namespace). */
+const DAY_PART_I18N_KEY: Record<DayPartLabel, string> = {
+  Breakfast: 'dayParts.breakfast',
+  Lunch: 'dayParts.lunch',
+  Dinner: 'dayParts.dinner',
+  'Late night': 'dayParts.lateNight',
+};
+
+/**
+ * The labels double as data keys (aggregation groups by them), so translate only
+ * at the display site: pass the current `t` and keep the raw label for lookups.
+ * Unknown labels are returned unchanged so a future day part never renders a key.
+ */
+export const translateDayPartLabel = (t: (key: string) => string, label: string): string => {
+  const key = DAY_PART_I18N_KEY[label as DayPartLabel];
+  return key ? t(key) : label;
+};
+
 const formatHour = (hour: number): string => `${hour.toString().padStart(2, '0')}:00`;
 
 export const getDayPartTimeRangeLabel = (label: DayPartLabel): string => {

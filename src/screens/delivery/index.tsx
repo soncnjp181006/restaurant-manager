@@ -45,7 +45,7 @@ export const Index = () => {
             });
           }}
         >
-          <TabList aria-label="Tabs"
+          <TabList aria-label={t('common:tabsAriaLabel')}
                    className="flex flex-row gap-3 px-1 py-3 flex-nowrap shrink-0"
                    data-testid="delivery-tabs">
             {Object.keys(pages).map(key => (

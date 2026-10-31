@@ -29,7 +29,7 @@ export const BuffetReport = () => {
   const filters = useMemo(parseFilters, []);
   const subtitle =
     filters.dateFrom && filters.dateTo
-      ? `${filters.dateFrom} to ${filters.dateTo}`
+      ? t('labels.rangeSubtitle', { start: filters.dateFrom, end: filters.dateTo })
       : undefined;
 
   useEffect(() => {

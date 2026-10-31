@@ -74,7 +74,7 @@ const DashboardSection = ({
             theme={nivoTheme}
           />
         ) : (
-          <div className="h-full flex items-center justify-center text-muted">No trend data</div>
+          <div className="h-full flex items-center justify-center text-muted">{t('labels.noTrendData')}</div>
         )}
       </div>
     </div>

@@ -95,7 +95,7 @@ const FinanceSection = ({
         <table className="min-w-full divide-y divide-neutral-200">
           <thead className="bg-surface">
           <tr>
-            <th className="py-3 pl-6 pr-3 text-left text-sm font-semibold text-foreground">Created at</th>
+            <th className="py-3 pl-6 pr-3 text-left text-sm font-semibold text-foreground">{t('labels.createdAt')}</th>
             <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('columns.order')}</th>
             <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('metrics.cashier')}</th>
             <th className="py-3 px-3 text-right text-sm font-semibold text-foreground">{t('metrics.gross')}</th>
@@ -109,7 +109,7 @@ const FinanceSection = ({
           <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
           {orders.length === 0 ? (
             <tr>
-              <td colSpan={metric === "tax_amount" ? 7 : 6} className="py-6 text-center text-sm text-muted">No rows found for selected range.</td>
+              <td colSpan={metric === "tax_amount" ? 7 : 6} className="py-6 text-center text-sm text-muted">{t('labels.noRowsFoundForSelectedRange')}</td>
             </tr>
           ) : orders.map((order) => {
             const gross = calculateGross(order);
@@ -148,7 +148,7 @@ export const OrderFinanceReport = ({title, metric, metricHeader}: Props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;

@@ -7,7 +7,7 @@ export const ExpenseFilter = () => {
   const { t } = useTranslation('reports');
   return (
     <form action={REPORTS_EXPENSE} className="flex flex-col gap-3 items-start" target="_blank">
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
       <Button variant="primary" filled type="submit">{t('filters.generate')}</Button>
     </form>
   );

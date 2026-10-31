@@ -56,7 +56,7 @@ export const PurchaseReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -197,11 +197,11 @@ export const PurchaseReport = () => {
         {/* Summary */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4">
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Purchases</p>
+            <p className="text-sm text-muted">{t('labels.totalPurchases')}</p>
             <p className="text-2xl font-bold text-foreground">{formatInventoryNumber(purchases.length)}</p>
           </div>
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Items</p>
+            <p className="text-sm text-muted">{t('labels.totalItems')}</p>
             <p className="text-2xl font-bold text-foreground">{formatInventoryNumber(totals.totalItems)}</p>
           </div>
           <div className="bg-surface p-4 rounded-lg">
@@ -232,7 +232,7 @@ export const PurchaseReport = () => {
 
         {/* Detailed table */}
         <div className="overflow-hidden rounded-lg border border-border">
-          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Purchase Details</h3>
+          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.purchaseDetails')}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-neutral-200">
               <thead className="bg-surface">
@@ -256,7 +256,7 @@ export const PurchaseReport = () => {
                 {purchases.length === 0 ? (
                   <tr>
                     <td colSpan={13} className="py-6 text-center text-sm text-muted">
-                      No purchases found for the selected filters
+                      {t('labels.noPurchasesFound')}
                     </td>
                   </tr>
                 ) : (

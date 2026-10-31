@@ -82,5 +82,8 @@
     "retryInvoicePending": "Số hoá đơn chưa sẵn sàng — hãy thử lại sau khi đồng bộ.",
     "retryOrderNotFound": "Không tìm thấy đơn hàng để thử lại gửi dữ liệu tài chính.",
     "retryProviderDisabled": "Nhà cung cấp đang bị tắt."
-  }
+  },
+  "tabsAriaLabel": "Thẻ tích hợp",
+  "selectAccount": "Chọn tài khoản",
+  "pasteCertificate": "Dán nội dung hoặc đường dẫn chứng thư"
 }

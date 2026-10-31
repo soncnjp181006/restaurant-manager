@@ -98,7 +98,7 @@ export const ProductMixWeeklyReport = () => {
 
   const filters = useMemo(parseFilters, []);
   const {weekStart, weekStartISO, weekEndISO, queryStart, queryEnd} = useMemo(() => parseWeekParams(filters.week), [filters.week]);
-  const subtitle = filters.week ? `${weekStartISO} to ${weekEndISO}` : undefined;
+  const subtitle = filters.week ? t('labels.rangeSubtitle', { start: weekStartISO, end: weekEndISO }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -328,7 +328,7 @@ const ProductMixWeeklyBody = ({
           <thead className="bg-surface">
             <tr>
               <th rowSpan={2} className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground border-r border-border">
-                Order Taker
+                {t('labels.orderTaker')}
               </th>
               {dayHeaders.map(({day, dateLabel}) => (
                 <th key={day} colSpan={2} className="py-3 px-3 text-center text-xs font-semibold text-foreground border-r border-border">
@@ -337,23 +337,23 @@ const ProductMixWeeklyBody = ({
                 </th>
               ))}
               <th colSpan={2} className="py-3 pr-6 text-center text-xs font-semibold text-foreground">
-                Weekly Total
+                {t('labels.weeklyTotal')}
               </th>
             </tr>
             <tr>
               {dayHeaders.flatMap(({day}) => [
                 <th key={`${day}-qty`} className="py-2 px-3 text-center text-xs font-semibold text-muted bg-surface border-r border-border">
-                  Qty
+                  {t('labels.qty')}
                 </th>,
                 <th key={`${day}-total`} className="py-2 px-3 text-center text-xs font-semibold text-muted bg-surface border-r border-border">
-                  Total
+                  {t('labels.totalLabel')}
                 </th>
               ])}
               <th className="py-2 px-3 text-center text-xs font-semibold text-muted bg-surface border-r border-border">
-                Qty
+                {t('labels.qty')}
               </th>
               <th className="py-2 pr-6 text-center text-xs font-semibold text-muted bg-surface">
-                Total
+                {t('labels.totalLabel')}
               </th>
             </tr>
           </thead>
@@ -385,7 +385,7 @@ const ProductMixWeeklyBody = ({
             {orderTakerMetrics.length === 0 && (
               <tr>
                 <td colSpan={dayHeaders.length * 2 + 3} className="py-6 text-center text-sm text-muted">
-                  No data available for the selected filters
+                  {t('labels.noDataForFilters')}
                 </td>
               </tr>
             )}

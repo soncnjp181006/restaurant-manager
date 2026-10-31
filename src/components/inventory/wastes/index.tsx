@@ -154,7 +154,7 @@ export const InventoryWastes = () => {
             }}
             icon={faPlus}
           >
-            Waste
+            {t('waste')}
           </Button>
         ]}
         defaultSort={[

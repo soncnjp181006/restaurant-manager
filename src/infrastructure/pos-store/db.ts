@@ -91,6 +91,11 @@ export class PosStoreDatabase extends Dexie {
     this.version(3).stores({
       couponRedemptions: 'id, order, coupon, user, [coupon+user]',
     });
+    // v4: consumeNumberInTx() looks reservations up by series+status; without a
+    // compound index Dexie falls back to a full scan and warns at runtime.
+    this.version(4).stores({
+      numberReservations: 'id, series, status, value, [series+status]',
+    });
   }
 
   /** Dexie store for a Surreal child table, or null when not mirrored. */

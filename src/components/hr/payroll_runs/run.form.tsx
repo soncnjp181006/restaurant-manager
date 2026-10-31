@@ -22,6 +22,7 @@ import {generatePreview} from "@/lib/labor-engine/payroll/run.service.ts";
 import {appPage} from "@/store/jotai.ts";
 import {toRecordId} from "@/lib/utils.ts";
 import {PayrollPeriodForm} from "@/components/hr/payroll_periods/form.tsx";
+import i18n from '@/lib/i18n.ts';
 
 interface FormValues {
   payroll_period: SelectOption | null;
@@ -38,8 +39,8 @@ const validationSchema = yup.object({
   payroll_period: yup
     .object({label: yup.string().required(), value: yup.string().required()})
     .nullable()
-    .required("Required"),
-  run_number: yup.number().typeError("Required").min(1).required("Required"),
+    .required(() => i18n.t('validation:required')),
+  run_number: yup.number().typeError(() => i18n.t('validation:required')).min(1).required(() => i18n.t('validation:required')),
 }).required();
 
 export const PayrollRunForm = ({open, onClose, onSuccess}: Props) => {

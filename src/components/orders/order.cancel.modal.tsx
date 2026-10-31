@@ -344,7 +344,7 @@ export const OrderCancelModal = ({
         </div>
 
         <div className="flex justify-end gap-3">
-          {/*<Button flat variant="primary" onClick={handleClose} disabled={isSubmitting} size="lg">Close</Button>*/}
+          {/*<Button flat variant="primary" onClick={handleClose} disabled={isSubmitting} size="lg"> {t('common:actions.close')}</Button>*/}
           <Button
             variant="danger"
             onClick={handleConfirm}

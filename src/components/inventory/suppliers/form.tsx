@@ -11,6 +11,7 @@ import {Modal} from "@/components/common/react-aria/modal.tsx";
 import {InputField} from "@/components/common/form/rhf-fields.tsx";
 import {Button} from "@/components/common/input/button.tsx";
 import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+import i18n from '@/lib/i18n.ts';
 
 interface SupplierFormValues {
   id?: string;
@@ -37,10 +38,10 @@ const normalizeString = (value?: string | null) => {
 
 const validationSchema: yup.ObjectSchema<SupplierFormValues> = yup.object({
   id: yup.string().optional(),
-  name: yup.string().required("This is required"),
+  name: yup.string().required(() => i18n.t('validation:required')),
   address: yup.string().transform((value) => normalizeString(value)).optional(),
   phone: yup.string().transform((value) => normalizeString(value)).optional(),
-  email: yup.string().transform((value) => normalizeString(value)).email("Invalid email").optional(),
+  email: yup.string().transform((value) => normalizeString(value)).email(() => i18n.t('validation:invalidEmail')).optional(),
 }).required();
 
 export const SupplierForm = ({open, onClose, data}: Props) => {
@@ -107,7 +108,7 @@ export const SupplierForm = ({open, onClose, data}: Props) => {
 
   return (
     <Modal
-      title={data ? `Update ${data?.name}` : "Create new supplier"}
+      title={data ? t('forms.updateSupplier', {name: data.name}) : t('forms.createSupplier')}
       open={open}
       onClose={closeModal}
       size="lg"

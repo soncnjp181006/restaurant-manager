@@ -57,7 +57,7 @@ export const PurchaseOrderReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -200,7 +200,7 @@ export const PurchaseOrderReport = () => {
                 {orders.length === 0 ? (
                   <tr>
                     <td colSpan={9} className="py-6 text-center text-sm text-muted">
-                      No purchase orders found for the selected filters
+                      {t('labels.noPurchaseOrdersFound')}
                     </td>
                   </tr>
                 ) : (

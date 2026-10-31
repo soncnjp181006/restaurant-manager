@@ -43,11 +43,11 @@ export const PurchaseReturnFilter = () => {
       className="flex flex-col gap-4 items-start w-full"
       target="_blank"
     >
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <label htmlFor="purchase-return-suppliers" className="form-label">Suppliers</label>
+          <label htmlFor="purchase-return-suppliers" className="form-label">{t('labels.suppliers')}</label>
           <ReactSelect
             id="purchase-return-suppliers"
             name="suppliers[]"

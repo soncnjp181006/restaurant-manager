@@ -14,12 +14,12 @@ export const TipsFilter = () => {
 
   return (
     <form action={REPORTS_TIPS} className="flex flex-col gap-3 items-start w-full" target="_blank">
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <BranchScopeFilter />
 
       <div className="w-full">
-        <label htmlFor="tips-shift" className="form-label">Shift</label>
+        <label htmlFor="tips-shift" className="form-label">{t('labels.shift')}</label>
         <ReactSelect
           id="tips-shift"
           name="shift"

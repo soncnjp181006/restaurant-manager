@@ -53,44 +53,44 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
-  number: yup.string().required(i18n.t('validation:required')),
-  priority: yup.number().required(i18n.t('validation:required')).typeError(i18n.t('validation:mustBeNumber')),
-  // position: yup.number().required(i18n.t('validation:required')).typeError(i18n.t('validation:mustBeNumber')),
-  price: yup.number().required(i18n.t('validation:required')).typeError(i18n.t('validation:mustBeNumber')),
-  cost: yup.number().required(i18n.t('validation:required')).typeError(i18n.t('validation:mustBeNumber')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  number: yup.string().required(() => i18n.t('validation:required')),
+  priority: yup.number().required(() => i18n.t('validation:required')).typeError(() => i18n.t('validation:mustBeNumber')),
+  // position: yup.number().required(() => i18n.t('validation:required')).typeError(() => i18n.t('validation:mustBeNumber')),
+  price: yup.number().required(() => i18n.t('validation:required')).typeError(() => i18n.t('validation:mustBeNumber')),
+  cost: yup.number().required(() => i18n.t('validation:required')).typeError(() => i18n.t('validation:mustBeNumber')),
   categories: yup.array(yup.object({
     label: yup.string(),
     value: yup.string()
-  })).min(1, i18n.t('validation:required')),
+  })).min(1, () => i18n.t('validation:required')),
   modifier_groups: yup.array(yup.object({
     modifier_group: yup.object({
       label: yup.string(),
       value: yup.string()
-    }).required(i18n.t('validation:required')),
+    }).required(() => i18n.t('validation:required')),
     has_required_modifiers: yup.boolean(),
     required_modifiers: yup.number().when('has_required_modifiers', (has_required_modifiers, schema) => {
       if (has_required_modifiers[0]) {
-        return schema.min(1, i18n.t('validation:mustBeGreaterThanZero')).required(i18n.t('validation:required'));
+        return schema.min(1, () => i18n.t('validation:mustBeGreaterThanZero')).required(() => i18n.t('validation:required'));
       }
 
       return schema;
     }),
     should_auto_open: yup.boolean(),
     should_auto_select: yup.boolean(),
-    priority: yup.string().required(i18n.t('validation:required')),
+    priority: yup.string().required(() => i18n.t('validation:required')),
   })),
   recipes: yup.array(yup.object({
     item: yup.object({
       label: yup.string(),
       value: yup.string()
-    }).required(i18n.t('validation:required')),
-    quantity: yup.number().required(i18n.t('validation:required')).min(0.01, i18n.t('validation:quantityMin')),
+    }).required(() => i18n.t('validation:required')),
+    quantity: yup.number().required(() => i18n.t('validation:required')).min(0.01, () => i18n.t('validation:quantityMin')),
     entered_uom: yup.string().nullable().optional(),
-    cost: yup.number().required(i18n.t('validation:required')).min(0, i18n.t('validation:costMin')),
+    cost: yup.number().required(() => i18n.t('validation:required')).min(0, () => i18n.t('validation:costMin')),
     is_price_locked: yup.boolean().optional(),
     id: yup.string().nullable().optional()
-  })).test('unique-items', i18n.t('validation:uniqueItems'), function (recipes) {
+  })).test('unique-items', () => i18n.t('validation:uniqueItems'), function (recipes) {
     if (!recipes || recipes.length === 0) return true;
     const itemValues = recipes.map(r => r?.item?.value).filter(Boolean);
     return itemValues.length === new Set(itemValues).size;
@@ -591,10 +591,10 @@ export const DishForm = ({
           )}
           <div className="flex gap-3 mb-3">
             <div className="flex-1">
-              <InputField name="name" control={control} label={t('forms.nameOfItem')} autoFocus error={errors?.name?.message} disabled={structuralLocked}/>
+              <InputField name="name" control={control} label={t('forms.dishName')} autoFocus error={errors?.name?.message} disabled={structuralLocked}/>
             </div>
             <div className="flex-1">
-              <InputField name="number" control={control} label={t('forms.numberOfItem')} error={errors?.number?.message}/>
+              <InputField name="number" control={control} label={t('forms.dishNumber')} error={errors?.number?.message}/>
             </div>
             <div className="flex-1">
               <Controller
@@ -655,7 +655,7 @@ export const DishForm = ({
                     value={field.value}
                     onChange={field.onChange}
                     type="number"
-                    label={t('forms.costOfItem')}
+                    label={t('forms.dishCost')}
                     error={errors?.cost?.message}
                   />
                 )}
@@ -832,7 +832,7 @@ export const DishForm = ({
                       control={control}
                       render={({field}) => (
                         <Switch checked={field.value} onChange={field.onChange}>
-                          Auto select modifiers?
+                          {t('ui.autoSelectModifiers')}
                         </Switch>
                       )}
                     />
@@ -843,7 +843,7 @@ export const DishForm = ({
                       control={control}
                       render={({field}) => (
                         <Switch checked={field.value} onChange={field.onChange}>
-                          Auto open modifiers?
+                          {t('ui.autoOpenModifiers')}
                         </Switch>
                       )}
                     />
@@ -854,7 +854,7 @@ export const DishForm = ({
                       control={control}
                       render={({field}) => (
                         <Switch checked={field.value} onChange={field.onChange}>
-                          Has required modifiers
+                          {t('ui.hasRequiredModifiers')}
                         </Switch>
                       )}
                     />
@@ -907,7 +907,7 @@ export const DishForm = ({
                     is_price_locked: false
                   })
                 }}>
-                  Add recipe item
+                  {t('ui.addRecipeItem')}
                 </Button>
               </div>
 

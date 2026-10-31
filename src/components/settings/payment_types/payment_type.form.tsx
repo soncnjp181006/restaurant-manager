@@ -38,9 +38,9 @@ const selectOptionSchema = yup.object({
 });
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
-  priority: yup.string().required(i18n.t('validation:required')),
-  type: selectOptionSchema.required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  priority: yup.string().required(() => i18n.t('validation:required')),
+  type: selectOptionSchema.required(() => i18n.t('validation:required')),
   gateway: selectOptionSchema.nullable().optional(),
   gateway_mode: selectOptionSchema.nullable().optional(),
   gateway_config: yup.object({

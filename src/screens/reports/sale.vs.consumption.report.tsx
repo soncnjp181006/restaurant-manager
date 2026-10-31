@@ -61,7 +61,7 @@ export const SaleVsConsumptionReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -241,7 +241,7 @@ export const SaleVsConsumptionReport = () => {
   if (!data) {
     return (
       <ReportsLayout title={t('titles.saleVsConsumption')} subtitle={subtitle}>
-        <div className="py-12 text-center text-muted">No data available</div>
+        <div className="py-12 text-center text-muted">{t('labels.noDataAvailable')}</div>
       </ReportsLayout>
     );
   }
@@ -254,18 +254,18 @@ export const SaleVsConsumptionReport = () => {
       <div className="space-y-8">
         {/* Sale vs Consumption */}
         <div className="overflow-hidden rounded-lg border border-border">
-          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Sale vs Consumption</h3>
+          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.saleVsConsumption')}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-neutral-200">
               <thead className="bg-surface">
                 <tr>
-                  <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">Metric</th>
+                  <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('labels.metric')}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
                 <tr>
-                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">Sale Total</td>
+                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">{t('labels.saleTotal')}</td>
                   <td className="py-3 px-3 text-right text-sm text-foreground">{withInventoryCurrency(data.saleTotal)}</td>
                 </tr>
                 <tr>
@@ -279,7 +279,7 @@ export const SaleVsConsumptionReport = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">Profit Percent</td>
+                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">{t('labels.profitPercent')}</td>
                   <td className={`py-3 px-3 text-right text-sm font-semibold ${data.consumptionProfitPercent >= 0 ? 'text-success-600' : 'text-danger-600'}`}>
                     {formatInventoryNumber(data.consumptionProfitPercent)}%
                   </td>
@@ -291,18 +291,18 @@ export const SaleVsConsumptionReport = () => {
 
         {/* Sale vs Inventory (Issuance) */}
         <div className="overflow-hidden rounded-lg border border-border">
-          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Sale vs Inventory (Issuance)</h3>
+          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.saleVsInventoryIssuance')}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-neutral-200">
               <thead className="bg-surface">
                 <tr>
-                  <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">Metric</th>
+                  <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('labels.metric')}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
                 <tr>
-                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">Sale Total</td>
+                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">{t('labels.saleTotal')}</td>
                   <td className="py-3 px-3 text-right text-sm text-foreground">{withInventoryCurrency(data.saleTotal)}</td>
                 </tr>
                 <tr>
@@ -316,7 +316,7 @@ export const SaleVsConsumptionReport = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">Profit Percent</td>
+                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">{t('labels.profitPercent')}</td>
                   <td className={`py-3 px-3 text-right text-sm font-semibold ${data.issuanceProfitPercent >= 0 ? 'text-success-600' : 'text-danger-600'}`}>
                     {formatInventoryNumber(data.issuanceProfitPercent)}%
                   </td>
@@ -328,22 +328,22 @@ export const SaleVsConsumptionReport = () => {
 
         {/* Sale vs Purchase */}
         <div className="overflow-hidden rounded-lg border border-border">
-          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Sale vs Purchase</h3>
+          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.saleVsPurchase')}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-neutral-200">
               <thead className="bg-surface">
                 <tr>
-                  <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">Metric</th>
+                  <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('labels.metric')}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
                 <tr>
-                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">Sale Total</td>
+                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">{t('labels.saleTotal')}</td>
                   <td className="py-3 px-3 text-right text-sm text-foreground">{withInventoryCurrency(data.saleTotal)}</td>
                 </tr>
                 <tr>
-                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">Purchase Total</td>
+                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">{t('labels.purchaseTotal')}</td>
                   <td className="py-3 px-3 text-right text-sm text-foreground">{withInventoryCurrency(data.purchaseTotal)}</td>
                 </tr>
                 <tr>
@@ -353,7 +353,7 @@ export const SaleVsConsumptionReport = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">Profit Percent</td>
+                  <td className="py-3 pl-6 pr-3 text-sm font-medium text-foreground">{t('labels.profitPercent')}</td>
                   <td className={`py-3 px-3 text-right text-sm font-semibold ${data.purchaseProfitPercent >= 0 ? 'text-success-600' : 'text-danger-600'}`}>
                     {formatInventoryNumber(data.purchaseProfitPercent)}%
                   </td>

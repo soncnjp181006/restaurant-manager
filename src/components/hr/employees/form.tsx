@@ -30,6 +30,7 @@ import {DepartmentForm} from "@/components/hr/departments/form.tsx";
 import {PositionForm} from "@/components/hr/positions/form.tsx";
 import {CostCenterForm} from "@/components/hr/cost_centers/form.tsx";
 import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+import i18n from '@/lib/i18n.ts';
 
 interface FormValues {
   id?: string;
@@ -58,9 +59,9 @@ const optionSchema = yup.object({label: yup.string().required(), value: yup.stri
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  employee_number: yup.string().required("Required"),
-  first_name: yup.string().required("Required"),
-  last_name: yup.string().required("Required"),
+  employee_number: yup.string().required(() => i18n.t('validation:required')),
+  first_name: yup.string().required(() => i18n.t('validation:required')),
+  last_name: yup.string().required(() => i18n.t('validation:required')),
   user: optionSchema,
   department: optionSchema,
   position: optionSchema,
@@ -239,7 +240,7 @@ export const EmployeeForm = ({open, onClose, data}: Props) => {
         source: 'entity-form',
       });
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

@@ -120,7 +120,7 @@ export const SalesWeeklyFilter = () => {
     >
       <BranchScopeFilter />
       <div>
-        <label htmlFor="week-select" className="form-label">Select a week</label>
+        <label htmlFor="week-select" className="form-label">{t('filters.selectWeek')}</label>
         <select
           id="week-select"
           name="week"
@@ -131,11 +131,11 @@ export const SalesWeeklyFilter = () => {
           required
         >
           {!loading && !weeks.length && (
-            <option>No weeks available</option>
+            <option>{t('filters.noWeeks')}</option>
           )}
           {weekOptions}
         </select>
-        {loading && <p className="text-sm text-muted">Loading weeks...</p>}
+        {loading && <p className="text-sm text-muted">{t('filters.loadingWeeks')}</p>}
         {error && <p className="text-sm text-danger-600">{error}</p>}
       </div>
 

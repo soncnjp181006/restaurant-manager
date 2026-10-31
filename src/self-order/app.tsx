@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { tr } from './i18n';
 import {
   api,
   ApiError,
@@ -56,7 +57,7 @@ const fromPrice = (dish: MenuDish) =>
 const optionNames = (dish: MenuDish, modifiers: Record<string, string[]>) =>
   dish.modifierGroups.flatMap((g) => (modifiers[g.id] ?? []).map((id) => g.options.find((o) => o.id === id)?.name).filter(Boolean) as string[]);
 
-const tableLabel = (menu: PublicMenu) => [menu.table.floor, `Table ${menu.table.number || menu.table.name}`].filter(Boolean).join(' · ');
+const tableLabel = (menu: PublicMenu) => [menu.table.floor, tr('table', { label: menu.table.number || menu.table.name })].filter(Boolean).join(' · ');
 
 /** A checkout that is paid and on its way to the kitchen. */
 const isSettled = (status: CheckoutStatus) =>
@@ -77,7 +78,7 @@ export function SelfOrderApp({ token, returningCheckoutId }: { token: string; re
   const load = useCallback(() => {
     setError(null);
     if (!token) {
-      setError('This link is missing its table code. Please scan the QR code on your table again.');
+      setError(tr('missingTableCode'));
       return;
     }
     api.menu(token).then(setMenu, (err: ApiError) => setError(err.message));
@@ -159,7 +160,7 @@ export function SelfOrderApp({ token, returningCheckoutId }: { token: string; re
     return sum + (dish.price + optionTotal(dish, l.modifiers)) * l.quantity;
   }, 0);
 
-  if (resuming) return <CenteredMessage title="Confirming your payment" spinner />;
+  if (resuming) return <CenteredMessage title={tr('confirmingPayment')} spinner />;
 
   if (done) {
     return (
@@ -178,9 +179,9 @@ export function SelfOrderApp({ token, returningCheckoutId }: { token: string; re
   }
 
   if (error && !menu) {
-    return <CenteredMessage title="We’re sorry" body={error} action={token ? { label: 'Try again', onClick: load } : undefined} />;
+    return <CenteredMessage title={tr('sorry')} body={error} action={token ? { label: tr('tryAgain'), onClick: load } : undefined} />;
   }
-  if (!menu) return <CenteredMessage title="Preparing the menu" spinner />;
+  if (!menu) return <CenteredMessage title={tr('preparingMenu')} spinner />;
 
   const addLine = (line: Omit<CartLine, 'key'>) => {
     setCart((prev) => {
@@ -198,7 +199,7 @@ export function SelfOrderApp({ token, returningCheckoutId }: { token: string; re
         <div className="sticky top-0 z-30 flex items-start justify-between gap-3 border-b border-[#e2b8a3] bg-[#f8e9e1] px-4 py-3 text-sm text-[#7a3517]">
           <p>{error}</p>
           <button className="shrink-0 font-semibold underline" onClick={() => setError(null)}>
-            Dismiss
+            {tr('dismiss')}
           </button>
         </div>
       )}
@@ -208,7 +209,7 @@ export function SelfOrderApp({ token, returningCheckoutId }: { token: string; re
         onPick={(dish) => {
           if (dish.modifierGroups.length === 0) {
             addLine({ dishId: dish.id, quantity: 1, modifiers: {} });
-            flash(`${dish.name} added to your order`);
+            flash(tr('addedToOrder', { name: dish.name }));
           } else {
             setActiveDish(dish);
           }
@@ -223,7 +224,7 @@ export function SelfOrderApp({ token, returningCheckoutId }: { token: string; re
               <span className="flex h-9 min-w-9 items-center justify-center rounded-full bg-[color:var(--so-gold)] px-2 text-sm font-bold text-[color:var(--so-gold-soft)]">
                 {cartCount}
               </span>
-              <span>View your order</span>
+              <span>{tr('viewYourOrder')}</span>
             </span>
             <span className="tabular-nums">{formatMoney(cartEstimate, menu.currency)}</span>
           </button>
@@ -238,7 +239,7 @@ export function SelfOrderApp({ token, returningCheckoutId }: { token: string; re
           onAdd={(line) => {
             addLine(line);
             setActiveDish(null);
-            flash(`${activeDish.name} added to your order`);
+            flash(tr('addedToOrder', { name: activeDish.name }));
           }}
         />
       )}
@@ -321,15 +322,15 @@ function MenuView({
     <>
       <header className="so-hero relative overflow-hidden px-6 pb-10 pt-10 text-[color:var(--so-on-ink)]">
         <div className="flex items-center justify-between">
-          <span className="so-eyebrow text-[color:var(--so-gold-soft)]">{menu.table.floor || 'Welcome'}</span>
+          <span className="so-eyebrow text-[color:var(--so-gold-soft)]">{menu.table.floor || tr('welcome')}</span>
           <span className="rounded-full border border-[color:var(--so-on-ink)] px-3.5 py-1.5 text-xs font-semibold tracking-wide text-[color:var(--so-gold-soft)]">
-            Table {menu.table.number || menu.table.name}
+            {tr('table', { label: menu.table.number || menu.table.name })}
           </span>
         </div>
-        <h1 className="so-serif mt-8 text-[2.3rem] font-bold leading-[1.05] tracking-tight">{menu.restaurant.name || 'Our Menu'}</h1>
+        <h1 className="so-serif mt-8 text-[2.3rem] font-bold leading-[1.05] tracking-tight">{menu.restaurant.name || tr('ourMenu')}</h1>
         <div className="so-ornament mt-4 max-w-[12rem] text-xs">✦</div>
         <p className="mt-4 max-w-sm text-[0.95rem] leading-relaxed text-[color:var(--so-on-ink)]">
-          {menu.restaurant.welcomeText || 'Choose at your leisure, pay from your seat — we’ll bring everything to your table.'}
+          {menu.restaurant.welcomeText || tr('welcomeText')}
         </p>
         <div className="relative mt-7">
           <svg className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--so-gold-soft)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -340,7 +341,7 @@ function MenuView({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search dishes"
+            placeholder={tr('searchDishes')}
             className="so-hero-field w-full rounded-full py-3.5 pl-11 pr-4 text-base outline-none"
           />
         </div>
@@ -370,7 +371,7 @@ function MenuView({
       </nav>
 
       {sections.length === 0 && (
-        <p className="so-serif px-6 py-16 text-center text-xl italic text-[color:var(--so-muted)]">Nothing matches “{query}”.</p>
+        <p className="so-serif px-6 py-16 text-center text-xl italic text-[color:var(--so-muted)]">{tr('nothingMatches', { query })}</p>
       )}
 
       {sections.map(({ category, dishes }) => (
@@ -384,7 +385,7 @@ function MenuView({
           className="scroll-mt-14 px-6 pt-10"
         >
           <div className="mb-2 text-center">
-            <p className="so-eyebrow text-[color:var(--so-gold-ink)]">{String(dishes.length).padStart(2, '0')} dishes</p>
+            <p className="so-eyebrow text-[color:var(--so-gold-ink)]">{tr('dishesCount', { count: String(dishes.length).padStart(2, '0') })}</p>
             <h2 className="so-serif mt-1 text-[1.6rem] font-bold leading-tight tracking-tight">{category.name}</h2>
             <div className="so-ornament mx-auto mt-2 max-w-[9rem] text-[0.6rem]">◆</div>
           </div>
@@ -404,7 +405,7 @@ function MenuView({
                         <span className="so-leader" />
                         <span className="shrink-0 pb-0.5 text-[0.95rem] font-semibold tabular-nums text-[color:var(--so-gold-ink)]">
                           {hasRequired && price !== dish.price && (
-                            <span className="mr-1 text-[0.7rem] font-medium uppercase tracking-wider text-[color:var(--so-muted)]">from</span>
+                            <span className="mr-1 text-[0.7rem] font-medium uppercase tracking-wider text-[color:var(--so-muted)]">{tr('from')}</span>
                           )}
                           {formatMoney(price, menu.currency)}
                         </span>
@@ -417,7 +418,7 @@ function MenuView({
                           ? 'bg-[color:var(--so-ink)] text-sm font-bold text-[color:var(--so-gold-soft)]'
                           : 'border border-[color:var(--so-gold)] text-[color:var(--so-gold-ink)]'
                       }`}
-                      aria-label={qty > 0 ? `${qty} in your order` : 'Add'}
+                      aria-label={qty > 0 ? tr('qtyInOrder', { qty }) : tr('add')}
                     >
                       {qty > 0 ? qty : '+'}
                     </span>
@@ -431,7 +432,7 @@ function MenuView({
 
       <footer className="px-6 pb-10 pt-14 text-center">
         <div className="so-ornament mx-auto max-w-[10rem] text-xs">✦</div>
-        <p className="so-serif mt-3 text-lg italic text-[color:var(--so-muted)]">Thank you for dining with us</p>
+        <p className="so-serif mt-3 text-lg italic text-[color:var(--so-muted)]">{tr('thankYouDining')}</p>
       </footer>
     </>
   );
@@ -476,7 +477,7 @@ function Sheet({
           <button
             onClick={onClose}
             className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--so-line)] text-lg leading-none text-[color:var(--so-muted)]"
-            aria-label="Close"
+            aria-label={tr('close')}
           >
             ×
           </button>
@@ -491,11 +492,11 @@ function Sheet({
 function QtyStepper({ value, onChange, min = 1 }: { value: number; onChange: (v: number) => void; min?: number }) {
   return (
     <div className="flex items-center rounded-full border border-[color:var(--so-line)] bg-[color:var(--so-card)]">
-      <button className="h-10 w-10 text-lg text-[color:var(--so-muted)] disabled:opacity-30" onClick={() => onChange(value - 1)} disabled={value <= min - 1} aria-label="Less">
+      <button className="h-10 w-10 text-lg text-[color:var(--so-muted)] disabled:opacity-30" onClick={() => onChange(value - 1)} disabled={value <= min - 1} aria-label={tr('less')}>
         −
       </button>
       <span className="w-6 text-center font-semibold tabular-nums">{value}</span>
-      <button className="h-10 w-10 text-lg text-[color:var(--so-fg)]" onClick={() => onChange(Math.min(50, value + 1))} aria-label="More">
+      <button className="h-10 w-10 text-lg text-[color:var(--so-fg)]" onClick={() => onChange(Math.min(50, value + 1))} aria-label={tr('more')}>
         +
       </button>
     </div>
@@ -533,7 +534,7 @@ function DishSheet({
   return (
     <Sheet
       title={dish.name}
-      eyebrow="Make it yours"
+      eyebrow={tr('makeItYours')}
       onClose={onClose}
       footer={
         <div className="flex items-center gap-3 pb-1">
@@ -546,7 +547,7 @@ function DishSheet({
             }}
             className="so-btn-primary flex-1"
           >
-            <span>{missing.length > 0 ? 'Pick your options' : 'Add to order'}</span>
+            <span>{missing.length > 0 ? tr('pickYourOptions') : tr('addToOrder')}</span>
             {missing.length === 0 && <span className="tabular-nums text-[color:var(--so-gold-ink)]">{formatMoney(unit * quantity, currency)}</span>}
           </button>
         </div>
@@ -564,7 +565,7 @@ function DishSheet({
                   group.required === 0 ? 'text-[color:var(--so-muted)]' : complete ? 'text-[color:var(--so-gold-ink)]' : 'text-[#a4552f]'
                 }`}
               >
-                {group.required === 0 ? 'Optional' : complete ? '✓ Selected' : group.required === 1 ? 'Required' : `Choose ${group.required}`}
+                {group.required === 0 ? tr('optional') : complete ? tr('selected') : group.required === 1 ? tr('required') : tr('chooseCount', { count: group.required })}
               </span>
             </legend>
             <div className="overflow-hidden rounded-2xl border border-[color:var(--so-line)] bg-[color:var(--so-card)]">
@@ -598,12 +599,12 @@ function DishSheet({
         );
       })}
       <label className="block">
-        <span className="so-serif mb-3 block text-xl font-semibold">Special requests</span>
+        <span className="so-serif mb-3 block text-xl font-semibold">{tr('specialRequests')}</span>
         <textarea
           value={comments}
           onChange={(e) => setComments(e.target.value.slice(0, 200))}
           rows={2}
-          placeholder="Allergies, no onions, well done…"
+          placeholder={tr('specialRequestsPlaceholder')}
           className="so-field resize-none"
         />
       </label>
@@ -636,17 +637,17 @@ function CartSheet({
 
   return (
     <Sheet
-      title="Your order"
-      eyebrow={`${lines.reduce((s, l) => s + l.quantity, 0)} items`}
+      title={tr('yourOrder')}
+      eyebrow={tr('itemsCount', { count: lines.reduce((s, l) => s + l.quantity, 0) })}
       onClose={onClose}
       footer={
         <button disabled={lines.length === 0} onClick={onCheckout} className="so-btn-primary mb-1">
-          <span>Continue to payment</span>
+          <span>{tr('continueToPayment')}</span>
           <span className="tabular-nums text-[color:var(--so-gold-soft)]">{formatMoney(total, currency)}</span>
         </button>
       }
     >
-      {lines.length === 0 && <p className="so-serif py-10 text-center text-xl italic text-[color:var(--so-muted)]">Your order is empty.</p>}
+      {lines.length === 0 && <p className="so-serif py-10 text-center text-xl italic text-[color:var(--so-muted)]">{tr('emptyOrder')}</p>}
       <ul>
         {lines.map((line) => {
           const dish = dishMap.get(line.dishId)!;
@@ -668,7 +669,7 @@ function CartSheet({
       </ul>
       {hasExclusive && (
         <p className="mt-2 text-sm text-[color:var(--so-muted)]">
-          {orderTax!.name} ({orderTax!.rate}%) is added at payment.
+          {tr('taxAddedAtPayment', { name: orderTax!.name, rate: orderTax!.rate })}
         </p>
       )}
     </Sheet>
@@ -764,13 +765,13 @@ function CheckoutSheet({
 
   return (
     <Sheet
-      title={checkout ? 'Payment' : 'Review & pay'}
+      title={checkout ? tr('payment') : tr('reviewAndPay')}
       eyebrow={tableLabel(menu)}
       onClose={checkout || busy ? () => undefined : onBack}
       footer={
         checkout ? undefined : (
           <button disabled={!quote || !method || busy} onClick={start} className="so-btn-primary mb-1">
-            <span>{busy ? 'One moment…' : method?.gateway === 'test' ? 'Place order · test' : 'Continue to payment'}</span>
+            <span>{busy ? tr('oneMoment') : method?.gateway === 'test' ? tr('placeOrderTest') : tr('continueToPayment')}</span>
             {quote && <span className="tabular-nums text-[color:var(--so-gold-soft)]">{formatMoney(quote.total, quote.currency)}</span>}
           </button>
         )
@@ -796,19 +797,19 @@ function CheckoutSheet({
             {quote.taxes.map((tax, i) => (
               <div key={i} className="flex justify-between text-[color:var(--so-muted)]">
                 <span>
-                  {tax.name} {tax.rate}%{hasInclusive ? ' (included)' : ''}
+                  {tax.name} {tax.rate}%{hasInclusive ? ` ${tr('included')}` : ''}
                 </span>
                 <span className="tabular-nums">{formatMoney(tax.amount, quote.currency)}</span>
               </div>
             ))}
             <div className="mt-1 flex items-baseline justify-between">
-              <span className="so-eyebrow text-[color:var(--so-muted)]">Total</span>
+              <span className="so-eyebrow text-[color:var(--so-muted)]">{tr('total')}</span>
               <span className="so-serif text-[1.6rem] font-bold tabular-nums">{formatMoney(quote.total, quote.currency)}</span>
             </div>
           </div>
         </div>
       ) : (
-        !error && <p className="so-serif py-8 text-center text-lg italic text-[color:var(--so-muted)]">Calculating your total…</p>
+        !error && <p className="so-serif py-8 text-center text-lg italic text-[color:var(--so-muted)]">{tr('calculatingTotal')}</p>
       )}
 
       {error && (
@@ -816,7 +817,7 @@ function CheckoutSheet({
           <p>{error.message}</p>
           {(error.code === 'UNAVAILABLE' || error.code === 'MODIFIERS') && (
             <button className="mt-2 font-semibold underline" onClick={onMenuChanged}>
-              Back to the menu
+              {tr('backToMenu')}
             </button>
           )}
         </div>
@@ -826,19 +827,19 @@ function CheckoutSheet({
         <>
           <div className="mt-6 grid gap-4">
             <label className="block">
-              <span className="so-eyebrow mb-2 block text-[color:var(--so-muted)]">Your name · optional</span>
-              <input value={name} onChange={(e) => setName(e.target.value.slice(0, 60))} placeholder="So we know who ordered" className="so-field" />
+              <span className="so-eyebrow mb-2 block text-[color:var(--so-muted)]">{tr('yourNameOptional')}</span>
+              <input value={name} onChange={(e) => setName(e.target.value.slice(0, 60))} placeholder={tr('yourNamePlaceholder')} className="so-field" />
             </label>
             <label className="block">
-              <span className="so-eyebrow mb-2 block text-[color:var(--so-muted)]">Note for the kitchen · optional</span>
-              <input value={notes} onChange={(e) => setNotes(e.target.value.slice(0, 300))} placeholder="Allergies, timing…" className="so-field" />
+              <span className="so-eyebrow mb-2 block text-[color:var(--so-muted)]">{tr('kitchenNoteOptional')}</span>
+              <input value={notes} onChange={(e) => setNotes(e.target.value.slice(0, 300))} placeholder={tr('kitchenNotePlaceholder')} className="so-field" />
             </label>
           </div>
 
-          <p className="so-eyebrow mb-3 mt-7 text-[color:var(--so-muted)]">Pay with</p>
+          <p className="so-eyebrow mb-3 mt-7 text-[color:var(--so-muted)]">{tr('payWith')}</p>
           {noMethods ? (
             <p className="rounded-2xl border border-[color:var(--so-line)] bg-[color:var(--so-card)] p-4 text-sm text-[color:var(--so-muted)]">
-              Online payment isn’t available right now. Please order with our staff.
+              {tr('onlineUnavailable')}
             </p>
           ) : (
             <div className="flex flex-col gap-2.5">
@@ -854,7 +855,7 @@ function CheckoutSheet({
                     <input type="radio" name="pay" checked={on} onChange={() => setMethod(m)} className="so-choice" />
                     <span className="flex-1 font-semibold">{m.name}</span>
                     <span className="so-eyebrow !text-[0.58rem] text-[color:var(--so-muted)]">
-                      {m.gateway === 'test' ? 'Demo' : m.gateway === 'paypal' ? 'PayPal' : 'Card · Wallet'}
+                      {m.gateway === 'test' ? tr('demo') : m.gateway === 'paypal' ? 'PayPal' : tr('cardWallet')}
                     </span>
                   </label>
                 );
@@ -863,7 +864,7 @@ function CheckoutSheet({
           )}
 
           <button className="so-btn-ghost mt-3" onClick={onBack} disabled={busy}>
-            Back to my order
+            {tr('backToMyOrder')}
           </button>
         </>
       )}
@@ -872,10 +873,10 @@ function CheckoutSheet({
         <div className="mt-6">
           {!checkout.payment || (checkout.gateway !== 'stripe' && checkout.gateway !== 'paypal') ? (
             <div className="rounded-2xl border border-[#e2b8a3] bg-[#f8e9e1] p-4 text-sm text-[#7a3517]">
-              <p>We couldn’t start this payment. Please choose another method, or ask a staff member to take your order.</p>
+              <p>{tr('paymentStartFailed')}</p>
             </div>
           ) : (
-            <Suspense fallback={<p className="so-serif py-8 text-center text-lg italic text-[color:var(--so-muted)]">Loading secure payment…</p>}>
+            <Suspense fallback={<p className="so-serif py-8 text-center text-lg italic text-[color:var(--so-muted)]">{tr('loadingSecurePayment')}</p>}>
               {checkout.gateway === 'stripe' && checkout.payment && (
                 <StripePay
                   publishableKey={checkout.payment.publishableKey ?? ''}
@@ -898,7 +899,7 @@ function CheckoutSheet({
               )}
             </Suspense>
           )}
-          {busy && <p className="so-serif mt-4 text-center text-lg italic text-[color:var(--so-muted)]">Sending your order to the kitchen…</p>}
+          {busy && <p className="so-serif mt-4 text-center text-lg italic text-[color:var(--so-muted)]">{tr('sendingToKitchen')}</p>}
           {!busy && (
             <button
               className="so-btn-ghost mt-2"
@@ -907,7 +908,7 @@ function CheckoutSheet({
                 setError(null);
               }}
             >
-              Choose another payment method
+              {tr('chooseAnotherMethod')}
             </button>
           )}
           <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-[color:var(--so-muted)]">
@@ -915,7 +916,7 @@ function CheckoutSheet({
               <rect x="5" y="11" width="14" height="10" rx="2" />
               <path d="M8 11V8a4 4 0 0 1 8 0v3" />
             </svg>
-            Secure payment — card details never touch our system
+            {tr('securePaymentNote')}
           </p>
         </div>
       )}
@@ -946,17 +947,17 @@ function DoneScreen({
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[color:var(--so-on-ink)] text-2xl font-bold text-[color:var(--so-gold-soft)]">
             !
           </div>
-          <p className="so-eyebrow mt-6 text-[color:var(--so-gold-soft)]">{restaurantName || 'Payment'}</p>
-          <h1 className="so-serif mt-2 text-[2.1rem] font-bold tracking-tight leading-tight">Payment not completed</h1>
+          <p className="so-eyebrow mt-6 text-[color:var(--so-gold-soft)]">{restaurantName || tr('payment')}</p>
+          <h1 className="so-serif mt-2 text-[2.1rem] font-bold tracking-tight leading-tight">{tr('paymentNotCompleted')}</h1>
           <p className="mx-auto mt-3 max-w-xs text-[0.95rem] leading-relaxed text-[color:var(--so-on-ink)]">
             {status.message ||
-              'Your payment didn’t go through, so no order was sent to the kitchen. Your order is still here — you can try again.'}
+              tr('paymentFailedBody')}
           </p>
         </div>
 
         <div className="so-safe-bottom mt-auto px-5 pt-8">
           <button onClick={onNewOrder} className="so-btn-primary justify-center">
-            Try payment again
+            {tr('tryPaymentAgain')}
           </button>
         </div>
       </div>
@@ -969,14 +970,14 @@ function DoneScreen({
         <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[color:var(--so-on-ink)] text-2xl text-[color:var(--so-gold-soft)] ${orderReady ? 'animate-bounce' : ''}`}>
           {orderReady ? '🔔' : '✓'}
         </div>
-        <p className="so-eyebrow mt-6 text-[color:var(--so-gold-soft)]">{restaurantName || 'Order confirmed'}</p>
+        <p className="so-eyebrow mt-6 text-[color:var(--so-gold-soft)]">{restaurantName || tr('orderConfirmed')}</p>
         <h1 className="so-serif mt-2 text-[2.1rem] font-bold tracking-tight leading-tight">
-          {orderReady ? 'Your order is ready!' : 'Thank you'}
+          {orderReady ? tr('orderReadyTitle') : tr('thankYou')}
         </h1>
         <p className="mx-auto mt-3 max-w-xs text-[0.95rem] leading-relaxed text-[color:var(--so-on-ink)]">
           {orderReady
-            ? 'The kitchen has finished your order — we’ll bring it to your table.'
-            : 'Your order is paid and with the kitchen. Keep this page open — we’ll alert you here when it’s ready.'}
+            ? tr('orderReadyBody')
+            : tr('orderWaitingBody')}
         </p>
       </div>
 
@@ -985,16 +986,16 @@ function DoneScreen({
           {orderReady && (
             <div className="mb-5 rounded-2xl border-2 border-[color:var(--so-gold)] bg-[color:var(--so-card)] p-4 text-center">
               <p className="so-serif text-xl font-bold text-[color:var(--so-gold-ink)]">
-                Your order is ready
+                {tr('orderReadyChip')}
               </p>
               <p className="mt-1 text-sm text-[color:var(--so-muted)]">
-                Please collect it from the counter or wait for it at your table.
+                {tr('orderReadyHint')}
               </p>
             </div>
           )}
           {status.orderNumber && (
             <div className="text-center">
-              <p className="so-eyebrow text-[color:var(--so-muted)]">Order number</p>
+              <p className="so-eyebrow text-[color:var(--so-muted)]">{tr('orderNumber')}</p>
               <p className="so-serif mt-1 text-[3rem] font-bold tracking-tight leading-none tabular-nums">#{status.orderNumber}</p>
               {tableLabel && <p className="mt-2 text-sm text-[color:var(--so-muted)]">{tableLabel}</p>}
               <div className="so-ornament mx-auto my-5 max-w-[8rem] text-[0.6rem]">◆</div>
@@ -1013,7 +1014,7 @@ function DoneScreen({
                 </li>
               ))}
               <li className="mt-2 flex items-baseline justify-between border-t border-[color:var(--so-line)] pt-3">
-                <span className="so-eyebrow text-[color:var(--so-muted)]">Paid</span>
+                <span className="so-eyebrow text-[color:var(--so-muted)]">{tr('paid')}</span>
                 <span className="so-serif text-xl font-bold tabular-nums">{formatMoney(status.quote.total, status.quote.currency)}</span>
               </li>
             </ul>
@@ -1023,7 +1024,7 @@ function DoneScreen({
 
       <div className="so-safe-bottom mt-auto px-5 pt-8">
         <button onClick={onNewOrder} className="so-btn-primary justify-center">
-          Order something else
+          {tr('orderSomethingElse')}
         </button>
       </div>
     </div>

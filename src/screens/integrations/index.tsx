@@ -158,7 +158,7 @@ export const IntegrationsScreen = () => {
           }}
         >
           <TabList
-            aria-label="Integrations tabs"
+            aria-label={t('tabsAriaLabel')}
             className="flex flex-row gap-3 px-1 py-3 flex-nowrap"
             data-testid="integrations-tabs"
           >

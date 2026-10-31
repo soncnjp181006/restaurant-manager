@@ -19,7 +19,7 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  show_in_menu: yup.boolean().required(i18n.t('validation:required'))
+  show_in_menu: yup.boolean().required(() => i18n.t('validation:required'))
 });
 
 export const CategoryBulkForm = ({

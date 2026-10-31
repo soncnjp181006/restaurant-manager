@@ -265,5 +265,8 @@
   "send": "Gửi",
   "messages": {
     "notFound": "Không tìm thấy chứng từ."
-  }
+  },
+  "columnMapping": "Ánh xạ cột",
+  "tabsAriaLabel": "Thẻ",
+  "close": "Đóng"
 }

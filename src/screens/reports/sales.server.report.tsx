@@ -10,7 +10,7 @@ import {getOrderFilteredItems, getOrderPaymentTotals, getOrderCartDiscountAmount
 import {formatNumber, withCurrency} from "@/lib/utils.ts";
 import {OrderItem} from "@/api/model/order_item.ts";
 import { toJsDate } from "@/lib/datetime.ts";
-import {DAY_PART_LABELS, getDayPartLabel, getDayPartTimeRangeLabel, type DayPartLabel} from "@/utils/dayParts";
+import {DAY_PART_LABELS, getDayPartLabel, getDayPartTimeRangeLabel, translateDayPartLabel, type DayPartLabel} from "@/utils/dayParts";
 import {
   buildBranchInsideCondition,
   buildCreatedAtDateConditions,
@@ -364,7 +364,7 @@ export const SalesServerReport = () => {
 
 
   const subtitle = filters.startDate && filters.endDate
-    ? `${filters.startDate} to ${filters.endDate}`
+    ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate })
     : undefined;
 
   if (loading || !branchScope.ready) {
@@ -478,7 +478,7 @@ const SalesServerBody = ({orders}: {orders: Order[]}) => {
   if (!sections.length) {
     return (
       <div className="text-center p-6 text-muted">
-        No server sales found for the selected filters.
+        {t('labels.noServerSales')}
       </div>
     );
   }
@@ -537,10 +537,10 @@ const SalesServerBody = ({orders}: {orders: Order[]}) => {
                     <tr>
                       <th>{t('columns.category')}</th>
                       <th className="text-right">{t('labels.amountDue')}</th>
-                      <th className="text-right">Net Sales Due</th>
+                      <th className="text-right">{t('labels.netSalesDue')}</th>
                       <th className="text-right">{t('metrics.discounts')}</th>
                       <th className="text-right">{t('metrics.coupons')}</th>
-                      <th className="text-right">Taxes</th>
+                      <th className="text-right">{t('labels.taxes')}</th>
                       <th className="text-right">{t('labels.grossSale')}</th>
                       <th className="text-right">{t('columns.avgCheck')}</th>
                       <th className="text-right">{t('columns.avgGuest')}</th>
@@ -567,7 +567,7 @@ const SalesServerBody = ({orders}: {orders: Order[]}) => {
                     {section.categories.length === 0 && (
                       <tr>
                         <td colSpan={9} className="text-center text-muted py-4">
-                          No category data found for this server.
+                          {t('labels.noCategoryDataForServer')}
                         </td>
                       </tr>
                     )}
@@ -597,12 +597,12 @@ const SalesServerBody = ({orders}: {orders: Order[]}) => {
                   <thead>
                     <tr>
                       <th>{t('columns.dayPart')}</th>
-                      <th className="text-right">Net Sales Due</th>
-                      <th className="text-right">Total Guests</th>
-                      <th className="text-right">Total Checks</th>
-                      <th className="text-right">Taxes</th>
+                      <th className="text-right">{t('labels.netSalesDue')}</th>
+                      <th className="text-right">{t('labels.totalGuests')}</th>
+                      <th className="text-right">{t('labels.totalChecks')}</th>
+                      <th className="text-right">{t('labels.taxes')}</th>
                       <th className="text-right">{t('columns.payments')}</th>
-                      <th className="text-right">Service Charges</th>
+                      <th className="text-right">{t('labels.serviceCharges')}</th>
                       <th className="text-right">{t('metrics.coupons')}</th>
                     </tr>
                   </thead>
@@ -610,7 +610,7 @@ const SalesServerBody = ({orders}: {orders: Order[]}) => {
                     {section.dayParts.map(row => (
                       <tr key={row.label}>
                         <td>
-                          <div>{row.label}</div>
+                          <div>{translateDayPartLabel(t, row.label as DayPartLabel)}</div>
                           <div className="text-xs text-muted">{getDayPartTimeRangeLabel(row.label)}</div>
                         </td>
                         <td className="text-right">{withCurrency(row.netSales)}</td>

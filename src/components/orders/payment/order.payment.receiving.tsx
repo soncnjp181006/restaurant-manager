@@ -245,7 +245,7 @@ const OrderPaymentReceivingContent = ({
             return;
           }
           if (Object.values(preResult.resultsByProvider).some((row) => row.status === 'failed')) {
-            toast.warning('Some fiscal providers failed; check Integrations queue');
+            toast.warning(t('fiscalProvidersFailed'));
           }
         }
       }
@@ -345,7 +345,7 @@ const OrderPaymentReceivingContent = ({
                 settledOrder
               );
               if (Object.values(fiscalResult.resultsByProvider).some((row) => row.status === 'failed')) {
-                toast.warning('Some fiscal providers failed; check Integrations queue');
+                toast.warning(t('fiscalProvidersFailed'));
               }
             }
           }

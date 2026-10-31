@@ -173,7 +173,8 @@
     "manualEntry": "Nhập thủ công",
     "closePeriod": "Đóng kỳ",
     "runPayroll": "Chạy bảng lương",
-    "reverse": "Đảo ngược"
+    "reverse": "Đảo ngược",
+    "yes": "Có"
   },
   "forms": {
     "employee": {
@@ -746,5 +747,10 @@
     "biweekly": "Hai tuần một lần",
     "monthly": "Theo tháng",
     "custom": "Tùy chỉnh"
+  },
+  "tabsAriaLabel": "Thẻ nhân sự",
+  "saved": "Đã lưu",
+  "toast": {
+    "documentDeleted": "Đã xoá tài liệu"
   }
 }

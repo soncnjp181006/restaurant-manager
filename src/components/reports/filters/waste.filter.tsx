@@ -39,7 +39,7 @@ export const WasteFilter = () => {
       className="flex flex-col gap-4 items-start w-full"
       target="_blank"
     >
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-2">

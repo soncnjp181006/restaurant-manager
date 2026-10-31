@@ -14,6 +14,7 @@ import {useDB} from "@/api/db/db.ts";
 import {useAtom} from "jotai";
 import {appPage} from "@/store/jotai.ts";
 import {createSchedule, updateSchedule} from "@/lib/labor-engine/scheduling/schedule.service.ts";
+import i18n from '@/lib/i18n.ts';
 
 interface FormValues {
   id?: string;
@@ -30,9 +31,9 @@ interface Props {
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  name: yup.string().required("Required"),
-  period_start: yup.mixed().nullable().required("Required"),
-  period_end: yup.mixed().nullable().required("Required"),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  period_start: yup.mixed().nullable().required(() => i18n.t('validation:required')),
+  period_end: yup.mixed().nullable().required(() => i18n.t('validation:required')),
 }).required();
 
 export const ScheduleForm = ({open, onClose, data}: Props) => {
@@ -88,7 +89,7 @@ export const ScheduleForm = ({open, onClose, data}: Props) => {
         });
       }
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

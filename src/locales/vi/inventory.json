@@ -96,7 +96,8 @@
     "active": "Hoạt động",
     "previousPrice": "Giá trước",
     "averageCost": "Giá vốn trung bình",
-    "item": "Nguyên liệu"
+    "item": "Nguyên liệu",
+    "businessDate": "Ngày hạch toán"
   },
   "buttons": {
     "item": "Nguyên liệu",
@@ -108,7 +109,8 @@
     "adjustment": "Điều chỉnh tồn",
     "line": "Dòng",
     "saveDraft": "Lưu (nháp)",
-    "saveAndPost": "Lưu & hạch toán"
+    "saveAndPost": "Lưu & hạch toán",
+    "addItem": "Thêm nguyên liệu"
   },
   "forms": {
     "createItem": "Tạo nguyên liệu mới",
@@ -161,7 +163,24 @@
     "lastPrice": "Lần trước",
     "itemPrice": "Nguyên liệu",
     "quantityChange": "Số lượng điều chỉnh",
-    "uom": "Đơn vị"
+    "uom": "Đơn vị",
+    "supplierOverride": "Ghi đè nhà cung cấp",
+    "updateSupplier": "Cập nhật {{name}}",
+    "updateCategory": "Cập nhật {{name}}",
+    "updateIssue": "Cập nhật phiếu xuất #{{number}}",
+    "viewIssue": "Phiếu xuất #{{number}}",
+    "updateIssueReturn": "Cập nhật phiếu trả #{{id}}",
+    "viewIssueReturn": "Phiếu trả hàng xuất #{{number}}",
+    "updateItem": "Cập nhật {{name}}",
+    "updateItemGroup": "Cập nhật nhóm cho {{name}}",
+    "updatePurchase": "Cập nhật hoá đơn nhập #{{number}}",
+    "viewPurchase": "Phiếu nhập #{{number}}",
+    "updatePurchaseOrder": "Cập nhật đơn đặt hàng #{{number}}",
+    "viewPurchaseOrder": "Đơn đặt hàng #{{number}}",
+    "viewPurchaseReturn": "Trả hàng nhập #{{number}}",
+    "updateStore": "Cập nhật {{name}}",
+    "viewWaste": "Phiếu hao hụt #{{number}}",
+    "updateItemCost": "Cập nhật giá vốn của chính mặt hàng"
   },
   "adjustment": {
     "reasons": {
@@ -205,7 +224,8 @@
     "atLeastOneItem": "Cần ít nhất một nguyên liệu",
     "invalidCategory": "Danh mục không hợp lệ \"{{name}}\"",
     "invalidStore": "Kho không hợp lệ \"{{name}}\"",
-    "invalidSupplier": "Nhà cung cấp không hợp lệ \"{{name}}\""
+    "invalidSupplier": "Nhà cung cấp không hợp lệ \"{{name}}\"",
+    "selectLocation": "Vui lòng chọn vị trí"
   },
   "csv": {
     "uploadTitle": "Thêm nguyên liệu bằng tệp CSV"
@@ -341,7 +361,8 @@
     "itemName": "Tên nguyên liệu",
     "physicalCount": "Số lượng thực tế",
     "itemAlreadyOnSheet": "Nguyên liệu đã có trong phiếu đối chiếu.",
-    "title": "Đối chiếu bếp"
+    "title": "Đối chiếu bếp",
+    "csvImportTitle": "Nhập đối chiếu bếp (CSV)"
   },
   "stockTransfer": {
     "type": "Loại điều chuyển",
@@ -679,5 +700,47 @@
     "toast": {
       "saved": "Đã lưu đơn vị {{code}}"
     }
-  }
+  },
+  "invoice": {
+    "item": "Món",
+    "qty": "SL",
+    "unit": "Đơn vị",
+    "unitCost": "Giá vốn",
+    "amount": "Số tiền",
+    "location": "Vị trí",
+    "generatedAt": "Tạo lúc {{time}}"
+  },
+  "documents": "Chứng từ",
+  "method": "Phương thức",
+  "supplier": "Nhà cung cấp",
+  "category": "Danh mục",
+  "issue": "Xuất kho",
+  "purchase": "Nhập kho",
+  "store": "Kho",
+  "waste": "Hao hụt",
+  "unified": "Hợp nhất",
+  "split": "Tách",
+  "issueReturn": "Trả hàng xuất",
+  "purchaseOrderLabel": "Đơn đặt hàng",
+  "purchaseReturnLabel": "Trả hàng nhập",
+  "item": "Nguyên liệu",
+  "ui": {
+    "download": "Tải xuống",
+    "noItemsShort": "Không có món",
+    "updateRecipeCost": "Cập nhật giá vốn công thức",
+    "saveAndPostButton": "Lưu & hạch toán",
+    "addSubItem": "Thêm mục con",
+    "issueReturn": "Trả hàng xuất",
+    "itemGroup": "Nhóm nguyên liệu",
+    "purchaseOrderLabel": "Đơn đặt hàng",
+    "purchaseReturnLabel": "Trả hàng nhập"
+  },
+  "purchasePosted_one": "Đã hạch toán phiếu nhập ({{count}} bút toán)",
+  "purchasePosted_other": "Đã hạch toán phiếu nhập ({{count}} bút toán)",
+  "issuePosted_one": "Đã hạch toán phiếu xuất ({{count}} bút toán)",
+  "issuePosted_other": "Đã hạch toán phiếu xuất ({{count}} bút toán)",
+  "alreadyPosted": "Đã hạch toán trước đó",
+  "postedCannotEdit": "Chứng từ đã hạch toán không thể sửa",
+  "issueApproved": "Đã duyệt phiếu xuất",
+  "purchaseApproved": "Đã duyệt phiếu nhập"
 }

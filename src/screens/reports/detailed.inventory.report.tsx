@@ -71,7 +71,7 @@ export const DetailedInventoryReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -239,28 +239,28 @@ export const DetailedInventoryReport = () => {
             <thead className="bg-surface">
             <tr>
               <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-foreground">
-                Date
+                {t('labels.dateLabel')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-foreground">
-                Item
+                {t('labels.itemLabel')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-foreground">
-                Category
+                {t('labels.categoryLabel')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-right text-sm font-semibold text-foreground">
-                Quantity
+                {t('labels.quantity')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-foreground">
                 {t('inventory:columns.location')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-foreground">
-                Type
+                {t('labels.typeLabel')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-foreground">
-                User
+                {t('labels.userLabel')}
               </th>
               <th scope="col" className="py-3.5 pl-3 pr-6 text-left text-sm font-semibold text-foreground">
-                Comments
+                {t('labels.comments')}
               </th>
             </tr>
             </thead>
@@ -297,7 +297,7 @@ export const DetailedInventoryReport = () => {
             ) : (
               <tr>
                 <td colSpan={8} className="py-6 text-center text-sm text-muted">
-                  No inventory transactions found for the selected period.
+                  {t('labels.noInventoryTransactions')}
                 </td>
               </tr>
             )}
@@ -311,13 +311,13 @@ export const DetailedInventoryReport = () => {
               <thead className="bg-surface">
               <tr>
                 <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-foreground">
-                  Item
+                  {t('labels.itemLabel')}
                 </th>
                 <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-foreground">
-                  Category
+                  {t('labels.categoryLabel')}
                 </th>
                 <th scope="col" className="py-3.5 px-3 text-right text-sm font-semibold text-foreground">
-                  Balance
+                  {t('labels.balanceLabel')}
                 </th>
               </tr>
               </thead>

@@ -48,6 +48,7 @@ import {
 } from "@/components/inventory/common/quantity.uom.fields.tsx";
 import {normalizeUom} from "@/utils/inventoryUom.ts";
 import { roundInventory } from "@/lib/inventory/rounding.ts";
+import i18n from '@/lib/i18n.ts';
 
 type SelectOption = { label: string; value: string } | null;
 
@@ -93,9 +94,9 @@ const toIdString = (value?: string | { toString(): string }) => {
 };
 
 const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string) => yup.object({
-  invoice_number: yup.number().typeError("This should be a number").required("This is required").test(
+  invoice_number: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')).test(
     "unique-purchase-return-invoice",
-    "Invoice number already exists",
+    () => i18n.t('validation:invoiceNumberExists'),
     async function (value) {
       if (value === undefined || value === null) {
         return true;
@@ -111,7 +112,7 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
 
       if (!isUnique) {
         return this.createError({
-          message: "Invoice number already exists",
+          message: i18n.t('validation:invoiceNumberExists'),
           path: "invoice_number"
         });
       }
@@ -126,7 +127,7 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
   location: yup.object({
     label: yup.string(),
     value: yup.string()
-  }).required("This is required").nullable(),
+  }).required(() => i18n.t('validation:required')).nullable(),
   date: yup.mixed().nullable().optional(),
   documents: yup.mixed().optional(),
   items: yup.array().of(
@@ -134,13 +135,13 @@ const createValidationSchema = (db: ReturnType<typeof useDB>, currentId?: string
       item: yup.object({
         label: yup.string(),
         value: yup.string()
-      }).required("This is required").nullable(),
-      quantity: yup.number().typeError("This should be a number").required("This is required").min(1, "Quantity must be at least 1"),
+      }).required(() => i18n.t('validation:required')).nullable(),
+      quantity: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')).min(1, () => i18n.t('validation:quantityAtLeast1')),
       entered_uom: yup.string().nullable().optional(),
       comments: yup.string().nullable().optional(),
       purchase_item_id: yup.string().nullable().optional(),
     })
-  ).min(1, 'At least one item is required'),
+  ).min(1, () => i18n.t('validation:atLeastOneItemRequired')),
 }).required();
 
 export const InventoryPurchaseReturnForm = ({open, onClose, data}: Props) => {
@@ -334,9 +335,10 @@ export const InventoryPurchaseReturnForm = ({open, onClose, data}: Props) => {
 
     let isMounted = true;
 
+    const initialSeqNumber = getValues("invoice_number");
     fetchNextSequentialNumber(db, Tables.inventory_purchase_returns, "invoice_number")
       .then((nextNumber) => {
-        if (isMounted) {
+        if (isMounted && getValues("invoice_number") === initialSeqNumber) {
           setValue("invoice_number", nextNumber);
         }
       })

@@ -155,7 +155,7 @@ export const AdminCoupons = () => {
             icon={faPlus}
             key="new-coupon"
           >
-            Coupon
+            {t('ui.couponLabel')}
           </Button></HqCatalogBaseOnlyAction>,
         ]}
       />

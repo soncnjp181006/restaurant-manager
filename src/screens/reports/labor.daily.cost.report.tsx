@@ -12,6 +12,7 @@ import {BranchBreakdown} from '@/components/reports/branch.breakdown.tsx';
 type BranchMarker = {branch_id?: string | null; rows: LaborCostResult[]};
 
 const DailyCostSection = ({rows}: {rows: LaborCostResult[]}) => {
+  const {t} = useTranslation('reports');
   const totals = rows.reduce(
     (acc, row) => ({
       totalCost: acc.totalCost + row.totalCost,
@@ -25,15 +26,15 @@ const DailyCostSection = ({rows}: {rows: LaborCostResult[]}) => {
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-primary/10 border border-primary/40 rounded-lg p-4">
-          <p className="text-sm text-primary-700">Total cost</p>
+          <p className="text-sm text-primary-700">{t('labels.totalCost')}</p>
           <p className="text-xl font-bold text-primary-900">{withCurrency(totals.totalCost)}</p>
         </div>
         <div className="bg-info/10 border border-info-200 rounded-lg p-4">
-          <p className="text-sm text-info-700">Total hours</p>
+          <p className="text-sm text-info-700">{t('labels.totalHours')}</p>
           <p className="text-xl font-bold text-info-900">{formatNumber(totals.totalHours)}</p>
         </div>
         <div className="bg-warning/10 border border-warning/40 rounded-lg p-4">
-          <p className="text-sm text-warning-700">Overtime hours</p>
+          <p className="text-sm text-warning-700">{t('labels.overtimeHours')}</p>
           <p className="text-xl font-bold text-warning-900">{formatNumber(totals.overtimeHours)}</p>
         </div>
       </div>
@@ -41,11 +42,11 @@ const DailyCostSection = ({rows}: {rows: LaborCostResult[]}) => {
         <table className="min-w-full divide-y divide-neutral-200">
           <thead className="bg-surface">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-muted">Date</th>
-              <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Hours</th>
-              <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">OT Hours</th>
-              <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Employees</th>
-              <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Cost</th>
+              <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-muted">{t('columns.date')}</th>
+              <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('metrics.hours')}</th>
+              <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.oTHours')}</th>
+              <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.employees')}</th>
+              <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('columns.cost')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-100">
@@ -112,7 +113,7 @@ export const LaborDailyCostReport = () => {
     void load();
   }, [branchScope.ready, branchScope.branchIds, branchScope.isByBranch, branchScope.branchOrder, filters.startDate, filters.endDate]);
 
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
   const dataByBranch = useMemo(
     () => new Map(markers.map((m) => [String(m.branch_id ?? ''), m.rows])),
     [markers],

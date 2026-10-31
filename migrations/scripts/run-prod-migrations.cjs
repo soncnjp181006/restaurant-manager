@@ -22,6 +22,38 @@ if (typeof global.WebSocket === 'undefined') {
   global.WebSocket = WS;
 }
 
+/**
+ * This runner needs the same settings docker-compose passes to the sidecars:
+ * SURREAL_* to connect, and PAYMENT_CREDENTIAL_ENCRYPTION_KEY (or
+ * INTEGRATION_TOKEN_ENCRYPTION_KEY) for the credential-encryption backfill.
+ * Compose injects them; a local `node migrations/scripts/run-prod-migrations.cjs`
+ * does not, so read .env / .env.local here. Values are never printed, and real
+ * environment variables always win over the file.
+ */
+const ROOT_DIR = process.env.REPO_ROOT || path.resolve(__dirname, '../..');
+
+function loadEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) return 0;
+  let loaded = 0;
+  for (const raw of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const eq = line.indexOf('=');
+    if (eq <= 0) continue;
+    const key = line.slice(0, eq).trim().replace(/^export\s+/, '');
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) continue;
+    if (process.env[key] !== undefined) continue;
+    const value = line.slice(eq + 1).trim().replace(/^(['"])(.*)\1$/, '$2');
+    process.env[key] = value;
+    loaded += 1;
+  }
+  return loaded;
+}
+
+const envFromFile = loadEnvFile(path.join(ROOT_DIR, '.env'))
+  + loadEnvFile(path.join(ROOT_DIR, '.env.local'));
+if (envFromFile) console.log(`Loaded ${envFromFile} setting(s) from .env / .env.local`);
+
 const DB_URL = process.env.SURREAL_URL || 'ws://surrealdb:8000/rpc';
 const DB_NS = process.env.SURREAL_NS || 'restaurant_manager';
 const DB_NAME = process.env.SURREAL_DB || 'restaurant_manager';
@@ -132,6 +164,7 @@ const MIGRATION_PLAN = [
   { id: '2026_10_21_printer_command_set', file: '2026_10_21_printer_command_set.surql' },
   { id: '2026_10_22_kitchen_recon_entered_uom', file: '2026_10_22_kitchen_recon_entered_uom.surql' },
   { id: '2026_10_31_brand_rename', file: '2026_10_31_brand_rename.surql' },
+  { id: '2026_10_31_optional_array_null', file: '2026_10_31_optional_array_null.surql' },
 ];
 
 const rows = (result) => {
@@ -216,8 +249,11 @@ async function applySurql(db, filePath, transform) {
 /**
  * SurrealDB 3.x rejects an array-element wildcard field (e.g. `foo.*`) when its
  * parent is declared with the explicit `none | array<T> | null` union that the
- * schema dumps use. `option<array<T>>` is equivalent and accepted, so rewrite
- * the baseline before import. No-op once the generated schema is fixed.
+ * schema dumps use, so the baseline cannot be imported verbatim. `option<array<T>>`
+ * is accepted, but it is NOT equivalent: it stores as `none | array<T>` and then
+ * rejects an explicit NULL for that field — which frontend writers do send.
+ * `2026_10_31_optional_array_null.surql` (a later plan entry, so it runs after this
+ * import too) restores the nullable union on every fresh or existing database.
  */
 const normalizeOptionalArrayTypes = (sql) =>
   sql.replace(

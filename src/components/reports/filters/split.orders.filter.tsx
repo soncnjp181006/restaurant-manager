@@ -8,7 +8,7 @@ export const SplitOrdersFilter = () => {
   const { t } = useTranslation('reports');
   return (
     <form action={REPORTS_SPLIT_ORDERS} className="flex flex-col gap-3 items-start" target="_blank">
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <BranchScopeFilter />
       <Button variant="primary" filled type="submit">{t('filters.generate')}</Button>

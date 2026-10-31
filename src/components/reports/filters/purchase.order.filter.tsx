@@ -30,13 +30,20 @@ const toOption = <T extends { id?: any }>(
 const notNull = <T,>(value: T | null | undefined): value is T =>
   value !== null && value !== undefined;
 
-const STATUS_OPTIONS = Object.values(PurchaseOrderStatus).map(status => ({
-  label: status,
-  value: status,
-}));
+const PURCHASE_ORDER_STATUS_KEYS: Record<PurchaseOrderStatus, string> = {
+  [PurchaseOrderStatus.draft]: 'filters.poStatusDraft',
+  [PurchaseOrderStatus.pendingApproval]: 'filters.poStatusPendingApproval',
+  [PurchaseOrderStatus.approved]: 'filters.poStatusApproved',
+  [PurchaseOrderStatus.fulfilled]: 'filters.poStatusFulfilled',
+};
 
 export const PurchaseOrderFilter = () => {
   const { t } = useTranslation('reports');
+  // Labels are built per render: a module-level map would freeze the language.
+  const statusOptions = Object.values(PurchaseOrderStatus).map((status) => ({
+    label: t(PURCHASE_ORDER_STATUS_KEYS[status]),
+    value: status,
+  }));
   const {data: suppliersData, isLoading: loadingSuppliers} = useApi<SettingsData<InventorySupplier>>(Tables.inventory_suppliers, [], ['name asc'], 0, 9999);
   const {data: itemsData, isLoading: loadingItems} = useApi<SettingsData<InventoryItem>>(Tables.inventory_items, [], ['name asc'], 0, 9999);
   const {data: usersData, isLoading: loadingUsers} = useApi<SettingsData<User>>(Tables.users, [], ['first_name asc'], 0, 9999);
@@ -47,7 +54,7 @@ export const PurchaseOrderFilter = () => {
       className="flex flex-col gap-4 items-start w-full"
       target="_blank"
     >
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-2">
@@ -57,7 +64,7 @@ export const PurchaseOrderFilter = () => {
             name="statuses[]"
             isMulti
             className="w-full"
-            options={STATUS_OPTIONS}
+            options={statusOptions}
           />
         </div>
 

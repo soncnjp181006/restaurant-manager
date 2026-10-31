@@ -80,7 +80,7 @@ export const InventorySuppliers = () => {
             }}
             icon={faPlus}
           >
-            Supplier
+            {t('supplier')}
           </Button>,
           <Button
             key="supplier-import"

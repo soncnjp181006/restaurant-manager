@@ -175,6 +175,8 @@ export const Sidebar = () => {
             <button
               type="button"
               data-testid="nav-settings"
+              aria-label={t('sidebar.settings')}
+              title={t('sidebar.settings')}
               onClick={() => protectedNavigate(SETTINGS, 'settings')}
               className={cn(
                 'btn btn-primary lg flex-1',
@@ -191,6 +193,8 @@ export const Sidebar = () => {
           <NavLink
             to={CLOCK}
             data-testid="nav-clock"
+            aria-label={t('sidebar.clock')}
+            title={t('sidebar.clock')}
             className={cn(
               'btn btn-primary lg flex-1',
               pathInfo === CLOCK ? 'active' : ''

@@ -41,6 +41,7 @@ import {
 } from "@/components/inventory/common/quantity.uom.fields.tsx";
 import {normalizeUom} from "@/utils/inventoryUom.ts";
 import {formatInventoryNumber} from "@/lib/inventory/rounding.ts";
+import i18n from '@/lib/i18n.ts';
 
 type SelectOption = {label: string; value: string} | null;
 
@@ -80,37 +81,37 @@ const selectOptionSchema = yup.object({
 
 const validationSchema = yup
   .object({
-    fromLocation: selectOptionSchema.required("This is required").nullable(),
-    toLocation: selectOptionSchema.required("This is required").nullable(),
-    date: yup.mixed().nullable().required("This is required"),
+    fromLocation: selectOptionSchema.required(() => i18n.t('validation:required')).nullable(),
+    toLocation: selectOptionSchema.required(() => i18n.t('validation:required')).nullable(),
+    date: yup.mixed().nullable().required(() => i18n.t('validation:required')),
     notes: yup.string().nullable().optional(),
     items: yup
       .array()
       .of(
         yup.object({
-          item: selectOptionSchema.required("This is required").nullable(),
+          item: selectOptionSchema.required(() => i18n.t('validation:required')).nullable(),
           quantity: yup
             .number()
-            .typeError("This should be a number")
+            .typeError(() => i18n.t('validation:mustBeNumber'))
             .moreThan(0, "Quantity must be greater than 0")
-            .required("This is required"),
+            .required(() => i18n.t('validation:required')),
           entered_uom: yup.string().nullable().optional(),
         })
       )
-      .min(1, "Add at least one item"),
+      .min(1, () => i18n.t('validation:addAtLeastOneItem')),
   })
-  .test("transfer-endpoints", "Invalid transfer endpoints", function (values) {
+  .test("transfer-endpoints", () => i18n.t('validation:invalidTransferEndpoints'), function (values) {
     if (!values) return true;
     if (!values.fromLocation?.value) {
-      return this.createError({path: "fromLocation", message: "This is required"});
+      return this.createError({path: "fromLocation", message: i18n.t('validation:required')});
     }
     if (!values.toLocation?.value) {
-      return this.createError({path: "toLocation", message: "This is required"});
+      return this.createError({path: "toLocation", message: i18n.t('validation:required')});
     }
     if (values.fromLocation.value === values.toLocation.value) {
       return this.createError({
         path: "toLocation",
-        message: "Source and destination must differ",
+        message: i18n.t('validation:sourceAndDestinationDiffer'),
       });
     }
     return true;

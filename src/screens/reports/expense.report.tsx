@@ -45,7 +45,7 @@ export const ExpenseReport = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -108,7 +108,7 @@ export const ExpenseReport = () => {
         <div className="border rounded-lg p-4 bg-surface">
           <div className="text-sm text-muted">{t('labels.expenseRows')}</div>
           <div className="text-xl font-semibold">{formatNumber(rows.length)}</div>
-          <div className="text-sm text-muted mt-2">Total expenses</div>
+          <div className="text-sm text-muted mt-2">{t('labels.totalExpenses')}</div>
           <div className="text-xl font-semibold">{withCurrency(totalExpenses)}</div>
         </div>
         <div className="overflow-hidden rounded-lg border border-border">
@@ -124,7 +124,7 @@ export const ExpenseReport = () => {
             <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={4} className="py-6 text-center text-sm text-muted">No expenses found for selected range.</td>
+                <td colSpan={4} className="py-6 text-center text-sm text-muted">{t('labels.noExpensesFoundForSelectedRange')}</td>
               </tr>
             ) : rows.map((row, index) => (
               <tr key={`${row.closingId}-${index}`}>

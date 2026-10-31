@@ -144,7 +144,7 @@ export const AdminUserRoles = () => {
             icon={faPlus}
             data-testid="admin-add-roles"
           >
-            Role
+            {t('ui.roleLabel')}
           </Button>,
         ]}
       />

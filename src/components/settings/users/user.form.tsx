@@ -44,12 +44,12 @@ const validationSchema = yup.object({
   login_method: yup.object({
     label: yup.string().required(),
     value: yup.string().required(),
-  }).required(i18n.t('validation:required')),
-  first_name: yup.string().required(i18n.t('validation:required')),
-  last_name: yup.string().required(i18n.t('validation:required')),
+  }).required(() => i18n.t('validation:required')),
+  first_name: yup.string().required(() => i18n.t('validation:required')),
+  last_name: yup.string().required(() => i18n.t('validation:required')),
   login: yup
     .string()
-    .required(i18n.t('validation:required'))
+    .required(() => i18n.t('validation:required'))
     .when("login_method.value", {
       is: "pin",
       then: (schema) =>
@@ -59,7 +59,7 @@ const validationSchema = yup.object({
   user_role: yup.object({
     label: yup.string(),
     value: yup.string(),
-  }).nullable().required('This is required'),
+  }).nullable().required(() => i18n.t('validation:required')),
   user_shift: yup.object({
     label: yup.string(),
     value: yup.string(),
@@ -67,7 +67,7 @@ const validationSchema = yup.object({
   create_employee: yup.boolean().default(true),
   employee_number: yup.string().when('create_employee', {
     is: true,
-    then: (schema) => schema.required(i18n.t('validation:required')),
+    then: (schema) => schema.required(() => i18n.t('validation:required')),
     otherwise: (schema) => schema.nullable(),
   }),
   // Rendered only when VITE_CATALOG_PUBLISH_ENABLED is on; the ReactSelect

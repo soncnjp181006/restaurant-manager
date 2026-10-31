@@ -8,10 +8,28 @@
     "accessTab": "Truy cập {{module}}"
   },
   "map": {
+    "phone": "Điện thoại",
+    "email": "Email",
+    "coordinates": "Toạ độ",
+    "statusLabel": "Trạng thái:",
+    "createdLabel": "Tạo lúc:",
+    "subtotal": "Tạm tính:",
+    "discount": "Giảm giá:",
+    "tax": "Thuế:",
+    "extras": "Phụ thu:",
+    "total": "Tổng cộng:",
+    "selectRider": "Chọn tài xế",
+    "loadingRiders": "Đang tải tài xế...",
+    "noRiders": "Chưa có tài xế nào",
+    "noAddress": "Chưa có địa chỉ giao hàng",
+    "orderDetails": "Chi tiết đơn hàng",
+    "serviceCharge": "Phí phục vụ:",
     "loading": "Đang tải bản đồ giao hàng...",
     "loadingAreas": "Đang tải các khu vực trên bản đồ...",
     "loadingMap": "Đang tải bản đồ...",
     "noOrders": "Không có đơn giao hàng...",
+    "notConfigured": "Chưa cấu hình bản đồ",
+    "notConfiguredHint": "Thêm VITE_GOOGLE_MAPS_API_KEY vào .env.local để hiển thị khu vực giao hàng trên bản đồ. Đơn hàng và khu vực vẫn hoạt động bình thường khi thiếu khoá này.",
     "deliveryOrder": "Đơn giao hàng",
     "drawPolygon": "Vẽ đa giác",
     "drawRectangle": "Vẽ hình chữ nhật",
@@ -23,7 +41,17 @@
     "rectangleTooSmall": "Hình chữ nhật quá nhỏ. Hãy kéo một vùng lớn hơn.",
     "circleTooSmall": "Hình tròn quá nhỏ. Hãy kéo bán kính lớn hơn.",
     "polygonTooSmall": "Đa giác quá nhỏ. Hãy kéo đường bao lớn hơn.",
-    "areasSaved": "Đã lưu các khu vực bản đồ thành công"
+    "areasSaved": "Đã lưu các khu vực bản đồ thành công",
+    "dayOfWeek": "Thứ trong tuần",
+    "date": "Ngày",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "accept": "Nhận",
+    "polygonLabel": "Đa giác",
+    "rectangleLabel": "Chữ nhật",
+    "circleLabel": "Vòng tròn",
+    "deleteSelected": "Xoá mục đã chọn",
+    "addCustomDate": "Thêm ngày tuỳ chọn"
   },
   "settings": {
     "title": "Cấu hình giao hàng",
@@ -113,5 +141,10 @@
     "friday": "Thứ Sáu",
     "saturday": "Thứ Bảy",
     "sunday": "Chủ Nhật"
+  },
+  "ui": {
+    "sendForDelivery": "Gửi đi giao",
+    "paymentSection": "Thanh toán",
+    "attachSelectedRider": "Gán tài xế đã chọn"
   }
 }

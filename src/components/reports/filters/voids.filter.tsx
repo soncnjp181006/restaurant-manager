@@ -46,13 +46,13 @@ export const VoidsFilter = () => {
       className="flex flex-col gap-4 items-start w-full"
       target="_blank"
     >
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <BranchScopeFilter />
 
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <label htmlFor="voids-reasons" className="form-label">Reasons</label>
+          <label htmlFor="voids-reasons" className="form-label">{t('labels.reasons')}</label>
           <ReactSelect
             id="voids-reasons"
             name="reasons[]"
@@ -63,7 +63,7 @@ export const VoidsFilter = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="voids-managers" className="form-label">Managers</label>
+          <label htmlFor="voids-managers" className="form-label">{t('labels.managers')}</label>
           <ReactSelect
             id="voids-managers"
             name="managers[]"

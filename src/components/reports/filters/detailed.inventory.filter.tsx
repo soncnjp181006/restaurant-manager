@@ -55,7 +55,7 @@ export const DetailedInventoryFilter = () => {
       className="flex flex-col gap-3 items-start"
       target="_blank"
     >
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-2">
@@ -73,7 +73,7 @@ export const DetailedInventoryFilter = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="detailed-inventory-types" className="form-label">Transaction Types</label>
+          <label htmlFor="detailed-inventory-types" className="form-label">{t('filters.transactionTypes')}</label>
           <ReactSelect
             id="detailed-inventory-types"
             name="types[]"

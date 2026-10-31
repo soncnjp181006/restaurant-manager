@@ -16,6 +16,7 @@ import {SelectOption, dayjsToSurreal, firstFormError} from "@/components/hr/shar
 import {createManualEntry} from "@/lib/labor-engine/attendance/attendance.service.ts";
 import {useAtom} from "jotai";
 import {appPage} from "@/store/jotai.ts";
+import i18n from '@/lib/i18n.ts';
 
 interface FormValues {
   employee: SelectOption | null;
@@ -30,9 +31,9 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required("Required"),
-  clock_in: yup.mixed().nullable().required("Required"),
-  clock_out: yup.mixed().nullable().required("Required"),
+  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required(() => i18n.t('validation:required')),
+  clock_in: yup.mixed().nullable().required(() => i18n.t('validation:required')),
+  clock_out: yup.mixed().nullable().required(() => i18n.t('validation:required')),
   notes: yup.string().optional(),
 }).required();
 
@@ -84,7 +85,7 @@ export const AttendanceManualForm = ({open, onClose}: Props) => {
         clockOut,
         notes: values.notes?.trim(),
       });
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

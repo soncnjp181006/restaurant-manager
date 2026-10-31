@@ -1,0 +1,10 @@
+# Optional overlay: expose the host's USB bus to the printing service so USB
+# receipt printers work. Linux hosts only — Docker Desktop on Windows/macOS has
+# no /dev/bus/usb to map and refuses the whole `up` if you ask for it, which is
+# why the base docker-compose.yml leaves `devices` out.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.usb.yml up -d
+services:
+  printer:
+    devices:
+      - /dev/bus/usb:/dev/bus/usb

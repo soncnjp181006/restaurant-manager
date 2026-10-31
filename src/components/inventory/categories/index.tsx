@@ -74,7 +74,7 @@ export const InventoryCategories = () => {
             }}
             icon={faPlus}
           >
-            Category
+            {t('category')}
           </Button>,
           <Button
             key="category-import"

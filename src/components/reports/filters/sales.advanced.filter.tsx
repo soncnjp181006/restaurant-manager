@@ -53,7 +53,7 @@ export const SalesAdvancedFilter = () => {
       className="flex flex-col gap-4 items-start w-full"
       target="_blank"
     >
-      <DateRange isRequired label="Select a range" />
+      <DateRange isRequired label={t('filters.selectRange')} />
 
       <BranchScopeFilter />
 
@@ -91,7 +91,7 @@ export const SalesAdvancedFilter = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="sales-advanced-tables" className="form-label">Tables</label>
+          <label htmlFor="sales-advanced-tables" className="form-label">{t('labels.tables')}</label>
           <ReactSelect
             id="sales-advanced-tables"
             name="tables[]"
@@ -133,18 +133,18 @@ export const SalesAdvancedFilter = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="form-label">Tax Filter</label>
+          <label className="form-label">{t('filters.taxFilter')}</label>
           <div className="flex flex-col gap-3">
-            <Checkbox name="with_tax" value="1" label="With Tax" />
-            <Checkbox name="without_tax" value="1" label="Without Tax" />
+            <Checkbox name="with_tax" value="1" label={t('filters.withTax')} />
+            <Checkbox name="without_tax" value="1" label={t('filters.withoutTax')} />
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="sales-advanced-discounts" className="form-label">Discount Filter</label>
+          <label htmlFor="sales-advanced-discounts" className="form-label">{t('filters.discountFilter')}</label>
           <div className="flex flex-col gap-3 mb-2">
-            <Checkbox name="with_discount" value="1" label="With Discount" />
-            <Checkbox name="without_discount" value="1" label="Without Discount" />
+            <Checkbox name="with_discount" value="1" label={t('filters.withDiscount')} />
+            <Checkbox name="without_discount" value="1" label={t('filters.withoutDiscount')} />
           </div>
           <ReactSelect
             id="sales-advanced-discounts"
@@ -152,7 +152,7 @@ export const SalesAdvancedFilter = () => {
             isMulti
             isLoading={loadingDiscounts}
             className="w-full"
-            placeholder="Select specific discounts (optional)"
+            placeholder={t('filters.selectDiscounts')}
             options={(discountsData?.data || [])
               .map(discount => toOption(discount, discount.name))
               .filter(notNull)}
@@ -160,7 +160,7 @@ export const SalesAdvancedFilter = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="sales-advanced-payment-types" className="form-label">Payment Types</label>
+          <label htmlFor="sales-advanced-payment-types" className="form-label">{t('filters.paymentTypes')}</label>
           <ReactSelect
             id="sales-advanced-payment-types"
             name="payment_types[]"
@@ -202,39 +202,39 @@ export const SalesAdvancedFilter = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="sales-advanced-menu-items-match" className="form-label">Menu Items Match</label>
+          <label htmlFor="sales-advanced-menu-items-match" className="form-label">{t('filters.menuItemsMatch')}</label>
           <select
             id="sales-advanced-menu-items-match"
             name="menu_items_match"
             className="form-control"
             defaultValue="any"
           >
-            <option value="any">Any selected item</option>
-            <option value="all">All selected items</option>
+            <option value="any">{t('filters.anySelectedItem')}</option>
+            <option value="all">{t('filters.allSelectedItems')}</option>
           </select>
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="form-label">Status Filters</label>
+          <label className="form-label">{t('filters.statusFilters')}</label>
           <div className="flex flex-col gap-3">
-            <Checkbox name="refund" value="1" label="Refund" />
-            <Checkbox name="merged" value="1" label="Merged" />
-            <Checkbox name="cancelled" value="1" label="Cancelled" />
-            <Checkbox name="split" value="1" label="Split" />
+            <Checkbox name="refund" value="1" label={t('filters.statusRefund')} />
+            <Checkbox name="merged" value="1" label={t('filters.statusMerged')} />
+            <Checkbox name="cancelled" value="1" label={t('filters.statusCancelled')} />
+            <Checkbox name="split" value="1" label={t('filters.statusSplit')} />
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
           <label className="form-label">{t('labels.displayOptions')}</label>
           <div className="flex flex-col gap-3">
-            <Checkbox name="show_menu_items" value="1" label="Show Menu Items for Details" />
-            <Checkbox name="show_details" value="1" label="Show Details" />
+            <Checkbox name="show_menu_items" value="1" label={t('filters.showMenuItemsForDetails')} />
+            <Checkbox name="show_details" value="1" label={t('filters.showDetails')} />
           </div>
         </div>
 
         <div className="flex flex-row gap-3">
           <div className="flex flex-col flex-1">
-            <label htmlFor="sales-advanced-sort-by" className="form-label">Sort result by</label>
+            <label htmlFor="sales-advanced-sort-by" className="form-label">{t('filters.sortBy')}</label>
             <select
               id="sales-advanced-sort-by"
               name="sortBy"
@@ -249,7 +249,7 @@ export const SalesAdvancedFilter = () => {
           </div>
 
           <div className="flex flex-col flex-1">
-            <label htmlFor="sales-advanced-sort-by" className="form-label">Sort result by</label>
+            <label htmlFor="sales-advanced-sort-by" className="form-label">{t('filters.sortBy')}</label>
             <select
               id="sales-advanced-sort-by"
               name="sortDirection"

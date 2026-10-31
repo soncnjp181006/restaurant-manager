@@ -173,7 +173,8 @@
     "manualEntry": "Manual entry",
     "closePeriod": "Close period",
     "runPayroll": "Run payroll",
-    "reverse": "Reverse"
+    "reverse": "Reverse",
+    "yes": "Yes"
   },
   "forms": {
     "employee": {
@@ -746,5 +747,10 @@
     "biweekly": "Biweekly",
     "monthly": "Monthly",
     "custom": "Custom"
+  },
+  "tabsAriaLabel": "HR Tabs",
+  "saved": "Saved",
+  "toast": {
+    "documentDeleted": "Document deleted"
   }
 }

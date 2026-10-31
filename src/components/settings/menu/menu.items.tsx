@@ -534,13 +534,13 @@ export const MenuItems = ({
 
           {loadingDishes && (
             <div className="text-center text-muted py-8">
-              Loading dishes...
+              {t('ui.loadingDishes')}
             </div>
           )}
 
           {!loadingDishes && items.length === 0 && (
             <div className="text-center text-muted py-8">
-              No dishes found.
+              {t('ui.noDishesFound')}
             </div>
           )}
 
@@ -650,7 +650,7 @@ export const MenuItems = ({
                         checked={allActive}
                         onChange={(event) => handleCategoryToggle(categoryId, event.currentTarget.checked)}
                       >
-                        Toggle All
+                        {t('ui.toggleAll')}
                       </Switch>
                     </div>
                     <div className="flex flex-col gap-3">
@@ -750,7 +750,7 @@ export const MenuItems = ({
                                         checked={field.value !== undefined ? Boolean(field.value) : true}
                                         onChange={(checked) => field.onChange(checked)}
                                       >
-                                        Active
+                                        {t('ui.activeLabel')}
                                       </Switch>
                                     </div>
                                   )}
@@ -786,7 +786,7 @@ export const MenuItems = ({
 
           <div>
             <Button type="submit" variant="primary" disabled={loading || items.length === 0}>
-              Save
+              {t('common:actions.save')}
             </Button>
           </div>
         </form>

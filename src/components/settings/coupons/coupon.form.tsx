@@ -40,40 +40,40 @@ const weekDayOptions: { label: string; value: WeekDay }[] = [
 ];
 
 const validationSchema = yup.object({
-  code: yup.string().required(i18n.t('validation:required')),
+  code: yup.string().required(() => i18n.t('validation:required')),
   description: yup.string().nullable(),
   coupon_type: yup
     .object({
       label: yup.string(),
       value: yup.mixed<CouponType>(),
     })
-    .required(i18n.t('validation:required')),
+    .required(() => i18n.t('validation:required')),
   discount_type: yup
     .object({
       label: yup.string(),
       value: yup.string(),
     })
-    .required(i18n.t('validation:required')),
+    .required(() => i18n.t('validation:required')),
   discount_value: yup
     .number()
-    .typeError(i18n.t('validation:mustBeNumber'))
-    .required(i18n.t('validation:required')),
+    .typeError(() => i18n.t('validation:mustBeNumber'))
+    .required(() => i18n.t('validation:required')),
   min_order_amount: yup
     .number()
-    .typeError(i18n.t('validation:mustBeNumber'))
+    .typeError(() => i18n.t('validation:mustBeNumber'))
     .nullable(),
   max_discount_amount: yup
     .number()
-    .typeError(i18n.t('validation:mustBeNumber'))
+    .typeError(() => i18n.t('validation:mustBeNumber'))
     .nullable(),
-  usage_limit: yup.number().typeError(i18n.t('validation:mustBeNumber')).nullable(),
+  usage_limit: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).nullable(),
   usage_limit_per_user: yup
     .number()
-    .typeError(i18n.t('validation:mustBeNumber'))
+    .typeError(() => i18n.t('validation:mustBeNumber'))
     .nullable(),
   priority: yup
     .string()
-    .required(i18n.t('validation:required')),
+    .required(() => i18n.t('validation:required')),
   valid_days: yup.array().of(
     yup.object({
       label: yup.string(),
@@ -572,7 +572,7 @@ export const CouponForm = ({ open, onClose, data }: Props) => {
         </div>
         <div>
           <Button type="submit" variant="primary">
-            Save
+            {t('common:actions.save')}
           </Button>
         </div>
       </form>

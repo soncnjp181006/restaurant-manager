@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { tr } from './i18n';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
@@ -66,7 +67,7 @@ function StripeForm({ returnUrl, amountLabel, busy, onPaid, onError }: Omit<Stri
 export function StripePay({ publishableKey, clientSecret, ...rest }: StripePayProps) {
   const stripePromise = useMemo(() => (publishableKey ? loadStripe(publishableKey) : null), [publishableKey]);
   if (!stripePromise || !clientSecret) {
-    return <p className="text-sm text-danger-800">Card payment is not set up correctly. Please ask a staff member.</p>;
+    return <p className="text-sm text-danger-800">{tr('cardNotSetup')}</p>;
   }
   return (
     <Elements
@@ -111,7 +112,7 @@ export function PaypalPay({
   onError: (message: string) => void;
 }) {
   if (!clientId) {
-    return <p className="text-sm text-danger-800">PayPal is not set up correctly. Please ask a staff member.</p>;
+    return <p className="text-sm text-danger-800">{tr('paypalNotSetup')}</p>;
   }
   return (
     <PayPalScriptProvider options={{ clientId, currency, intent: 'capture', vault: false }}>

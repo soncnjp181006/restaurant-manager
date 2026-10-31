@@ -216,16 +216,16 @@ export const CurrentInventoryReport = () => {
             <thead className="bg-surface">
             <tr>
               <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-foreground">
-                Item
+                {t('labels.itemLabel')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-foreground">
-                Category
+                {t('labels.categoryLabel')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-foreground">
                 {t('inventory:columns.location')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-right text-sm font-semibold text-foreground">
-                Current Balance
+                {t('labels.currentBalance')}
               </th>
               <th scope="col" className="py-3.5 px-3 text-right text-sm font-semibold text-foreground">
                 {t('inventory:columns.reorderLevel')}
@@ -262,7 +262,7 @@ export const CurrentInventoryReport = () => {
             ) : (
               <tr>
                 <td colSpan={6} className="py-6 text-center text-sm text-muted">
-                  No inventory items found.
+                  {t('labels.noInventoryItems')}
                 </td>
               </tr>
             )}

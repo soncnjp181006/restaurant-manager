@@ -44,7 +44,8 @@
     "cancelled": "Đã huỷ",
     "spilt": "Đã tách",
     "merged": "Đã gộp",
-    "refunded": "Đã hoàn tiền"
+    "refunded": "Đã hoàn tiền",
+    "pending": "Chờ xử lý"
   },
   "totals": {
     "items": "Món ({{count}})",
@@ -185,5 +186,16 @@
   },
   "loadingItems": "Đang tải món…",
   "retryLoad": "Thử tải lại món",
-  "loadFailed": "Không tải được đơn hàng"
+  "loadFailed": "Không tải được đơn hàng",
+  "mpesa": {
+    "title": "Số điện thoại M-Pesa",
+    "bodySending": "Đang gửi yêu cầu STK push tới điện thoại khách…",
+    "bodyEnter": "Nhập số M-Pesa của khách để gửi STK push.",
+    "phone": "Điện thoại",
+    "cancel": "Huỷ",
+    "sending": "Đang gửi…",
+    "send": "Gửi STK push"
+  },
+  "telebirrScanToPay": "Quét bằng ứng dụng Telebirr để thanh toán",
+  "telebirrAmount": "Số tiền: {{amount}} ETB"
 }

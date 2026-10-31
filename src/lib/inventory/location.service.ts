@@ -7,6 +7,7 @@ import {
 import { toRecordId } from "@/lib/utils.ts";
 import { recordIdToString } from "@/api/reports/shared/records.ts";
 import { nowSurrealDateTime } from "@/lib/datetime.ts";
+import i18n from "@/lib/i18n.ts";
 
 type DatabaseClient = ReturnType<typeof useDB>;
 
@@ -309,7 +310,10 @@ export const toLocationOptions = (
     .map((loc) => {
       const id = recordIdToString(loc.id) || String(loc.id ?? "");
       if (!id) return null;
-      const typeLabel = loc.type ? ` (${loc.type})` : "";
+      // The stored type is an English enum ("Store"); translate for the picker.
+      const typeLabel = loc.type
+        ? ` (${i18n.t(`inventory:location.types.${loc.type}`, { defaultValue: loc.type })})`
+        : "";
       return {
         label: `${loc.name}${typeLabel}`,
         value: id,

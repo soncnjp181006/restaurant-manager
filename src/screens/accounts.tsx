@@ -71,7 +71,7 @@ export const AccountsScreen = () => {
         >
           <ScrollContainer mouseScroll hideScrollbars={false} className="flex-grow-0 flex-shrink">
             <TabList
-              aria-label="Tabs"
+              aria-label={t('common:tabsAriaLabel')}
               className="flex flex-row gap-3 px-1 py-3 flex-nowrap"
               data-testid="accounts-tabs"
             >

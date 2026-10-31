@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   DateInput,
@@ -56,13 +57,14 @@ export function DatePicker<T extends DateValue>({
 }
 
 function DatePickerClearButton() {
+  const { t } = useTranslation('common');
   const state = useContext(DatePickerStateContext)!;
   return (
     <Button
       // Don't inherit default Button behavior from DatePicker.
       slot={null}
       className="clear-button"
-      aria-label="Clear"
+      aria-label={t('actions.clear')}
       onPress={() => state.setValue(null)}>
       ✕
     </Button>

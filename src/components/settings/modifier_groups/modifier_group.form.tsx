@@ -44,14 +44,14 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
-  priority: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  priority: yup.string().required(() => i18n.t('validation:required')),
   modifiers: yup.array(yup.object({
     modifier: yup.object({
       label: yup.string(),
       value: yup.string()
-    }).default(undefined).required(i18n.t('validation:required')),
-    price: yup.number().required(i18n.t('validation:required')),
+    }).default(undefined).required(() => i18n.t('validation:required')),
+    price: yup.number().required(() => i18n.t('validation:required')),
     allowed_next_groups: yup.array(yup.string()).default([]),
     next_group_overrides: yup.array(yup.object({
       group_id: yup.string().required(),
@@ -61,7 +61,7 @@ const validationSchema = yup.object({
         hidden: yup.boolean().default(false),
       })).default([])
     })).default([])
-  })).min(1, i18n.t('validation:required'))
+  })).min(1, () => i18n.t('validation:required'))
 });
 
 const ModifierNextGroups = ({

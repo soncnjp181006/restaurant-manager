@@ -33,6 +33,7 @@ import {
 import {PayType} from "@/api/model/hr.types.ts";
 import {LaborPolicy} from "@/api/model/labor_policy.ts";
 import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+import i18n from '@/lib/i18n.ts';
 import {
   isHourlyLikePayType,
   isWorkDaysPayType,
@@ -139,15 +140,15 @@ const emptyForm = {
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required("Required"),
-  pay_type: yup.string().required("Required"),
-  base_rate: yup.number().typeError("Required").required("Required"),
+  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required(() => i18n.t('validation:required')),
+  pay_type: yup.string().required(() => i18n.t('validation:required')),
+  base_rate: yup.number().typeError(() => i18n.t('validation:required')).required(() => i18n.t('validation:required')),
   currency: yup.string().optional(),
   expected_work_days: yup.number().transform((value, original) => (original === '' || original === null || Number.isNaN(value) ? null : value)).nullable().optional(),
   work_weekdays: yup.array().of(yup.number()).optional(),
   maximum_hours_per_day: yup.number().transform((value, original) => (original === '' || original === null || Number.isNaN(value) ? null : value)).nullable().optional(),
   maximum_hours_per_week: yup.number().transform((value, original) => (original === '' || original === null || Number.isNaN(value) ? null : value)).nullable().optional(),
-  effective_from: yup.mixed().nullable().required("Required"),
+  effective_from: yup.mixed().nullable().required(() => i18n.t('validation:required')),
   effective_to: yup.mixed().nullable().optional(),
   notes: yup.string().optional(),
   overtime_mode: yup.string().oneOf(POLICY_MODES).required(),
@@ -368,7 +369,7 @@ export const PayProfileForm = ({open, onClose, data}: Props) => {
         source: 'entity-form',
       });
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

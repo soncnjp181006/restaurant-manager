@@ -56,7 +56,7 @@ export const ActivityReport = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -110,22 +110,22 @@ export const ActivityReport = () => {
           <tr>
             <th className="py-3 pl-6 pr-3 text-left text-sm font-semibold text-foreground">{t('common:actions.time')}</th>
             <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('filters.user')}</th>
-            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Role</th>
-            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Shift</th>
+            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.role')}</th>
+            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.shift')}</th>
             <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('columns.module')}</th>
             <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('common:table.page')}</th>
-            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Auth</th>
-            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Manager</th>
-            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Manager Role</th>
+            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.auth')}</th>
+            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.manager')}</th>
+            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.managerRole')}</th>
             {/* <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Coords</th> */}
-            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Payload</th>
+            <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.payload')}</th>
             <th className="py-3 pr-6 text-left text-sm font-semibold text-foreground">{t('columns.device')}</th>
           </tr>
           </thead>
           <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={12} className="py-6 text-center text-sm text-muted">No activity logs for selected range.</td>
+              <td colSpan={12} className="py-6 text-center text-sm text-muted">{t('labels.noActivityLogsForSelectedRange')}</td>
             </tr>
           ) : rows.map((row) => (
             <tr key={row.id}>

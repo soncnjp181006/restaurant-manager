@@ -17,6 +17,7 @@ import {PerformanceNoteSeverity, PerformanceNoteType} from "@/api/model/hr.types
 import {useAtom} from "jotai";
 import {appPage} from "@/store/jotai.ts";
 import {nowSurrealDateTime} from "@/lib/datetime.ts";
+import i18n from '@/lib/i18n.ts';
 
 const PERFORMANCE_TYPES: PerformanceNoteType[] = ["warning", "compliment", "review", "incident"];
 const PERFORMANCE_SEVERITIES: PerformanceNoteSeverity[] = ["low", "medium", "high", "critical"];
@@ -39,10 +40,10 @@ interface Props {
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required("Required"),
-  type: yup.string().required("Required"),
-  title: yup.string().required("Required"),
-  content: yup.string().required("Required"),
+  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required(() => i18n.t('validation:required')),
+  type: yup.string().required(() => i18n.t('validation:required')),
+  title: yup.string().required(() => i18n.t('validation:required')),
+  content: yup.string().required(() => i18n.t('validation:required')),
   severity: yup.string().optional(),
   visible_to_employee: yup.boolean().optional(),
 }).required();
@@ -135,7 +136,7 @@ export const PerformanceForm = ({open, onClose, data}: Props) => {
         await db.create(Tables.employee_performance_notes, payload);
       }
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

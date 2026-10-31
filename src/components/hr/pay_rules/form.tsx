@@ -45,6 +45,7 @@ import {DepartmentForm} from "@/components/hr/departments/form.tsx";
 import {PositionForm} from "@/components/hr/positions/form.tsx";
 import {CostCenterForm} from "@/components/hr/cost_centers/form.tsx";
 import {HolidayForm} from "@/components/hr/holidays/form.tsx";
+import i18n from '@/lib/i18n.ts';
 
 const STACKING_MODES: StackingMode[] = ["allow", "prevent", "highest_wins", "priority"];
 const EFFECT_TYPES: RuleEffectType[] = [
@@ -101,19 +102,19 @@ const optionSchema = yup.object({
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  code: yup.string().required("Required"),
-  name: yup.string().required("Required"),
+  code: yup.string().required(() => i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
   priority: yup.number().optional(),
   stacking_mode: yup.string().optional(),
   exclusive: yup.boolean().optional(),
   is_active: yup.boolean().optional(),
   effects: yup.array().of(
     yup.object({
-      type: yup.string().required("Required"),
-      value: yup.number().typeError("Required").required("Required"),
-      applies_to: yup.string().required("Required"),
+      type: yup.string().required(() => i18n.t('validation:required')),
+      value: yup.number().typeError(() => i18n.t('validation:required')).required(() => i18n.t('validation:required')),
+      applies_to: yup.string().required(() => i18n.t('validation:required')),
     }),
-  ).min(1, "Required").required("Required"),
+  ).min(1, () => i18n.t('validation:required')).required(() => i18n.t('validation:required')),
   employee_ids: yup.array().of(optionSchema).default([]),
   department_ids: yup.array().of(optionSchema).default([]),
   position_ids: yup.array().of(optionSchema).default([]),
@@ -361,7 +362,7 @@ export const PayRuleForm = ({open, onClose, data}: Props) => {
         await db.create(Tables.labor_pay_rules, payload);
       }
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

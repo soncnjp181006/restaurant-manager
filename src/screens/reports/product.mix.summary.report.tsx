@@ -42,7 +42,7 @@ const ModifiersSummaryTable = ({
     <table className="min-w-full divide-y divide-neutral-200 border border-border">
       <thead className="bg-surface">
         <tr>
-          <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">Modifier</th>
+          <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('labels.modifier')}</th>
           <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.quantity')}</th>
           <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.price')}</th>
           <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">{t('columns.total')}</th>
@@ -75,7 +75,7 @@ const ModifiersSummaryTable = ({
       </tbody>
       <tfoot className="bg-surface font-semibold">
         <tr>
-          <td className="py-3 pl-6 pr-3 text-sm text-foreground">Totals</td>
+          <td className="py-3 pl-6 pr-3 text-sm text-foreground">{t('labels.totals')}</td>
           <td className="py-3 px-3 text-sm text-right text-foreground">{formatNumber(totals.quantity)}</td>
           <td className="py-3 px-3 text-sm text-right text-foreground">-</td>
           <td className="py-3 pr-6 text-sm text-right text-foreground">{withCurrency(totals.total)}</td>
@@ -121,7 +121,7 @@ export const ProductMixSummaryReport = () => {
 
   const filters = useMemo(parseFilters, []);
   const subtitle = filters.startDate && filters.endDate
-    ? `${filters.startDate} to ${filters.endDate}`
+    ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate })
     : undefined;
 
   const [orders, setOrders] = useState<any[]>([]);
@@ -279,17 +279,17 @@ const ProductMixSummaryBody = ({
 
   return (
       <>
-      <div className="alert alert-warning">This report doesn't include taxes, discounts, service charges, extras and tips</div>
+      <div className="alert alert-warning">{t('labels.thisReportDoesnTIncludeTaxesDiscountsServiceChargesExtrasAndNote')}</div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-neutral-200 border border-border">
           <thead className="bg-surface">
             <tr>
               <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground"></th>
-              <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Rank</th>
-              <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Item Number</th>
+              <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.rank')}</th>
+              <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.itemNumber')}</th>
               <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('columns.name')}</th>
-              <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Num Sold</th>
-              <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Price Sold</th>
+              <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.numSold')}</th>
+              <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.priceSold')}</th>
               <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
               <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.cost')}</th>
               <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.profit')}</th>
@@ -297,8 +297,8 @@ const ProductMixSummaryBody = ({
               <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Sale %</th>
               <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('reports.discount')}</th>
               <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('reports.tax')}</th>
-              <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Service Charges</th>
-              <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">Total Collected</th>
+              <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.serviceCharges')}</th>
+              <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">{t('labels.totalCollected')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
@@ -413,19 +413,19 @@ const ProductMixSummaryBody = ({
                       <td></td>
                       <td colSpan={COLUMN_COUNT - 1} className="py-0 px-0">
                         <div className="px-6 py-3 bg-surface">
-                          <div className="text-xs font-semibold text-foreground mb-2">Modifiers:</div>
+                          <div className="text-xs font-semibold text-foreground mb-2">{t('labels.modifiersLabel')}</div>
                           <table className="w-full border border-border rounded">
                             <thead className="bg-surface">
                               <tr>
-                                <th className="py-2 px-3 text-left text-xs font-semibold text-foreground">Modifier</th>
+                                <th className="py-2 px-3 text-left text-xs font-semibold text-foreground">{t('labels.modifier')}</th>
                                 <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">{t('columns.quantity')}</th>
-                                <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">Unit Price</th>
+                                <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">{t('labels.unitPrice')}</th>
                                 <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">{t('reports.discount')}</th>
                                 <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">{t('reports.tax')}</th>
-                                <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">Service Charges</th>
+                                <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">{t('labels.serviceCharges')}</th>
                                 <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">{t('columns.total')}</th>
-                                <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">Ratio</th>
-                                <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">Meal Price</th>
+                                <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">{t('labels.ratio')}</th>
+                                <th className="py-2 px-3 text-right text-xs font-semibold text-foreground">{t('labels.mealPrice')}</th>
                               </tr>
                             </thead>
                             <tbody className="bg-surface-elevated divide-y divide-neutral-200">
@@ -460,7 +460,7 @@ const ProductMixSummaryBody = ({
             {categoryGroups.length === 0 && (
               <tr>
                 <td colSpan={COLUMN_COUNT} className="py-6 text-center text-sm text-muted">
-                  No data available for the selected filters
+                  {t('labels.noDataForFilters')}
                 </td>
               </tr>
             )}
@@ -472,7 +472,7 @@ const ProductMixSummaryBody = ({
                 <td className="py-3 px-3 text-sm text-foreground"></td>
                 <td className="py-3 px-3 text-sm text-foreground"></td>
                 <td className="py-3 px-3 text-sm text-foreground uppercase">
-                  TOTAL
+                  {t('labels.totalUpper')}
                 </td>
                 <td className="py-3 px-3 text-right text-sm text-foreground">
                   {formatNumber(grandTotals.numSold)}

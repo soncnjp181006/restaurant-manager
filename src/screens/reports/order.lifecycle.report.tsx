@@ -328,7 +328,7 @@ export const OrderLifecycleReport = () => {
 
         <div className="space-y-3">
           {events.length === 0 ? (
-            <div className="py-6 text-center text-sm text-muted border rounded-lg">No lifecycle events found for this order.</div>
+            <div className="py-6 text-center text-sm text-muted border rounded-lg">{t('labels.noLifecycleEventsFoundForThisOrder')}</div>
           ) : events.map((event) => (
             <div key={event.key} className="border rounded-lg p-4 flex items-start gap-3">
               <div className="h-8 w-8 rounded-full bg-surface flex items-center justify-center">

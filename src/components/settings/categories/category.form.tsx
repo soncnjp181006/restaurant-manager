@@ -23,8 +23,8 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
-  priority: yup.string().required(i18n.t('validation:required')).typeError(i18n.t('validation:mustBeNumber')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  priority: yup.string().required(() => i18n.t('validation:required')).typeError(() => i18n.t('validation:mustBeNumber')),
   show_in_menu: yup.boolean()
 });
 
@@ -171,7 +171,7 @@ export const CategoryForm = ({
                 control={control}
                 render={({ field }) => (
                   <Switch checked={field.value} onChange={field.onChange}>
-                    Show this category in menu
+                    {t('admin:forms.showCategoryInMenu')}
                   </Switch>
                 )}
               />

@@ -44,7 +44,8 @@
     "cancelled": "Cancelled",
     "spilt": "Spilt",
     "merged": "Merged",
-    "refunded": "Refunded"
+    "refunded": "Refunded",
+    "pending": "Pending"
   },
   "totals": {
     "items": "Items ({{count}})",
@@ -185,5 +186,16 @@
   },
   "loadingItems": "Loading items…",
   "retryLoad": "Retry loading items",
-  "loadFailed": "Failed to load order"
+  "loadFailed": "Failed to load order",
+  "mpesa": {
+    "title": "M-Pesa phone number",
+    "bodySending": "Sending STK push to the customer phone…",
+    "bodyEnter": "Enter the customer M-Pesa number to send an STK push.",
+    "phone": "Phone",
+    "cancel": "Cancel",
+    "sending": "Sending…",
+    "send": "Send STK push"
+  },
+  "telebirrScanToPay": "Scan with Telebirr app to pay",
+  "telebirrAmount": "Amount: {{amount}} ETB"
 }

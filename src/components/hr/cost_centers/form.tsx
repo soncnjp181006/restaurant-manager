@@ -11,6 +11,7 @@ import {Modal} from "@/components/common/react-aria/modal.tsx";
 import {Button} from "@/components/common/input/button.tsx";
 import {HrCheckboxField, HrInputField} from "@/components/hr/shared/form-field.tsx";
 import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+import i18n from '@/lib/i18n.ts';
 
 interface FormValues {
   id?: string;
@@ -28,8 +29,8 @@ interface Props {
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  code: yup.string().required("Required"),
-  name: yup.string().required("Required"),
+  code: yup.string().required(() => i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
   description: yup.string().optional(),
   is_active: yup.boolean().optional(),
 }).required();
@@ -84,7 +85,7 @@ export const CostCenterForm = ({open, onClose, data}: Props) => {
         source: 'entity-form',
       });
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

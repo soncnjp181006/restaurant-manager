@@ -77,7 +77,7 @@ export const InventoryItemGroups = () => {
             }}
             icon={faPlus}
           >
-            Item group
+            {t('ui.itemGroup')}
           </Button>
         ]}
       />

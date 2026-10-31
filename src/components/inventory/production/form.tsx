@@ -23,6 +23,7 @@ import {ScaledRecipeResult} from "@/lib/inventory/production.calculations.ts";
 import {recordToString} from "@/api/reports/shared/records.ts";
 import {useInventoryLocations} from "@/hooks/useInventoryLocations.ts";
 import {useIntegrationManager} from "@/providers/integration.provider.tsx";
+import i18n from '@/lib/i18n.ts';
 import {
   formatInventoryNumber,
   withInventoryCurrency,
@@ -52,7 +53,7 @@ const selectOptionSchema = yup.object({
 const validationSchema = yup.object({
   recipe: selectOptionSchema.required().nullable(),
   location: selectOptionSchema.required().nullable(),
-  producedQty: yup.number().typeError("Number required").positive().required(),
+  producedQty: yup.number().typeError(() => i18n.t('validation:numberRequired')).positive().required(),
   batchNumber: yup.string().nullable().optional(),
   notes: yup.string().nullable().optional(),
   updateItemCost: yup.boolean().default(false),

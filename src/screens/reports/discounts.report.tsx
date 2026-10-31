@@ -195,7 +195,7 @@ export const DiscountsReport = () => {
   const [error, setError] = useState<string | null>(null);
   const filters = useMemo(parseFilters, []);
   const subtitle = filters.startDate && filters.endDate
-    ? `${filters.startDate} to ${filters.endDate}`
+    ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate })
     : undefined;
 
   useEffect(() => {

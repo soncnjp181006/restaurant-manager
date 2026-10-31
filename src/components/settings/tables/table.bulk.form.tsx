@@ -35,12 +35,12 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  background: yup.string().required(i18n.t('validation:required')),
-  color: yup.string().required(i18n.t('validation:required')),
+  background: yup.string().required(() => i18n.t('validation:required')),
+  color: yup.string().required(() => i18n.t('validation:required')),
   floor: yup.object({
     label: yup.string().required(),
     value: yup.string().required(),
-  }).default(undefined).required('This is required'),
+  }).default(undefined).required(() => i18n.t('validation:required')),
   categories: yup.array(yup.object({
     label: yup.string(),
     value: yup.string()
@@ -177,7 +177,7 @@ export const TableBulkForm = ({
                 control={control}
                 render={({field}) => (
                   <Switch checked={field.value} onChange={field.onChange}>
-                    Ask for number of covers
+                    {t('ui.askForCoversBulk')}
                   </Switch>
                 )}
               />

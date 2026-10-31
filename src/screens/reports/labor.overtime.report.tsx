@@ -19,17 +19,17 @@ const OvertimeTable = ({rows}: {rows: OvertimeReportRow[]}) => {
         <thead className="bg-surface">
           <tr>
             <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-muted">{t('columns.name')}</th>
-            <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-muted">Department</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Regular</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">OT</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Double</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">OT Pay</th>
+            <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-muted">{t('labels.department')}</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.regular')}</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.oT')}</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.double')}</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.oTPay')}</th>
             <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('columns.total')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-neutral-100">
           {rows.length === 0 ? (
-            <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">No overtime records</td></tr>
+            <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">{t('labels.noOvertimeRecords')}</td></tr>
           ) : rows.map(row => (
             <tr key={row.employeeId}>
               <td className="px-4 py-2 text-sm text-foreground">{row.employeeName}</td>
@@ -94,7 +94,7 @@ export const LaborOvertimeReport = () => {
     void load();
   }, [branchScope.ready, branchScope.branchIds, branchScope.isByBranch, branchScope.branchOrder, filters.startDate, filters.endDate]);
 
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
   const dataByBranch = useMemo(
     () => new Map(markers.map((m) => [String(m.branch_id ?? ''), m.rows])),
     [markers],

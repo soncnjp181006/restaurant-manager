@@ -29,14 +29,14 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
   stages: yup.array().of(yup.object({
-    name: yup.string().required(i18n.t('forms.stageNameRequired')),
+    name: yup.string().required(() => i18n.t('forms.stageNameRequired')),
     kitchen: yup.object({
       label: yup.string(),
       value: yup.string()
-    }).nullable().test('kitchen-required', i18n.t('forms.kitchenRequired'), (value) => !!value?.value)
-  })).min(1, i18n.t('forms.addAtLeastOneStage')),
+    }).nullable().test('kitchen-required', () => i18n.t('forms.kitchenRequired'), (value) => !!value?.value)
+  })).min(1, () => i18n.t('forms.addAtLeastOneStage')),
 });
 
 export const WorkflowForm = ({
@@ -167,12 +167,12 @@ export const WorkflowForm = ({
 
           <div className="flex-1">
             <fieldset className="border-2 border-border rounded-lg p-3">
-              <legend>Production stages (in order)</legend>
+              <legend>{t('productionStagesInOrder')}</legend>
               <div className="mb-3">
                 <Button type="button" icon={faPlus} variant="primary" onClick={() => {
                   append({ name: '', kitchen: null });
                 }}>
-                  Add stage
+                  {t('ui.addStage')}
                 </Button>
               </div>
 

@@ -58,7 +58,7 @@ export const IssueReturnReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -161,15 +161,15 @@ export const IssueReturnReport = () => {
         {/* Summary */}
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Returns</p>
+            <p className="text-sm text-muted">{t('labels.totalReturns')}</p>
             <p className="text-2xl font-bold text-foreground">{formatInventoryNumber(issueReturns.length)}</p>
           </div>
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Items</p>
+            <p className="text-sm text-muted">{t('labels.totalItems')}</p>
             <p className="text-2xl font-bold text-foreground">{formatInventoryNumber(totals.totalItems)}</p>
           </div>
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Amount</p>
+            <p className="text-sm text-muted">{t('labels.totalAmount')}</p>
             <p className="text-2xl font-bold text-foreground">{withInventoryCurrency(totals.totalAmount)}</p>
           </div>
         </div>
@@ -197,7 +197,7 @@ export const IssueReturnReport = () => {
                 {issueReturns.length === 0 ? (
                   <tr>
                     <td colSpan={10} className="py-6 text-center text-sm text-muted">
-                      No issue returns found for the selected filters
+                      {t('labels.noIssueReturnsFound')}
                     </td>
                   </tr>
                 ) : (

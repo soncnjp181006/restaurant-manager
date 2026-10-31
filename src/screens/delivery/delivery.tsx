@@ -192,6 +192,9 @@ const DeliveryMapOverlays = ({mapAreas, deliveryOrders, openOrderPopup}: Deliver
 
 export const Delivery = () => {
   const { t } = useTranslation('delivery');
+  // Empty when the deployment has no Maps key: the SDK must not be loaded at all,
+  // otherwise it replaces the page with its own "can't load Google Maps" dialog.
+  const mapsApiKey = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? '').trim();
   const db = useDB();
   const {selectedOrder, openOrderPopup, deliveryOrders} = useDeliveryOrders();
   const [mapAreas, setMapAreas] = useState<MapArea[]>([]);
@@ -250,22 +253,35 @@ export const Delivery = () => {
   return (
     <div className="grid grid-cols-5 gap-5 h-full min-h-0 p-2" data-testid="delivery-map-panel">
       <div className="col-span-4 min-h-0 h-full">
-        <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-          <Map
-            className="h-full w-full min-h-0 rounded-lg"
-            defaultCenter={center}
-            center={selectedOrderCenter ?? undefined}
-            defaultZoom={11}
-            gestureHandling="greedy"
-            disableDefaultUI
+        {mapsApiKey ? (
+          <APIProvider apiKey={mapsApiKey}>
+            <Map
+              className="h-full w-full min-h-0 rounded-lg"
+              defaultCenter={center}
+              center={selectedOrderCenter ?? undefined}
+              defaultZoom={11}
+              gestureHandling="greedy"
+              disableDefaultUI
+            >
+              <DeliveryMapOverlays
+                mapAreas={mapAreas}
+                deliveryOrders={deliveryOrders}
+                openOrderPopup={openOrderPopup}
+              />
+            </Map>
+          </APIProvider>
+        ) : (
+          // Without a key the Google SDK still loads and pops its own
+          // "This page can't load Google Maps correctly" dialog; skip it entirely.
+          <div
+            className="h-full w-full min-h-[16rem] rounded-lg border border-dashed flex flex-col items-center justify-center gap-3 text-center text-muted p-6"
+            data-testid="delivery-map-unconfigured"
           >
-            <DeliveryMapOverlays
-              mapAreas={mapAreas}
-              deliveryOrders={deliveryOrders}
-              openOrderPopup={openOrderPopup}
-            />
-          </Map>
-        </APIProvider>
+            <FontAwesomeIcon icon={faExclamationCircle} size="2x" />
+            <p className="font-medium">{t('map.notConfigured')}</p>
+            <p className="text-sm max-w-md">{t('map.notConfiguredHint')}</p>
+          </div>
+        )}
       </div>
       <div className="col-span-1 select-none min-h-0 h-full" data-testid="delivery-orders-list">
         <ScrollContainer className="h-full">
@@ -281,7 +297,7 @@ export const Delivery = () => {
             ) : (
               <div className="text-center text-3xl flex flex-col justify-center items-center h-full min-h-[12rem] gap-5">
                 <FontAwesomeIcon icon={faExclamationCircle} size="2x" />
-                No delivery orders...
+                {t('map.noOrders')}
               </div>
             )}
           </div>

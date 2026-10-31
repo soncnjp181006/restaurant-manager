@@ -34,6 +34,7 @@ import {ShiftForm} from "@/components/settings/users/shifts/shift.form.tsx";
 import {DepartmentForm} from "@/components/hr/departments/form.tsx";
 import {PositionForm} from "@/components/hr/positions/form.tsx";
 import {CostCenterForm} from "@/components/hr/cost_centers/form.tsx";
+import i18n from '@/lib/i18n.ts';
 
 interface FormValues {
   id?: string;
@@ -59,14 +60,14 @@ const optionSchema = yup.object({label: yup.string().required(), value: yup.stri
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  work_schedule: optionSchema.required("Required"),
-  employee: optionSchema.required("Required"),
+  work_schedule: optionSchema.required(() => i18n.t('validation:required')),
+  employee: optionSchema.required(() => i18n.t('validation:required')),
   shift_template: optionSchema.optional(),
   department: optionSchema.optional(),
   position: optionSchema.optional(),
   cost_center: optionSchema.optional(),
-  start_at: yup.mixed().nullable().required("Required"),
-  end_at: yup.mixed().nullable().required("Required"),
+  start_at: yup.mixed().nullable().required(() => i18n.t('validation:required')),
+  end_at: yup.mixed().nullable().required(() => i18n.t('validation:required')),
   notes: yup.string().optional(),
 }).required();
 

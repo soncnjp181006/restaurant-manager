@@ -20,6 +20,7 @@ import {
 } from "@/components/hr/shared/form.utils.ts";
 import {PayrollPeriodStatus, PayrollPeriodType} from "@/api/model/hr.types.ts";
 import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+import i18n from '@/lib/i18n.ts';
 
 const PERIOD_TYPES: PayrollPeriodType[] = ["weekly", "biweekly", "monthly", "custom"];
 const PERIOD_STATUSES: PayrollPeriodStatus[] = ["open", "locked", "closed", "paid"];
@@ -41,10 +42,10 @@ interface Props {
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  name: yup.string().required("Required"),
+  name: yup.string().required(() => i18n.t('validation:required')),
   period_type: yup.string().optional(),
-  start_date: yup.mixed().nullable().required("Required"),
-  end_date: yup.mixed().nullable().required("Required"),
+  start_date: yup.mixed().nullable().required(() => i18n.t('validation:required')),
+  end_date: yup.mixed().nullable().required(() => i18n.t('validation:required')),
   status: yup.string().optional(),
 }).required();
 
@@ -112,7 +113,7 @@ export const PayrollPeriodForm = ({open, onClose, data}: Props) => {
         source: 'entity-form',
       });
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

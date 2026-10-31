@@ -408,7 +408,7 @@ const CashClosingBranchBlock = ({
                 <div className="text-xl font-semibold">{withCurrency(drawerFloat)}</div>
               </div>
               <div className="border rounded-lg p-4 bg-surface">
-                <div className="text-sm text-muted">Other payments</div>
+                <div className="text-sm text-muted">{t('labels.otherPayments')}</div>
                 <div className="text-xl font-semibold">{withCurrency(totalOtherPayments)}</div>
               </div>
               {closedByName && (
@@ -431,25 +431,25 @@ const CashClosingBranchBlock = ({
                     <td className="py-3 pr-6 text-sm text-foreground">{closing.shift?.name || t('labels.noShift')}</td>
                   </tr>
                   <tr>
-                    <td className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">Window</td>
+                    <td className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">{t('labels.window')}</td>
                     <td className="py-3 pr-6 text-sm text-foreground">
                       {toLuxonDateTime(closing.date_from).toFormat("yyyy-LL-dd HH:mm")} - {toLuxonDateTime(closing.date_to).toFormat("yyyy-LL-dd HH:mm")}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">Created at</td>
+                    <td className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">{t('labels.createdAt')}</td>
                     <td className="py-3 pr-6 text-sm text-foreground">
                       {toLuxonDateTime(closing.created_at).toFormat("yyyy-LL-dd HH:mm")}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">Closed at</td>
+                    <td className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">{t('labels.closedAt')}</td>
                     <td className="py-3 pr-6 text-sm text-foreground">
                       {closing.closed_at ? toLuxonDateTime(closing.closed_at).toFormat("yyyy-LL-dd HH:mm") : "-"}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">Notes</td>
+                    <td className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">{t('labels.notes')}</td>
                     <td className="py-3 pr-6 text-sm text-foreground">{closing.notes || "-"}</td>
                   </tr>
                   {varianceReason && (
@@ -502,18 +502,18 @@ const CashClosingBranchBlock = ({
             )}
 
             <div className="overflow-hidden rounded-lg border border-border">
-              <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Terminal cash</h3>
+              <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.terminalCash')}</h3>
               <table className="min-w-full divide-y divide-neutral-200">
                 <thead className="bg-surface">
                   <tr>
-                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">Terminal</th>
+                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('labels.terminal')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
                   {(closing.terminal_cash || []).length === 0 ? (
                     <tr>
-                      <td colSpan={2} className="py-6 text-center text-sm text-muted">No terminal cash data</td>
+                      <td colSpan={2} className="py-6 text-center text-sm text-muted">{t('labels.noTerminalCashData')}</td>
                     </tr>
                   ) : (
                     (closing.terminal_cash || []).map((terminal: any, index) => (
@@ -528,18 +528,18 @@ const CashClosingBranchBlock = ({
             </div>
 
             <div className="overflow-hidden rounded-lg border border-border">
-              <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Payment summary</h3>
+              <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.paymentSummary')}</h3>
               <table className="min-w-full divide-y divide-neutral-200">
                 <thead className="bg-surface">
                   <tr>
-                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">Payment type</th>
+                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('labels.paymentType')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
                   {(closing.payments_data || []).length === 0 ? (
                     <tr>
-                      <td colSpan={2} className="py-6 text-center text-sm text-muted">No payment summary data</td>
+                      <td colSpan={2} className="py-6 text-center text-sm text-muted">{t('labels.noPaymentSummaryData')}</td>
                     </tr>
                   ) : (
                     (closing.payments_data || []).map((payment: any, index) => (
@@ -632,7 +632,7 @@ const CashClosingBranchBlock = ({
                     </tr>
                   ) : transactions.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-6 text-center text-sm text-muted">No transactions in this closing</td>
+                      <td colSpan={5} className="py-6 text-center text-sm text-muted">{t('labels.noTransactionsInThisClosing')}</td>
                     </tr>
                   ) : (
                     transactions.map((row, index) => (
@@ -658,7 +658,7 @@ const CashClosingBranchBlock = ({
                 {transactions.length > 0 && (
                   <tfoot className="bg-surface">
                     <tr>
-                      <td colSpan={4} className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">Total (paid)</td>
+                      <td colSpan={4} className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">{t('labels.totalPaid')}</td>
                       <td className="py-3 px-3 text-right text-sm font-bold text-foreground">{withCurrency(transactionsTotal)}</td>
                     </tr>
                   </tfoot>
@@ -679,7 +679,7 @@ const CashClosingBranchBlock = ({
                 <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
                   {(closing.expenses_data || []).length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="py-6 text-center text-sm text-muted">No expense records</td>
+                      <td colSpan={3} className="py-6 text-center text-sm text-muted">{t('labels.noExpenseRecords')}</td>
                     </tr>
                   ) : (
                     (closing.expenses_data || []).map((expense: any, index) => (
@@ -694,7 +694,7 @@ const CashClosingBranchBlock = ({
                 {(closing.expenses_data || []).length > 0 && (
                   <tfoot className="bg-surface">
                     <tr>
-                      <td colSpan={2} className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">Total expenses</td>
+                      <td colSpan={2} className="py-3 pl-6 pr-3 text-sm font-semibold text-foreground">{t('labels.totalExpenses')}</td>
                       <td className="py-3 px-3 text-right text-sm font-bold text-foreground">{withCurrency(totalExpenses)}</td>
                     </tr>
                   </tfoot>

@@ -96,7 +96,8 @@
     "active": "Active",
     "previousPrice": "Previous price",
     "averageCost": "Average cost",
-    "item": "Item"
+    "item": "Item",
+    "businessDate": "Business date"
   },
   "buttons": {
     "item": "Item",
@@ -108,7 +109,8 @@
     "adjustment": "Adjustment",
     "line": "Line",
     "saveDraft": "Save (Draft)",
-    "saveAndPost": "Save & Post"
+    "saveAndPost": "Save & Post",
+    "addItem": "Add item"
   },
   "forms": {
     "createItem": "Create new item",
@@ -161,7 +163,24 @@
     "lastPrice": "Last",
     "itemPrice": "Item",
     "quantityChange": "Quantity change",
-    "uom": "UOM"
+    "uom": "UOM",
+    "supplierOverride": "Supplier override",
+    "updateSupplier": "Update {{name}}",
+    "updateCategory": "Update {{name}}",
+    "updateIssue": "Update issue# {{number}}",
+    "viewIssue": "Issue #{{number}}",
+    "updateIssueReturn": "Update return {{id}}",
+    "viewIssueReturn": "Issue return #{{number}}",
+    "updateItem": "Update {{name}}",
+    "updateItemGroup": "Update group for {{name}}",
+    "updatePurchase": "Update invoice #{{number}}",
+    "viewPurchase": "Purchase #{{number}}",
+    "updatePurchaseOrder": "Update PO #{{number}}",
+    "viewPurchaseOrder": "Purchase order #{{number}}",
+    "viewPurchaseReturn": "Purchase return #{{number}}",
+    "updateStore": "Update {{name}}",
+    "viewWaste": "Waste #{{number}}",
+    "updateItemCost": "Update cost of item itself"
   },
   "adjustment": {
     "reasons": {
@@ -205,7 +224,8 @@
     "atLeastOneItem": "At least one item is required",
     "invalidCategory": "Invalid category \"{{name}}\"",
     "invalidStore": "Invalid store \"{{name}}\"",
-    "invalidSupplier": "Invalid supplier \"{{name}}\""
+    "invalidSupplier": "Invalid supplier \"{{name}}\"",
+    "selectLocation": "Select a location"
   },
   "csv": {
     "uploadTitle": "Add items using CSV file"
@@ -341,7 +361,8 @@
     "itemName": "Item Name",
     "physicalCount": "Physical Count",
     "itemAlreadyOnSheet": "Item is already on the reconciliation sheet.",
-    "title": "Kitchen reconciliation"
+    "title": "Kitchen reconciliation",
+    "csvImportTitle": "Import kitchen reconciliation (CSV)"
   },
   "stockTransfer": {
     "type": "Transfer type",
@@ -679,5 +700,47 @@
     "toast": {
       "saved": "Unit {{code}} saved"
     }
-  }
+  },
+  "invoice": {
+    "item": "Item",
+    "qty": "Qty",
+    "unit": "Unit",
+    "unitCost": "Unit cost",
+    "amount": "Amount",
+    "location": "Location",
+    "generatedAt": "Generated at {{time}}"
+  },
+  "documents": "Documents",
+  "method": "Method",
+  "supplier": "Supplier",
+  "category": "Category",
+  "issue": "Issue",
+  "purchase": "Purchase",
+  "store": "Store",
+  "waste": "Waste",
+  "unified": "Unified",
+  "split": "Split",
+  "issueReturn": "Issue return",
+  "purchaseOrderLabel": "Purchase order",
+  "purchaseReturnLabel": "Purchase return",
+  "item": "Item",
+  "ui": {
+    "download": "Download",
+    "noItemsShort": "No items",
+    "updateRecipeCost": "Update recipe cost",
+    "saveAndPostButton": "Save & Post",
+    "addSubItem": "Add sub item",
+    "issueReturn": "Issue return",
+    "itemGroup": "Item group",
+    "purchaseOrderLabel": "Purchase order",
+    "purchaseReturnLabel": "Purchase return"
+  },
+  "purchasePosted_one": "Purchase posted ({{count}} ledger entry)",
+  "purchasePosted_other": "Purchase posted ({{count}} ledger entries)",
+  "issuePosted_one": "Issue posted ({{count}} ledger entry)",
+  "issuePosted_other": "Issue posted ({{count}} ledger entries)",
+  "alreadyPosted": "Already posted",
+  "postedCannotEdit": "Posted documents cannot be edited",
+  "issueApproved": "Issue approved",
+  "purchaseApproved": "Purchase approved"
 }

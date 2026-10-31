@@ -55,7 +55,7 @@ export const ConsumptionReport = () => {
 
   const filters = useMemo(parseFilters, []);
   const subtitle = filters.startDate && filters.endDate
-    ? `${filters.startDate} to ${filters.endDate}`
+    ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate })
     : undefined;
 
   useEffect(() => {
@@ -143,15 +143,15 @@ export const ConsumptionReport = () => {
       <div className="space-y-8">
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Items</p>
+            <p className="text-sm text-muted">{t('labels.totalItems')}</p>
             <p className="text-2xl font-bold text-foreground">{formatInventoryNumber(consumptionData.length)}</p>
           </div>
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Sale Price</p>
+            <p className="text-sm text-muted">{t('labels.totalSalePrice')}</p>
             <p className="text-2xl font-bold text-foreground">{withInventoryCurrency(totals.totalSalePrice)}</p>
           </div>
           <div className="bg-surface p-4 rounded-lg">
-            <p className="text-sm text-muted">Total Cost (Average)</p>
+            <p className="text-sm text-muted">{t('labels.totalCostAverage')}</p>
             <p className="text-2xl font-bold text-foreground">{withInventoryCurrency(totals.totalCostAverage)}</p>
           </div>
         </div>
@@ -166,7 +166,7 @@ export const ConsumptionReport = () => {
                   <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t("columns.code")}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t("columns.quantity")}</th>
                   <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t("columns.uom")}</th>
-                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Sale Price</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.salePrice')}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t("metrics.costAvg")}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t("metrics.costCurrent")}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t("metrics.differenceAvg")}</th>
@@ -177,7 +177,7 @@ export const ConsumptionReport = () => {
                 {consumptionData.length === 0 ? (
                   <tr>
                     <td colSpan={9} className="py-6 text-center text-sm text-muted">
-                      No consumption data found for the selected filters
+                      {t('labels.noConsumptionData')}
                     </td>
                   </tr>
                 ) : (

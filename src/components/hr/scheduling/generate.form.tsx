@@ -19,6 +19,7 @@ import {SelectOption, firstFormError, toSelectOption} from "@/components/hr/shar
 import {generateShiftsFromTemplate} from "@/lib/labor-engine/scheduling/template.service.ts";
 import {ScheduleForm} from "@/components/hr/scheduling/schedule.form.tsx";
 import {ScheduleTemplateForm} from "@/components/hr/scheduling/template.form.tsx";
+import i18n from '@/lib/i18n.ts';
 
 interface FormValues {
   work_schedule: SelectOption | null;
@@ -34,11 +35,11 @@ interface Props {
 const optionSchema = yup.object({label: yup.string().required(), value: yup.string().required()}).nullable();
 
 const validationSchema = yup.object({
-  work_schedule: optionSchema.required("Required"),
-  template: optionSchema.required("Required"),
+  work_schedule: optionSchema.required(() => i18n.t('validation:required')),
+  template: optionSchema.required(() => i18n.t('validation:required')),
   employees: yup.array().of(
     yup.object({label: yup.string().required(), value: yup.string().required()}),
-  ).min(1, "Required").required("Required"),
+  ).min(1, () => i18n.t('validation:required')).required(() => i18n.t('validation:required')),
 }).required();
 
 export const GenerateScheduleForm = ({open, onClose}: Props) => {

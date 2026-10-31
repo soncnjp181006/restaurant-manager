@@ -511,7 +511,10 @@
     "usePrintSettings": "Dùng cài đặt in",
     "userBranches": "Chi nhánh",
     "userBranchesShared": "Mọi chi nhánh (dùng chung)",
-    "userBranchesHint": "Để trống nếu nhân viên làm việc ở mọi cửa hàng. Chọn chi nhánh để giới hạn tải xuống khi bấm Đồng bộ ngay chỉ ở các cửa hàng đó."
+    "userBranchesHint": "Để trống nếu nhân viên làm việc ở mọi cửa hàng. Chọn chi nhánh để giới hạn tải xuống khi bấm Đồng bộ ngay chỉ ở các cửa hàng đó.",
+    "dishName": "Tên món",
+    "dishNumber": "Số hiệu món",
+    "dishCost": "Giá vốn món"
   },
   "dishView": {
     "detailsTitle": "Chi tiết món",
@@ -1074,7 +1077,8 @@
     "helpAria": "Trợ giúp chế độ sửa danh mục",
     "dismissHint": "Đã hiểu",
     "createMultiBlocked": "Chọn Danh mục gốc hoặc đúng một chi nhánh để tạo. Chế độ nhiều chi nhánh chỉ dùng để ghi đè.",
-    "branchOwnedSaved": "Đã lưu mục thuộc chi nhánh"
+    "branchOwnedSaved": "Đã lưu mục thuộc chi nhánh",
+    "branchOwnedHint": "Đang chọn một chi nhánh: mục mới thuộc chi nhánh này. Mục dùng chung vẫn lưu dưới dạng ghi đè."
   },
   "qrOrdering": {
     "title": "Đặt món tại bàn qua QR",
@@ -1127,5 +1131,37 @@
     "themeTitle": "Giao diện trang dành cho khách",
     "themeDescription": "Màu sắc cho trang đặt món qua QR. Sáng/tối có thể theo điện thoại của từng khách.",
     "themeMode": "Hiển thị"
+  },
+  "productionStagesInOrder": "Các công đoạn sản xuất (theo thứ tự)",
+  "ui": {
+    "couponLabel": "Mã giảm giá",
+    "extraLabel": "Phụ thu",
+    "layoutLabel": "Sơ đồ",
+    "selectedLabel": "Đã chọn",
+    "activeLabel": "Hoạt động",
+    "endsOnNextDayLabel": "Kết thúc vào hôm sau",
+    "loadingDishes": "Đang tải món...",
+    "noDishesFound": "Không tìm thấy món nào.",
+    "toggleAll": "Chọn tất cả",
+    "resetToMenu": "Đặt lại theo thực đơn",
+    "resetLabel": "Đặt lại",
+    "allowServiceCharges": "Cho phép phí phục vụ",
+    "showItemNumber": "Hiện số món",
+    "showItemName": "Hiện tên món",
+    "showQuantity": "Hiện số lượng",
+    "showItemPrice": "Hiện giá món",
+    "showItemTotal": "Hiện tổng món",
+    "askForCoversBulk": "Hỏi số khách",
+    "roleLabel": "Vai trò",
+    "shiftLabel": "Ca",
+    "addStage": "Thêm công đoạn",
+    "setWorkflowForSelected": "Gán quy trình cho các món đã chọn",
+    "replaceCategoriesForSelected": "Thay nhóm món cho các món đã chọn",
+    "replaceModifierGroupsForSelected": "Thay nhóm tuỳ chọn cho các món đã chọn",
+    "autoSelectModifiers": "Tự chọn tuỳ chọn?",
+    "autoOpenModifiers": "Tự mở tuỳ chọn?",
+    "hasRequiredModifiers": "Có tuỳ chọn bắt buộc",
+    "replaceRecipeForSelected": "Thay công thức cho các món đã chọn",
+    "addRecipeItem": "Thêm nguyên liệu công thức"
   }
 }

@@ -26,6 +26,7 @@ import {
 } from "@/components/hr/shared/form.utils.ts";
 import {LaborAdjustmentType} from "@/api/model/hr.types.ts";
 import {PayrollPeriodForm} from "@/components/hr/payroll_periods/form.tsx";
+import i18n from '@/lib/i18n.ts';
 
 const ADJUSTMENT_TYPES: LaborAdjustmentType[] = [
   "bonus", "penalty", "allowance", "reimbursement", "advance", "loan", "correction", "deduction",
@@ -50,13 +51,13 @@ interface Props {
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required("Required"),
+  employee: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().required(() => i18n.t('validation:required')),
   payroll_period: yup.object({label: yup.string().required(), value: yup.string().required()}).nullable().optional(),
-  type: yup.string().required("Required"),
-  amount: yup.number().typeError("Required").required("Required"),
+  type: yup.string().required(() => i18n.t('validation:required')),
+  amount: yup.number().typeError(() => i18n.t('validation:required')).required(() => i18n.t('validation:required')),
   currency: yup.string().optional(),
   description: yup.string().optional(),
-  effective_date: yup.mixed().nullable().required("Required"),
+  effective_date: yup.mixed().nullable().required(() => i18n.t('validation:required')),
 }).required();
 
 export const AdjustmentForm = ({open, onClose, data}: Props) => {
@@ -150,7 +151,7 @@ export const AdjustmentForm = ({open, onClose, data}: Props) => {
         await db.create(Tables.labor_adjustments, payload);
       }
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

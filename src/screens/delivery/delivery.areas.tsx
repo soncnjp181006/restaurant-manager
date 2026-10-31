@@ -919,7 +919,7 @@ const DeliveryAreasEditor = ({mapAreas, onSaveAreas}: DeliveryAreasEditorProps) 
             }`}
             onClick={() => startDrawing("polygon")}
           >
-            Polygon
+            {t('map.polygonLabel')}
           </button>
           <button
             type="button"
@@ -931,7 +931,7 @@ const DeliveryAreasEditor = ({mapAreas, onSaveAreas}: DeliveryAreasEditorProps) 
             }`}
             onClick={() => startDrawing("rectangle")}
           >
-            Rectangle
+            {t('map.rectangleLabel')}
           </button>
           <button
             type="button"
@@ -943,21 +943,21 @@ const DeliveryAreasEditor = ({mapAreas, onSaveAreas}: DeliveryAreasEditorProps) 
             }`}
             onClick={() => startDrawing("circle")}
           >
-            Circle
+            {t('map.circleLabel')}
           </button>
         </div>
 
         {drawingMode && (
           <div className="max-w-xs rounded-md border border-border bg-surface-elevated px-3 py-2 text-sm text-muted shadow-sm">
             {drawingMode === "rectangle" && <p>{t('map.drawRectangleHint')}</p>}
-            {drawingMode === "circle" && <p>Click and drag from the center to set the radius.</p>}
+            {drawingMode === "circle" && <p>{t('map.drawCircleHint')}</p>}
             {drawingMode === "polygon" && <p>{t('map.drawPolygonHint')}</p>}
             <button
               type="button"
               className="mt-2 rounded-md border border-border bg-surface-elevated px-3 py-1.5 text-sm font-medium text-foreground hover:bg-surface"
               onClick={cancelDrawing}
             >
-              Cancel
+              {t('common:actions.cancel')}
             </button>
           </div>
         )}
@@ -973,7 +973,7 @@ const DeliveryAreasEditor = ({mapAreas, onSaveAreas}: DeliveryAreasEditorProps) 
         disabled={!hasSelectedOverlay}
         onClick={deleteSelectedOverlay}
       >
-        Delete selected
+        {t('map.deleteSelected')}
       </button>
     </>
   );

@@ -19,17 +19,17 @@ const AttendanceTable = ({rows}: {rows: AttendanceReportRow[]}) => {
         <thead className="bg-surface">
           <tr>
             <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-muted">{t('columns.name')}</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Scheduled</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Worked</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Late</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Absent</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">On time</th>
-            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Rate %</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.scheduled')}</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.worked')}</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.late')}</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.absent')}</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.onTime')}</th>
+            <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.ratePercent')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-neutral-100">
           {rows.length === 0 ? (
-            <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">No attendance data</td></tr>
+            <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">{t('labels.noAttendanceData')}</td></tr>
           ) : rows.map(row => (
             <tr key={row.employeeId}>
               <td className="px-4 py-2 text-sm text-foreground">{row.employeeName}</td>
@@ -94,7 +94,7 @@ export const LaborAttendanceReport = () => {
     void load();
   }, [branchScope.ready, branchScope.branchIds, branchScope.isByBranch, branchScope.branchOrder, filters.startDate, filters.endDate]);
 
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
   const dataByBranch = useMemo(
     () => new Map(markers.map((m) => [String(m.branch_id ?? ''), m.rows])),
     [markers],

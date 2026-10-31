@@ -24,7 +24,7 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
   start_from: yup.string().nullable(),
   end_time: yup.string().nullable(),
   ends_on_next_day: yup.boolean(),
@@ -218,7 +218,7 @@ export const MenuForm = ({
                   render={({ field }) => (
                     <div>
                       <Switch checked={field.value || false} onChange={field.onChange}>
-                        Ends on next day
+                        {t('ui.endsOnNextDayLabel')}
                       </Switch>
                     </div>
                   )}
@@ -234,7 +234,7 @@ export const MenuForm = ({
                 render={({ field }) => (
                   <div>
                     <Switch checked={field.value !== undefined ? field.value : true} onChange={field.onChange}>
-                      Active
+                      {t('ui.activeLabel')}
                     </Switch>
                   </div>
                 )}

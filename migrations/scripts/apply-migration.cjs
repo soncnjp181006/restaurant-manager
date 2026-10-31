@@ -77,9 +77,26 @@ const stripComments = (sql) =>
     })
     .join('\n');
 
+/**
+ * A full export (e.g. migrations/demo-data.surql) also contains the
+ * `_schema_migration` rows of the database it came from. Replaying those into a
+ * database whose ledger already has the same names aborts the whole query on the
+ * unique index — usually after half the data went in. The prod runner filters
+ * them; do the same here so a manual apply of a dump stays usable.
+ */
+const withoutMigrationLedger = (sql) => {
+  const lines = sql.split('\n');
+  const kept = lines.filter((line) => !(line.trim().startsWith('INSERT') && line.includes('_schema_migration')));
+  const dropped = lines.length - kept.length;
+  if (dropped > 0) {
+    console.log(`Skipping ${dropped} INSERT line(s) that only carry _schema_migration rows`);
+  }
+  return kept.join('\n');
+};
+
 async function main() {
   const raw = fs.readFileSync(filePath, 'utf8');
-  const sql = stripComments(raw).trim();
+  const sql = withoutMigrationLedger(stripComments(raw)).trim();
   if (!sql) {
     console.error('Migration file is empty after stripping comments');
     process.exit(1);

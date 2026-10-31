@@ -265,5 +265,8 @@
   "send": "Send",
   "messages": {
     "notFound": "Document not found."
-  }
+  },
+  "columnMapping": "Column Mapping",
+  "tabsAriaLabel": "Tabs",
+  "close": "Close"
 }

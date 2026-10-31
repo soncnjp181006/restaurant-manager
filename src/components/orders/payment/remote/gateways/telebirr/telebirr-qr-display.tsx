@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ReactQrCode } from '@/lib/react-qr-code.tsx';
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
 };
 
 export function TelebirrQrDisplay({ value, amount }: Props) {
+  const { t } = useTranslation('orders');
   if (!value) return null;
 
   return (
@@ -14,10 +16,10 @@ export function TelebirrQrDisplay({ value, amount }: Props) {
         <ReactQrCode value={value} size={160} />
       </div>
       {amount !== undefined && (
-        <span className="text-sm font-medium">Amount: {amount.toFixed(2)} ETB</span>
+        <span className="text-sm font-medium">{t('telebirrAmount', { amount: amount.toFixed(2) })}</span>
       )}
       <span className="text-xs text-muted text-center">
-        Scan with Telebirr app to pay
+        {t('telebirrScanToPay')}
       </span>
     </div>
   );

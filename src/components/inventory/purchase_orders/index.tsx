@@ -256,7 +256,7 @@ export const InventoryPurchaseOrders = () => {
             }}
             icon={faPlus}
           >
-            Purchase order
+            {t('ui.purchaseOrderLabel')}
           </Button>
         ]}
         defaultSort={[

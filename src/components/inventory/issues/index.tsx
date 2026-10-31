@@ -60,7 +60,7 @@ export const InventoryIssues = () => {
       try {
         setActionLoadingId(String(row.id));
         await approveDocument(db, "issue", String(row.id), userId);
-        toast.success("Issue approved");
+        toast.success(t('inventory:issueApproved'));
         loadHook.fetchData();
       } catch (error) {
         toast.error(error instanceof Error ? error.message : String(error));
@@ -85,9 +85,9 @@ export const InventoryIssues = () => {
           integrationManager: manager,
         });
         if (result.skipped) {
-          toast.info(result.reason || "Already posted");
+          toast.info(result.reason || t('inventory:alreadyPosted'));
         } else {
-          toast.success(`Issue posted (${result.ledgerEntryCount} ledger entries)`);
+          toast.success(t('inventory:issuePosted', {count: result.ledgerEntryCount}));
         }
         loadHook.fetchData();
       } catch (error) {
@@ -322,7 +322,7 @@ export const InventoryIssues = () => {
             }}
             icon={faPlus}
           >
-            Issue
+            {t('issue')}
           </Button>
         ]}
         defaultSort={[

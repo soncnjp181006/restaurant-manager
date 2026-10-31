@@ -24,8 +24,8 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
-  priority: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  priority: yup.string().required(() => i18n.t('validation:required')),
   allow_service_charges: yup.boolean(),
 });
 
@@ -166,7 +166,7 @@ export const OrderTypeForm = ({
                 control={control}
                 render={({ field }) => (
                   <Switch checked={!!field.value} onChange={field.onChange}>
-                    Allow service charges
+                    {t('ui.allowServiceCharges')}
                   </Switch>
                 )}
               />

@@ -135,5 +135,6 @@
     "paymentReceived": "Đã nhận được thanh toán {{gateway}}.",
     "payWithCard": "Thanh toán bằng thẻ",
     "payWithRazorpay": "Thanh toán bằng Razorpay"
-  }
+  },
+  "fiscalProvidersFailed": "Một số nhà cung cấp hoá đơn điện tử gặp lỗi; kiểm tra hàng đợi Tích hợp"
 }

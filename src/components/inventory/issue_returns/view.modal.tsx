@@ -64,7 +64,7 @@ export const InventoryIssueReturnViewModal = ({open, issueReturn, onClose}: Prop
 
   return (
     <Modal
-      title={viewReturn ? `Issue return #${viewReturn.invoice_number}` : "Issue return"}
+      title={viewReturn ? t('forms.viewIssueReturn', { number: viewReturn.invoice_number }) : t('issueReturn')}
       open={open}
       onClose={onClose}
       size="xl"

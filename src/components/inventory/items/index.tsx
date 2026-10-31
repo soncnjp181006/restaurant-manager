@@ -131,7 +131,7 @@ export const InventoryItems = () => {
         buttons={[
           <Button variant="primary" onClick={() => {
             setFormModal(true);
-          }} icon={faPlus}> Item</Button>,
+          }} icon={faPlus}> {t('item')}</Button>,
           <Button variant="primary" onClick={() => {
             setImportModal(true);
           }}><span className="mr-2"><AiSparklesIcon /></span>{t('common:actions.smartImport', {defaultValue: 'AI Import'})}</Button>

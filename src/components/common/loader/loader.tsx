@@ -1,5 +1,6 @@
 import {ReactNode, useEffect, useState} from "react";
 import uniqueId from "lodash/uniqueId";
+import { useTranslation } from "react-i18next";
 
 interface LoaderProps{
   lines?: number;
@@ -7,6 +8,7 @@ interface LoaderProps{
 }
 
 export const Loader = ({lines = 5, lineItems = 5}: LoaderProps) => {
+  const { t } = useTranslation("common");
   const [items, setItems] = useState<ReactNode[]>([]);
   useEffect(() => {
     const a: ReactNode[] = [];
@@ -31,7 +33,7 @@ export const Loader = ({lines = 5, lineItems = 5}: LoaderProps) => {
     <div role="status"
          className="gap-5 w-full divide-y divide-gray-300 animate-pulse">
       {items}
-      <span className="sr-only">Loading...</span>
+      <span className="sr-only">{t("loading")}</span>
     </div>
   );
 };

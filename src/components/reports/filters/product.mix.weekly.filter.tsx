@@ -152,7 +152,7 @@ export const ProductMixWeeklyReportFilter = () => {
     >
       <BranchScopeFilter />
       <div className="w-full flex flex-col gap-2">
-        <label htmlFor="product-mix-weekly-week" className="form-label">Week</label>
+        <label htmlFor="product-mix-weekly-week" className="form-label">{t('labels.week')}</label>
         <select
           id="product-mix-weekly-week"
           name="week"
@@ -163,11 +163,11 @@ export const ProductMixWeeklyReportFilter = () => {
           required
         >
           {!loading && !weeks.length && (
-            <option>No weeks available</option>
+            <option>{t('filters.noWeeks')}</option>
           )}
           {weekOptions}
         </select>
-        {loading && <p className="text-sm text-muted">Loading weeks...</p>}
+        {loading && <p className="text-sm text-muted">{t('filters.loadingWeeks')}</p>}
         {error && <p className="text-sm text-danger-600">{error}</p>}
       </div>
 
@@ -237,7 +237,7 @@ export const ProductMixWeeklyReportFilter = () => {
         type="submit"
         disabled={!selectedWeek}
       >
-        Generate
+        {t('filters.generate')}
       </Button>
     </form>
   );

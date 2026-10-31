@@ -146,7 +146,7 @@ export const InventoryPurchaseReturns = () => {
             }}
             icon={faPlus}
           >
-            Purchase return
+            {t('ui.purchaseReturnLabel')}
           </Button>
         ]}
         defaultSort={[

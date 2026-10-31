@@ -64,7 +64,7 @@ export const InventoryPurchaseReturnViewModal = ({open, purchaseReturn, onClose}
 
   return (
     <Modal
-      title={viewReturn ? `Purchase return #${viewReturn.invoice_number}` : "Purchase return"}
+      title={viewReturn ? t('forms.viewPurchaseReturn', { number: viewReturn.invoice_number }) : t('purchaseReturnLabel')}
       open={open}
       onClose={onClose}
       size="xl"

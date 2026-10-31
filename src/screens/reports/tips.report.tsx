@@ -58,11 +58,11 @@ const TipsSection = ({ distributions }: { distributions: TipDistributionRow[] })
     <>
       <div className="grid grid-cols-2 gap-4 mb-5">
         <div className="border rounded-lg p-4 bg-surface">
-          <div className="text-sm text-muted">Total tips</div>
+          <div className="text-sm text-muted">{t('labels.totalTips')}</div>
           <div className="text-2xl font-semibold">{withCurrency(totalTips)}</div>
         </div>
         <div className="border rounded-lg p-4 bg-surface">
-          <div className="text-sm text-muted">Saved distributions</div>
+          <div className="text-sm text-muted">{t('labels.savedDistributions')}</div>
           <div className="text-2xl font-semibold">{totalDistributions}</div>
         </div>
       </div>
@@ -85,7 +85,7 @@ const TipsSection = ({ distributions }: { distributions: TipDistributionRow[] })
               ))
             ) : (
               <tr>
-                <td colSpan={2} className="py-6 text-center text-sm text-muted">No tips found for selected filters.</td>
+                <td colSpan={2} className="py-6 text-center text-sm text-muted">{t('labels.noTipsFoundForSelectedFilters')}</td>
               </tr>
             )}
           </tbody>
@@ -107,7 +107,7 @@ export const TipsReport = () => {
   const filters = useMemo(parseFilters, []);
 
   const subtitle = useMemo(() => {
-    const datePart = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : "All dates";
+    const datePart = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : "All dates";
     const shiftPart = shiftName || "All shifts";
     return `${datePart} | ${shiftPart}`;
   }, [filters.startDate, filters.endDate, shiftName]);

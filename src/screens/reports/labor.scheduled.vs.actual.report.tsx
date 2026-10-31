@@ -39,7 +39,7 @@ export const LaborScheduledVsActualReport = () => {
     void load();
   }, [filters.startDate, filters.endDate]);
 
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   return (
     <ReportsLayout title={t('titles.scheduledVsActual')} subtitle={subtitle}>
@@ -50,19 +50,19 @@ export const LaborScheduledVsActualReport = () => {
           <table className="min-w-full divide-y divide-neutral-200">
             <thead className="bg-surface">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-muted">Date</th>
+                <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-muted">{t('columns.date')}</th>
                 <th className="px-4 py-2 text-left text-xs font-semibold uppercase text-muted">{t('columns.name')}</th>
-                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Scheduled hrs</th>
-                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Actual hrs</th>
-                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Variance</th>
-                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Scheduled cost</th>
-                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Actual cost</th>
-                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">Cost var.</th>
+                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.scheduledHrs')}</th>
+                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.actualHrs')}</th>
+                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.variance')}</th>
+                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.scheduledCost')}</th>
+                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.actualCost')}</th>
+                <th className="px-4 py-2 text-right text-xs font-semibold uppercase text-muted">{t('labels.costVar')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {rows.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-muted">No schedule variance data</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-muted">{t('labels.noScheduleVarianceData')}</td></tr>
               ) : rows.map(row => (
                 <tr key={`${row.employeeId}-${row.date}`}>
                   <td className="px-4 py-2 text-sm text-foreground">{row.date}</td>

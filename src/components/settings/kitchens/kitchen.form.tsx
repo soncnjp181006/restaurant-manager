@@ -39,10 +39,10 @@ const selectOptionSchema = yup.object({
 });
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
   printers: yup.array().of(selectOptionSchema).nullable().optional(),
   items: yup.array().of(selectOptionSchema),
-  priority: yup.number().min(1, i18n.t('validation:required')).required(i18n.t('validation:required')),
+  priority: yup.number().min(1, () => i18n.t('validation:required')).required(() => i18n.t('validation:required')),
 });
 
 export const KitchenForm = ({

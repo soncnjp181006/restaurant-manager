@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/common/input/button.tsx";
 import { Input } from "@/components/common/input/input.tsx";
 import { Modal } from "@/components/common/react-aria/modal.tsx";
@@ -20,11 +21,12 @@ export const MpesaPhoneModal = memo(function MpesaPhoneModal({
   onCancel,
   isSubmitting,
 }: Props) {
+  const { t } = useTranslation('orders');
   return (
     <Modal
       open={open}
       onClose={isSubmitting ? () => {} : onCancel}
-      title="M-Pesa phone number"
+      title={t('mpesa.title')}
       size="sm"
       shouldCloseOnOverlayClick={!isSubmitting}
       shouldCloseOnEsc={!isSubmitting}
@@ -32,11 +34,11 @@ export const MpesaPhoneModal = memo(function MpesaPhoneModal({
     >
       <p className="text-sm text-muted mb-3">
         {isSubmitting
-          ? "Sending STK push to the customer phone…"
-          : "Enter the customer M-Pesa number to send an STK push."}
+          ? t('mpesa.bodySending')
+          : t('mpesa.bodyEnter')}
       </p>
       <Input
-        label="Phone"
+        label={t('mpesa.phone')}
         value={phoneInput}
         onChange={(e) => onPhoneChange(e.target.value)}
         placeholder="2547XXXXXXXX or 07XXXXXXXX"
@@ -52,7 +54,7 @@ export const MpesaPhoneModal = memo(function MpesaPhoneModal({
           onClick={onCancel}
           disabled={isSubmitting}
         >
-          Cancel
+          {t('mpesa.cancel')}
         </Button>
         <Button
           variant="primary"
@@ -60,7 +62,7 @@ export const MpesaPhoneModal = memo(function MpesaPhoneModal({
           onClick={onConfirm}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Sending…" : "Send STK push"}
+          {isSubmitting ? t('mpesa.sending') : t('mpesa.send')}
         </Button>
       </div>
     </Modal>

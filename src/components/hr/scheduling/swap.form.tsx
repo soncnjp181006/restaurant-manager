@@ -14,6 +14,7 @@ import {HrSelectField} from "@/components/hr/shared/form-field.tsx";
 import {SelectOption, firstFormError, formatDisplayDate, entityLabel} from "@/components/hr/shared/form.utils.ts";
 import {useDB} from "@/api/db/db.ts";
 import {requestSwap} from "@/lib/labor-engine/scheduling/swap.service.ts";
+import i18n from '@/lib/i18n.ts';
 
 interface FormValues {
   scheduled_shift: SelectOption | null;
@@ -30,8 +31,8 @@ interface Props {
 const optionSchema = yup.object({label: yup.string().required(), value: yup.string().required()}).nullable();
 
 const validationSchema = yup.object({
-  scheduled_shift: optionSchema.required("Required"),
-  requesting_employee: optionSchema.required("Required"),
+  scheduled_shift: optionSchema.required(() => i18n.t('validation:required')),
+  requesting_employee: optionSchema.required(() => i18n.t('validation:required')),
   target_employee: optionSchema.optional(),
   proposed_shift: optionSchema.optional(),
 }).required();

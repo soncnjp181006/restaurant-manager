@@ -156,7 +156,7 @@ export const InventoryIssueReturns = () => {
             }}
             icon={faPlus}
           >
-            Issue return
+            {t('ui.issueReturn')}
           </Button>
         ]}
         defaultSort={[

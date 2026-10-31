@@ -62,7 +62,7 @@ export const InventoryDocumentAttachments = ({
                   }
                 >
                   <FontAwesomeIcon icon={faDownload} className="mr-1" />
-                  Download
+                  {t('ui.download')}
                 </Button>
               )}
             </div>

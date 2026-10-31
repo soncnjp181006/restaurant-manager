@@ -511,7 +511,10 @@
     "usePrintSettings": "Use print settings",
     "userBranches": "Branches",
     "userBranchesShared": "All branches (shared)",
-    "userBranchesHint": "Leave empty for a shared employee on every store. Select branches to limit Sync now download to those stores."
+    "userBranchesHint": "Leave empty for a shared employee on every store. Select branches to limit Sync now download to those stores.",
+    "dishName": "Dish name",
+    "dishNumber": "Dish number",
+    "dishCost": "Dish cost"
   },
   "dishView": {
     "detailsTitle": "Dish details",
@@ -1074,7 +1077,8 @@
     "helpAria": "Catalog edit mode help",
     "dismissHint": "Got it",
     "createMultiBlocked": "Pick Base catalog or exactly one branch to create. Multi-branch mode is for overrides only.",
-    "branchOwnedSaved": "Branch-owned item saved"
+    "branchOwnedSaved": "Branch-owned item saved",
+    "branchOwnedHint": "One branch selected: new items are owned by this branch. Shared items still save as overrides."
   },
   "qrOrdering": {
     "title": "QR table ordering",
@@ -1127,5 +1131,37 @@
     "themeTitle": "Customer page theme",
     "themeDescription": "Colors for the QR ordering page. Light/dark can follow each customer’s phone.",
     "themeMode": "Appearance"
+  },
+  "productionStagesInOrder": "Production stages (in order)",
+  "ui": {
+    "couponLabel": "Coupon",
+    "extraLabel": "Extra",
+    "layoutLabel": "Layout",
+    "selectedLabel": "Selected",
+    "activeLabel": "Active",
+    "endsOnNextDayLabel": "Ends on next day",
+    "loadingDishes": "Loading dishes...",
+    "noDishesFound": "No dishes found.",
+    "toggleAll": "Toggle All",
+    "resetToMenu": "Reset to menu",
+    "resetLabel": "Reset",
+    "allowServiceCharges": "Allow service charges",
+    "showItemNumber": "Show item number",
+    "showItemName": "Show item name",
+    "showQuantity": "Show quantity",
+    "showItemPrice": "Show item price",
+    "showItemTotal": "Show item total",
+    "askForCoversBulk": "Ask for number of covers",
+    "roleLabel": "Role",
+    "shiftLabel": "Shift",
+    "addStage": "Add stage",
+    "setWorkflowForSelected": "Set workflow for selected dishes",
+    "replaceCategoriesForSelected": "Replace categories for selected dishes",
+    "replaceModifierGroupsForSelected": "Replace modifier groups for selected dishes",
+    "autoSelectModifiers": "Auto select modifiers?",
+    "autoOpenModifiers": "Auto open modifiers?",
+    "hasRequiredModifiers": "Has required modifiers",
+    "replaceRecipeForSelected": "Replace recipe for selected dishes",
+    "addRecipeItem": "Add recipe item"
   }
 }

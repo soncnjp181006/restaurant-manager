@@ -62,7 +62,7 @@ export const AiReportHistory = ({onSelect}: AiReportHistoryProps) => {
                 type="button"
                 onClick={() => handleRemove(entry.prompt)}
                 className="btn btn-flat btn-danger btn-square"
-                aria-label="Remove"
+                aria-label={t('common:actions.remove')}
               >
                 ×
               </button>

@@ -1,4 +1,5 @@
 import {DateTime} from "luxon";
+import {useTranslation} from 'react-i18next';
 import {InventoryInvoiceDoc} from "@/lib/inventory/invoice.mapper.ts";
 import {
   formatInventoryNumber,
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export const InventoryInvoice = ({doc}: Props) => {
+  const {t} = useTranslation('inventory');
   const showCost = !!doc.showCostColumns;
   // Invoices keep their own dd/MM convention when VITE_DATE_TIME_FORMAT is unset.
   const generatedAt = DateTime.now().toFormat(
@@ -65,17 +67,17 @@ export const InventoryInvoice = ({doc}: Props) => {
             <thead>
               <tr className="border-b-2 border-border text-left">
                 <th className="py-2 pr-2 font-semibold">#</th>
-                <th className="py-2 pr-2 font-semibold">Item</th>
-                <th className="py-2 pr-2 font-semibold text-right">Qty</th>
-                <th className="py-2 pr-2 font-semibold">Unit</th>
+                <th className="py-2 pr-2 font-semibold">{t('invoice.item')}</th>
+                <th className="py-2 pr-2 font-semibold text-right">{t('invoice.qty')}</th>
+                <th className="py-2 pr-2 font-semibold">{t('invoice.unit')}</th>
                 {showCost && (
                   <>
-                    <th className="py-2 pr-2 font-semibold text-right">Unit cost</th>
-                    <th className="py-2 font-semibold text-right">Amount</th>
+                    <th className="py-2 pr-2 font-semibold text-right">{t('invoice.unitCost')}</th>
+                    <th className="py-2 font-semibold text-right">{t('invoice.amount')}</th>
                   </>
                 )}
                 {!showCost && (
-                  <th className="py-2 font-semibold">Location</th>
+                  <th className="py-2 font-semibold">{t('invoice.location')}</th>
                 )}
               </tr>
             </thead>
@@ -86,7 +88,7 @@ export const InventoryInvoice = ({doc}: Props) => {
                     colSpan={showCost ? 6 : 5}
                     className="py-6 text-center text-muted"
                   >
-                    No items
+                    {t('ui.noItemsShort')}
                   </td>
                 </tr>
               ) : (
@@ -174,13 +176,13 @@ export const InventoryInvoice = ({doc}: Props) => {
 
         {doc.notes && (
           <div className="mt-8 border-t border-border pt-4">
-            <div className="text-[11px] uppercase tracking-wide text-muted">Notes</div>
+            <div className="text-[11px] uppercase tracking-wide text-muted">{t('columns.notes')}</div>
             <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">{doc.notes}</div>
           </div>
         )}
 
         <div className="mt-10 pt-4 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-muted">
-          <div>Generated at {generatedAt}</div>
+          <div>{t('invoice.generatedAt', { time: generatedAt })}</div>
           <div>{doc.docType} #{doc.invoiceNumber}</div>
         </div>
       </div>

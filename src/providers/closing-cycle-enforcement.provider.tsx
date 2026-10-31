@@ -114,7 +114,10 @@ export const ClosingCycleEnforcementProvider: React.FC<ClosingCycleEnforcementPr
         clearTimeout(timeoutId);
       }
     };
-  }, [page?.user?.id, setEnforcement]);
+    // `t` is a dependency: react-i18next re-creates it per language, so an
+    // infinite-duration toast created before the device language is applied gets
+    // re-created (in the right language) instead of keeping its English text.
+  }, [page?.user?.id, setEnforcement, t]);
 
   return <>{children}</>;
 };

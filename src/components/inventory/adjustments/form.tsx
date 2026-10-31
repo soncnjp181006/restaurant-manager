@@ -39,6 +39,7 @@ import {
   QuantityUomFields,
 } from "@/components/inventory/common/quantity.uom.fields.tsx";
 import { normalizeUom } from "@/utils/inventoryUom.ts";
+import i18n from '@/lib/i18n.ts';
 type Option = { label: string; value: string };
 
 interface FormValues {
@@ -71,7 +72,7 @@ const validationSchema = yup.object({
     .of(
       yup.object({
         item: yup.object({ label: yup.string(), value: yup.string() }).required().nullable(),
-        quantity_change: yup.number().typeError("Required").required(),
+        quantity_change: yup.number().typeError(() => i18n.t('validation:required')).required(),
         entered_uom: yup.string().nullable().optional(),
         unit_cost: yup.number().nullable().optional(),
         comments: yup.string().optional(),
@@ -148,8 +149,14 @@ export const InventoryAdjustmentForm = ({ open, onClose, data }: Props) => {
     fetchItems();
     void reloadLocations();
     if (!data?.id) {
+      const initialSeqNumber = getValues("invoice_number");
       fetchNextSequentialNumber(db, Tables.inventory_adjustments, "invoice_number").then(
-        (n) => reset((prev) => ({ ...prev, invoice_number: n, reason: reasonOptions[0] }))
+        (n) => {
+          // Keep a number the operator typed while this request resolved.
+          if (getValues("invoice_number") === initialSeqNumber) {
+            reset((prev) => ({ ...prev, invoice_number: n, reason: reasonOptions[0] }));
+          }
+        }
       );
     }
   }, [open]);

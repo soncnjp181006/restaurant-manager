@@ -25,6 +25,7 @@ import {
 } from "@/lib/inventory/buffet.service.ts";
 import {recordToString} from "@/api/reports/shared/records.ts";
 import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
+import i18n from '@/lib/i18n.ts';
 
 type SelectOption = {label: string; value: string} | null;
 
@@ -62,7 +63,7 @@ const validationSchema = yup.object({
   items: yup.array().of(
     yup.object({
       recipe: selectOptionSchema.required().nullable(),
-      perGuestQty: yup.number().typeError("Number required").positive().required(),
+      perGuestQty: yup.number().typeError(() => i18n.t('validation:numberRequired')).positive().required(),
     })
   ).min(1),
 });

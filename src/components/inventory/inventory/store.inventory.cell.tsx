@@ -282,14 +282,14 @@ export const StoreInventoryCell = ({locationId, item}: {locationId: string; item
               filled={display === "unified"}
               onClick={() => setDisplay("unified")}
             >
-              Unified
+              {t('unified')}
             </Button>
             <Button
               variant="primary"
               filled={display === "split"}
               onClick={() => setDisplay("split")}
             >
-              Split
+              {t('split')}
             </Button>
           </div>
 

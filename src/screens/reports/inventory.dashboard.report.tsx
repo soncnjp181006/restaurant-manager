@@ -1156,7 +1156,7 @@ export const InventoryDashboardReport = () => {
             </div>
           </div>
           <Tabs className="w-full" defaultSelectedKey={locationStock[0]?.locationName || ""}>
-            <TabList aria-label="Location tabs" className="flex flex-row gap-3 mb-4 flex-wrap">
+            <TabList aria-label={t('labels.locationTabs')} className="flex flex-row gap-3 mb-4 flex-wrap">
               {locationStock.map((location) => (
                 <Tab
                   activeClass="bg-neutral-900 text-warning"

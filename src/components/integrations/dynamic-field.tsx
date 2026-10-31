@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ProviderManifestField } from '@/integrations/core/types.ts';
 import { Input } from '@/components/common/input/input.tsx';
 import { Textarea } from '@/components/common/input/textarea.tsx';
@@ -30,6 +31,7 @@ const AccountField = ({
   value,
   onChange,
 }: DynamicFieldProps) => {
+  const { t } = useTranslation('integrations');
   const db = useDB();
   const [options, setOptions] = useState<SelectOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +81,7 @@ const AccountField = ({
       isLoading={loading}
       isClearable={!field.required}
       onChange={(option) => onChange(option?.value ?? '')}
-      placeholder={field.placeholder ?? 'Select account'}
+      placeholder={field.placeholder ?? t('selectAccount')}
     />
   );
 };
@@ -90,6 +92,7 @@ const ExternalEntityField = ({
   onChange,
   providerId,
 }: DynamicFieldProps) => {
+  const { t } = useTranslation('integrations');
   const db = useDB();
   const [options, setOptions] = useState<SelectOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -158,6 +161,7 @@ const fileToDataUri = (file: File): Promise<string> =>
   });
 
 const ImageField = ({ value, onChange, field }: DynamicFieldProps) => {
+  const { t } = useTranslation('integrations');
   const inputRef = useRef<HTMLInputElement>(null);
   const preview =
     typeof value === 'string' && value.trim().startsWith('data:') ? value.trim() : null;
@@ -187,7 +191,7 @@ const ImageField = ({ value, onChange, field }: DynamicFieldProps) => {
             className="h-20 w-20 object-contain rounded border border-border bg-surface-elevated"
           />
           <Button type="button" variant="secondary" size="lg" onClick={() => onChange('')}>
-            Remove
+            {t('common:actions.remove')}
           </Button>
         </div>
       )}
@@ -209,6 +213,7 @@ const ImageField = ({ value, onChange, field }: DynamicFieldProps) => {
 };
 
 export const DynamicField = ({ field, value, onChange, providerId }: DynamicFieldProps) => {
+  const { t } = useTranslation('integrations');
   switch (field.type) {
     case 'image':
       return <ImageField field={field} value={value} onChange={onChange} providerId={providerId} />;
@@ -283,7 +288,7 @@ export const DynamicField = ({ field, value, onChange, providerId }: DynamicFiel
           type="text"
           value={(value as string | undefined) ?? ''}
           onChange={(event) => onChange(event.target.value)}
-          placeholder={field.placeholder ?? 'Paste certificate content or reference'}
+          placeholder={field.placeholder ?? t('pasteCertificate')}
         />
       );
     case 'dynamic':

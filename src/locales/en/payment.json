@@ -135,5 +135,6 @@
     "paymentReceived": "{{gateway}} payment received.",
     "payWithCard": "Pay with card",
     "payWithRazorpay": "Pay with Razorpay"
-  }
+  },
+  "fiscalProvidersFailed": "Some fiscal providers failed; check the Integrations queue"
 }

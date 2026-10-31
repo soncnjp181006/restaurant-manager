@@ -150,7 +150,7 @@ export const ReportsLayout = ({
             icon={faPrint}
             size="sm"
           >
-            Print
+            {t('labels.print')}
           </Button>
           <Button
             variant="primary"
@@ -158,7 +158,7 @@ export const ReportsLayout = ({
             icon={faFile}
             size="sm"
           >
-            Download as XLSX
+            {t('labels.downloadXlsx')}
           </Button>
           <Button
             variant="primary"
@@ -166,7 +166,7 @@ export const ReportsLayout = ({
             icon={faFile}
             size="sm"
           >
-            Download as PDF
+            {t('labels.downloadPdf')}
           </Button>
           <Button
             variant="primary"
@@ -174,7 +174,7 @@ export const ReportsLayout = ({
             icon={faImage}
             size="sm"
           >
-            Download as Image
+            {t('labels.downloadImage')}
           </Button>
           <Button
             variant="primary"
@@ -182,7 +182,7 @@ export const ReportsLayout = ({
             icon={faRefresh}
             size="sm"
           >
-            Refresh
+            {t('labels.refresh')}
           </Button>
           {customActions}
         </div>
@@ -203,7 +203,7 @@ export const ReportsLayout = ({
               )}
               {restaurantAddress && <p>{restaurantAddress}</p>}
               <p className="text-muted mt-2">
-                Generated at: {generatedAt}
+                {t('labels.generatedAt', { time: generatedAt })}
               </p>
             </div>
           </div>
@@ -223,7 +223,7 @@ export const ReportsLayout = ({
                 icon={faChevronLeft}
                 size="sm"
               >
-                Previous
+                {t('labels.previous')}
               </Button>
               <span className="text-sm text-foreground px-4">
                 Page {pagination.currentPage} of {pagination.totalPages}
@@ -235,7 +235,7 @@ export const ReportsLayout = ({
                 rightIcon={faChevronRight}
                 size="sm"
               >
-                Next
+                {t('labels.next')}
               </Button>
             </div>
           )}

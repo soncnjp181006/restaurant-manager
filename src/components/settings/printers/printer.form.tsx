@@ -23,10 +23,10 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
   priority: yup.mixed().optional(),
   ip_address: yup.string().optional(),
-  port: yup.number().typeError(i18n.t('validation:invalidPort')).optional(),
+  port: yup.number().typeError(() => i18n.t('validation:invalidPort')).optional(),
   type: yup.object({
     label: yup.string(),
     value: yup.string()

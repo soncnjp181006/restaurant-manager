@@ -188,7 +188,7 @@ export const DeliveryDensityReport = () => {
   const [mapCenter, setMapCenter] = useState({lat: 0, lng: 0});
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -377,7 +377,7 @@ const DeliveryDensityBody = ({
       <div className="space-y-8">
         <div className="overflow-hidden rounded-lg border border-border">
           <div className="bg-surface px-6 py-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">Order Density Map</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('labels.orderDensityMap')}</h3>
             <span className="text-xs text-muted">
               {formatNumber(filteredOrders.length)} orders • {formatNumber(locationCount)} locations
             </span>
@@ -408,15 +408,15 @@ const DeliveryDensityBody = ({
                 <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('columns.date')}</th>
                 <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('columns.invoice')}</th>
                 <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('filters.status')}</th>
-                <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Area</th>
-                <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Address</th>
+                <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.area')}</th>
+                <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.address')}</th>
                 {filters.showMenuItems && (
                   <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('filters.menuItems')}</th>
                 )}
                 {filters.showDetails && (
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.lineTotal')}</th>
                 )}
-                <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">Paid Amount</th>
+                <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">{t('labels.paidAmount')}</th>
               </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
@@ -449,7 +449,7 @@ const DeliveryDensityBody = ({
               {filteredOrders.length === 0 && (
                 <tr>
                   <td colSpan={filters.showMenuItems ? (filters.showDetails ? 8 : 7) : (filters.showDetails ? 7 : 6)} className="py-6 text-center text-sm text-muted">
-                    No delivery orders found for the selected filters.
+                    {t('errors.noDeliveryOrdersForFilters')}
                   </td>
                 </tr>
               )}

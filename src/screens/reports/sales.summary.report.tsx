@@ -7,7 +7,7 @@ import {aggregateSalesSummary, fetchOrderVoids, fetchPaidOrders, SALES_SUMMARY_F
 import type {Order} from "@/api/model/order.ts";
 import type {OrderVoid} from "@/api/model/order_void.ts";
 import {withCurrency, formatNumber} from "@/lib/utils.ts";
-import {DAY_PARTS, getDayPartTimeRangeLabel} from "@/utils/dayParts";
+import {DAY_PARTS, getDayPartTimeRangeLabel, translateDayPartLabel} from "@/utils/dayParts";
 import {useReportBranchScope} from "@/hooks/useReportBranchScope.ts";
 import {BranchBreakdown} from "@/components/reports/branch.breakdown.tsx";
 import {getRowBranchId} from "@/api/reports/shared/branch-scope.ts";
@@ -43,12 +43,12 @@ const buildSummaryRows = (
   } = summary;
 
   const checkBreakdown = DAY_PARTS.map(part => ({
-    label: `${part.label} (${getDayPartTimeRangeLabel(part.label)})`,
+    label: `${translateDayPartLabel(t, part.label)} (${getDayPartTimeRangeLabel(part.label)})`,
     value: formatNumber(dayPartTotals[part.label].checks),
   }));
 
   const saleBreakdown = DAY_PARTS.map(part => ({
-    label: `${part.label} (${getDayPartTimeRangeLabel(part.label)})`,
+    label: `${translateDayPartLabel(t, part.label)} (${getDayPartTimeRangeLabel(part.label)})`,
     value: withCurrency(dayPartTotals[part.label].sales),
   }));
 
@@ -63,16 +63,16 @@ const buildSummaryRows = (
   }));
 
   return [
-    {label: "Net sales", value: withCurrency(totalNetSales)},
-    {label: "Amount collected", value: withCurrency(paymentSummary.amountCollected)},
+    {label: t('labels.netSales'), value: withCurrency(totalNetSales)},
+    {label: t('labels.amountCollectedLabel'), value: withCurrency(paymentSummary.amountCollected)},
     {label: t('labels.cashPaymentsNet'), value: withCurrency(paymentSummary.cashPayments)},
-    {label: "Rounding benefit", value: withCurrency(roundingBenefit)},
+    {label: t('labels.roundingBenefit'), value: withCurrency(roundingBenefit)},
     {label: t('metrics.checkCountByDayPart'), breakdown: checkBreakdown},
-    {label: "Sale by day part", breakdown: saleBreakdown},
-    {label: "Net sales by order type", breakdown: orderTypeItems},
-    {label: "Service charges", value: withCurrency(serviceCharges)},
-    {label: "Taxes", value: withCurrency(taxes)},
-    {label: "Non cash payments", value: withCurrency(paymentSummary.nonCashPayments), breakdown: nonCashItems},
+    {label: t('labels.saleByDayPart'), breakdown: saleBreakdown},
+    {label: t('labels.netSalesByOrderType'), breakdown: orderTypeItems},
+    {label: t('labels.serviceCharges'), value: withCurrency(serviceCharges)},
+    {label: t('labels.taxes'), value: withCurrency(taxes)},
+    {label: t('labels.nonCashPayments'), value: withCurrency(paymentSummary.nonCashPayments), breakdown: nonCashItems},
     {label: t('metrics.discounts'), value: withCurrency(totalDiscounts)},
     {label: t('metrics.coupons'), value: withCurrency(totalCoupons)},
     {label: t('reports.voids'), value: withCurrency(totalVoids)},
@@ -96,10 +96,10 @@ const SummaryTables = ({
           <thead className="bg-surface">
           <tr>
             <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-foreground">
-              Metric
+              {t('labels.metric')}
             </th>
             <th scope="col" className="py-3.5 px-6 text-left text-sm font-semibold text-foreground">
-              Value
+              {t('labels.value')}
             </th>
           </tr>
           </thead>
@@ -127,7 +127,7 @@ const SummaryTables = ({
           {summaryRows.length === 0 && (
             <tr>
               <td colSpan={2} className="py-6 text-center text-sm text-muted">
-                No sales activity for the selected period.
+                {t('labels.noSalesActivity')}
               </td>
             </tr>
           )}
@@ -140,13 +140,13 @@ const SummaryTables = ({
           <thead className="bg-surface">
           <tr>
             <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-foreground">
-              Discount type
+              {t('labels.discountTypeLabel')}
             </th>
             <th scope="col" className="py-3.5 px-4 text-right text-sm font-semibold text-foreground">
-              Quantity
+              {t('labels.quantity')}
             </th>
             <th scope="col" className="py-3.5 pr-6 text-right text-sm font-semibold text-foreground">
-              Amount
+              {t('labels.amountLabel')}
             </th>
           </tr>
           </thead>
@@ -166,7 +166,7 @@ const SummaryTables = ({
           ) : (
             <tr>
               <td colSpan={3} className="py-6 text-center text-sm text-muted">
-                No discounts applied for the selected period.
+                {t('labels.noDiscountsApplied')}
               </td>
             </tr>
           )}
@@ -187,7 +187,7 @@ export const SalesSummaryReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', {start: filters.startDate, end: filters.endDate}) : undefined;
 
   useEffect(() => {
     if (!branchScope.ready) return;

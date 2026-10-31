@@ -22,9 +22,9 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
-  rate: yup.number().required(i18n.t('validation:required')),
-  priority: yup.string().required(i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  rate: yup.number().required(() => i18n.t('validation:required')),
+  priority: yup.string().required(() => i18n.t('validation:required')),
 });
 
 export const TaxForm = ({

@@ -175,7 +175,7 @@ export const SalesHourlyLabourWeeklyReport = () => {
     }));
   }, [weekStart]);
 
-  const subtitle = `${weekStartISO} to ${weekEndISO}`;
+  const subtitle = t('labels.rangeSubtitle', { start: weekStartISO, end: weekEndISO });
 
   if (loading || !branchScope.ready) {
     return (
@@ -349,7 +349,7 @@ const SalesHourlyLabourWeeklyBody = ({
   if (!rows.length) {
     return (
       <div className="text-center p-6 text-muted">
-        No data available for the selected week.
+        {t('labels.noDataForWeek')}
       </div>
     );
   }
@@ -360,14 +360,14 @@ const SalesHourlyLabourWeeklyBody = ({
           <thead>
             <tr>
               <th>{t('columns.hour')}</th>
-              <th>Metric</th>
+              <th>{t('labels.metric')}</th>
               {dayHeaders.map(({day, dateLabel}) => (
                 <th key={day} className="text-right">
                   <div>{day}</div>
                   <div className="text-xs text-muted">{dateLabel}</div>
                 </th>
               ))}
-              <th className="text-right">Weekly Total</th>
+              <th className="text-right">{t('labels.weeklyTotal')}</th>
             </tr>
           </thead>
           <tbody>

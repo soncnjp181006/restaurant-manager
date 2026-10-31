@@ -18,6 +18,7 @@ import {StringRecordId} from "surrealdb";
 import {TimePicker} from "@/components/common/antd/time.picker.tsx";
 import {DeliveryBannersSection} from "@/components/delivery/delivery-banners-section.tsx";
 import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
+import i18n from '@/lib/i18n.ts';
 
 interface DeliveryTimingEntry {
   id: string;
@@ -70,20 +71,20 @@ const validationSchema = yup.object({
   delivery_menu: yup.object({
     label: yup.string(),
     value: yup.string()
-  }).required('This is required'),
-  delivery_charges: yup.number().min(0, "Delivery charges must be positive").required("This is required"),
-  delivery_time: yup.number().min(0, "Delivery time must be positive").required("This is required"),
-  minimum_order: yup.number().min(0, "Minimum order must be positive").required("This is required"),
+  }).required(() => i18n.t('validation:required')),
+  delivery_charges: yup.number().min(0, () => i18n.t('validation:deliveryChargesPositive')).required(() => i18n.t('validation:required')),
+  delivery_time: yup.number().min(0, () => i18n.t('validation:deliveryTimePositive')).required(() => i18n.t('validation:required')),
+  minimum_order: yup.number().min(0, () => i18n.t('validation:minimumOrderPositive')).required(() => i18n.t('validation:required')),
   map_center: yup.object({
-    lat: yup.number().required("Latitude is required"),
-    lng: yup.number().required("Longitude is required")
-  }).required("Map center is required"),
+    lat: yup.number().required(() => i18n.t('validation:latitudeRequired')),
+    lng: yup.number().required(() => i18n.t('validation:longitudeRequired'))
+  }).required(() => i18n.t('validation:mapCenterRequired')),
   delivery_timing: yup.array().of(
     yup.object({
       id: yup.string().required(),
-      day_or_date: yup.string().required("Day or date is required"),
-      start_time: yup.string().required("Start time is required"),
-      end_time: yup.string().required("End time is required"),
+      day_or_date: yup.string().required(() => i18n.t('validation:dayOrDateRequired')),
+      start_time: yup.string().required(() => i18n.t('validation:startTimeRequired')),
+      end_time: yup.string().required(() => i18n.t('validation:endTimeRequired')),
       is_end_time_next_day: yup.boolean(),
       enable_delivery: yup.boolean()
     })
@@ -413,7 +414,7 @@ export const DeliverySettings = () => {
                       className="flex items-center gap-2"
                     >
                       <FontAwesomeIcon icon={faPlus} size="sm" />
-                      Add Custom Date
+                      {t('map.addCustomDate')}
                     </Button>
                   </div>
                   
@@ -431,7 +432,7 @@ export const DeliverySettings = () => {
                                 render={({field: dayField}) => (
                                   <Input
                                     type={isDefaultDay ? "text" : "date"}
-                                    label={isDefaultDay ? "Day of Week" : "Date"}
+                                    label={isDefaultDay ? t('map.dayOfWeek') : t('map.date')}
                                     value={dayField.value}
                                     onChange={dayField.onChange}
                                     disabled={isDefaultDay}

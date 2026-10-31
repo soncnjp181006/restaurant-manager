@@ -13,6 +13,7 @@ import {Button} from "@/components/common/input/button.tsx";
 import {HrCheckboxField, HrDateField, HrInputField} from "@/components/hr/shared/form-field.tsx";
 import {calendarDateToSurreal, toCalendarDateValue} from "@/components/hr/shared/form.utils.ts";
 import { emitEntityCrudSave } from '@/integrations/events/entity-write.ts';
+import i18n from '@/lib/i18n.ts';
 
 interface FormValues {
   id?: string;
@@ -31,8 +32,8 @@ interface Props {
 
 const validationSchema = yup.object({
   id: yup.string().optional(),
-  name: yup.string().required("Required"),
-  date: yup.mixed().nullable().required("Required"),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  date: yup.mixed().nullable().required(() => i18n.t('validation:required')),
   country_code: yup.string().optional(),
   is_recurring: yup.boolean().optional(),
   is_active: yup.boolean().optional(),
@@ -90,7 +91,7 @@ export const HolidayForm = ({open, onClose, data}: Props) => {
         source: 'entity-form',
       });
 
-      toast.success(t("buttons.save"));
+      toast.success(t("saved"));
       closeModal();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));

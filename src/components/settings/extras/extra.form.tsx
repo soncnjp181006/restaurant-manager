@@ -36,8 +36,8 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required(i18n.t('validation:required')),
-  value: yup.number().required(i18n.t('validation:required')).typeError(i18n.t('validation:mustBeNumber')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  value: yup.number().required(() => i18n.t('validation:required')).typeError(() => i18n.t('validation:mustBeNumber')),
   payment_types: yup.array(yup.object({
     label: yup.string(),
     value: yup.string(),

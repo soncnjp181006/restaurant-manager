@@ -25,22 +25,24 @@ const parseFilters = () => {
   return {startDate, endDate};
 };
 
-const MergeTable = ({rows}: {rows: MergeRow[]}) => (
+const MergeTable = ({rows}: {rows: MergeRow[]}) => {
+  const {t} = useTranslation('reports');
+  return (
   <>
     <div className="overflow-hidden rounded-lg border border-border">
       <table className="min-w-full divide-y divide-neutral-200">
         <thead className="bg-surface">
         <tr>
-          <th className="py-3 pl-6 pr-3 text-left text-sm font-semibold text-foreground">Merged at</th>
-          <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Merged by</th>
-          <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">New order</th>
-          <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">Old orders</th>
+          <th className="py-3 pl-6 pr-3 text-left text-sm font-semibold text-foreground">{t('labels.mergedAt')}</th>
+          <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.mergedBy')}</th>
+          <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.newOrder')}</th>
+          <th className="py-3 px-3 text-left text-sm font-semibold text-foreground">{t('labels.oldOrders')}</th>
         </tr>
         </thead>
         <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
         {rows.length === 0 ? (
           <tr>
-            <td colSpan={4} className="py-6 text-center text-sm text-muted">No merge events for selected range.</td>
+            <td colSpan={4} className="py-6 text-center text-sm text-muted">{t('labels.noMergeEventsForSelectedRange')}</td>
           </tr>
         ) : rows.map((row) => (
           <tr key={row.id}>
@@ -57,9 +59,10 @@ const MergeTable = ({rows}: {rows: MergeRow[]}) => (
         </tbody>
       </table>
     </div>
-    <div className="mt-4 text-sm text-muted">Total merge events: <span className="font-semibold">{formatNumber(rows.length)}</span></div>
+    <div className="mt-4 text-sm text-muted">{t('labels.totalMergeEvents')} <span className="font-semibold">{formatNumber(rows.length)}</span></div>
   </>
-);
+  );
+};
 
 export const MergeOrdersReport = () => {
   const { t } = useTranslation('reports');
@@ -70,7 +73,7 @@ export const MergeOrdersReport = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;

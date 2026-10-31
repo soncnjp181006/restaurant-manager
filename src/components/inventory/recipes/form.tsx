@@ -34,6 +34,7 @@ import {
   QuantityUomFields,
 } from "@/components/inventory/common/quantity.uom.fields.tsx";
 import {normalizeUom} from "@/utils/inventoryUom.ts";
+import i18n from '@/lib/i18n.ts';
 
 type SelectOption = {label: string; value: string} | null;
 
@@ -78,24 +79,24 @@ const validationSchema = yup.object({
   code: yup.string().nullable().optional(),
   notes: yup.string().nullable().optional(),
   isActive: yup.boolean().default(true),
-  baseBatchQty: yup.number().typeError("Number required").positive().required(),
+  baseBatchQty: yup.number().typeError(() => i18n.t('validation:numberRequired')).positive().required(),
   costAllocation: selectOptionSchema.required().nullable(),
   items: yup.array().of(
     yup.object({
       item: selectOptionSchema.required().nullable(),
-      quantity: yup.number().typeError("Number required").positive().required(),
+      quantity: yup.number().typeError(() => i18n.t('validation:numberRequired')).positive().required(),
       entered_uom: yup.string().nullable().optional(),
     })
   ).min(1),
   outputs: yup.array().of(
     yup.object({
       item: selectOptionSchema.required().nullable(),
-      yieldPercent: yup.number().typeError("Number required").positive().required(),
+      yieldPercent: yup.number().typeError(() => i18n.t('validation:numberRequired')).positive().required(),
       disposition: selectOptionSchema.required().nullable(),
-      valueWeight: yup.number().typeError("Number required").min(0).required(),
+      valueWeight: yup.number().typeError(() => i18n.t('validation:numberRequired')).min(0).required(),
       isPrimary: yup.boolean().default(false),
     })
-  ).min(1).test("one-primary", "Exactly one primary output required", (outputs) => {
+  ).min(1).test("one-primary", () => i18n.t('validation:exactlyOnePrimaryOutput'), (outputs) => {
     if (!outputs?.length) return false;
     return outputs.filter((o) => o?.isPrimary).length === 1;
   }),

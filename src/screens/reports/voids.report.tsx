@@ -131,7 +131,7 @@ export const VoidsReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const filters = useMemo(parseFilters, []);
-  const subtitle = filters.startDate && filters.endDate ? `${filters.startDate} to ${filters.endDate}` : undefined;
+  const subtitle = filters.startDate && filters.endDate ? t('labels.rangeSubtitle', { start: filters.startDate, end: filters.endDate }) : undefined;
 
   useEffect(() => {
     queryRef.current = db.query;
@@ -324,7 +324,7 @@ const VoidsReportBody = ({
         <div className="grid grid-cols-3 gap-4">
           {/* Voids by Reason */}
           <div className="overflow-hidden rounded-lg border border-border">
-            <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Voids by Reason</h3>
+            <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.voidsByReason')}</h3>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-neutral-200">
                 <thead className="bg-surface">
@@ -339,7 +339,7 @@ const VoidsReportBody = ({
                   {voidsByReason.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="py-6 text-center text-sm text-muted">
-                        No voids by reason
+                        {t('labels.noVoidsByReason')}
                       </td>
                     </tr>
                   ) : (
@@ -361,12 +361,12 @@ const VoidsReportBody = ({
 
           {/* Voids by Managers */}
           <div className="overflow-hidden rounded-lg border border-border">
-            <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Voids by Managers</h3>
+            <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.voidsByManagers')}</h3>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-neutral-200">
                 <thead className="bg-surface">
                   <tr>
-                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">Manager</th>
+                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('labels.manager')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.count')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.quantity')}</th>
                     <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
@@ -376,7 +376,7 @@ const VoidsReportBody = ({
                   {voidsByManager.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="py-6 text-center text-sm text-muted">
-                        No voids by manager
+                        {t('labels.noVoidsByManager')}
                       </td>
                     </tr>
                   ) : (
@@ -398,12 +398,12 @@ const VoidsReportBody = ({
 
           {/* Voids by Menu Items */}
           <div className="overflow-hidden rounded-lg border border-border">
-            <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Voids by Menu Items</h3>
+            <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.voidsByMenuItems')}</h3>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-neutral-200">
                 <thead className="bg-surface">
                   <tr>
-                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">Menu Item</th>
+                    <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('labels.menuItem')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.count')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.quantity')}</th>
                     <th className="py-3 pr-6 text-right text-xs font-semibold text-foreground">{t('columns.amount')}</th>
@@ -413,7 +413,7 @@ const VoidsReportBody = ({
                   {voidsByMenuItem.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="py-6 text-center text-sm text-muted">
-                        No voids by menu item
+                        {t('labels.noVoidsByMenuItem')}
                       </td>
                     </tr>
                   ) : (
@@ -436,7 +436,7 @@ const VoidsReportBody = ({
 
         {/* Detailed voids table */}
         <div className="overflow-hidden rounded-lg border border-border">
-          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">Voids Detail</h3>
+          <h3 className="bg-surface px-6 py-3 text-sm font-semibold text-foreground">{t('labels.voidsDetail')}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-neutral-200">
               <thead className="bg-surface">
@@ -444,12 +444,12 @@ const VoidsReportBody = ({
                   <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-foreground">{t('columns.date')}</th>
                   <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('common:actions.time')}</th>
                   <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('columns.reason')}</th>
-                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Menu Item</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.menuItem')}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.quantity')}</th>
                   <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.lineTotal')}</th>
-                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">Manager</th>
+                  <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('labels.manager')}</th>
                   <th className="py-3 px-3 text-left text-xs font-semibold text-foreground">{t('metrics.cashier')}</th>
-                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">Order #</th>
+                  <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('orderFiscal.order')}</th>
                   <th className="py-3 pr-6 text-left text-xs font-semibold text-foreground">{t('columns.comments')}</th>
                 </tr>
               </thead>
@@ -457,7 +457,7 @@ const VoidsReportBody = ({
                 {orderVoids.length === 0 ? (
                   <tr>
                     <td colSpan={10} className="py-6 text-center text-sm text-muted">
-                      No voids found for the selected filters
+                      {t('labels.noVoidsFound')}
                     </td>
                   </tr>
                 ) : (
@@ -510,7 +510,7 @@ const VoidsReportBody = ({
                                         ))}
                                       </div>
                                     ) : (
-                                      <div className="mt-1 text-xs text-muted">No modifiers</div>
+                                      <div className="mt-1 text-xs text-muted">{t('labels.noModifiers')}</div>
                                     )}
                                   </div>
                                 );

@@ -32,10 +32,10 @@ interface CreateAccountProps {
 }
 
 const ValidationSchema = yup.object({
-  code: yup.string().required(i18n.t('validation:required')),
-  name: yup.string().required(i18n.t('validation:required')),
-  group: yup.object().required(i18n.t('validation:required')),
-  normal_balance: yup.object().required(i18n.t('validation:required')),
+  code: yup.string().required(() => i18n.t('validation:required')),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  group: yup.object().required(() => i18n.t('validation:required')),
+  normal_balance: yup.object().required(() => i18n.t('validation:required')),
   notes: yup.string().nullable().optional(),
   parent: yup.object().nullable().optional(),
 }).required();

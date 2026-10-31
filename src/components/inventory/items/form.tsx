@@ -35,6 +35,7 @@ import {useInventoryLocations} from "@/hooks/useInventoryLocations.ts";
 import {toRecordId} from "@/lib/utils.ts";
 import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
 import {assertItemUomChangeAllowed} from "@/lib/inventory/item.uom.lock.ts";
+import i18n from '@/lib/i18n.ts';
 
 interface Props {
   open: boolean
@@ -43,33 +44,33 @@ interface Props {
 }
 
 const validationSchema = yup.object({
-  name: yup.string().required("This is required"),
-  code: yup.string().required("This is required"),
+  name: yup.string().required(() => i18n.t('validation:required')),
+  code: yup.string().required(() => i18n.t('validation:required')),
   uom: yup.object({
     label: yup.string(),
     value: yup.string()
-  }).required('This is required'),
+  }).required(() => i18n.t('validation:required')),
   category: yup.object({
     label: yup.string(),
     value: yup.string()
-  }).required("This is required").nullable(),
-  base_quantity: yup.number().typeError("This should be a number").optional().default(1),
+  }).required(() => i18n.t('validation:required')).nullable(),
+  base_quantity: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).optional().default(1),
   suppliers: yup.array(yup.object({
     label: yup.string(),
     value: yup.string()
-  })).min(1, 'This is required'),
+  })).min(1, () => i18n.t('validation:required')),
   locations: yup.array(yup.object({
     label: yup.string(),
     value: yup.string()
-  })).min(1, 'Select at least one location'),
-  price: yup.number().typeError("This should be a number").nullable().optional(),
-  average_price: yup.number().typeError("This should be a number").nullable().optional(),
+  })).min(1, () => i18n.t('validation:selectAtLeastOneLocation')),
+  price: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).nullable().optional(),
+  average_price: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).nullable().optional(),
   item_types: yup.array().of(
     yup.object({
       label: yup.string(),
       value: yup.string().oneOf(['raw', 'semi_finished', 'finished']),
     })
-  ).min(1, 'Select at least one item type'),
+  ).min(1, () => i18n.t('validation:selectAtLeastOneItemType')),
   taxable: yup.boolean().optional(),
 });
 
@@ -269,7 +270,7 @@ export const InventoryItemForm = ({
   return (
     <>
       <Modal
-        title={data ? `Update ${data?.name}` : 'Create new item'}
+        title={data ? t('forms.updateItem', { name: data.name }) : t('forms.createItem')}
         open={open}
         onClose={closeModal}
         size="lg"

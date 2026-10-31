@@ -102,7 +102,7 @@ export const NestedGroupOverrideEditor = ({
 
         <div className="flex gap-2">
           <Button variant="secondary" type="button" onClick={resetGroup}>
-            Reset to menu
+            {t('ui.resetToMenu')}
           </Button>
           <Button
             variant="success"
@@ -110,7 +110,7 @@ export const NestedGroupOverrideEditor = ({
             className="ml-auto"
             onClick={() => onSave(draftItems)}
           >
-            Save
+            {t('common:actions.save')}
           </Button>
         </div>
 
@@ -157,7 +157,7 @@ export const NestedGroupOverrideEditor = ({
                     })
                   }
                 >
-                  Reset
+                  {t('ui.resetLabel')}
                 </Button>
               </div>
             );

@@ -18,6 +18,7 @@ import {faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {StringRecordId} from "surrealdb";
 import get from "lodash/get";
 import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button.tsx";
+import i18n from '@/lib/i18n.ts';
 
 interface InventoryItemGroupFormValues {
   main_item: { label: string; value: string } | null;
@@ -38,15 +39,15 @@ const validationSchema = yup.object({
   main_item: yup.object({
     label: yup.string(),
     value: yup.string()
-  }).required("This is required").nullable(),
-  base_quantity: yup.number().typeError("This should be a number").required("This is required"),
+  }).required(() => i18n.t('validation:required')).nullable(),
+  base_quantity: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')),
   sub_items: yup.array().of(yup.object({
     item: yup.object({
       label: yup.string(),
       value: yup.string()
-    }).required("This is required").nullable(),
-    quantity: yup.number().typeError("This should be a number").required("This is required"),
-  })).min(1, "Add at least one sub item"),
+    }).required(() => i18n.t('validation:required')).nullable(),
+    quantity: yup.number().typeError(() => i18n.t('validation:mustBeNumber')).required(() => i18n.t('validation:required')),
+  })).min(1, () => i18n.t('validation:addAtLeastOneSubItem')),
 }).required();
 
 export const InventoryItemGroupForm = ({open, onClose, data}: Props) => {
@@ -197,7 +198,7 @@ export const InventoryItemGroupForm = ({open, onClose, data}: Props) => {
 
   return (
     <Modal
-      title={data ? `Update group for ${data?.main_item?.name ?? ""}` : "Create new item group"}
+      title={data ? t('forms.updateItemGroup', { name: data?.main_item?.name ?? '' }) : t('forms.createItemGroup')}
       open={open}
       onClose={closeModal}
       size="lg"
@@ -247,7 +248,7 @@ export const InventoryItemGroupForm = ({open, onClose, data}: Props) => {
                 variant="primary"
                 onClick={() => append({item: null, quantity: 1})}
               >
-                Add sub item
+                {t('ui.addSubItem')}
               </Button>
             </div>
 
