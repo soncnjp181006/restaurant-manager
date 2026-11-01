@@ -13,11 +13,11 @@
     "brandTitle": "Màu thương hiệu",
     "brandDescription": "Chọn một bộ màu cho thiết bị này. Khung ứng dụng, nút, ô chọn và biểu đồ cập nhật ngay.",
     "brand": {
-      "classic": "Cổ điển",
+      "classic": "Băng hà",
       "ocean": "Xanh biển",
-      "forest": "Xanh rừng",
-      "cream": "Màu kem",
-      "ruby": "Hồng ngọc",
+      "forest": "Rêu băng",
+      "cream": "Băng trắng",
+      "ruby": "Lam tím",
       "sapphire": "Lam ngọc",
       "custom": "Tùy chỉnh"
     },

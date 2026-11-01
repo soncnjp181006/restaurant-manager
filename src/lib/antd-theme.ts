@@ -12,16 +12,16 @@ const neutral900 = "#171717";
 const neutral800 = "#262626";
 const neutral700 = "#404040";
 const neutral500 = "#737373";
-const neutral400 = "#a3a3a3";
-const neutral200 = "#e5e5e5";
-const neutral100 = "#f5f5f5";
+const neutral400 = "#8fa2b8";
+const neutral200 = "#dfe7f0";
+const neutral100 = "#eef3f8";
 
 function accentsFromPalette(palette: BrandPalette) {
   return {
     primary: paletteRgb(palette.primary),
-    primaryHex: rgbChannelsToHex(palette.primary, "#0046FE"),
+    primaryHex: rgbChannelsToHex(palette.primary, "#0E7490"),
     warning: paletteRgb(palette.warning),
-    warningHex: rgbChannelsToHex(palette.warning, "#FFA514"),
+    warningHex: rgbChannelsToHex(palette.warning, "#D97706"),
     danger: paletteRgb(palette.danger),
     success: paletteRgb(palette.success),
     info: paletteRgb(palette.info),

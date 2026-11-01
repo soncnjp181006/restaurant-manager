@@ -19,7 +19,12 @@ export type BrandPalette = {
   info: string;
 };
 
-export const DEFAULT_THEME: AppThemePreference = 'system';
+/**
+ * Cold themes read best dark-first on a POS screen, and `index.html` already
+ * pre-boots dark before any JS runs — a 'system' default made the two
+ * disagree, so a fresh device flashed light and then flipped.
+ */
+export const DEFAULT_THEME: AppThemePreference = 'dark';
 export const DEFAULT_BRAND: AppBrandId = 'classic';
 
 export const THEME_PREFERENCES: AppThemePreference[] = ['light', 'dark', 'system'];

@@ -23,6 +23,8 @@
   }
 }
 @mixin gradient-background{
+  /* Cold band only, and straight from the brand vars: theme('colors.*.DEFAULT')
+     would inline `rgb(var(--x) / <alpha-value>)`, which is invalid CSS here. */
   background:
           linear-gradient(
                           to bottom,
@@ -32,12 +34,12 @@
           padding-box,
           conic-gradient(
                           from var(--bg-angle),
-                          theme('colors.danger.500'),
-                          theme('colors.warning.500'),
-                          theme('colors.success.500'),
-                          theme('colors.info.500'),
-                          theme('colors.warning.500'),
-                          theme('colors.danger.500')
+                          rgb(var(--primary)),
+                          rgb(var(--info)),
+                          rgb(var(--success)),
+                          rgb(var(--info)),
+                          rgb(var(--primary)),
+                          rgb(var(--primary))
           )
           border-box;
   animation: bg-angle-spin var(--duration) infinite linear;

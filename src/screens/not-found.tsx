@@ -23,8 +23,8 @@ const NotFoundIllustration = () => (
         <stop offset="1" stopColor="#d4d4d4"/>
       </linearGradient>
       <linearGradient id="accent-gradient" x1="0" y1="0" x2="1" y2="1">
-        <stop stopColor="#f59e0b"/>
-        <stop offset="1" stopColor="#d97706"/>
+        <stop stopColor="#22C9E6"/>
+        <stop offset="1" stopColor="#0E7490"/>
       </linearGradient>
       <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
         <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#000" floodOpacity="0.35"/>
@@ -32,9 +32,9 @@ const NotFoundIllustration = () => (
     </defs>
 
     {/* floating decorative orbs */}
-    <circle cx="60" cy="60" r="28" fill="#f59e0b" fillOpacity="0.12"/>
+    <circle cx="60" cy="60" r="28" fill="#22C9E6" fillOpacity="0.12"/>
     <circle cx="350" cy="90" r="18" fill="#3b82f6" fillOpacity="0.15"/>
-    <circle cx="320" cy="270" r="22" fill="#f59e0b" fillOpacity="0.1"/>
+    <circle cx="320" cy="270" r="22" fill="#22C9E6" fillOpacity="0.1"/>
 
     {/* table surface */}
     <ellipse cx="200" cy="268" rx="150" ry="18" fill="#171717" fillOpacity="0.6"/>
@@ -80,7 +80,7 @@ const NotFoundIllustration = () => (
     </g>
 
     {/* question marks */}
-    <text x="175" y="195" fontSize="22" fill="#f59e0b" fontWeight="700" fontFamily="system-ui, sans-serif" opacity="0.9">?</text>
+    <text x="175" y="195" fontSize="22" fill="#22C9E6" fontWeight="700" fontFamily="system-ui, sans-serif" opacity="0.9">?</text>
     <text x="125" y="175" fontSize="16" fill="#737373" fontWeight="600" fontFamily="system-ui, sans-serif">?</text>
     <text x="195" y="185" fontSize="14" fill="#525252" fontWeight="600" fontFamily="system-ui, sans-serif">?</text>
 
@@ -93,7 +93,7 @@ const NotFoundIllustration = () => (
       fill="none"
       opacity="0.5"
     />
-    <circle cx="300" cy="80" r="5" fill="#f59e0b"/>
+    <circle cx="300" cy="80" r="5" fill="#22C9E6"/>
     <circle cx="120" cy="200" r="4" fill="#737373"/>
   </svg>
 );

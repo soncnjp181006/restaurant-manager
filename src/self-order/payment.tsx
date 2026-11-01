@@ -77,19 +77,19 @@ export function StripePay({ publishableKey, clientSecret, ...rest }: StripePayPr
         appearance: {
           theme: 'flat',
           variables: {
-            colorPrimary: '#17140f',
-            colorBackground: '#fffdf9',
-            colorText: '#17140f',
-            colorTextSecondary: '#7c7163',
-            colorDanger: '#a4552f',
+            colorPrimary: '#0e7490',
+            colorBackground: '#f8fafc',
+            colorText: '#162230',
+            colorTextSecondary: '#586c82',
+            colorDanger: '#be123c',
             borderRadius: '14px',
             fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
           },
           rules: {
-            '.Input': { border: '1px solid #e6dccb', boxShadow: 'none' },
-            '.Input:focus': { border: '1px solid #b8955a', boxShadow: '0 0 0 3px rgba(184,149,90,0.18)' },
-            '.Tab': { border: '1px solid #e6dccb' },
-            '.Tab--selected': { borderColor: '#17140f' },
+            '.Input': { border: '1px solid #cedae7', boxShadow: 'none' },
+            '.Input:focus': { border: '1px solid #0e7490', boxShadow: '0 0 0 3px rgba(14,116,144,0.18)' },
+            '.Tab': { border: '1px solid #cedae7' },
+            '.Tab--selected': { borderColor: '#0e7490' },
           },
         },      }}
     >

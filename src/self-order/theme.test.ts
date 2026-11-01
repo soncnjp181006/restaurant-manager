@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { BRAND_PALETTES } from '@/lib/brand-palettes.ts'
 import {
   applySelfOrderTheme,
   normalizeSelfOrderBrand,
@@ -32,11 +33,28 @@ describe('self-order theme', () => {
     const written = new Map<string, string>()
     for (const [name, value] of setProperty.mock.calls) written.set(name, value)
 
-    // Ocean dark palette values (see brand-palettes.ts).
-    expect(written.get('--so-paper')).toBe('rgb(8 18 24)')
-    expect(written.get('--so-ink')).toBe('rgb(34 211 238)')
-    expect(written.get('--so-on-ink')).toBe('rgb(8 18 24)')
+    // Bound to the live preset instead of copied literals: this test is about
+    // the mapping (which token lands on which --so-* var), and literals went
+    // stale the moment the app went cold.
+    const oceanDark = BRAND_PALETTES.ocean.dark
+    expect(written.get('--so-paper')).toBe(`rgb(${oceanDark.canvas})`)
+    expect(written.get('--so-ink')).toBe(`rgb(${oceanDark.primary})`)
+    expect(written.get('--so-on-ink')).toBe(`rgb(${oceanDark.primaryFg})`)
+    expect(written.get('--so-card')).toBe(`rgb(${oceanDark.surfaceElevated})`)
+    expect(written.get('--so-line')).toBe(`rgb(${oceanDark.border})`)
+    expect(written.get('--so-fg')).toBe(`rgb(${oceanDark.foreground})`)
+    expect(written.get('--so-muted')).toBe(`rgb(${oceanDark.muted})`)
     expect(written.has('--so-gold-ink')).toBe(true)
+
+    // The full set of vars the QR page reads. A missing one leaves that part of
+    // the customer page on the CSS default — half-brand, half-beige.
+    for (const name of [
+      '--so-paper', '--so-card', '--so-line', '--so-muted', '--so-fg',
+      '--so-ink', '--so-on-ink', '--so-gold', '--so-gold-soft', '--so-gold-ink',
+      '--so-ink-rgb', '--so-on-ink-rgb', '--so-gold-rgb',
+    ]) {
+      expect(written.has(name), `${name} was never written`).toBe(true)
+    }
 
     globalThis.document = original
   })

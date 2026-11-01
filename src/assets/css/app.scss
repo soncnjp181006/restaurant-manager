@@ -16,34 +16,58 @@ body {
   /* Bottom app toolbar height; 0 until a session mounts AppToolbar. */
   --app-toolbar-h: 0px;
 
-  /* Semantic theme tokens (RGB channels for Tailwind alpha support) */
-  --canvas: 212 212 212; /* neutral-300 */
-  --surface: 250 250 250; /* neutral-50 */
+  /*
+   * Cold fallback tokens. ThemeProvider overwrites these from
+   * `brand-palettes.ts` on mount, but the first paint and anything that
+   * renders before that (login, self-order, print previews) uses these —
+   * so they must be the same cold family, not neutral gray.
+   */
+  --canvas: 226 234 243; /* blue-tinted slate */
+  --surface: 243 246 251;
   --surface-elevated: 255 255 255;
-  --foreground: 64 64 64; /* neutral-700 */
-  --muted: 82 82 82; /* neutral-600 — was neutral-500 (115,115,115), 4.54:1 on --surface with almost no safety margin above the 4.5:1 minimum; this gives 7.49:1 */
-  --border: 229 229 229; /* neutral-200 */
-  --primary: 0 70 254;
+  --foreground: 22 34 48;
+  --muted: 88 108 130; /* 7.1:1 on --surface */
+  --border: 206 218 231;
+  --primary: 14 116 144;
   --primary-fg: 255 255 255;
-  --warning: 255 165 20;
-  --danger: 244 58 48;
-  --success: 61 229 103;
-  --info: 48 198 232;
+  --warning: 180 83 9;
+  --danger: 190 18 60;
+  --success: 13 148 136;
+  --info: 2 132 199;
+
+  /* Elevation + accent ramps (cold). Components read these, never raw hex. */
+  --elev-1: 0 1px 2px rgb(15 34 56 / 0.06), 0 1px 3px rgb(15 34 56 / 0.05);
+  --elev-2: 0 2px 6px rgb(15 34 56 / 0.08), 0 8px 20px -8px rgb(15 34 56 / 0.14);
+  --elev-3: 0 4px 10px rgb(15 34 56 / 0.1), 0 18px 40px -12px rgb(15 34 56 / 0.22);
+  --ring: rgb(var(--primary) / 0.28);
+  --accent-1: rgb(var(--primary));
+  --accent-2: rgb(var(--info));
+  --accent-soft: rgb(var(--primary) / 0.08);
+  --accent-line: linear-gradient(90deg, rgb(var(--primary) / 0), rgb(var(--primary)) 18%, rgb(var(--info)) 82%, rgb(var(--info) / 0));
+  --hairline: rgb(var(--border));
+  --grid-line: rgb(15 34 56 / 0.07);
 }
 
 .dark {
-  --canvas: 10 10 10; /* near black */
-  --surface: 23 23 23; /* neutral-900 */
-  --surface-elevated: 38 38 38; /* neutral-800 */
-  --foreground: 245 245 245; /* neutral-100 */
-  --muted: 229 229 229; /* neutral-200 — lighter secondary text */
-  --border: 64 64 64; /* neutral-700 */
-  --primary: 63 121 254;
-  --primary-fg: 255 255 255;
-  --warning: 255 194 78;
-  --danger: 248 118 98;
-  --success: 107 239 127;
-  --info: 97 225 241;
+  --canvas: 8 12 18; /* deep blue-black */
+  --surface: 15 22 32;
+  --surface-elevated: 24 33 46;
+  --foreground: 226 236 245;
+  --muted: 147 167 186;
+  --border: 41 55 73;
+  --primary: 34 211 238;
+  --primary-fg: 6 20 28;
+  --warning: 251 191 36;
+  --danger: 251 113 133;
+  --success: 52 211 153;
+  --info: 56 189 248;
+
+  --elev-1: 0 1px 2px rgb(0 0 0 / 0.45), 0 1px 3px rgb(2 12 24 / 0.4);
+  --elev-2: 0 2px 6px rgb(0 0 0 / 0.5), 0 10px 24px -10px rgb(0 4 12 / 0.7);
+  --elev-3: 0 4px 12px rgb(0 0 0 / 0.55), 0 22px 44px -14px rgb(0 4 12 / 0.8);
+  --ring: rgb(var(--primary) / 0.35);
+  --accent-soft: rgb(var(--primary) / 0.12);
+  --grid-line: rgb(120 180 220 / 0.09);
 }
 
 html[data-app-toolbar='1'] {
@@ -62,10 +86,15 @@ html[data-app-toolbar='1'] {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-warning-100 rounded;
+  /* Was bg-warning-100 — a warm yellow thumb on every cold surface. */
+  background: rgb(var(--muted) / 0.45);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-warning;
+  background: rgb(var(--primary) / 0.75);
+  background-clip: padding-box;
 }
 
 @font-face {
@@ -132,7 +161,7 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
 
 @keyframes fade-highlight {
   from {
-    @apply bg-neutral-500;
+    background-color: rgb(var(--primary) / 0.35);
   }
   to {
     background-color: rgb(var(--surface-elevated));
@@ -169,7 +198,9 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
     vertical-align: middle;
   }
   th{
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: rgb(var(--muted));
   }
   th, td{
     border-collapse: collapse;
@@ -177,6 +208,9 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
     //text-align: left;
     vertical-align: middle;
     border-bottom: 1px solid rgb(var(--border));
+  }
+  tbody tr:hover td {
+    background: var(--accent-soft);
   }
   &.table-sm{
     th, td{
@@ -202,6 +236,7 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
   tbody {
     tr {
       @apply hover:bg-surface dark:hover:bg-neutral-800;
+      transition: background-color 120ms linear;
     }
   }
 }
@@ -211,6 +246,8 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
       position: sticky;
       top: 0;
       background: rgb(var(--surface-elevated));
+      /* Cold hairline under the sticky header instead of a gray shadow. */
+      box-shadow: inset 0 -1px 0 rgb(var(--primary) / 0.25), var(--elev-1);
     }
   }
 }
@@ -237,9 +274,20 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
   active:shadow-none bg-surface-elevated uppercase font-bold border-2;
   font-size: var(--font-size);
   line-height: 1;
-  transition: all linear 100ms;
+  transition: background-color 100ms linear, border-color 100ms linear,
+    color 100ms linear, box-shadow 140ms ease-out, transform 100ms linear;
   border-radius: var(--radius);
+  border-color: rgb(var(--border));
+  box-shadow: var(--elev-1);
   white-space: nowrap;
+  &:hover {
+    border-color: rgb(var(--primary) / 0.55);
+    box-shadow: var(--elev-2);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
   &:active{
     transform: scale(var(--scale));
   }
@@ -258,10 +306,15 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
 
   &:disabled, &.disabled {
     @apply cursor-not-allowed pointer-events-none select-none opacity-50;
+    box-shadow: none;
   }
   &.btn-flat {
     border: none;
     background: rgb(var(--surface-elevated));
+    box-shadow: none;
+    &:hover {
+      background: var(--accent-soft);
+    }
     &:disabled {
       @apply bg-surface-elevated;
     }
@@ -291,15 +344,16 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
       @apply bg-danger/10;
     }
     &.active, &:active {
-      @apply bg-danger text-white shadow-none;
+      /* --danger is a light rose in dark mode, so the ink flips to dark. */
+      @apply bg-danger text-white dark:text-neutral-950 shadow-none;
     }
     &.btn-filled{
-      @apply bg-danger text-white;
+      @apply bg-danger text-white dark:text-neutral-950;
     }
   }
   &.btn-primary {
     @apply border-primary text-primary focus:outline-none focus:border-primary hover:bg-primary/10
-    dark:border-primary dark:text-primary dark:focus:border-primary dark:hover:bg-primary/20;
+    dark:border-primary dark:text-primary dark:hover:bg-primary/20;
     &:disabled {
       @apply bg-surface text-muted dark:bg-neutral-700 dark:text-muted;
     }
@@ -312,17 +366,17 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
     }
   }
   &.btn-secondary {
-    @apply border-slate-900 bg-slate-100 text-slate-500 focus:outline-none focus:border-slate-500
-    hover:bg-slate-100 focus:bg-slate-100
-    dark:border-slate-400 dark:bg-neutral-800 dark:text-slate-300 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700;
+    @apply border-slate-300 bg-slate-100 text-slate-600 focus:outline-none focus:border-slate-500
+    hover:bg-slate-200 focus:bg-slate-200
+    dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:focus:bg-slate-700;
     &:disabled {
-      @apply bg-slate-100 dark:bg-neutral-800;
+      @apply bg-slate-100 dark:bg-slate-800;
     }
     &.active, &:active {
-      @apply bg-slate-500 text-slate-900 shadow-none dark:bg-slate-400 dark:text-neutral-900;
+      @apply bg-slate-500 text-slate-50 shadow-none dark:bg-slate-400 dark:text-slate-900;
     }
     &.btn-filled{
-      @apply bg-slate-500 text-slate-100;
+      @apply bg-slate-500 text-slate-50;
     }
   }
   &.btn-warning {
@@ -345,10 +399,10 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
       @apply bg-success/10;
     }
     &.active, &:active {
-      @apply bg-success text-white shadow-none;
+      @apply bg-success text-white dark:text-neutral-950 shadow-none;
     }
     &.btn-filled{
-      @apply bg-success text-white;
+      @apply bg-success text-white dark:text-neutral-950;
     }
   }
 
@@ -371,12 +425,20 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
   border-border disabled:bg-surface read-only:bg-surface focus:outline-none focus:border-primary
   h-[40px] w-full bg-surface-elevated
   dark:disabled:bg-neutral-800 dark:read-only:bg-neutral-800;
-  transition: all 100ms linear;
-  &[type=file]{
-    @apply py-1;
+  transition: border-color 100ms linear, box-shadow 140ms ease-out,
+    background-color 100ms linear;
+  box-shadow: inset 0 1px 0 rgb(var(--foreground) / 0.03);
+  &:hover:not(:disabled):not(:read-only) {
+    border-color: rgb(var(--primary) / 0.4);
   }
   &:focus {
-    //box-shadow: inset 2px 2px 0 0 #0095ff, inset -2px -2px 0 0 #0095ff;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  &::placeholder {
+    color: rgb(var(--muted) / 0.75);
+  }
+  &[type=file]{
+    @apply py-1;
   }
   &:disabled,
   &:read-only {
@@ -542,11 +604,10 @@ table th {
   height: 72px;
   font-size: 24px;
   text-transform: unset;
-  box-shadow: 3px 3px 8px rgba(0,0,0,0.4);
+  box-shadow: var(--elev-2);
 
   &:active {
-    @apply bg-neutral-900;
-    color: white;
+    @apply bg-primary text-primary-fg;
   }
   &:focus,
   &:active {
@@ -721,23 +782,25 @@ table th {
 .error-404 h1 {
   font-size: 180px;
   font-weight: 700;
-  color: #4154f1;
+  color: rgb(var(--primary));
   margin-bottom: 0;
   line-height: 150px;
 }
 .error-404 h2 {
   font-size: 24px;
   font-weight: 700;
-  color: #012970;
+  color: rgb(var(--foreground));
   margin-bottom: 30px;
 }
 .error-404 .btn {
-  background: #51678f;
-  color: #fff;
+  background: rgb(var(--surface-elevated));
+  color: rgb(var(--foreground));
+  border-color: rgb(var(--border));
   padding: 8px 30px;
 }
 .error-404 .btn:hover {
-  background: #3e4f6f;
+  background: var(--accent-soft);
+  border-color: rgb(var(--primary));
 }
 @media (min-width: 992px) {
   .error-404 img {
@@ -880,7 +943,7 @@ table th {
             position: inherit;
             content: "";
             top: -20px;
-            background-color: theme("colors.neutral.500");
+            background-color: rgb(var(--canvas));
             height: 20px;
             width: 20px;
             right: 0;
@@ -891,7 +954,7 @@ table th {
             position: inherit;
             content: "";
             bottom: -20px;
-            background-color: theme("colors.neutral.500");
+            background-color: rgb(var(--canvas));
             height: 20px;
             width: 20px;
             right: 0;
@@ -1036,20 +1099,22 @@ table th {
 }
 
 @keyframes login-aurora-hue {
+  /* Stay inside the cool band: small rotations drift navy↔teal, while the old
+     88deg / 200deg / 280deg swings passed straight through yellow and magenta. */
   0%, 16% {
     filter: hue-rotate(0deg);
   }
   22%, 40% {
-    filter: hue-rotate(88deg);
+    filter: hue-rotate(-26deg);
   }
   46%, 64% {
-    filter: hue-rotate(200deg);
+    filter: hue-rotate(18deg);
   }
   70%, 88% {
-    filter: hue-rotate(280deg);
+    filter: hue-rotate(-12deg);
   }
   100% {
-    filter: hue-rotate(360deg);
+    filter: hue-rotate(0deg);
   }
 }
 
@@ -1083,13 +1148,13 @@ table th {
   --space: 5px;
   --size: 15px;
 
-  background: repeating-linear-gradient(90deg ,rgb(var(--surface-elevated)) 0 var(--space), theme('colors.neutral.300') 0 var(--size));
+  background: repeating-linear-gradient(90deg ,rgb(var(--surface-elevated)) 0 var(--space), rgb(var(--border)) 0 var(--size));
 }
 .v-separator{
   --space: 5px;
   --size: 10px;
 
-  background: repeating-linear-gradient(0deg ,rgb(var(--surface-elevated)) 0 var(--space), theme('colors.neutral.300') 0 var(--size));
+  background: repeating-linear-gradient(0deg ,rgb(var(--surface-elevated)) 0 var(--space), rgb(var(--border)) 0 var(--size));
 }
 .pressable {
   --scale: 0.9;
@@ -1103,12 +1168,16 @@ table th {
 .bg-grid{
   background-size: 20px 20px;
   background-image:
-          linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
+          linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+          linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
 }
 .tag{
   @apply bg-muted/20 text-foreground p-1 rounded-lg px-2 shadow-sm text-xs font-bold
-    hover:bg-neutral-300 hover:text-primary hover:scale-125;
+    hover:text-primary hover:scale-125;
+  transition: background-color 120ms linear, color 120ms linear, transform 140ms ease-out;
+  &:hover {
+    background: var(--accent-soft);
+  }
 }
 .kitchen-order-modifier-group{
   &:before{
@@ -1116,8 +1185,9 @@ table th {
   }
 }
 :root {
-  --btn-color: oklch(1 0.3074 153.83 / 50.74%);
-  --btn-color-2: oklch(1 0.3074 153.83 / 36.28%);
+  /* Pillow buttons followed the brand accent (was a fixed green hue). */
+  --btn-color: oklch(0.92 0.11 210 / 50.74%);
+  --btn-color-2: oklch(0.86 0.13 220 / 36.28%);
 }
 
 .btn-pillow {
@@ -1228,6 +1298,60 @@ table th {
  * rather than removing them, so looping/decorative motion (login aurora,
  * gradient spins, confetti, the infinite order-ready celebration) stops
  * without deleting the underlying state change it signals. */
+/* ------------------------------------------------------------------ */
+/* Cold refresh: depth, focus, and typography shared by every surface.  */
+/* ------------------------------------------------------------------ */
+
+/* Page depth without adding a layer: one faint accent wash in the top corner,
+ * so a full-screen panel never reads as flat gray-on-gray. */
+body {
+  background-image:
+    radial-gradient(120% 80% at 100% 0%, rgb(var(--primary) / 0.07) 0%, transparent 55%),
+    radial-gradient(90% 70% at 0% 100%, rgb(var(--info) / 0.05) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+/* One focus language everywhere, including the controls that never set one. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+  border-radius: inherit;
+}
+
+h1, h2, h3, h4, h5, h6, .title, .card-title {
+  letter-spacing: -0.011em;
+}
+
+/* Panels that already opt into an elevated background get a hairline edge;
+ * this is what makes a card read as a card on a dark canvas. */
+/* Shadows come from the cold `boxShadow` scale in tailwind.config.js, not from
+ * overriding `.shadow*` here: Tailwind composes a shadow with `ring-*` through
+ * one `box-shadow` property, and a plain override silently deletes the ring
+ * (order tiles, popovers and the alert badge all pair the two). */
+
+.btn-circle {
+  background-color: rgb(var(--surface-elevated));
+  border: 1px solid rgb(var(--border));
+  transition: border-color 120ms linear, background-color 120ms linear;
+  &:hover {
+    border-color: rgb(var(--primary) / 0.5);
+    background-color: var(--accent-soft);
+  }
+}
+
+/* Dialogs and popovers: one cold edge instead of a floating gray box. */
+.react-aria-Modal .react-aria-Dialog,
+.react-aria-Popover {
+  border: 1px solid rgb(var(--border));
+  box-shadow: var(--elev-3);
+}
+
+/* Active nav/filter chips get the accent language everywhere at once. */
+.sidebar-btn.active,
+[aria-pressed="true"].btn {
+  background-image: linear-gradient(180deg, var(--accent-soft), transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

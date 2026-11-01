@@ -33,14 +33,16 @@ interface ThemeContextValue {
   palette: BrandPalette;
 }
 
-const defaultPalette = resolveBrandPalette(DEFAULT_BRAND, 'light');
+/** Matches what `index.html` pre-boots, so the first paint and the context agree. */
+const defaultResolvedTheme = resolveAppTheme(DEFAULT_THEME);
+const defaultPalette = resolveBrandPalette(DEFAULT_BRAND, defaultResolvedTheme);
 
 const ThemeContext = createContext<ThemeContextValue>({
   preference: DEFAULT_THEME,
   brand: DEFAULT_BRAND,
   customPrimary: DEFAULT_CUSTOM_PRIMARY,
-  resolvedTheme: 'light',
-  isDark: false,
+  resolvedTheme: defaultResolvedTheme,
+  isDark: defaultResolvedTheme === 'dark',
   palette: defaultPalette,
 });
 

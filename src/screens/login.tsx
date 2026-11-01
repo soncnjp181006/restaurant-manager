@@ -437,8 +437,8 @@ export const Login = () => {
               className={cn(
                 "w-56 border-2 transition-all duration-150 btn btn-filled lg",
                 loginMethod === 'pin'
-                  ? "!bg-warning text-black border-warning"
-                  : "!bg-black text-white"
+                  ? "!bg-primary text-primary-fg border-primary"
+                  : "!bg-surface text-foreground border-border"
               )}
               onClick={() => {
                 setLoginMethod('pin');
@@ -456,8 +456,8 @@ export const Login = () => {
               className={cn(
                 "w-56 border-2 transition-all duration-150 btn btn-filled lg",
                 loginMethod === 'form'
-                  ? "!bg-warning text-black border-warning"
-                  : "!bg-black text-white"
+                  ? "!bg-primary text-primary-fg border-primary"
+                  : "!bg-surface text-foreground border-border"
               )}
               onClick={() => {
                 setLoginMethod('form');
@@ -499,7 +499,7 @@ export const Login = () => {
                   <button type="button" onClick={() => onKey('7')} className="btn-login">7</button>
                   <button type="button" onClick={() => onKey('8')} className="btn-login">8</button>
                   <button type="button" onClick={() => onKey('9')} className="btn-login">9</button>
-                  <button type="button" onClick={onBack} className="btn-login danger"><FontAwesomeIcon icon={faBackspace}/>
+                  <button type="button" onClick={onBack} className="btn-login"><FontAwesomeIcon icon={faBackspace}/>
                   </button>
                   <button type="button" onClick={() => onKey('0')} className="btn-login">0</button>
                   <button type="button" onClick={onClear} className="btn-login danger">C</button>

@@ -11,14 +11,14 @@ type AuroraLine = {
   color: string;
 };
 
-/** One green family, light through dark. The parent hue cycle shifts them together. */
+/** One cold family (navy → cyan → azure), light through dark. The parent hue cycle shifts them together. */
 const LINES: AuroraLine[] = [
-  { offset: -72, amp: 48, wavelength: 520, speed: 0.19, sizeSpeed: 0.1, width: 28, opacity: 0.28, color: "rgb(6, 95, 70)" },
-  { offset: -36, amp: 64, wavelength: 420, speed: 0.24, sizeSpeed: 0.07, width: 16, opacity: 0.45, color: "rgb(5, 150, 105)" },
-  { offset: -8, amp: 86, wavelength: 360, speed: 0.17, sizeSpeed: 0.08, width: 8, opacity: 0.9, color: "rgb(167, 243, 208)" },
-  { offset: 22, amp: 58, wavelength: 460, speed: 0.28, sizeSpeed: 0.05, width: 12, opacity: 0.62, color: "rgb(52, 211, 153)" },
-  { offset: 54, amp: 74, wavelength: 320, speed: 0.21, sizeSpeed: 0.11, width: 18, opacity: 0.38, color: "rgb(16, 185, 129)" },
-  { offset: 12, amp: 96, wavelength: 400, speed: 0.14, sizeSpeed: 0.08, width: 6, opacity: 0.8, color: "rgb(209, 250, 229)" },
+  { offset: -72, amp: 48, wavelength: 520, speed: 0.19, sizeSpeed: 0.1, width: 28, opacity: 0.28, color: "rgb(8, 51, 88)" },
+  { offset: -36, amp: 64, wavelength: 420, speed: 0.24, sizeSpeed: 0.07, width: 16, opacity: 0.45, color: "rgb(14, 116, 144)" },
+  { offset: -8, amp: 86, wavelength: 360, speed: 0.17, sizeSpeed: 0.08, width: 8, opacity: 0.9, color: "rgb(165, 243, 252)" },
+  { offset: 22, amp: 58, wavelength: 460, speed: 0.28, sizeSpeed: 0.05, width: 12, opacity: 0.62, color: "rgb(34, 211, 238)" },
+  { offset: 54, amp: 74, wavelength: 320, speed: 0.21, sizeSpeed: 0.11, width: 18, opacity: 0.38, color: "rgb(2, 132, 199)" },
+  { offset: 12, amp: 96, wavelength: 400, speed: 0.14, sizeSpeed: 0.08, width: 6, opacity: 0.8, color: "rgb(191, 219, 254)" },
 ];
 
 const usePrefersReducedMotion = () => {

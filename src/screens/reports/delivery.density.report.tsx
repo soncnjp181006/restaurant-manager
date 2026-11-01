@@ -95,7 +95,7 @@ const getOrderCoordinates = (order: Order): {lat: number; lng: number} | null =>
 const getClusterColor = (count: number): string => {
   if (count >= 16) return "#F43A30";
   if (count >= 6) return "#FFA514";
-  return "#0046FE";
+  return "#0E7490";
 };
 
 const clusterRenderer: Renderer = {

@@ -23,23 +23,30 @@
 }
 
 /* Defaults are the "classic" brand, light mode. The QR page overwrites these
- * at runtime from the configured brand (see src/self-order/theme.ts). */
+ * at runtime from the configured brand (see src/self-order/theme.ts).
+ * Token names keep their historical `gold` spelling; the values are cold. */
 :root {
   color-scheme: light;
   -webkit-tap-highlight-color: transparent;
-  --so-paper: rgb(245 232 211);
+  --so-paper: rgb(226 234 243);
   --so-card: rgb(255 255 255);
-  --so-line: rgb(230 211 181);
-  --so-muted: rgb(115 91 61);
-  --so-fg: rgb(55 38 20);
-  --so-ink: rgb(255 165 20);
-  --so-on-ink: rgb(45 28 5);
-  --so-gold: rgb(255 165 20);
-  --so-gold-soft: rgb(45 28 5);
-  --so-gold-ink: rgb(150 92 22);
-  --so-ink-rgb: 255 165 20;
-  --so-on-ink-rgb: 45 28 5;
-  --so-gold-rgb: 255 165 20;
+  --so-line: rgb(206 218 231);
+  --so-muted: rgb(88 108 130);
+  --so-fg: rgb(22 34 48);
+  --so-ink: rgb(14 116 144);
+  --so-on-ink: rgb(255 255 255);
+  --so-gold: rgb(14 116 144);
+  --so-gold-soft: rgb(255 255 255);
+  --so-gold-ink: rgb(8 51 68);
+  --so-ink-rgb: 14 116 144;
+  --so-on-ink-rgb: 255 255 255;
+  --so-gold-rgb: 14 116 144;
+  /* Cold alert + scrim tokens, so the QR page has no warm literals left. */
+  --so-alert-line: rgb(190 208 224);
+  --so-alert-bg: rgb(232 241 249);
+  --so-alert-ink: rgb(12 74 110);
+  --so-warn-ink: rgb(180 83 9);
+  --so-scrim: rgb(7 11 18 / 0.55);
   --so-sans: "Urbanist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --so-serif: "Quicksand", "Urbanist", ui-sans-serif, system-ui, sans-serif;
 }

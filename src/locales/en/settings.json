@@ -13,11 +13,11 @@
     "brandTitle": "Brand colors",
     "brandDescription": "Pick a color pack for this device. Shell, buttons, selects, and charts update immediately.",
     "brand": {
-      "classic": "Classic",
+      "classic": "Glacier",
       "ocean": "Ocean",
-      "forest": "Forest",
-      "cream": "Cream",
-      "ruby": "Ruby",
+      "forest": "Seafoam",
+      "cream": "Frost white",
+      "ruby": "Amethyst",
       "sapphire": "Sapphire",
       "custom": "Custom"
     },

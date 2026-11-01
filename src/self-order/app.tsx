@@ -196,7 +196,7 @@ export function SelfOrderApp({ token, returningCheckoutId }: { token: string; re
   return (
     <div className="mx-auto min-h-screen max-w-xl pb-32">
       {error && (
-        <div className="sticky top-0 z-30 flex items-start justify-between gap-3 border-b border-[#e2b8a3] bg-[#f8e9e1] px-4 py-3 text-sm text-[#7a3517]">
+        <div className="sticky top-0 z-30 flex items-start justify-between gap-3 border-b border-[color:var(--so-alert-line)] bg-[color:var(--so-alert-bg)] px-4 py-3 text-sm text-[color:var(--so-alert-ink)]">
           <p>{error}</p>
           <button className="shrink-0 font-semibold underline" onClick={() => setError(null)}>
             {tr('dismiss')}
@@ -461,7 +461,7 @@ function Sheet({
     };
   }, []);
   return (
-    <div className="so-backdrop fixed inset-0 z-30 flex items-end justify-center bg-[#17140f]/55 backdrop-blur-[2px]" onClick={onClose}>
+    <div className="so-backdrop fixed inset-0 z-30 flex items-end justify-center bg-[color:var(--so-scrim)] backdrop-blur-[2px]" onClick={onClose}>
       <div
         className="so-sheet flex max-h-[92vh] w-full max-w-xl flex-col rounded-t-[28px] bg-[color:var(--so-paper)] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -562,7 +562,7 @@ function DishSheet({
               <span className="so-serif text-[1.05rem] font-semibold">{group.name}</span>
               <span
                 className={`so-eyebrow !text-[0.6rem] ${
-                  group.required === 0 ? 'text-[color:var(--so-muted)]' : complete ? 'text-[color:var(--so-gold-ink)]' : 'text-[#a4552f]'
+                  group.required === 0 ? 'text-[color:var(--so-muted)]' : complete ? 'text-[color:var(--so-gold-ink)]' : 'text-[color:var(--so-warn-ink)]'
                 }`}
               >
                 {group.required === 0 ? tr('optional') : complete ? tr('selected') : group.required === 1 ? tr('required') : tr('chooseCount', { count: group.required })}
@@ -813,7 +813,7 @@ function CheckoutSheet({
       )}
 
       {error && (
-        <div className="mt-4 rounded-2xl border border-[#e2b8a3] bg-[#f8e9e1] p-4 text-sm text-[#7a3517]">
+        <div className="mt-4 rounded-2xl border border-[color:var(--so-alert-line)] bg-[color:var(--so-alert-bg)] p-4 text-sm text-[color:var(--so-alert-ink)]">
           <p>{error.message}</p>
           {(error.code === 'UNAVAILABLE' || error.code === 'MODIFIERS') && (
             <button className="mt-2 font-semibold underline" onClick={onMenuChanged}>
@@ -872,7 +872,7 @@ function CheckoutSheet({
       {checkout && (
         <div className="mt-6">
           {!checkout.payment || (checkout.gateway !== 'stripe' && checkout.gateway !== 'paypal') ? (
-            <div className="rounded-2xl border border-[#e2b8a3] bg-[#f8e9e1] p-4 text-sm text-[#7a3517]">
+            <div className="rounded-2xl border border-[color:var(--so-alert-line)] bg-[color:var(--so-alert-bg)] p-4 text-sm text-[color:var(--so-alert-ink)]">
               <p>{tr('paymentStartFailed')}</p>
             </div>
           ) : (
