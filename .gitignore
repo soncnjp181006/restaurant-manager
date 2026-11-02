@@ -58,6 +58,7 @@ printing/data
 # API AI usage counters (written at runtime)
 api/data
 backups/surrealdb
+backups/postgres
 .qwen
 .commandcode
 .freebuff

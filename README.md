@@ -4,7 +4,7 @@
 
 Restaurant Manager is a **source-available restaurant POS and restaurant management system** built for modern food businesses. It combines point-of-sale ordering, kitchen display systems (KDS), inventory and recipe management, staff scheduling and payroll, accounting, delivery, fiscalization (FBR / PRA), and AI restaurant analytics powered by **Kashif** in one **offline-first** platform.
 
-React · TypeScript · Vite · Bun · SurrealDB · WebSockets · IndexedDB
+React · TypeScript · Vite · Bun · PostgreSQL · WebSockets · IndexedDB
 
 ## Links
 
@@ -166,7 +166,7 @@ Write proposals use the same review-and-confirm pipeline as **AI Import** — Ka
 - **Auth gateway** — session JWT; Surreal credentials not shipped to browser ([GATEWAY.md](docs/security/GATEWAY.md))
 - **ESC/POS printing** — USB, Serial, Network, Bluetooth; kitchen tickets, receipts, delivery slips, pre-sale bills, sales summaries; custom logos
 - **Multi-lingual** — English, Tiếng Việt; live language switch
-- **Tech stack** — React + TypeScript, Bun + Vite, SurrealDB, WebSockets
+- **Tech stack** — React + TypeScript, Bun + Vite, PostgreSQL (via the wire-compatible dbproxy service), WebSockets
 
 ---
 
@@ -186,23 +186,33 @@ bun install
 docker compose up -d
 ```
 
-Copied `.env` files include **local-dev** Surreal credentials (`restaurant` / `CHANGE_ME_BEFORE_DEPLOY`). Change `SURREAL_USER`, `SURREAL_PASS`, and `GATEWAY_JWT_SECRET` before any non-localhost deploy — `GATEWAY_JWT_SECRET` ships **blank** on purpose, so generate one (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`). `root`/`root` is rejected.
+Copied `.env` files include **local-dev** database credentials (`restaurant` / `CHANGE_ME_BEFORE_DEPLOY`). Change `POSTGRES_USER`, `POSTGRES_PASSWORD`, `SURREAL_USER`, `SURREAL_PASS` (the dbproxy RPC root credentials), and `GATEWAY_JWT_SECRET` before any non-localhost deploy — `GATEWAY_JWT_SECRET` ships **blank** on purpose, so generate one (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`). `root`/`root` is rejected.
 
-**Auth gateway (default):** SPA uses port **3142**, not Surreal **8000**. Set `VITE_GATEWAY_URL` / `VITE_DB_WEBDOCKET` to the gateway; do **not** set `VITE_DB_USER` / `VITE_DB_PASS` in the browser bundle. Details and rollback: [docs/security/GATEWAY.md](docs/security/GATEWAY.md).
+**Auth gateway (default):** SPA uses port **3142**, never the database port (**8000** dbproxy / **5432** PostgreSQL) directly. Set `VITE_GATEWAY_URL` / `VITE_DB_WEBDOCKET` to the gateway; do **not** set `VITE_DB_USER` / `VITE_DB_PASS` in the browser bundle. Details and rollback: [docs/security/GATEWAY.md](docs/security/GATEWAY.md).
 
-**Optional PostgreSQL mirror:** the tracking / activity log can additionally be copied into PostgreSQL for SQL analytics. SurrealDB stays the store every report reads, and nothing is required — leave the `TRACKING_PG_*` variables blank and no Postgres is contacted. Design, limits, and how to enable it: [docs/adr/0006-postgres-tracking-mirror.md](docs/adr/0006-postgres-tracking-mirror.md).
+**PostgreSQL everywhere:** the whole system of record is PostgreSQL (see [docs/MIGRATION-POSTGRES.md](docs/MIGRATION-POSTGRES.md)). The tracking / activity log can additionally be mirrored into a relational `tracking_events` table for SQL analytics — leave `TRACKING_PG_*` blank and the mirror stays inert. Design, limits, and how to enable it: [docs/adr/0006-postgres-tracking-mirror.md](docs/adr/0006-postgres-tracking-mirror.md).
 
-### Upgrading a database that still uses the old namespace
+### Migrating a legacy SurrealDB datastore to PostgreSQL
 
-SurrealDB's namespace and database are now `restaurant_manager`. An existing install keeps its data under the previous names, so `docker compose up` would open an **empty** database. Move it deliberately (there is no `RENAME NAMESPACE` in SurrealDB, so this is a data copy, and it does not delete the source):
+An install that still runs SurrealDB keeps its data in `./database` (surrealkv). Move it into PostgreSQL with the one-shot migration script — it starts a temporary SurrealDB, copies every table through the dbproxy (so record links and datetimes keep their wire types), applies `migrations/latest.surql`, and prints a per-table count comparison:
 
 ```bash
-# 1. build the schema under the new names
-SURREAL_NS=restaurant_manager SURREAL_DB=restaurant_manager node migrations/scripts/run-prod-migrations.cjs
-# 2. copy the records
-SURREAL_URL=ws://127.0.0.1:8000/rpc SURREAL_USER=<user> SURREAL_PASS=<pass> node scripts/rename-surreal-namespace.mjs
-# 3. check the printed per-table counts, then set SURREAL_NS / SURREAL_DB in .env
+# 1. start a temporary SurrealDB serving the legacy datastore (adjust paths/ports)
+docker volume create rm-surreal-data
+docker run --rm -v rm-surreal-data:/data -v "$PWD/database:/src" alpine sh -c "cp -r /src/. /data/ && chmod -R u+rwX /data && rm -f /data/LOCK"
+docker run --rm -d --name rm-surreal-migrate -p 18000:8000 --user 0:0 -v rm-surreal-data:/database \
+  surrealdb/surrealdb:v3.0.5 start --user restaurant --pass <pass> surrealkv://database --bind 0.0.0.0:8000
+
+# 2. start the dbproxy with events disabled for a clean import
+cd dbproxy && DB_DISABLE_EVENTS=1 DB_HOST=127.0.0.1 DB_PORT=<pg-port> DB_NAME=restaurant_manager \
+  DB_USER=<user> DB_PASS=<pass> DB_ROOT_USER=<user> DB_ROOT_PASS=<pass> DB_TOKEN_SECRET=<jwt-secret> \
+  DBPROXY_PORT=18001 node src/server.mjs & cd ..
+
+# 3. migrate + apply schema + verify per-table counts
+SRC_URL=ws://127.0.0.1:18000/rpc DST_URL=ws://127.0.0.1:18001/rpc node migrations/scripts/migrate-surreal-to-pg.cjs
 ```
+
+Full procedure and verification steps: [docs/MIGRATION-POSTGRES.md](docs/MIGRATION-POSTGRES.md).
 
 Browser-side offline data (PosStore, integration queue/secrets, AI history) is copied automatically on first launch by `src/lib/legacy-storage.ts`, which leaves the old store in place as a fallback. Active sessions end once, because the gateway's JWT issuer and the session cookie names changed. Full rationale: [docs/adr/0007-full-brand-rename.md](docs/adr/0007-full-brand-rename.md).
 

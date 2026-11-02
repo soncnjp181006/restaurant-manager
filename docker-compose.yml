@@ -24,7 +24,7 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - surrealdb
+      - dbproxy
       - printer
       - payment
       - sync
@@ -32,29 +32,52 @@ services:
       - api
       - gateway
 
-  surrealdb:
-    image: surrealdb/surrealdb:v3.0.5
-    env_file:
-      - path: ./.env
-        required: false
-      - path: ./.env.local
-        required: false
-    # SURREAL_USER/SURREAL_PASS must be set in .env (copy from .env.example).
-    # Bind the published port to loopback so the browser cannot skip the
-    # auth gateway; other containers still reach surrealdb:8000 on the
-    # compose network.
-    working_dir: /
-    user: "0:0"
-    command: >
-      start --user ${SURREAL_USER:?Set SURREAL_USER in .env} --pass ${SURREAL_PASS:?Set SURREAL_PASS in .env} surrealkv://database --bind 0.0.0.0:8000
+  postgres:
+    image: postgres:16-alpine
+    # The single system of record. All app data lives in the "records" JSONB
+    # store owned by the dbproxy service (see dbproxy/README.md).
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      - POSTGRES_DB=${POSTGRES_DB:-restaurant_manager}
     ports:
-      # Overridable because 8000 is often taken on dev machines (another SurrealDB,
-      # a Jupyter/Python server). Set SURREAL_HOST_PORT in .env.local to move it; the
-      # containers keep reaching surrealdb:8000 on the compose network regardless.
-      - "${SURREAL_HOST_PORT:-8000}:8000"
+      # Overridable because 5432 is often taken on dev machines. Containers
+      # always reach postgres:5432 on the compose network regardless.
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
     volumes:
-      # Host /database -> container /database (surrealkv://database resolves to ./database = /database)
-      - ./database:/database
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB:-restaurant_manager}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  dbproxy:
+    # PostgreSQL-backed data service speaking the same /rpc WebSocket wire
+    # protocol the SurrealDB server used to expose. Every container talks to
+    # dbproxy:8000 exactly like it talked to surrealdb:8000 before.
+    build:
+      context: ./dbproxy
+      dockerfile: Dockerfile
+    image: restaurant-manager-dbproxy:latest
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB:-restaurant_manager}
+      - DB_USER=${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      - DB_PASS=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      - DB_ROOT_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
+      - DB_ROOT_PASS=${SURREAL_PASS:?Set SURREAL_PASS in .env}
+      - DB_TOKEN_SECRET=${GATEWAY_JWT_SECRET:?Set GATEWAY_JWT_SECRET in .env}
+      - DBPROXY_PORT=8000
+      - DBPROXY_HOST=0.0.0.0
+    ports:
+      - "${SURREAL_HOST_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
   printer:
     build:
@@ -103,7 +126,7 @@ services:
       - PAYMENT_PORT=3134
       - PAYMENT_HOST=0.0.0.0
       - PAYMENT_BASE_URL=${VITE_PAYMENT_SERVER_URL:-http://localhost:3134}
-      - SURREAL_URL=ws://surrealdb:8000/rpc
+      - SURREAL_URL=ws://dbproxy:8000/rpc
       - SURREAL_NS=restaurant_manager
       - SURREAL_DB=restaurant_manager
       - SURREAL_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
@@ -114,7 +137,7 @@ services:
     ports:
       - "3134:3134"
     depends_on:
-      - surrealdb
+      - dbproxy
       - gateway
 
   sync:
@@ -129,7 +152,7 @@ services:
       - SYNC_RECONNECT_MS=5000
       - SYNC_LOG_LEVEL=info
       - SYNC_CLIENT_ID=${SYNC_CLIENT_ID:-client-001}
-      - SYNC_SOURCE_URL=${SYNC_SOURCE_URL:-ws://surrealdb:8000/rpc}
+      - SYNC_SOURCE_URL=${SYNC_SOURCE_URL:-ws://dbproxy:8000/rpc}
       - SYNC_SOURCE_NS=${SYNC_SOURCE_NS:-restaurant_manager}
       - SYNC_SOURCE_DB=${SYNC_SOURCE_DB:-restaurant_manager}
       # SYNC_SOURCE_* points at this compose's own surrealdb (the "source" of
@@ -145,7 +168,7 @@ services:
     ports:
       - "3136:3136"
     depends_on:
-      - surrealdb
+      - dbproxy
     restart: unless-stopped
 
   tracking:
@@ -164,7 +187,7 @@ services:
     environment:
       - TRACKING_PORT=3138
       - TRACKING_HOST=0.0.0.0
-      - TRACKING_DB_URL=ws://surrealdb:8000/rpc
+      - TRACKING_DB_URL=ws://dbproxy:8000/rpc
       - TRACKING_DB_NS=restaurant_manager
       - TRACKING_DB_NAME=restaurant_manager
       - TRACKING_DB_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
@@ -179,7 +202,7 @@ services:
     ports:
       - "3138:3138"
     depends_on:
-      - surrealdb
+      - dbproxy
       - gateway
 
   # The optional PostgreSQL tracking mirror is declared in
@@ -207,7 +230,7 @@ services:
       - AI_ENABLED=${AI_ENABLED:-false}
       - AI_DAILY_LIMIT=${AI_DAILY_LIMIT:-}
       - AI_MONTHLY_LIMIT=${AI_MONTHLY_LIMIT:-}
-      - SURREAL_URL=ws://surrealdb:8000/rpc
+      - SURREAL_URL=ws://dbproxy:8000/rpc
       - SURREAL_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
       - SURREAL_PASS=${SURREAL_PASS:?Set SURREAL_PASS in .env}
     command: sh -c "npm install && node server.js"
@@ -233,7 +256,7 @@ services:
       - GATEWAY_PORT=3142
       - GATEWAY_JWT_TTL=${GATEWAY_JWT_TTL:-12h}
       - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
-      - SURREAL_URL=ws://surrealdb:8000/rpc
+      - SURREAL_URL=ws://dbproxy:8000/rpc
       - SURREAL_NS=restaurant_manager
       - SURREAL_DB=restaurant_manager
       - SURREAL_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
@@ -246,60 +269,31 @@ services:
       # self-order rate limiter.
       - "${GATEWAY_PORT}:3142"
     depends_on:
-      - surrealdb
+      - dbproxy
 
   backup:
-    # SECURITY NOTE: this service mounts /var/run/docker.sock so it can run
-    # `docker exec` against the surrealdb container for `surreal export`. The
-    # Docker socket grants effectively root on the host — anyone who can write
-    # to this service can escape to the host. For production hardening, prefer
-    # a Docker socket proxy (e.g. tecnativa/docker-socket-proxy) that only
-    # allows the `containers.exec` and `containers.exec.start` endpoints, and
-    # bind it read-only. See docs/security/BACKUP.md for a hardened example.
-    image: docker:27-cli
+    # Nightly pg_dump of the PostgreSQL database. Retains the latest
+    # BACKUP_RETENTION_COUNT dumps in ./backups/postgres.
+    image: postgres:16-alpine
     working_dir: /backup
     volumes:
-      - ./backups/surrealdb:/backups
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ./backups/postgres:/backups
     environment:
-      # Timezone for cron schedule (change if you need local time)
       - TZ=UTC
-      # SurrealDB auth + target namespace/database for export.
-      # Compose interpolation forces these to be set at deploy time.
-      - SURREAL_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
-      - SURREAL_PASS=${SURREAL_PASS:?Set SURREAL_PASS in .env}
-      - SURREAL_NAMESPACE=restaurant_manager
-      - SURREAL_DATABASE=restaurant_manager
-      # Endpoint used from inside the surrealdb container
-      - SURREAL_ENDPOINT=http://127.0.0.1:8000
-      # Keep only the latest N backup files
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGDATABASE=${POSTGRES_DB:-restaurant_manager}
+      - PGUSER=${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      - PGPASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       - BACKUP_RETENTION_COUNT=7
     depends_on:
-      - surrealdb
+      postgres:
+        condition: service_healthy
     command: >
       sh -c '
         set -eu;
         mkdir -p /backups;
-        # Validate credentials at boot — refuse to start if missing, so the
-        # generated run-backup.sh cannot accidentally fall back to root/root.
-        if [ -z "$${SURREAL_USER}" ] || [ -z "$${SURREAL_PASS}" ]; then
-          echo "ERROR: SURREAL_USER and SURREAL_PASS must be set (compose should have enforced this)" >&2;
-          exit 1;
-        fi;
-        printf "%s\n" \
-          "#!/bin/sh" \
-          "set -eu" \
-          "mkdir -p /backups" \
-          "retention=\$${BACKUP_RETENTION_COUNT:-7}" \
-          "ts=\$$(date -u +%Y%m%dT%H%M%SZ)" \
-          "file=/backups/surrealdb-\$${ts}.surql" \
-          "project=\$${COMPOSE_PROJECT_NAME:-restaurant-manager}" \
-          "db_container=\$${SURREAL_CONTAINER_NAME:-}" \
-          "if [ -z \"\$$db_container\" ]; then db_container=\$$(docker ps --filter \"label=com.docker.compose.project=\$$project\" --filter \"label=com.docker.compose.service=surrealdb\" --format \"{{.Names}}\" | awk \"NR==1{print; exit}\"); fi" \
-          "if [ -z \"\$$db_container\" ]; then echo \"No surrealdb container found\" >&2; exit 1; fi" \
-          "if docker exec \"\$$db_container\" /surreal --log none export --endpoint \"\$${SURREAL_ENDPOINT:-http://127.0.0.1:8000}\" --username \"\$${SURREAL_USER}\" --password \"\$${SURREAL_PASS}\" --namespace \"\$${SURREAL_NAMESPACE:-restaurant_manager}\" --database \"\$${SURREAL_DATABASE:-restaurant_manager}\" - > \"\$$file\"; then echo \"Created backup: \$$file\"; else rm -f \"\$$file\"; echo \"Backup export failed\" >&2; exit 1; fi" \
-          "ls -1t /backups/surrealdb-*.surql 2>/dev/null | sed -n \"\$$((retention+1)),\\\$$p\" | xargs -r rm -f" \
-          > /usr/local/bin/run-backup.sh;
+        printf "%s\n" "#!/bin/sh" "set -eu" "mkdir -p /backups" "retention=$${BACKUP_RETENTION_COUNT:-7}" "ts=$$(date -u +%Y%m%dT%H%M%SZ)" "file=/backups/postgres-$$ts.dump" "pg_dump -Fc -f \"$$file\"" "ls -1t /backups/postgres-*.dump 2>/dev/null | sed -n \"$$((retention+1)),\\$$p\" | xargs -r rm -f" > /usr/local/bin/run-backup.sh;
         chmod +x /usr/local/bin/run-backup.sh;
         {
           echo "0 0 * * * /usr/local/bin/run-backup.sh";
@@ -309,7 +303,9 @@ services:
       '
     restart: unless-stopped
 
+
 volumes:
+  postgres-data:
   printer-node_modules:
   payment-node_modules:
   sync-node_modules:

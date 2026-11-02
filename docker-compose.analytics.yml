@@ -1,53 +1,25 @@
 # Optional PostgreSQL mirror for the tracking / activity log.
 #
-# SurrealDB stays the authoritative store: every report (activity, order
-# lifecycle, sales dashboard, cash audit, order detail) still reads
-# `tracking` from SurrealDB, and nothing in `migrations/` targets this service.
-# `tracking-api` only *additionally* writes each ingested event into
-# `tracking_events` here, so SQL-native analytics can run against a relational
-# copy. If a mirror write fails, ingestion still returns 201 and the failure
-# count is exposed on `GET /health` as `pgMirrorFailures`.
+# Since the full PostgreSQL migration the primary store IS PostgreSQL
+# (docker-compose.yml defines the `postgres` service). This overlay now only
+# enables the tracking-api SQL mirror: every ingested event is additionally
+# written into `tracking_events` on the SAME main PostgreSQL instance, so
+# SQL-native analytics can run against a relational copy. If a mirror write
+# fails, ingestion still returns 201 and the failure count is exposed on
+# `GET /health` as `pgMirrorFailures`.
 #
-# Why a separate file: Compose interpolates `${VAR:?...}` for every service in
-# a file whether or not its profile is active, so required mirror credentials in
-# docker-compose.yml would break `docker compose up` for everyone who does not
-# use Postgres. Keeping them here means the default stack is untouched.
-#
-# Usage (one command, so both services share one project network):
+# Usage:
 #   1. Set TRACKING_PG_USER and TRACKING_PG_PASS in .env (see .env.example).
-#   2. docker compose -f docker-compose.yml -f docker-compose.analytics.yml up -d postgres
-#   3. docker compose -f docker-compose.yml -f docker-compose.analytics.yml up -d tracking
-#   4. curl http://127.0.0.1:3138/health   -> "pgMirror": "configured"
+#   2. docker compose -f docker-compose.yml -f docker-compose.analytics.yml up -d tracking
+#   3. curl http://127.0.0.1:3138/health   -> "pgMirror": "configured"
 #
-# Without step 2-3 the tracking service sees an empty TRACKING_PG_URL and the
-# mirror stays completely inert.
+# Without TRACKING_PG_* the tracking service sees an empty TRACKING_PG_URL and
+# the mirror stays completely inert (Postgres itself is always on now).
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      - POSTGRES_USER=${TRACKING_PG_USER:?Set TRACKING_PG_USER in .env}
-      - POSTGRES_PASSWORD=${TRACKING_PG_PASS:?Set TRACKING_PG_PASS in .env}
-      - POSTGRES_DB=${TRACKING_PG_DB:-tracking}
-    # Loopback only — publishing this on all interfaces would expose the mirror
-    # to the LAN, the same way the gateway port is restricted in the main file.
-    ports:
-      - "127.0.0.1:${TRACKING_PG_PORT:-5432}:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-    restart: unless-stopped
-
   tracking:
     environment:
       # In-container URL: the service DNS name is `postgres`, port 5432.
       # For running tracking-api on the host instead, use
-      #   TRACKING_PG_URL=postgres://<user>:<pass>@127.0.0.1:<TRACKING_PG_PORT>/<db>
-      - TRACKING_PG_URL=${TRACKING_PG_URL:-postgresql://${TRACKING_PG_USER}:${TRACKING_PG_PASS}@postgres:5432/${TRACKING_PG_DB:-tracking}}
-
-volumes:
-  postgres-data:
+      #   TRACKING_PG_URL=postgres://<user>:<pass>@127.0.0.1:<POSTGRES_HOST_PORT>/restaurant_manager
+      - TRACKING_PG_URL=${TRACKING_PG_URL:-postgresql://${TRACKING_PG_USER:-restaurant}:${TRACKING_PG_PASS}@postgres:5432/${POSTGRES_DB:-restaurant_manager}}

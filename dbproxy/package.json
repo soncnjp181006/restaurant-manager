@@ -1,0 +1,18 @@
+{
+  "name": "restaurant-manager-dbproxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PostgreSQL-backed data service speaking the SurrealDB wire protocol (drop-in replacement for the SurrealDB server). All persistence is PostgreSQL.",
+  "type": "module",
+  "main": "src/server.mjs",
+  "scripts": {
+    "start": "node src/server.mjs",
+    "dev": "node --watch src/server.mjs",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "pg": "^8.12.0",
+    "ws": "^8.18.0"
+  }
+}
