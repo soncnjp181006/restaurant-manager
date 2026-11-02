@@ -195,6 +195,19 @@ PostgreSQL (docker) → 127.0.0.1:5434  (healthy)
 
 > Kết luận: **App chạy được end-to-end trên PostgreSQL** — đọc (orders, users, catalog) lẫn ghi (clock-in, audit, sync handshake) đều qua dbproxy → PostgreSQL, không còn một byte dữ liệu nào đi qua SurrealDB.
 
+
+### 10.1. Vòng xác minh lại (2026-11-02, lần 2 — kiểm tra trạng thái hiện tại)
+
+| Kiểm tra | Kết quả |
+|----------|---------|
+| Docker: `postgres` healthy, `dbproxy` Up; compose **không còn service surrealdb** (chỉ còn dòng comment giải thích) | ✅ |
+| Gateway `/health` OK, Vite :5173 OK | ✅ |
+| PostgreSQL 16.15 — 2.282 records / 44 bảng, 43 unique indexes, 280 defaults, 9 events, change_log 2.304, DB size 11 MB | ✅ |
+| Wire CRUD + LIVE + bcrypt + datetime qua SDK (dbproxy ↔ PG) | ✅ 5/5 |
+| sync-compat (SHOW CHANGES theo helper của sync-service) | ✅ 8/8 |
+| UI đang mở: vẫn đăng nhập, "Synced", dữ liệu Order "Bàn 11" hiển thị | ✅ |
+| **WRITE live**: gateway login → `audit_log` 10 → **11** ngay trong PG (`login_success`, actor `1234`, source `gateway-auth-routes`) | ✅ |
+
 ---
 
 ## 11. Tài khoản đăng nhập (dữ liệu đã migrate)
