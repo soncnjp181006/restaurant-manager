@@ -167,3 +167,57 @@ docker compose ps                     # postgres healthy, dbproxy listening
 - `README.md` — tech stack, security note, hướng dẫn migrate datastore cũ
 
 **Không đổi:** toàn bộ `src/` (frontend), code truy vấn của 5 service backend, `migrations/*.surql`.
+
+---
+
+## 10. Kiểm tra live app qua trình duyệt (đã chạy thực tế)
+
+Ngày 2026-11-02 — boot full stack thật và thao tác bằng trình duyệt (browser automation):
+
+```
+Vite dev server  → http://localhost:5173  (React app, không đổi code)
+Gateway          → http://localhost:3142   (auth + WS relay /rpc)
+dbproxy (docker) → ws://127.0.0.1:8007/rpc
+PostgreSQL (docker) → 127.0.0.1:5434  (healthy)
+```
+
+**Kết quả từng bước trên UI:**
+
+| Bước | Hành động trên màn hình | Kết quả |
+|------|------------------------|---------|
+| 1 | Mở `http://localhost:5173` | App render màn hình **Login** (PIN pad) |
+| 2 | Nhập PIN **1234** → đăng nhập | **Đăng nhập thành công** — bcrypt compare chạy trong dbproxy trên PostgreSQL; header hiện **Synced** (kết nối DB OK) |
+| 3 | App yêu cầu **Clock In Required** → bấm CLOCK IN | Vào thẳng hệ thống: Menu, Orders, Summary, Kitchen, Order Display, Delivery, Closing, Inventory, Manage, Reports, Tip Dist., Accounts, HR, Integrations, Settings |
+| 4 | Mở **Orders** | **Dữ liệu thật từ PostgreSQL**: Order# 2 — Bàn 11, IN PROGRESS, "Cà phê sữa đá" ×2, Items (2), **₫58.000** |
+| 5 | Kiểm tra WRITE trong PG | `time_entry` mới (Clock In), `audit_log` (DEFINE EVENT tự chạy khi login), `sync_terminal`/`sync_number_reservation`/`sync_number_counter` — `change_log` tăng 2.270 → 2.299 row, toàn bộ do UI ghi |
+
+Ảnh chụp màn hình Orders (dữ liệu live từ PostgreSQL): trình duyệt in-app hiển thị order "Bàn 11 — Order# 2 / Delivery — IN PROGRESS — Cà phê sữa đá ×2 — ₫58.000".
+
+> Kết luận: **App chạy được end-to-end trên PostgreSQL** — đọc (orders, users, catalog) lẫn ghi (clock-in, audit, sync handshake) đều qua dbproxy → PostgreSQL, không còn một byte dữ liệu nào đi qua SurrealDB.
+
+---
+
+## 11. Tài khoản đăng nhập (dữ liệu đã migrate)
+
+Đăng nhập màn hình **PIN**: nhập mã PIN rồi bấm nút mũi tên (→). Gateway dùng chính PIN làm mật khẩu (bcrypt trong DB).
+
+| PIN (login = mật khẩu) | Phương thức | Ghi chú |
+|------------------------|-------------|---------|
+| **1234** | pin | Đã xác minh qua UI + API (HTTP 200, Clock In OK) |
+| **0000** | pin | Đã xác minh API (HTTP 200) |
+| **5555** | pin | Đã xác minh API (HTTP 200) |
+| **8888** | pin | Đã xác minh API (HTTP 200) |
+| **9999** | pin | Đã xác minh API (HTTP 200) — DB có 2 user trùng PIN 9999 (bản ghi đầu được dùng) |
+| `rider` (tab Form) | form | Mật khẩu dạng bcrypt hash từ data cũ — **không rõ plaintext**; cần reset nếu muốn dùng |
+
+Cách đặt lại mật khẩu cho tài khoản Form (nếu cần): hash mật khẩu mới bằng bcrypt (cost 10) rồi UPDATE vào `data->>'password'` của user tương ứng trong bảng `records`.
+
+Thông tin kết nối PostgreSQL (máy dev, trùng `.env`):
+
+| Thành phần | Giá trị |
+|------------|---------|
+| Host:port (từ host) | `127.0.0.1:${POSTGRES_HOST_PORT:-5432}` (máy này: **5434**) |
+| Database / User / Password | `restaurant_manager` / `restaurant` / `fc3ec04f8907d7032df738bae6951b928d83` |
+| RPC root của dbproxy (signin cho services) | `SURREAL_USER` / `SURREAL_PASS` = `restaurant` / `fc3ec04f8907d7032df738bae6951b928d83` |
+
+⚠️ Đổi toàn bộ thông tin trên trước khi deploy thật (xem §7).
