@@ -1,4 +1,4 @@
-// Full-stack browser-flow smoke: gateway login → ws-relay → dbproxy → PostgreSQL.
+// Full-stack browser-flow smoke: gateway login → ws-relay → dbproxy → MySQL.
 // Uses the REAL gateway server and the REAL SDK, exactly like the browser does.
 const path = require('node:path');
 const { createRequire } = require('node:module');

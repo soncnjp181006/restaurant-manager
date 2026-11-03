@@ -6,10 +6,10 @@
  * The Surreal client is replaced with a recording stub (the service requires it
  * once, at load time), so these tests prove the wiring without a SurrealDB
  * instance: the Surreal query is unchanged, its result is what the route returns,
- * and the PostgreSQL mirror receives the same normalised payload.
+ * and the MySQL mirror receives the same normalised payload.
  *
- * The "mirror actually stored it" case is a live PostgreSQL test — skipped
- * visibly when TRACKING_PG_URL is not set.
+ * The "mirror actually stored it" case is a live MySQL test — skipped
+ * visibly when TRACKING_MYSQL_URL is not set.
  *
  *   node --test tracking-api/src/services/tracking.service.test.js
  */
@@ -17,7 +17,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
-const store = require('../postgres-store');
+const store = require('../mysql-store');
 
 const clientPath = require.resolve('../surreal-client.js');
 
@@ -42,8 +42,8 @@ function loadServiceWithStub(record) {
   return require(servicePath);
 }
 
-function withoutPgEnv(fn) {
-  const keys = ['TRACKING_PG_URL', 'TRACKING_PG_HOST', 'TRACKING_PG_DB', 'TRACKING_PG_USER', 'TRACKING_PG_PASS'];
+function withoutMysqlEnv(fn) {
+  const keys = ['TRACKING_MYSQL_URL', 'TRACKING_MYSQL_HOST', 'TRACKING_MYSQL_DB', 'TRACKING_MYSQL_USER', 'TRACKING_MYSQL_PASS'];
   const previous = {};
   for (const key of keys) previous[key] = process.env[key];
   for (const key of keys) process.env[key] = '';
@@ -61,7 +61,7 @@ test('a client-supplied safe id still goes through CREATE type::record', async (
   const record = { calls: [] };
   const { createTracking } = loadServiceWithStub(record);
 
-  await withoutPgEnv(async () => {
+  await withoutMysqlEnv(async () => {
     const result = await createTracking({ id: 'evt_1', page: 'floor', user: 'cashier' });
     assert.equal(record.calls.length, 1);
     assert.match(record.calls[0].sql, /CREATE type::record\(\$table, \$id\)/);
@@ -77,7 +77,7 @@ test('an unsafe id still falls back to CREATE type::table', async () => {
   const record = { calls: [] };
   const { createTracking } = loadServiceWithStub(record);
 
-  await withoutPgEnv(async () => {
+  await withoutMysqlEnv(async () => {
     const result = await createTracking({ id: 'user:abc', page: 'floor', user: 'cashier' });
     assert.equal(record.calls.length, 1);
     assert.match(record.calls[0].sql, /CREATE type::table\(\$table\)/);
@@ -91,7 +91,7 @@ test('ingestion succeeds with the mirror disabled', async () => {
   const record = { calls: [] };
   const { createTracking } = loadServiceWithStub(record);
 
-  await withoutPgEnv(async () => {
+  await withoutMysqlEnv(async () => {
     const before = store.mirrorFailures();
     const result = await createTracking({ page: 'reports', user: 'manager' });
     assert.ok(result, 'Surreal result must still be returned');
@@ -101,12 +101,12 @@ test('ingestion succeeds with the mirror disabled', async () => {
 });
 
 test(
-  'live: createTracking also lands in PostgreSQL',
-  { skip: store.mirrorConfig() ? false : 'set TRACKING_PG_URL to run against a real PostgreSQL' },
+  'live: createTracking also lands in MySQL',
+  { skip: store.mirrorConfig() ? false : 'set TRACKING_MYSQL_URL to run against a real MySQL' },
   async () => {
-    const { Pool } = require('pg');
+    const mysql = require('mysql2/promise');
     const config = store.mirrorConfig();
-    const admin = new Pool({ ...config, max: 2 });
+    const admin = mysql.createPool({ ...config, connectionLimit: 2 });
     const record = { calls: [] };
     const { createTracking } = loadServiceWithStub(record);
     const runId = `svc_${Date.now()}`;
@@ -122,17 +122,17 @@ test(
       });
       assert.equal(result.id, `tracking:${runId}`);
 
-      const rows = await admin.query(
-        'SELECT page, user_id, module, payload FROM tracking_events WHERE tracking_id = $1',
+      const [rows] = await admin.query(
+        'SELECT page, user_id, module, payload FROM tracking_events WHERE tracking_id = ?',
         [runId]
       );
-      assert.equal(rows.rowCount, 1);
-      assert.equal(rows.rows[0].page, 'checkout');
-      assert.equal(rows.rows[0].user_id, 'cashier-9');
-      assert.equal(rows.rows[0].module, 'payments');
-      assert.deepEqual(rows.rows[0].payload, { payload: { order: 7 } });
+      assert.equal(rows.length, 1);
+      assert.equal(rows[0].page, 'checkout');
+      assert.equal(rows[0].user_id, 'cashier-9');
+      assert.equal(rows[0].module, 'payments');
+      assert.deepEqual(rows[0].payload, { payload: { order: 7 } });
     } finally {
-      await admin.query('DELETE FROM tracking_events WHERE tracking_id = $1', [runId]);
+      await admin.query('DELETE FROM tracking_events WHERE tracking_id = ?', [runId]);
       await admin.end();
       await store.closeMirror();
     }

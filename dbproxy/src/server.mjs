@@ -1,20 +1,20 @@
 /**
- * Restaurant Manager — PostgreSQL data service.
+ * Restaurant Manager — MySQL data service.
  *
  * Replaces the SurrealDB server: speaks the same /rpc WebSocket wire protocol
  * (so the `surrealdb` JS SDK clients in the app keep working unchanged) while
- * persisting 100% of data in PostgreSQL.
+ * persisting 100% of data in MySQL.
  */
 
-import pg from 'pg';
-import { PgStore } from './store.mjs';
+import mysql from 'mysql2/promise';
+import { MySqlStore } from './store.mjs';
 import { DbAuth } from './auth.mjs';
 import { LiveRegistry } from './live.mjs';
 import { RpcServer } from './rpc.mjs';
 
 const {
   DB_HOST = '127.0.0.1',
-  DB_PORT = '5432',
+  DB_PORT = '3306',
   DB_NAME = 'restaurant_manager',
   DB_USER,
   DB_PASS,
@@ -35,21 +35,26 @@ const logger = {
   error: (...args) => console.error('[dbproxy]', ...args),
 };
 
-const pool = new pg.Pool({
+const pool = mysql.createPool({
   host: DB_HOST,
   port: Number(DB_PORT),
   database: DB_NAME,
   user: DB_USER,
   password: DB_PASS,
-  max: Number(process.env.DB_POOL_MAX ?? 20),
+  connectionLimit: Number(process.env.DB_POOL_MAX ?? 20),
+  waitForConnections: true,
+  queueLimit: 0,
+  connectTimeout: 15_000,
+  timezone: '+00:00',
+  enableKeepAlive: true,
   ssl: DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
 });
 
 async function main() {
-  const store = new PgStore(pool, logger);
+  const store = new MySqlStore(pool, logger);
   const t0 = Date.now();
   await store.init();
-  logger.info(`PostgreSQL store ready (schema initialized in ${Date.now() - t0}ms)`);
+  logger.info(`MySQL store ready (schema initialized in ${Date.now() - t0}ms)`);
 
   const auth = new DbAuth();
   const liveRegistry = new LiveRegistry(store, { logger, pollMs: DB_LIVE_POLL_MS ? Number(DB_LIVE_POLL_MS) : undefined });
@@ -59,7 +64,7 @@ async function main() {
   const port = Number(DBPROXY_PORT);
   const host = DBPROXY_HOST;
   rpc.listen({ port, host });
-  logger.info(`DB RPC listening on ws://${host}:${port}/rpc (PostgreSQL-backed)`);
+  logger.info(`DB RPC listening on ws://${host}:${port}/rpc (MySQL-backed)`);
 
   const shutdown = async (signal) => {
     logger.info(`Received ${signal}, shutting down`);

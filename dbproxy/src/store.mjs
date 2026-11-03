@@ -1,8 +1,8 @@
 /**
- * PostgreSQL persistence for the data service.
+ * MySQL persistence for the data service.
  *
  * Storage model: every SurrealDB table maps to rows in a single `records`
- * table — (table_name, id, data jsonb). Record links ("table:id" strings),
+ * table — (table_name, id, data JSON). Record links ("table:id" strings),
  * datetimes (ISO-8601 UTC strings), decimals/uuids/durations (strings) are
  * re-hydrated to their wire types on read using per-field kinds learned at
  * write time and seeded from migrations/latest.surql during import.
@@ -13,6 +13,14 @@
  *   field_defaults  — DEFINE FIELD ... DEFAULT (applied on create)
  *   event_defs      — DEFINE EVENT (WHEN/THEN evaluated on write)
  *   change_log      — durable change feed (replaces SurrealDB changefeeds)
+ *
+ * Dialect notes (MySQL 8 / InnoDB, utf8mb4_bin so record ids stay byte-exact):
+ *   jsonb           → JSON (the driver parses it back into objects, like jsonb)
+ *   $n placeholders → ?
+ *   ON CONFLICT     → ON DUPLICATE KEY UPDATE col = new.col (row alias)
+ *   RETURNING seq   → result.insertId (seq is AUTO_INCREMENT)
+ *   = ANY(array)    → IN (?, ?, …)
+ *   data->>'col'    → JSON_EXTRACT(data, '$."col"') = CAST(? AS JSON)
  */
 
 import { SRid, SDateTime, SDecimal, SUuid, SDuration, SNone, SSet, STagged } from './cbor.mjs';
@@ -21,55 +29,57 @@ import fs from 'node:fs';
 
 const RID_PATH_RE = /^([A-Za-z_][A-Za-z0-9_]*):(.+)$/s;
 
-const INIT_SQL = `
-CREATE TABLE IF NOT EXISTS records (
-  table_name text NOT NULL,
-  id text NOT NULL,
-  data jsonb NOT NULL DEFAULT '{}'::jsonb,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY (table_name, id)
-);
-CREATE INDEX IF NOT EXISTS records_table_idx ON records (table_name);
-CREATE TABLE IF NOT EXISTS field_kinds (
-  table_name text NOT NULL,
-  field text NOT NULL,
-  kind text NOT NULL,
-  PRIMARY KEY (table_name, field)
-);
-CREATE TABLE IF NOT EXISTS change_log (
-  seq bigserial PRIMARY KEY,
-  table_name text NOT NULL,
-  record_id text NOT NULL,
-  action text NOT NULL,
-  data jsonb,
-  at timestamptz NOT NULL DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS change_log_table_idx ON change_log (table_name, seq);
-CREATE TABLE IF NOT EXISTS unique_indexes (
-  name text PRIMARY KEY,
-  table_name text NOT NULL,
-  fields jsonb NOT NULL
-);
-CREATE INDEX IF NOT EXISTS unique_indexes_table_idx ON unique_indexes (table_name);
-CREATE TABLE IF NOT EXISTS field_defaults (
-  table_name text NOT NULL,
-  field text NOT NULL,
-  expr jsonb NOT NULL,
-  PRIMARY KEY (table_name, field)
-);
-CREATE TABLE IF NOT EXISTS event_defs (
-  name text PRIMARY KEY,
-  table_name text NOT NULL,
-  when_ast jsonb,
-  then_statements jsonb NOT NULL
-);
-CREATE INDEX IF NOT EXISTS event_defs_table_idx ON event_defs (table_name);
-`;
+const INIT_SQL = [
+  `CREATE TABLE IF NOT EXISTS records (
+     table_name VARCHAR(128) NOT NULL,
+     id VARCHAR(512) NOT NULL,
+     data JSON NOT NULL,
+     created_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+     updated_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+     PRIMARY KEY (table_name, id)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin`,
+  `CREATE TABLE IF NOT EXISTS field_kinds (
+     table_name VARCHAR(128) NOT NULL,
+     field VARCHAR(512) NOT NULL,
+     kind VARCHAR(64) NOT NULL,
+     PRIMARY KEY (table_name, field)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin`,
+  `CREATE TABLE IF NOT EXISTS change_log (
+     seq BIGINT NOT NULL AUTO_INCREMENT,
+     table_name VARCHAR(128) NOT NULL,
+     record_id VARCHAR(512) NOT NULL,
+     action VARCHAR(16) NOT NULL,
+     data JSON NULL,
+     at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+     PRIMARY KEY (seq),
+     KEY change_log_table_idx (table_name, seq)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin`,
+  `CREATE TABLE IF NOT EXISTS unique_indexes (
+     name VARCHAR(255) NOT NULL,
+     table_name VARCHAR(128) NOT NULL,
+     fields JSON NOT NULL,
+     PRIMARY KEY (name),
+     KEY unique_indexes_table_idx (table_name)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin`,
+  `CREATE TABLE IF NOT EXISTS field_defaults (
+     table_name VARCHAR(128) NOT NULL,
+     field VARCHAR(512) NOT NULL,
+     expr JSON NOT NULL,
+     PRIMARY KEY (table_name, field)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin`,
+  `CREATE TABLE IF NOT EXISTS event_defs (
+     name VARCHAR(255) NOT NULL,
+     table_name VARCHAR(128) NOT NULL,
+     when_ast JSON NULL,
+     then_statements JSON NOT NULL,
+     PRIMARY KEY (name),
+     KEY event_defs_table_idx (table_name)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin`,
+];
 
 const REMOVED = Symbol('field-removed');
 
-/** Normalize an incoming wire value into the JSONB storage model. */
+/** Normalize an incoming wire value into the JSON storage model. */
 export function normalizeIn(value, table, path, kinds) {
   if (value instanceof SRid) {
     const s = `${value.table}:${value.id}`;
@@ -142,7 +152,13 @@ function astToJson(node) {
   return JSON.parse(JSON.stringify(node));
 }
 
-export class PgStore {
+/** JSON path for a top-level record field, with the key safely quoted. */
+function jsonPath(field) {
+  const escaped = String(field).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  return `$."${escaped}"`;
+}
+
+export class MySqlStore {
   constructor(pool, logger = console) {
     this.pool = pool;
     this.logger = logger;
@@ -157,9 +173,11 @@ export class PgStore {
   }
 
   async init() {
-    const client = await this.pool.connect();
+    const client = await this.pool.getConnection();
     try {
-      await client.query(INIT_SQL);
+      for (const ddl of INIT_SQL) {
+        await client.query(ddl);
+      }
     } finally {
       client.release();
     }
@@ -171,13 +189,13 @@ export class PgStore {
   }
 
   async loadKinds() {
-    const { rows } = await this.pool.query('SELECT table_name, field, kind FROM field_kinds');
-    for (const row of rows) {
+    const [kinds] = await this.pool.query('SELECT table_name, field, kind FROM field_kinds');
+    for (const row of kinds) {
       const key = row.table_name;
       if (!this.kindsCache.has(key)) this.kindsCache.set(key, new Map());
       this.kindsCache.get(key).set(row.field, row.kind);
     }
-    const [{ rows: uq }, { rows: def }, { rows: evt }] = await Promise.all([
+    const [[uq], [def], [evt]] = await Promise.all([
       this.pool.query('SELECT name, table_name, fields FROM unique_indexes'),
       this.pool.query('SELECT table_name, field, expr FROM field_defaults'),
       this.pool.query('SELECT name, table_name, when_ast, then_statements FROM event_defs'),
@@ -206,8 +224,8 @@ export class PgStore {
       const existing = this.kindsCache.get(table)?.get(field);
       if (existing === kind) continue;
       await client.query(
-        `INSERT INTO field_kinds (table_name, field, kind) VALUES ($1, $2, $3)
-         ON CONFLICT (table_name, field) DO UPDATE SET kind = EXCLUDED.kind`,
+        `INSERT INTO field_kinds (table_name, field, kind) VALUES (?, ?, ?) AS new
+         ON DUPLICATE KEY UPDATE kind = new.kind`,
         [table, field, kind]
       );
       if (!this.kindsCache.has(table)) this.kindsCache.set(table, new Map());
@@ -219,8 +237,8 @@ export class PgStore {
 
   async upsertUniqueIndex(client, { name, table, fields }) {
     await client.query(
-      `INSERT INTO unique_indexes (name, table_name, fields) VALUES ($1, $2, $3::jsonb)
-       ON CONFLICT (name) DO UPDATE SET table_name = EXCLUDED.table_name, fields = EXCLUDED.fields`,
+      `INSERT INTO unique_indexes (name, table_name, fields) VALUES (?, ?, ?) AS new
+       ON DUPLICATE KEY UPDATE table_name = new.table_name, fields = new.fields`,
       [name, table, JSON.stringify(fields)]
     );
     const list = this.uniqueCache.get(table) ?? [];
@@ -233,9 +251,9 @@ export class PgStore {
 
   async upsertFieldDefault(client, { table, field, ast }) {
     await client.query(
-      `INSERT INTO field_defaults (table_name, field, expr) VALUES ($1, $2, $3::jsonb)
-       ON CONFLICT (table_name, field) DO UPDATE SET expr = EXCLUDED.expr`,
-      [table, field, astToJson(ast)]
+      `INSERT INTO field_defaults (table_name, field, expr) VALUES (?, ?, ?) AS new
+       ON DUPLICATE KEY UPDATE expr = new.expr`,
+      [table, field, JSON.stringify(astToJson(ast))]
     );
     const list = this.defaultsCache.get(table) ?? [];
     const entry = { field, ast };
@@ -251,11 +269,14 @@ export class PgStore {
     }
     try {
       await client.query(
-        `INSERT INTO event_defs (name, table_name, when_ast, then_statements) VALUES ($1, $2, $3::jsonb, $4::jsonb)
-         ON CONFLICT (name) DO UPDATE SET table_name = EXCLUDED.table_name, when_ast = EXCLUDED.when_ast, then_statements = EXCLUDED.then_statements`,
-        // NOTE: pg serializes JS arrays as Postgres array literals, not JSON —
-        // then_statements is an array, so it must be passed as a JSON string.
-        [name, table, whenAst ? JSON.stringify(astToJson(whenAst)) : null, JSON.stringify(astToJson(thenStatements))]
+        `INSERT INTO event_defs (name, table_name, when_ast, then_statements) VALUES (?, ?, ?, ?) AS new
+         ON DUPLICATE KEY UPDATE table_name = new.table_name, when_ast = new.when_ast, then_statements = new.then_statements`,
+        [
+          name,
+          table,
+          whenAst ? JSON.stringify(astToJson(whenAst)) : null,
+          JSON.stringify(astToJson(thenStatements)),
+        ]
       );
     } catch (err) {
       console.error("[event-debug] insert failed:", err.message, "name:", name, "table:", table);
@@ -271,71 +292,72 @@ export class PgStore {
   }
 
   async removeUniqueIndex(client, name, table) {
-    await client.query('DELETE FROM unique_indexes WHERE name = $1', [name]);
+    await client.query('DELETE FROM unique_indexes WHERE name = ?', [name]);
     this.uniqueCache.set(table, (this.uniqueCache.get(table) ?? []).filter((x) => x.name !== name));
   }
 
   async removeFieldDefault(client, table, field) {
-    await client.query('DELETE FROM field_defaults WHERE table_name = $1 AND field = $2', [table, field]);
+    await client.query('DELETE FROM field_defaults WHERE table_name = ? AND field = ?', [table, field]);
     this.defaultsCache.set(table, (this.defaultsCache.get(table) ?? []).filter((x) => x.field !== field));
   }
 
   async removeEvent(client, name, table) {
-    await client.query('DELETE FROM event_defs WHERE name = $1', [name]);
+    await client.query('DELETE FROM event_defs WHERE name = ?', [name]);
     this.eventsCache.set(table, (this.eventsCache.get(table) ?? []).filter((x) => x.name !== name));
   }
 
   // ---- reads --------------------------------------------------------------
 
   async listTables(client) {
-    const { rows } = await client.query('SELECT DISTINCT table_name FROM records ORDER BY table_name');
+    const [rows] = await client.query('SELECT DISTINCT table_name FROM records ORDER BY table_name');
     return rows.map((r) => r.table_name);
   }
 
   async countRecords(client, table) {
-    const { rows } = await client.query('SELECT count(*)::int AS n FROM records WHERE table_name = $1', [table]);
-    return rows[0].n;
+    const [rows] = await client.query('SELECT COUNT(*) AS n FROM records WHERE table_name = ?', [table]);
+    return Number(rows[0].n);
   }
 
   async getRecords(client, table, ids) {
     if (ids.length === 0) return [];
-    const { rows } = await client.query(
-      'SELECT id, data FROM records WHERE table_name = $1 AND id = ANY($2)',
-      [table, ids]
+    const [rows] = await client.query(
+      `SELECT id, data FROM records WHERE table_name = ? AND id IN (${ids.map(() => '?').join(', ')})`,
+      [table, ...ids]
     );
     return rows;
   }
 
   async scanTable(client, table) {
-    const { rows } = await client.query('SELECT id, data FROM records WHERE table_name = $1', [table]);
+    const [rows] = await client.query('SELECT id, data FROM records WHERE table_name = ?', [table]);
     return rows;
   }
 
   async scanTables(client, tables) {
-    const { rows } = await client.query(
-      'SELECT table_name, id, data FROM records WHERE table_name = ANY($1)',
-      [tables]
+    if (tables.length === 0) return [];
+    const [rows] = await client.query(
+      `SELECT table_name, id, data FROM records WHERE table_name IN (${tables.map(() => '?').join(', ')})`,
+      tables
     );
     return rows;
   }
 
   async getMaxSeq(client) {
-    const { rows } = await client.query('SELECT COALESCE(max(seq), 0)::bigint AS max FROM change_log');
+    const [rows] = await client.query('SELECT COALESCE(MAX(seq), 0) AS max FROM change_log');
     return Number(rows[0].max);
   }
 
   async getChangesSince(client, table, sinceSeq, limit) {
-    const { rows } = await client.query(
-      'SELECT seq, table_name, record_id, action, data, at FROM change_log WHERE seq > $1 AND table_name = $2 ORDER BY seq ASC LIMIT $3',
-      [sinceSeq, table, limit]
+    const [rows] = await client.query(
+      'SELECT seq, table_name, record_id, action, data, at FROM change_log WHERE seq > ? AND table_name = ? ORDER BY seq ASC LIMIT ?',
+      [sinceSeq, table, Number(limit)]
     );
     return rows;
   }
 
   async getAllChangesSince(client, sinceSeq, limit) {
-    const { rows } = await client.query(
-      'SELECT seq, table_name, record_id, action, data, at FROM change_log WHERE seq > $1 ORDER BY seq ASC LIMIT $2',
-      [sinceSeq, limit]
+    const [rows] = await client.query(
+      'SELECT seq, table_name, record_id, action, data, at FROM change_log WHERE seq > ? ORDER BY seq ASC LIMIT ?',
+      [sinceSeq, Number(limit)]
     );
     return rows;
   }
@@ -364,13 +386,13 @@ export class PgStore {
     const action = isCreate ? 'CREATE' : 'UPDATE';
     if (isCreate) {
       await client.query(
-        'INSERT INTO records (table_name, id, data) VALUES ($1, $2, $3::jsonb)',
+        'INSERT INTO records (table_name, id, data) VALUES (?, ?, ?)',
         [table, id, JSON.stringify(finalData)]
       );
     } else {
       await client.query(
-        'UPDATE records SET data = $3::jsonb, updated_at = now() WHERE table_name = $1 AND id = $2',
-        [table, id, JSON.stringify(finalData)]
+        'UPDATE records SET data = ?, updated_at = CURRENT_TIMESTAMP(3) WHERE table_name = ? AND id = ?',
+        [JSON.stringify(finalData), table, id]
       );
     }
 
@@ -410,11 +432,14 @@ export class PgStore {
     for (const unique of uniques) {
       const values = unique.fields.map((f) => data[f]);
       if (values.some((v) => v === undefined)) continue; // NULLs don't conflict (SurrealDB semantic)
-      const sql = `SELECT id FROM records WHERE table_name = $1 AND id <> $2 AND (${unique.fields
-        .map((_, i) => `data->>$${i + 3} = $${i + 3 + unique.fields.length}`)
-        .join(' AND ')}) LIMIT 1`;
-      const params = [table, id, ...unique.fields, ...values];
-      const { rows } = await client.query(sql, params);
+      // Typed comparison: the stored JSON scalar vs the value re-parsed as
+      // JSON, so a number never matches the same digits written as a string
+      // (jsonb's `data->>$n = $m` compared both as text).
+      const sql = `SELECT id FROM records WHERE table_name = ? AND id <> ? AND ${unique.fields
+        .map(() => 'JSON_EXTRACT(data, ?) = CAST(? AS JSON)')
+        .join(' AND ')} LIMIT 1`;
+      const params = [table, id, ...unique.fields.map(jsonPath), ...values.map((v) => JSON.stringify(v))];
+      const [rows] = await client.query(sql, params);
       if (rows.length > 0) {
         throw new QueryError(
           `Unique index '${unique.name}' violated on table '${table}' (fields: ${unique.fields.join(', ')}) — existing record '${rows[0].id}'`,
@@ -425,11 +450,11 @@ export class PgStore {
   }
 
   async appendChange(client, table, id, action, data) {
-    const { rows } = await client.query(
-      'INSERT INTO change_log (table_name, record_id, action, data) VALUES ($1, $2, $3, $4::jsonb) RETURNING seq',
+    const [result] = await client.query(
+      'INSERT INTO change_log (table_name, record_id, action, data) VALUES (?, ?, ?, ?)',
       [table, id, action, data ? JSON.stringify(data) : null]
     );
-    return Number(rows[0].seq);
+    return Number(result.insertId);
   }
 
   async fireEvents(client, table, id, action, before, after, ctx, kinds, depth) {
@@ -521,8 +546,8 @@ export class PgStore {
     await this.enforceUnique(client, table, id, after);
     await this.persistKinds(client, kinds);
     await client.query(
-      'UPDATE records SET data = $3::jsonb, updated_at = now() WHERE table_name = $1 AND id = $2',
-      [table, id, JSON.stringify(after)]
+      'UPDATE records SET data = ?, updated_at = CURRENT_TIMESTAMP(3) WHERE table_name = ? AND id = ?',
+      [JSON.stringify(after), table, id]
     );
     await this.appendChange(client, table, id, 'UPDATE', after);
     await this.fireEvents(client, table, id, 'UPDATE', before, after, ctx, kinds, 0);
@@ -533,7 +558,7 @@ export class PgStore {
     const existing = await this.getRecords(client, table, [id]);
     if (!existing[0]) return null;
     const before = existing[0].data;
-    await client.query('DELETE FROM records WHERE table_name = $1 AND id = $2', [table, id]);
+    await client.query('DELETE FROM records WHERE table_name = ? AND id = ?', [table, id]);
     // keep the before-image: LIVE SELECT DELETE pushes need a payload object
     await this.appendChange(client, table, id, 'DELETE', before);
     await this.fireEvents(client, table, id, 'DELETE', before, undefined, ctx, kinds, 0);
@@ -545,17 +570,15 @@ export class PgStore {
     const kinds = new Map();
     const values = [];
     const chunks = [];
-    let p = 1;
     for (const rec of records) {
       const normalized = normalizeIn(rec.data, table, '', kinds);
+      chunks.push('(?, ?, ?)');
       values.push(table, rec.id, JSON.stringify(normalized));
-      chunks.push(`($${p}, $${p + 1}, $${p + 2}::jsonb)`);
-      p += 3;
     }
     if (chunks.length === 0) return 0;
     await client.query(
-      `INSERT INTO records (table_name, id, data) VALUES ${chunks.join(', ')}
-       ON CONFLICT (table_name, id) DO UPDATE SET data = EXCLUDED.data`,
+      `INSERT INTO records (table_name, id, data) VALUES ${chunks.join(', ')} AS new
+       ON DUPLICATE KEY UPDATE data = new.data`,
       values
     );
     await this.persistKinds(client, kinds);
@@ -563,4 +586,4 @@ export class PgStore {
   }
 }
 
-export { REMOVED, RID_PATH_RE };
+export { REMOVED, RID_PATH_RE, jsonPath, INIT_SQL };

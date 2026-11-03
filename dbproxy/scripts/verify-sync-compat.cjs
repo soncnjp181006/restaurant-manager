@@ -1,5 +1,5 @@
 // Compat test: sync-service's own SHOW CHANGES parsing against dbproxy.
-// Mirrors what sync-manager.tailTable() does after the PostgreSQL switch.
+// Mirrors what sync-manager.tailTable() does after the MySQL switch.
 const path = require('node:path'); const { pathToFileURL } = require('node:url');
 const helpersPath = path.resolve('..', 'sync-service', 'src', 'sync-helpers.js');
 

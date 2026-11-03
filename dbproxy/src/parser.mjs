@@ -1,7 +1,7 @@
 /**
  * SurrealQL tokenizer + recursive-descent parser for the dialect subset this
  * application actually uses. Produces a statement AST consumed by
- * `engine.mjs` (which executes it against PostgreSQL).
+ * `engine.mjs` (which executes it against MySQL).
  *
  * Supported statements: SELECT, CREATE, UPSERT, INSERT, UPDATE, DELETE,
  * RELATE, LIVE SELECT, KILL, DEFINE (TABLE/FIELD/INDEX/EVENT/...),

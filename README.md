@@ -4,7 +4,7 @@
 
 Restaurant Manager is a **source-available restaurant POS and restaurant management system** built for modern food businesses. It combines point-of-sale ordering, kitchen display systems (KDS), inventory and recipe management, staff scheduling and payroll, accounting, delivery, fiscalization (FBR / PRA), and AI restaurant analytics powered by **Kashif** in one **offline-first** platform.
 
-React · TypeScript · Vite · Bun · PostgreSQL · WebSockets · IndexedDB
+React · TypeScript · Vite · Bun · MySQL · WebSockets · IndexedDB
 
 ## Links
 
@@ -166,7 +166,7 @@ Write proposals use the same review-and-confirm pipeline as **AI Import** — Ka
 - **Auth gateway** — session JWT; Surreal credentials not shipped to browser ([GATEWAY.md](docs/security/GATEWAY.md))
 - **ESC/POS printing** — USB, Serial, Network, Bluetooth; kitchen tickets, receipts, delivery slips, pre-sale bills, sales summaries; custom logos
 - **Multi-lingual** — English, Tiếng Việt; live language switch
-- **Tech stack** — React + TypeScript, Bun + Vite, PostgreSQL (via the wire-compatible dbproxy service), WebSockets
+- **Tech stack** — React + TypeScript, Bun + Vite, MySQL (via the wire-compatible dbproxy service), WebSockets
 
 ---
 
@@ -186,15 +186,15 @@ bun install
 docker compose up -d
 ```
 
-Copied `.env` files include **local-dev** database credentials (`restaurant` / `CHANGE_ME_BEFORE_DEPLOY`). Change `POSTGRES_USER`, `POSTGRES_PASSWORD`, `SURREAL_USER`, `SURREAL_PASS` (the dbproxy RPC root credentials), and `GATEWAY_JWT_SECRET` before any non-localhost deploy — `GATEWAY_JWT_SECRET` ships **blank** on purpose, so generate one (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`). `root`/`root` is rejected.
+Copied `.env` files include **local-dev** database credentials (`restaurant` / `CHANGE_ME_BEFORE_DEPLOY`). Change `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `SURREAL_USER`, `SURREAL_PASS` (the dbproxy RPC root credentials), and `GATEWAY_JWT_SECRET` before any non-localhost deploy — `GATEWAY_JWT_SECRET` ships **blank** on purpose, so generate one (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`). `root`/`root` is rejected.
 
-**Auth gateway (default):** SPA uses port **3142**, never the database port (**8000** dbproxy / **5432** PostgreSQL) directly. Set `VITE_GATEWAY_URL` / `VITE_DB_WEBDOCKET` to the gateway; do **not** set `VITE_DB_USER` / `VITE_DB_PASS` in the browser bundle. Details and rollback: [docs/security/GATEWAY.md](docs/security/GATEWAY.md).
+**Auth gateway (default):** SPA uses port **3142**, never the database port (**8000** dbproxy / **3306** MySQL) directly. Set `VITE_GATEWAY_URL` / `VITE_DB_WEBDOCKET` to the gateway; do **not** set `VITE_DB_USER` / `VITE_DB_PASS` in the browser bundle. Details and rollback: [docs/security/GATEWAY.md](docs/security/GATEWAY.md).
 
-**PostgreSQL everywhere:** the whole system of record is PostgreSQL (see [docs/MIGRATION-POSTGRES.md](docs/MIGRATION-POSTGRES.md)). The tracking / activity log can additionally be mirrored into a relational `tracking_events` table for SQL analytics — leave `TRACKING_PG_*` blank and the mirror stays inert. Design, limits, and how to enable it: [docs/adr/0006-postgres-tracking-mirror.md](docs/adr/0006-postgres-tracking-mirror.md).
+**MySQL everywhere:** the whole system of record is MySQL — one `records` JSON store plus its metadata and change-log tables, all owned by the wire-compatible `dbproxy` service (see [docs/MIGRATION-MYSQL.md](docs/MIGRATION-MYSQL.md)). The tracking / activity log can additionally be mirrored into a flat `tracking_events` table for SQL analytics — leave `TRACKING_MYSQL_*` blank and the mirror stays inert. Design, limits, and how to enable it: [docs/adr/0006-mysql-tracking-mirror.md](docs/adr/0006-mysql-tracking-mirror.md).
 
-### Migrating a legacy SurrealDB datastore to PostgreSQL
+### Migrating a legacy SurrealDB datastore to MySQL
 
-An install that still runs SurrealDB keeps its data in `./database` (surrealkv). Move it into PostgreSQL with the one-shot migration script — it starts a temporary SurrealDB, copies every table through the dbproxy (so record links and datetimes keep their wire types), applies `migrations/latest.surql`, and prints a per-table count comparison:
+An install that still runs SurrealDB keeps its data in `./database` (surrealkv). Move it into MySQL with the one-shot migration script — it starts a temporary SurrealDB, copies every table through the dbproxy (so record links and datetimes keep their wire types), applies `migrations/latest.surql`, and prints a per-table count comparison:
 
 ```bash
 # 1. start a temporary SurrealDB serving the legacy datastore (adjust paths/ports)
@@ -204,15 +204,19 @@ docker run --rm -d --name rm-surreal-migrate -p 18000:8000 --user 0:0 -v rm-surr
   surrealdb/surrealdb:v3.0.5 start --user restaurant --pass <pass> surrealkv://database --bind 0.0.0.0:8000
 
 # 2. start the dbproxy with events disabled for a clean import
-cd dbproxy && DB_DISABLE_EVENTS=1 DB_HOST=127.0.0.1 DB_PORT=<pg-port> DB_NAME=restaurant_manager \
+cd dbproxy && DB_DISABLE_EVENTS=1 DB_HOST=127.0.0.1 DB_PORT=<mysql-port> DB_NAME=restaurant_manager \
   DB_USER=<user> DB_PASS=<pass> DB_ROOT_USER=<user> DB_ROOT_PASS=<pass> DB_TOKEN_SECRET=<jwt-secret> \
   DBPROXY_PORT=18001 node src/server.mjs & cd ..
 
 # 3. migrate + apply schema + verify per-table counts
-SRC_URL=ws://127.0.0.1:18000/rpc DST_URL=ws://127.0.0.1:18001/rpc node migrations/scripts/migrate-surreal-to-pg.cjs
+SRC_URL=ws://127.0.0.1:18000/rpc DST_URL=ws://127.0.0.1:18001/rpc node migrations/scripts/migrate-surreal-to-mysql.cjs
 ```
 
-Full procedure and verification steps: [docs/MIGRATION-POSTGRES.md](docs/MIGRATION-POSTGRES.md).
+### Migrating an existing PostgreSQL store to MySQL
+
+An install that ran the previous engine keeps everything in six PostgreSQL tables. Export them with `psql` and let the mover load and **verify** the copy (row counts, every cell compared canonically, and the `change_log` watermark): the exact commands are in the header of [`migrations/scripts/migrate-pg-to-mysql.cjs`](migrations/scripts/migrate-pg-to-mysql.cjs).
+
+Full procedure and verification steps: [docs/MIGRATION-MYSQL.md](docs/MIGRATION-MYSQL.md).
 
 Browser-side offline data (PosStore, integration queue/secrets, AI history) is copied automatically on first launch by `src/lib/legacy-storage.ts`, which leaves the old store in place as a fallback. Active sessions end once, because the gateway's JWT issuer and the session cookie names changed. Full rationale: [docs/adr/0007-full-brand-rename.md](docs/adr/0007-full-brand-rename.md).
 

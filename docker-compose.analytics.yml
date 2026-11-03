@@ -1,25 +1,25 @@
-# Optional PostgreSQL mirror for the tracking / activity log.
+# Optional MySQL mirror for the tracking / activity log.
 #
-# Since the full PostgreSQL migration the primary store IS PostgreSQL
-# (docker-compose.yml defines the `postgres` service). This overlay now only
+# Since the full MySQL migration the primary store IS MySQL
+# (docker-compose.yml defines the `mysql` service). This overlay now only
 # enables the tracking-api SQL mirror: every ingested event is additionally
-# written into `tracking_events` on the SAME main PostgreSQL instance, so
+# written into `tracking_events` on the SAME main MySQL instance, so
 # SQL-native analytics can run against a relational copy. If a mirror write
 # fails, ingestion still returns 201 and the failure count is exposed on
-# `GET /health` as `pgMirrorFailures`.
+# `GET /health` as `mysqlMirrorFailures`.
 #
 # Usage:
-#   1. Set TRACKING_PG_USER and TRACKING_PG_PASS in .env (see .env.example).
+#   1. Set TRACKING_MYSQL_USER and TRACKING_MYSQL_PASS in .env (see .env.example).
 #   2. docker compose -f docker-compose.yml -f docker-compose.analytics.yml up -d tracking
-#   3. curl http://127.0.0.1:3138/health   -> "pgMirror": "configured"
+#   3. curl http://127.0.0.1:3138/health   -> "mysqlMirror": "configured"
 #
-# Without TRACKING_PG_* the tracking service sees an empty TRACKING_PG_URL and
-# the mirror stays completely inert (Postgres itself is always on now).
+# Without TRACKING_MYSQL_* the tracking service sees an empty TRACKING_MYSQL_URL
+# and the mirror stays completely inert (MySQL itself is always on now).
 
 services:
   tracking:
     environment:
-      # In-container URL: the service DNS name is `postgres`, port 5432.
+      # In-container URL: the service DNS name is `mysql`, port 3306.
       # For running tracking-api on the host instead, use
-      #   TRACKING_PG_URL=postgres://<user>:<pass>@127.0.0.1:<POSTGRES_HOST_PORT>/restaurant_manager
-      - TRACKING_PG_URL=${TRACKING_PG_URL:-postgresql://${TRACKING_PG_USER:-restaurant}:${TRACKING_PG_PASS}@postgres:5432/${POSTGRES_DB:-restaurant_manager}}
+      #   TRACKING_MYSQL_URL=mysql://<user>:<pass>@127.0.0.1:<MYSQL_HOST_PORT>/restaurant_manager
+      - TRACKING_MYSQL_URL=${TRACKING_MYSQL_URL:-mysql://${TRACKING_MYSQL_USER:-restaurant}:${TRACKING_MYSQL_PASS}@mysql:3306/${MYSQL_DB:-restaurant_manager}}

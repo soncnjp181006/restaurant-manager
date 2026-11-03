@@ -421,7 +421,7 @@ function callFunction(name, args, ctx) {
     case 'record::tb':
       return callFunction('record::table', args, ctx);
     default:
-      throw new QueryError(`Function '${name}' is not supported by the PostgreSQL data service`);
+      throw new QueryError(`Function '${name}' is not supported by the MySQL data service`);
   }
 }
 

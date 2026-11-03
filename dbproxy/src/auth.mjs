@@ -4,7 +4,7 @@
  * The gateway signs POS session JWTs (GATEWAY_JWT_SECRET). For the database
  * connection the browser passes a DB access token obtained from
  * POST /auth/login (field `surrealToken`) — under SurrealDB this was a
- * SurrealDB-issued access token; the PostgreSQL data service replaces it with
+ * SurrealDB-issued access token; the MySQL data service replaces it with
  * an HS256 JWT carrying the user's identity so `$auth` works in DEFINE EVENT
  * handlers. `DB_TOKEN_SECRET` defaults to `GATEWAY_JWT_SECRET` so the gateway
  * and the data service share the secret in local deployments.

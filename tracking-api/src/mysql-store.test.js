@@ -1,22 +1,22 @@
 'use strict';
 
 /**
- * Tests for the optional PostgreSQL tracking mirror (tracking-api/src/postgres-store.js).
+ * Tests for the optional MySQL tracking mirror (tracking-api/src/mysql-store.js).
  *
  * Run without a database — the "mirror inert" cases are the ones that prove
- * ingestion keeps working when Postgres is not configured:
- *   node --test tracking-api/src/postgres-store.test.js
+ * ingestion keeps working when MySQL is not configured:
+ *   node --test tracking-api/src/mysql-store.test.js
  *
- * Run against a real PostgreSQL — the integration block un-skips itself when
- * TRACKING_PG_URL (or TRACKING_PG_HOST/DB/USER/PASS) points at one:
- *   TRACKING_PG_URL=postgres://pos:pos@127.0.0.1:55432/pos_tracking \
- *     node --test tracking-api/src/postgres-store.test.js
+ * Run against a real MySQL — the integration block un-skips itself when
+ * TRACKING_MYSQL_URL (or TRACKING_MYSQL_HOST/DB/USER/PASS) points at one:
+ *   TRACKING_MYSQL_URL=mysql://pos:pos@127.0.0.1:3307/pos_tracking \
+ *     node --test tracking-api/src/mysql-store.test.js
  */
 
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
-const store = require('./postgres-store');
+const store = require('./mysql-store');
 
 function withEnv(env, fn) {
   const previous = {};
@@ -32,14 +32,14 @@ function withEnv(env, fn) {
     });
 }
 
-test('mirror is inert when no Postgres env is set', async () => {
+test('mirror is inert when no MySQL env is set', async () => {
   await withEnv(
     {
-      TRACKING_PG_URL: '',
-      TRACKING_PG_HOST: '',
-      TRACKING_PG_DB: '',
-      TRACKING_PG_USER: '',
-      TRACKING_PG_PASS: '',
+      TRACKING_MYSQL_URL: '',
+      TRACKING_MYSQL_HOST: '',
+      TRACKING_MYSQL_DB: '',
+      TRACKING_MYSQL_USER: '',
+      TRACKING_MYSQL_PASS: '',
     },
     async () => {
       assert.equal(store.mirrorStatus(), 'disabled');
@@ -56,24 +56,52 @@ test('mirror is inert when no Postgres env is set', async () => {
   );
 });
 
-test('TRACKING_PG_URL wins over the discrete parts', () => {
+test('TRACKING_MYSQL_URL wins over the discrete parts', () => {
   const config = store.mirrorConfig({
-    TRACKING_PG_URL: 'postgres://a:b@db.internal:5432/analytics',
-    TRACKING_PG_HOST: 'ignored',
-    TRACKING_PG_DB: 'ignored',
-    TRACKING_PG_USER: 'ignored',
-    TRACKING_PG_PASS: 'ignored',
+    TRACKING_MYSQL_URL: 'mysql://a:b@db.internal:3306/analytics',
+    TRACKING_MYSQL_HOST: 'ignored',
+    TRACKING_MYSQL_DB: 'ignored',
+    TRACKING_MYSQL_USER: 'ignored',
+    TRACKING_MYSQL_PASS: 'ignored',
   });
-  assert.deepEqual(config, { connectionString: 'postgres://a:b@db.internal:5432/analytics' });
+  assert.deepEqual(config, {
+    host: 'db.internal',
+    port: 3306,
+    user: 'a',
+    password: 'b',
+    database: 'analytics',
+  });
+});
+
+test('a URL without an explicit port defaults to 3306', () => {
+  const config = store.mirrorConfig({ TRACKING_MYSQL_URL: 'mysql://reader:secret@db.internal/analytics' });
+  assert.equal(config.port, 3306);
+});
+
+test('a URL with encoded credentials is decoded', () => {
+  const config = store.mirrorConfig({ TRACKING_MYSQL_URL: 'mysql://read%2Fer:p%40ss@db.internal:3307/analytics' });
+  assert.equal(config.user, 'read/er');
+  assert.equal(config.password, 'p@ss');
+});
+
+test('a wrong-scheme or database-less URL is rejected loudly', () => {
+  assert.throws(
+    () => store.mirrorConfig({ TRACKING_MYSQL_URL: 'postgres://a:b@h/d' }),
+    /mysql:\/\/ scheme/
+  );
+  assert.throws(
+    () => store.mirrorConfig({ TRACKING_MYSQL_URL: 'mysql://a:b@db.internal' }),
+    /must carry both a host and a database/
+  );
 });
 
 test('discrete parts build a pool config, and a missing part disables the mirror', () => {
   const full = store.mirrorConfig({
-    TRACKING_PG_HOST: 'db.internal',
-    TRACKING_PG_PORT: '6000',
-    TRACKING_PG_DB: 'analytics',
-    TRACKING_PG_USER: 'reader',
-    TRACKING_PG_PASS: 'secret',
+    TRACKING_MYSQL_HOST: 'db.internal',
+    TRACKING_MYSQL_PORT: '6000',
+    TRACKING_MYSQL_DB: 'analytics',
+    TRACKING_MYSQL_USER: 'reader',
+    TRACKING_MYSQL_PASS: 'secret',
   });
   assert.deepEqual(full, {
     host: 'db.internal',
@@ -83,13 +111,13 @@ test('discrete parts build a pool config, and a missing part disables the mirror
     password: 'secret',
   });
 
-  for (const missing of ['TRACKING_PG_HOST', 'TRACKING_PG_DB', 'TRACKING_PG_USER', 'TRACKING_PG_PASS']) {
+  for (const missing of ['TRACKING_MYSQL_HOST', 'TRACKING_MYSQL_DB', 'TRACKING_MYSQL_USER', 'TRACKING_MYSQL_PASS']) {
     const env = {
-      TRACKING_PG_HOST: 'db.internal',
-      TRACKING_PG_PORT: '6000',
-      TRACKING_PG_DB: 'analytics',
-      TRACKING_PG_USER: 'reader',
-      TRACKING_PG_PASS: 'secret',
+      TRACKING_MYSQL_HOST: 'db.internal',
+      TRACKING_MYSQL_PORT: '6000',
+      TRACKING_MYSQL_DB: 'analytics',
+      TRACKING_MYSQL_USER: 'reader',
+      TRACKING_MYSQL_PASS: 'secret',
       [missing]: '',
     };
     assert.equal(store.mirrorConfig(env), null, `expected null when ${missing} is empty`);
@@ -100,22 +128,14 @@ test('a bogus port is rejected loudly instead of silently disabling the mirror',
   assert.throws(
     () =>
       store.mirrorConfig({
-        TRACKING_PG_HOST: 'db.internal',
-        TRACKING_PG_PORT: 'not-a-port',
-        TRACKING_PG_DB: 'analytics',
-        TRACKING_PG_USER: 'reader',
-        TRACKING_PG_PASS: 'secret',
+        TRACKING_MYSQL_HOST: 'db.internal',
+        TRACKING_MYSQL_PORT: 'not-a-port',
+        TRACKING_MYSQL_DB: 'analytics',
+        TRACKING_MYSQL_USER: 'reader',
+        TRACKING_MYSQL_PASS: 'secret',
       }),
-    /TRACKING_PG_PORT/
+    /TRACKING_MYSQL_PORT/
   );
-});
-
-test('TRACKING_PG_SCHEMA sets search_path', () => {
-  const config = store.mirrorConfig({
-    TRACKING_PG_URL: 'postgres://a:b@h/d',
-    TRACKING_PG_SCHEMA: 'pos',
-  });
-  assert.equal(config.search_path, 'pos');
 });
 
 test('a safe client id becomes the primary key and is not duplicated in payload', () => {
@@ -141,7 +161,7 @@ test('an unsafe id is replaced by a uuid but the original value is kept in paylo
   }
 });
 
-test('missing page/user fall back to the same sentinels the Surreal write uses', () => {
+test('missing page/user fall back to the same sentinels the record write uses', () => {
   const row = store.toMirrorRow({});
   assert.equal(row.page, 'unknown');
   assert.equal(row.userId, 'unknown');
@@ -149,14 +169,14 @@ test('missing page/user fall back to the same sentinels the Surreal write uses',
   assert.ok(row.createdAt instanceof Date);
 });
 
-test('an unreachable Postgres reports a failure and keeps ingestion alive', async () => {
+test('an unreachable MySQL reports a failure and keeps ingestion alive', async () => {
   await withEnv(
     {
-      TRACKING_PG_URL: 'postgres://nobody:nope@127.0.0.1:1/nothing',
-      TRACKING_PG_HOST: '',
-      TRACKING_PG_DB: '',
-      TRACKING_PG_USER: '',
-      TRACKING_PG_PASS: '',
+      TRACKING_MYSQL_URL: 'mysql://nobody:nope@127.0.0.1:1/nothing',
+      TRACKING_MYSQL_HOST: '',
+      TRACKING_MYSQL_DB: '',
+      TRACKING_MYSQL_USER: '',
+      TRACKING_MYSQL_PASS: '',
     },
     async () => {
       await store.closeMirror();
@@ -171,7 +191,7 @@ test('an unreachable Postgres reports a failure and keeps ingestion alive', asyn
 });
 
 test('mirror write retries after a failed bootstrap instead of sticking', async () => {
-  await withEnv({ TRACKING_PG_URL: 'postgres://nobody:nope@127.0.0.1:1/nothing' }, async () => {
+  await withEnv({ TRACKING_MYSQL_URL: 'mysql://nobody:nope@127.0.0.1:1/nothing' }, async () => {
     await store.closeMirror();
     const before = store.mirrorFailures();
     const first = await store.writeTrackingEvent({ page: 'a', user: 'u' });
@@ -186,14 +206,19 @@ test('mirror write retries after a failed bootstrap instead of sticking', async 
   });
 });
 
-test('upsert semantics match the Surreal CREATE-over-write for a client id', () => {
-  assert.match(store.UPSERT_SQL, /ON CONFLICT \(tracking_id\) DO UPDATE SET/);
+test('upsert semantics match the record CREATE-over-write for a client id', () => {
+  assert.match(store.UPSERT_SQL, /ON DUPLICATE KEY UPDATE/);
+  assert.match(store.UPSERT_SQL, /VALUES \(\?, \?, \?, \?, \?, \?\) AS new/);
   assert.match(store.CREATE_TABLE_SQL, /CREATE TABLE IF NOT EXISTS tracking_events/);
-  assert.match(store.CREATE_TABLE_SQL, /payload\s+jsonb/);
+  assert.match(store.CREATE_TABLE_SQL, /payload\s+JSON/);
+  // MySQL has no CREATE INDEX IF NOT EXISTS, so both indexes must ship inside
+  // the CREATE TABLE — otherwise a second bootstrap of the same table errors.
+  assert.match(store.CREATE_TABLE_SQL, /KEY tracking_events_created_at_idx/);
+  assert.match(store.CREATE_TABLE_SQL, /KEY tracking_events_module_created_at_idx/);
 });
 
 // ---------------------------------------------------------------------------
-// Integration — only runs against a live PostgreSQL. It is skipped (visibly)
+// Integration — only runs against a live MySQL. It is skipped (visibly)
 // when no database is configured, so a green local run never pretends to have
 // exercised the real SQL.
 // ---------------------------------------------------------------------------
@@ -202,10 +227,10 @@ const liveConfig = store.mirrorConfig();
 
 test(
   'live: schema, insert, upsert overwrite, and read-back',
-  { skip: liveConfig ? false : 'set TRACKING_PG_URL to run against a real PostgreSQL' },
+  { skip: liveConfig ? false : 'set TRACKING_MYSQL_URL to run against a real MySQL' },
   async () => {
-    const { Pool } = require('pg');
-    const admin = new Pool({ ...liveConfig, max: 2 });
+    const mysql = require('mysql2/promise');
+    const admin = mysql.createPool({ ...liveConfig, connectionLimit: 2 });
     const runId = `itest_${Date.now()}`;
 
     try {
@@ -238,35 +263,39 @@ test(
       });
       assert.equal(third.written, true, third.reason);
 
-      const rows = await admin.query(
+      const [rows] = await admin.query(
         `SELECT tracking_id, page, user_id, module, payload, created_at
            FROM tracking_events
-          WHERE tracking_id LIKE $1 OR payload->>'id' = $2
+          WHERE tracking_id LIKE ? OR JSON_UNQUOTE(JSON_EXTRACT(payload, '$."id"')) = ?
           ORDER BY tracking_id`,
         [`${runId}%`, 'user:evil']
       );
 
-      const byId = Object.fromEntries(rows.rows.map((r) => [r.tracking_id, r]));
+      const byId = Object.fromEntries(rows.map((r) => [r.tracking_id, r]));
       assert.equal(byId[`${runId}_a`].user_id, 'cashier-2');
       assert.equal(byId[`${runId}_a`].page, 'floor');
       assert.equal(byId[`${runId}_a`].module, 'orders');
-      // The jsonb column mirrors the Surreal document, which nests the event
+      // The JSON column mirrors the record document, which nests the event
       // body under its own `payload` field — so the columns are page/user_id/
       // module plus the untouched remainder.
       assert.deepEqual(byId[`${runId}_a`].payload, { payload: { order: 99 } });
       assert.ok(byId[`${runId}_a`].created_at instanceof Date);
 
-      const unsafe = rows.rows.find((r) => r.tracking_id !== `${runId}_a`);
+      const unsafe = rows.find((r) => r.tracking_id !== `${runId}_a`);
       assert.ok(unsafe, 'expected a uuid-keyed row for the rejected id');
       assert.equal(unsafe.payload.id, 'user:evil');
       assert.equal(unsafe.user_id, 'manager');
     } finally {
       await admin.query(
         `DELETE FROM tracking_events
-          WHERE tracking_id LIKE $1 OR payload->>'id' = $2`,
+          WHERE tracking_id LIKE ? OR JSON_UNQUOTE(JSON_EXTRACT(payload, '$."id"')) = ?`,
         [`${runId}%`, 'user:evil']
       );
       await admin.end();
+      // The mirror's own pool is opened by writeTrackingEvent above. Leaving it
+      // idle keeps the event loop alive and the test file never exits, so it
+      // must be closed here — the service test does the same.
+      await store.closeMirror();
     }
   }
 );

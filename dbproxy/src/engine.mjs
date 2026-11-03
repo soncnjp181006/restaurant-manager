@@ -1,5 +1,5 @@
 /**
- * Statement executor: runs parsed SurrealQL ASTs against the PostgreSQL
+ * Statement executor: runs parsed SurrealQL ASTs against the MySQL
  * store, reproducing SurrealDB result semantics (arrays of records, ONLY
  * singular results, FETCH hydration, GROUP/ORDER/SPLIT, LIVE SELECT uuids).
  */

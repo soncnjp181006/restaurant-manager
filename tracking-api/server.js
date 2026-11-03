@@ -5,7 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const trackingRoutes = require('./src/routes/tracking.routes');
-const { mirrorStatus, mirrorFailures, closeMirror } = require('./src/postgres-store');
+const { mirrorStatus, mirrorFailures, closeMirror } = require('./src/mysql-store');
 const {
   createSessionAuthMiddleware,
   createCorsOriginDelegate,
@@ -24,8 +24,8 @@ app.get('/health', (req, res) => {
     ok: true,
     service: 'restaurant-manager-tracking-api',
     // Analytical mirror only — SurrealDB is the store every report reads.
-    pgMirror: mirrorStatus(),
-    pgMirrorFailures: mirrorFailures(),
+    mysqlMirror: mirrorStatus(),
+    mysqlMirrorFailures: mirrorFailures(),
   });
 });
 
@@ -46,7 +46,7 @@ const server = app.listen(PORT, HOST, () => {
   // eslint-disable-next-line no-console
   console.log('POST /tracking');
   // eslint-disable-next-line no-console
-  console.log(`PostgreSQL mirror: ${mirrorStatus()}`);
+  console.log(`MySQL mirror: ${mirrorStatus()}`);
 });
 
 for (const signal of ['SIGINT', 'SIGTERM']) {
@@ -54,7 +54,7 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
     server.close(() => {
       closeMirror().catch(() => {
         // eslint-disable-next-line no-console
-        console.error('Failed to close the PostgreSQL mirror pool');
+        console.error('Failed to close the MySQL mirror pool');
       });
     });
   });

@@ -55,7 +55,7 @@ export class LiveRegistry {
   async rewind() {
     // Start dispatching from "now" — subscribers receive only new changes.
     try {
-      const client = await this.store.pool.connect();
+      const client = await this.store.pool.getConnection();
       try {
         this.lastSeq = await this.store.getMaxSeq(client);
       } finally {
@@ -72,7 +72,7 @@ export class LiveRegistry {
     this.dispatching = true;
     try {
       this.pruneDead();
-      const client = await this.store.pool.connect();
+      const client = await this.store.pool.getConnection();
       let changes;
       try {
         changes = await this.store.getAllChangesSince(client, this.lastSeq, 500);

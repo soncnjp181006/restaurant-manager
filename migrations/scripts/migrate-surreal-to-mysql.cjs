@@ -2,12 +2,12 @@
 
 /**
  * Migrate the legacy SurrealDB datastore (surrealkv files in ./database) into
- * PostgreSQL via the dbproxy service.
+ * MySQL via the dbproxy service.
  *
- * Steps performed by this script (see docs/MIGRATION-POSTGRES.md):
+ * Steps performed by this script (see docs/MIGRATION-MYSQL.md):
  *   1. Connect to the running legacy SurrealDB (SRC_* env) and read the table
  *      list + every record.
- *   2. Connect to the PostgreSQL data service (DST_* env, the dbproxy) and
+ *   2. Connect to the MySQL data service (DST_* env, the dbproxy) and
  *      UPSERT every record with its original id. Record links, datetimes and
  *      other typed values travel as SDK objects so the proxy re-learns their
  *      wire types exactly like production writes.
@@ -16,7 +16,7 @@
  *   4. Print a per-table row-count comparison for verification.
  *
  * Usage (from the repo root):
- *   node migrations/scripts/migrate-surreal-to-pg.cjs
+ *   node migrations/scripts/migrate-surreal-to-mysql.cjs
  *
  * Env:
  *   SRC_URL   ws://127.0.0.1:18000/rpc  (temp SurrealDB serving ./database)
@@ -123,7 +123,7 @@ async function applySchema(dst) {
 
 async function main() {
   const src = await connect(SRC_URL, SRC_NS, SRC_DB, SRC_USER, SRC_PASS, 'source (SurrealDB)');
-  const dst = await connect(DST_URL, DST_NS, DST_DB, DST_USER, DST_PASS, 'target (dbproxy/PostgreSQL)');
+  const dst = await connect(DST_URL, DST_NS, DST_DB, DST_USER, DST_PASS, 'target (dbproxy/MySQL)');
 
   const tables = await listSourceTables(src);
   console.log(`[migrate] source tables: ${tables.length}`);
@@ -178,8 +178,8 @@ async function main() {
 main().catch((err) => {
   console.error('[migrate] fatal:', err?.message ?? err);
   if (err?.message && /already exists/i.test(err.message)) {
-    console.error('[migrate] hint: records already exist in PostgreSQL — the migration is not idempotent.');
-    console.error('[migrate] hint: to re-run, TRUNCATE the records/field_kinds tables first (see docs/MIGRATION-POSTGRES.md).');
+    console.error('[migrate] hint: records already exist in MySQL — the migration is not idempotent.');
+    console.error('[migrate] hint: to re-run, TRUNCATE the records/field_kinds tables first (see docs/MIGRATION-MYSQL.md).');
   }
   process.exit(1);
 });

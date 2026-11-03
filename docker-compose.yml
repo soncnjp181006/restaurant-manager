@@ -32,29 +32,39 @@ services:
       - api
       - gateway
 
-  postgres:
-    image: postgres:16-alpine
-    # The single system of record. All app data lives in the "records" JSONB
-    # store owned by the dbproxy service (see dbproxy/README.md).
+  mysql:
+    image: mysql:8.0
+    # The single system of record. All app data lives in the "records" JSON
+    # store owned by the dbproxy service (see dbproxy/src/store.mjs).
+    # utf8mb4_bin keeps record ids and table names byte-exact (the MySQL
+    # default *_ai_ci collations would fold case and accents into one key),
+    # and READ-COMMITTED matches the isolation the app was built against.
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_bin
+      - --transaction-isolation=READ-COMMITTED
+      - --max-allowed-packet=64M
+      - --innodb-buffer-pool-size=256M
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:?Set POSTGRES_USER in .env}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
-      - POSTGRES_DB=${POSTGRES_DB:-restaurant_manager}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+      - MYSQL_DATABASE=${MYSQL_DB:-restaurant_manager}
+      - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
     ports:
-      # Overridable because 5432 is often taken on dev machines. Containers
-      # always reach postgres:5432 on the compose network regardless.
-      - "${POSTGRES_HOST_PORT:-5432}:5432"
+      # Overridable because 3306 is often taken on dev machines. Containers
+      # always reach mysql:3306 on the compose network regardless.
+      - "${MYSQL_HOST_PORT:-3306}:3306"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB:-restaurant_manager}"]
+      test: ["CMD-SHELL", "mysql -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} -h 127.0.0.1 -e 'SELECT 1' >/dev/null 2>&1"]
       interval: 5s
       timeout: 5s
-      retries: 12
+      retries: 24
     restart: unless-stopped
 
   dbproxy:
-    # PostgreSQL-backed data service speaking the same /rpc WebSocket wire
+    # MySQL-backed data service speaking the same /rpc WebSocket wire
     # protocol the SurrealDB server used to expose. Every container talks to
     # dbproxy:8000 exactly like it talked to surrealdb:8000 before.
     build:
@@ -62,11 +72,11 @@ services:
       dockerfile: Dockerfile
     image: restaurant-manager-dbproxy:latest
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=${POSTGRES_DB:-restaurant_manager}
-      - DB_USER=${POSTGRES_USER:?Set POSTGRES_USER in .env}
-      - DB_PASS=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${MYSQL_DB:-restaurant_manager}
+      - DB_USER=${MYSQL_USER:?Set MYSQL_USER in .env}
+      - DB_PASS=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
       - DB_ROOT_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
       - DB_ROOT_PASS=${SURREAL_PASS:?Set SURREAL_PASS in .env}
       - DB_TOKEN_SECRET=${GATEWAY_JWT_SECRET:?Set GATEWAY_JWT_SECRET in .env}
@@ -75,7 +85,7 @@ services:
     ports:
       - "${SURREAL_HOST_PORT:-8000}:8000"
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
     restart: unless-stopped
 
@@ -192,11 +202,10 @@ services:
       - TRACKING_DB_NAME=restaurant_manager
       - TRACKING_DB_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
       - TRACKING_DB_PASS=${SURREAL_PASS:?Set SURREAL_PASS in .env}
-      # Optional PostgreSQL analytical mirror. Left unset the tracking service
-      # behaves exactly as before (SurrealDB alone). Set them, or start the
-      # `analytics` profile below, to also copy every event into Postgres.
-      - TRACKING_PG_URL=${TRACKING_PG_URL:-}
-      - TRACKING_PG_SCHEMA=${TRACKING_PG_SCHEMA:-}
+      # Optional MySQL analytical mirror. Left unset the tracking service
+      # behaves exactly as before (the store alone). Set them, or start the
+      # `analytics` profile below, to also copy every event into MySQL.
+      - TRACKING_MYSQL_URL=${TRACKING_MYSQL_URL:-}
       - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
     command: sh -c "npm install && npm start"
     ports:
@@ -205,7 +214,7 @@ services:
       - dbproxy
       - gateway
 
-  # The optional PostgreSQL tracking mirror is declared in
+  # The optional MySQL tracking mirror is declared in
   # docker-compose.analytics.yml (run it with -f docker-compose.yml -f that
   # file). Compose interpolates `${VAR:?}` for every service in a file even
   # when a profile hides it, so the mirror's required credentials cannot live
@@ -272,40 +281,46 @@ services:
       - dbproxy
 
   backup:
-    # Nightly pg_dump of the PostgreSQL database. Retains the latest
-    # BACKUP_RETENTION_COUNT dumps in ./backups/postgres.
-    image: postgres:16-alpine
+    # Nightly mysqldump of the MySQL database. Retains the latest
+    # BACKUP_RETENTION_COUNT dumps in ./backups/mysql. Scheduled by a plain
+    # sleep-to-the-next-00:00/12:00-UTC loop: the mysql image (unlike the
+    # alpine one used before) ships no crond to install a crontab into.
+    image: mysql:8.0
     working_dir: /backup
     volumes:
-      - ./backups/postgres:/backups
+      - ./backups/mysql:/backups
     environment:
       - TZ=UTC
-      - PGHOST=postgres
-      - PGPORT=5432
-      - PGDATABASE=${POSTGRES_DB:-restaurant_manager}
-      - PGUSER=${POSTGRES_USER:?Set POSTGRES_USER in .env}
-      - PGPASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      - BACKUP_HOST=mysql
+      - BACKUP_PORT=3306
+      - BACKUP_DB=${MYSQL_DB:-restaurant_manager}
+      - BACKUP_USER=${MYSQL_USER:?Set MYSQL_USER in .env}
+      - MYSQL_PWD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
       - BACKUP_RETENTION_COUNT=7
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
     command: >
       sh -c '
         set -eu;
         mkdir -p /backups;
-        printf "%s\n" "#!/bin/sh" "set -eu" "mkdir -p /backups" "retention=$${BACKUP_RETENTION_COUNT:-7}" "ts=$$(date -u +%Y%m%dT%H%M%SZ)" "file=/backups/postgres-$$ts.dump" "pg_dump -Fc -f \"$$file\"" "ls -1t /backups/postgres-*.dump 2>/dev/null | sed -n \"$$((retention+1)),\\$$p\" | xargs -r rm -f" > /usr/local/bin/run-backup.sh;
-        chmod +x /usr/local/bin/run-backup.sh;
-        {
-          echo "0 0 * * * /usr/local/bin/run-backup.sh";
-          echo "0 12 * * * /usr/local/bin/run-backup.sh";
-        } > /etc/crontabs/root;
-        crond -f -l 8 -L /dev/stdout
+        run_backup() {
+        ts=$$(date -u +%Y%m%dT%H%M%SZ);
+        file=/backups/mysql-$$ts.sql;
+        mysqldump -h "$$BACKUP_HOST" -P "$$BACKUP_PORT" -u "$$BACKUP_USER" --single-transaction --no-tablespaces --routines --triggers --set-gtid-purged=OFF "$$BACKUP_DB" > "$$file";
+        ls -1t /backups/mysql-*.sql 2>/dev/null | sed -n "$$(( $${BACKUP_RETENTION_COUNT:-7} + 1 )),\\$$p" | xargs -r rm -f;
+        };
+        while :; do
+        now=$$(date -u +%s);
+        sleep $$(( ( ( now / 43200 ) + 1 ) * 43200 - now ));
+        run_backup;
+        done
       '
     restart: unless-stopped
 
 
 volumes:
-  postgres-data:
+  mysql-data:
   printer-node_modules:
   payment-node_modules:
   sync-node_modules:

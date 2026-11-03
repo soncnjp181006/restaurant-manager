@@ -2,7 +2,7 @@
   "name": "restaurant-manager-dbproxy",
   "version": "1.0.0",
   "private": true,
-  "description": "PostgreSQL-backed data service speaking the SurrealDB wire protocol (drop-in replacement for the SurrealDB server). All persistence is PostgreSQL.",
+  "description": "MySQL-backed data service speaking the SurrealDB wire protocol (drop-in replacement for the SurrealDB server). All persistence is MySQL.",
   "type": "module",
   "main": "src/server.mjs",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "pg": "^8.12.0",
+    "mysql2": "^3.24.6",
     "ws": "^8.18.0"
   }
 }

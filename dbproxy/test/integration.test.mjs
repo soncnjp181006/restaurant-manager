@@ -1,27 +1,27 @@
 /**
  * Integration test: the REAL `surrealdb` JS SDK (the exact client the app
- * uses) against the PostgreSQL-backed RPC server. Self-skips when no
- * PostgreSQL is reachable at DB_TEST_PORT (5433 default).
+ * uses) against the MySQL-backed RPC server. Self-skips when no
+ * MySQL is reachable at DB_TEST_PORT (3307 default).
  *
  * Run: node --test test/integration.test.mjs
  */
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import pg from 'pg';
+import mysql from 'mysql2/promise';
 import { Surreal, RecordId, StringRecordId, Uuid } from 'surrealdb';
 
-const PG = {
+const DB = {
   host: process.env.DB_TEST_HOST ?? '127.0.0.1',
-  port: Number(process.env.DB_TEST_PORT ?? 5433),
+  port: Number(process.env.DB_TEST_PORT ?? 3307),
   database: process.env.DB_TEST_DB ?? 'restaurant_manager',
   user: process.env.DB_TEST_USER ?? 'restaurant',
   password: process.env.DB_TEST_PASS ?? 'fc3ec04f8907d7032df738bae6951b928d83',
 };
 
-async function pgReachable() {
+async function dbReachable() {
   try {
-    const client = new pg.Pool({ ...PG, max: 1, connectionTimeoutMillis: 1500 });
+    const client = await mysql.createConnection({ ...DB, connectTimeout: 1500 });
     await client.query('SELECT 1');
     await client.end();
     return true;
@@ -30,16 +30,16 @@ async function pgReachable() {
   }
 }
 
-const hasPg = await pgReachable();
+const hasDb = await dbReachable();
 
 async function startServer() {
-  const { PgStore } = await import('../src/store.mjs');
+  const { MySqlStore } = await import('../src/store.mjs');
   const { DbAuth } = await import('../src/auth.mjs');
   const { LiveRegistry } = await import('../src/live.mjs');
   const { RpcServer } = await import('../src/rpc.mjs');
 
-  const pool = new pg.Pool({ ...PG, max: 10 });
-  const store = new PgStore(pool, console);
+  const pool = mysql.createPool({ ...DB, connectionLimit: 10 });
+  const store = new MySqlStore(pool, console);
   await store.init();
   const auth = new DbAuth({
     rootUser: 'restaurant',
@@ -63,24 +63,19 @@ async function startServer() {
 }
 
 async function cleanTables(pool) {
-  const client = await pool.connect();
+  const client = await pool.getConnection();
   try {
-    await client.query('DELETE FROM records');
-    await client.query('DELETE FROM change_log');
-    await client.query('DELETE FROM unique_indexes');
-    await client.query('DELETE FROM field_defaults');
-    await client.query('DELETE FROM event_defs');
-    await client.query('DELETE FROM field_kinds');
-    const store = { kindsCache: new Map() };
-    void store;
+    for (const table of ['records', 'change_log', 'unique_indexes', 'field_defaults', 'event_defs', 'field_kinds']) {
+      await client.query(`DELETE FROM ${table}`);
+    }
   } finally {
     client.release();
   }
 }
 
-test('SDK ↔ dbproxy ↔ PostgreSQL end-to-end', { skip: hasPg ? false : 'no PostgreSQL available' }, async (t) => {
+test('SDK ↔ dbproxy ↔ MySQL end-to-end', { skip: hasDb ? false : 'no MySQL available' }, async (t) => {
   const server = await startServer();
-  const pool = new pg.Pool({ ...PG, max: 2 });
+  const pool = mysql.createPool({ ...DB, connectionLimit: 2 });
   await cleanTables(pool);
 
   const db = new Surreal();
@@ -269,9 +264,9 @@ test('SDK ↔ dbproxy ↔ PostgreSQL end-to-end', { skip: hasPg ? false : 'no Po
   assert.equal(typeof token.access, 'string');
 });
 
-test('RPC: bad statements return per-statement ERR without killing the batch', { skip: hasPg ? false : 'no PostgreSQL available' }, async (t) => {
+test('RPC: bad statements return per-statement ERR without killing the batch', { skip: hasDb ? false : 'no MySQL available' }, async (t) => {
   const server = await startServer();
-  const pool = new pg.Pool({ ...PG, max: 2 });
+  const pool = mysql.createPool({ ...DB, connectionLimit: 2 });
   await cleanTables(pool);
   const db = new Surreal();
   await db.connect('ws://127.0.0.1:18099/rpc', {

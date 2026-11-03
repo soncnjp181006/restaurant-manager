@@ -1,7 +1,7 @@
 /**
  * WebSocket RPC server speaking the SurrealDB /rpc wire protocol (subprotocol
  * "cbor", CBOR-encoded JSON-RPC frames as produced by the `surrealdb` JS SDK
- * v2). Every statement is executed against PostgreSQL via engine.mjs.
+ * v2). Every statement is executed against MySQL via engine.mjs.
  *
  * Supported RPC methods: ping, version, use, info, signin, signup,
  * authenticate, invalidate, let, unset, query, begin, commit, cancel, kill.
@@ -220,7 +220,7 @@ export class RpcServer {
         }
         case 'begin': {
           const uuid = crypto.randomUUID();
-          const client = await this.store.pool.connect();
+          const client = await this.store.pool.getConnection();
           await client.query('BEGIN');
           session.transactions.set(uuid, { client, savepoint: 0 });
           return reply(uuid);
@@ -260,7 +260,7 @@ export class RpcServer {
   }
 
   /**
-   * Execute a SurrealQL batch. One PostgreSQL transaction per batch, one
+   * Execute a SurrealQL batch. One MySQL transaction per batch, one
    * savepoint per statement — a failing statement returns status ERR and the
    * batch continues (SurrealDB behavior), while the whole batch stays atomic
    * against crashes.
@@ -268,7 +268,7 @@ export class RpcServer {
   async handleQuery(request, session, reply, fail) {
     const [sql, bindings] = request.params ?? [];
     const stmtResults = [];
-    const client = await this.store.pool.connect();
+    const client = await this.store.pool.getConnection();
     let inManualTxn = false;
     let manualSavepoint = null;
     let savepointCounter = 0;

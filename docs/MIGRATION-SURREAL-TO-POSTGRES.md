@@ -1,3 +1,8 @@
+> **TÀI LIỆU LỊCH SỬ (2026-11-03).** Bài này ghi lại lần chuyển SurrealDB → PostgreSQL.
+> Engine hiện tại của toàn bộ hệ thống là **MySQL** — xem [`MIGRATION-MYSQL.md`](MIGRATION-MYSQL.md).
+> Kiến trúc `dbproxy` (giữ nguyên giao thức wire cho frontend và 5 sidecar) vẫn đúng;
+> chỉ engine phía dưới và tên biến môi trường là đổi.
+
 # Báo cáo chuyển đổi toàn bộ DB sang PostgreSQL
 
 > **Ngày hoàn thành:** 2026-11-02 · **Nhánh:** `refactor`
@@ -32,7 +37,7 @@ PostgreSQL chỉ là mirror tùy chọn cho tracking (docker-compose.analytics.y
 ```
 
 - Frontend gọi SurrealQL trực tiếp qua SDK `surrealdb` (839 điểm gọi, 202 file dùng `useDB`).
-- 5 service backend dùng SDK同一个 (`gateway/src/surreal-client.js` và tương tự).
+- 5 service backend dùng SDK cùng một (`gateway/src/surreal-client.js` và tương tự).
 - `sync-service` replicate branch↔HQ bằng changefeed (`SHOW CHANGES`, `ALTER TABLE … CHANGEFEED`).
 
 ### 2.2 Sau khi chuyển
