@@ -94,19 +94,44 @@ export const FloorLayout = () => {
   }, [catalogTables, catalogReady, settings.tables]);
 
   const tables = useMemo(() => {
-    if (state.floor) {
-      const floorId = String(state.floor.id ?? '');
-      return allTables.filter((item) => {
-        const raw = item.floor;
-        const itemFloorId =
-          raw && typeof raw === 'object' && 'id' in raw
-            ? String((raw as { id: unknown }).id ?? '')
-            : String(raw ?? '');
-        return itemFloorId === floorId;
-      });
-    }
+    const list = state.floor
+      ? (() => {
+          const floorId = String(state.floor.id ?? '');
+          return allTables.filter((item) => {
+            const raw = item.floor;
+            const itemFloorId =
+              raw && typeof raw === 'object' && 'id' in raw
+                ? String((raw as { id: unknown }).id ?? '')
+                : String(raw ?? '');
+            return itemFloorId === floorId;
+          });
+        })()
+      : allTables;
 
-    return allTables;
+    // Tables seeded without layout geometry (x/y/width/height) would all pile
+    // up as 50×50 black boxes at the canvas origin with their badges stacked
+    // on top of each other. Arrange those on a grid instead; explicit
+    // positions from the floors editor are never touched.
+    const CELL_W = 150;
+    const CELL_H = 112;
+    const MARGIN = 24;
+    const COLS = 4;
+    let gridIndex = 0;
+    return list.map((item) => {
+      if (item.x != null && item.y != null) return item;
+      const col = gridIndex % COLS;
+      const row = Math.floor(gridIndex / COLS);
+      gridIndex += 1;
+      return {
+        ...item,
+        x: MARGIN + col * CELL_W,
+        y: MARGIN + row * CELL_H,
+        width: item.width ?? 120,
+        height: item.height ?? 88,
+        color: item.color ?? '#5eead4',
+        background: item.background ?? '#0f172a',
+      };
+    });
   }, [allTables, state.floor]);
 
   const catalogLoading =

@@ -113,6 +113,59 @@ test('SDK ↔ dbproxy ↔ MySQL end-to-end', { skip: hasDb ? false : 'no MySQL a
   assert.equal(afterMerge.price, 70000);
   assert.equal(afterMerge.name, 'Phở bò');
 
+  // compound assignment: SET x += v / x -= v (SurrealQL; used by smart-menu import)
+  await db.create(new RecordId('modifier_group', 'size')).content({ name: 'Size', modifiers: [] });
+  const groupId = new RecordId('modifier_group', 'size');
+  const m1 = new RecordId('modifier', 'm1');
+  const m2 = new RecordId('modifier', 'm2');
+  await db.query('UPDATE $group SET modifiers += $modifier', { group: groupId, modifier: m1 });
+  await db.query('UPDATE $group SET modifiers += $modifier', { group: groupId, modifier: m1 }); // no duplicate
+  await db.query('UPDATE $group SET modifiers += $modifier', { group: groupId, modifier: m2 });
+  let group = await db.select(groupId);
+  assert.deepEqual(
+    group.modifiers.map(String),
+    ['modifier:m1', 'modifier:m2'],
+    '+= must append each value once, in order'
+  );
+  await db.query('UPDATE $group SET modifiers -= $modifier', { group: groupId, modifier: m1 });
+  group = await db.select(groupId);
+  assert.deepEqual(group.modifiers.map(String), ['modifier:m2'], '-= must remove the matching value');
+
+  // numeric compound assignment
+  await db.create(new RecordId('counter', 'orders')).content({ n: 1 });
+  await db.query('UPDATE counter:orders SET n += 2, label += "-"');
+  await db.query('UPDATE counter:orders SET n -= 1');
+  const counter = await db.select(new RecordId('counter', 'orders'));
+  assert.equal(counter.n, 2, 'numeric += / -= must add and subtract');
+  assert.equal(counter.label, '-'); // missing field + string concat falls back to the value
+
+  // RETURN BEFORE / RETURN AFTER (gateway nextEventId sequence — regression
+  // guard: this used to return null and made every sync push collide on
+  // sync_event.event_id = 1)
+  await db.create(new RecordId('seq_check', 'singleton')).content({ counter: 5 });
+  const beforeRow = await db.query('UPDATE seq_check:singleton SET counter += 1 RETURN BEFORE');
+  assert.equal(Number(beforeRow[0]?.[0]?.counter ?? 0), 5, 'RETURN BEFORE must expose the pre-write record');
+  const afterRow = await db.query('UPDATE seq_check:singleton SET counter += 1 RETURN AFTER');
+  assert.equal(Number(afterRow[0]?.[0]?.counter ?? 0), 7, 'RETURN AFTER must expose the post-write record');
+
+  // ?? nullish coalescing — exact invoice order-number statement (src/lib/invoice.ts):
+  // this shape reached dbproxy from a MERGE_RECORD op and used to fail with
+  // "Expected ')' but got op '??'"
+  const up1 = await db.query(
+    `UPSERT type::record('order_number_seq_test', 'orders')
+     SET value = math::max([value ?? 0, $seed]) + 1
+     RETURN AFTER`,
+    { seed: 4 },
+  );
+  assert.equal(Number(up1[0]?.[0]?.value ?? 0), 5, 'missing field: ?? falls back to seed, then +1');
+  const up2 = await db.query(
+    `UPSERT type::record('order_number_seq_test', 'orders')
+     SET value = math::max([value ?? 0, $seed]) + 1
+     RETURN AFTER`,
+    { seed: 2 },
+  );
+  assert.equal(Number(up2[0]?.[0]?.value ?? 0), 6, 'existing field: max(value, seed) + 1');
+
   // upsert creates when missing
   const upserted = await db.upsert(new RecordId('dish', 'banhmi')).content({ name: 'Bánh mì', price: 25000 });
   assert.equal(upserted.name, 'Bánh mì');
@@ -196,6 +249,70 @@ test('SDK ↔ dbproxy ↔ MySQL end-to-end', { skip: hasDb ? false : 'no MySQL a
   );
   assert.equal(login[0].length, 1);
   assert.equal(login[0][0].login, 'anna');
+
+  // manager-approval PIN gate (src/components/security/auth/pin-auth.tsx exact
+  // query): array::intersect + ?? + bcrypt — used to fail with
+  // "Function 'array::intersect' is not supported" so locked pages could
+  // never be unlocked with a manager PIN. For pin-method users `login` holds
+  // the PIN itself, so switch anna to PIN '1234' (login + bcrypt password)
+  // and restore afterwards.
+  const bcryptPin = (await import('bcryptjs')).default;
+  await db.update(new RecordId('user', 'anna')).merge({ login: '1234', password: bcryptPin.hashSync('1234', 10) });
+  const pinAuth = await db.query(
+    `SELECT * FROM user
+     WHERE deleted_at = none
+       AND array::len(array::intersect(user_role.roles ?? [], $modules)) > 0
+       AND login_method = 'pin'
+       AND login = $pin
+       AND crypto::bcrypt::compare(password, $pin) = true
+     FETCH user_role, user_shift`,
+    { modules: ['manage'], pin: '1234' },
+  );
+  assert.equal(pinAuth[0].length, 1, 'manager PIN with matching module must authenticate');
+  assert.equal(pinAuth[0][0].login, '1234');
+  const pinAuthWrongModule = await db.query(
+    `SELECT * FROM user
+     WHERE deleted_at = none
+       AND array::len(array::intersect(user_role.roles ?? [], $modules)) > 0
+       AND login_method = 'pin'
+       AND login = $pin
+       AND crypto::bcrypt::compare(password, $pin) = true
+     FETCH user_role, user_shift`,
+    { modules: ['integrations'], pin: '1234' },
+  );
+  assert.equal(pinAuthWrongModule[0].length, 0, 'manager PIN without the module must be rejected');
+  await db.update(new RecordId('user', 'anna')).merge({ login: 'anna', password: bcryptPin.hashSync('pin1234', 10) });
+
+  // implicit record-link traversal in WHERE / SELECT VALUE (SurrealDB core
+  // semantics): used to silently return no rows because `user_role.roles`
+  // stayed a rid string during evaluation
+  const traversed = await db.query("SELECT VALUE login FROM user WHERE user_role.roles CONTAINS 'manage'");
+  assert.deepEqual(traversed[0].sort(), ['anna'], 'WHERE must resolve record links');
+  const rolesProjected = await db.query('SELECT VALUE user_role.roles FROM user');
+  assert.deepEqual(rolesProjected[0], [['manage']], 'SELECT VALUE must resolve record links');
+  const updated = await db.query("UPDATE user SET login_method = 'pin' WHERE user_role.roles CONTAINS 'manage' RETURN AFTER");
+  assert.equal(updated[0].length, 1, 'UPDATE WHERE must resolve record links');
+
+  // positional INSERT INTO t (cols) VALUES (...) — exact Users-form query
+  const posIns = await db.query(
+    `INSERT INTO seq_user (first_name, login, password, user_role) VALUES ($name, $login, crypto::bcrypt::generate($pin), $role) RETURN AFTER`,
+    { name: 'Pos', login: '9999', pin: '9999', role: 'user_role:manager' },
+  );
+  assert.equal(posIns[0]?.[0]?.first_name, 'Pos', 'positional INSERT must create the row and return AFTER');
+  const posRead = await db.query("SELECT * FROM seq_user WHERE login = '9999'");
+  assert.equal(posRead[0][0].login, '9999', 'positional INSERT row must be readable');
+
+  // regression: record-id markers inside evaluated objects must survive as
+  // rid strings — this used to store {table,id} objects and broke gateway
+  // login for users created through the Users form
+  const rid = new StringRecordId('user_role:manager');
+  const ridIns = await db.query(
+    `INSERT INTO ridtest (first_name, user_role) VALUES ($name, $role) RETURN AFTER`,
+    { name: 'Rid', role: rid },
+  );
+  assert.equal(String(ridIns[0]?.[0]?.user_role), 'user_role:manager', 'rid param must store as table:id string');
+  const ridRead = await db.query('SELECT * FROM ridtest WHERE first_name = \'Rid\'');
+  assert.equal(String(ridRead[0][0].user_role), 'user_role:manager');;
 
   // NONE removal semantics
   await db.query('UPDATE user:anna SET deleted_at = NONE');

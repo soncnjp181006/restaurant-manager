@@ -119,6 +119,47 @@ export async function gatewayLogin(payload: {
   return { ...data, ok: true, status: res.status };
 }
 
+export type AuthStatus = {
+  ok: boolean;
+  needsBootstrap?: boolean;
+};
+
+/** Public auth status from the gateway — needsBootstrap=true when the user
+ *  table is empty (first-run: sign in with PIN 0000, then create the admin). */
+export async function fetchAuthStatus(): Promise<AuthStatus> {
+  if (!isGatewayAuthEnabled()) return { ok: true, needsBootstrap: false };
+  try {
+    const res = await fetch(`${getGatewayBaseUrl()}/auth/status`);
+    const data = (await res.json().catch(() => ({}))) as { needsBootstrap?: boolean };
+    return { ok: res.ok, needsBootstrap: data.needsBootstrap === true };
+  } catch {
+    return { ok: false };
+  }
+}
+
+/** First-run only: create the initial admin account. Returns the same shape
+ *  as gatewayLogin (token + surrealToken + user) so the caller can proceed
+ *  signed in. */
+export async function gatewayBootstrapAdmin(payload: {
+  name: string;
+  pin: string;
+}): Promise<GatewayLoginResponse> {
+  const res = await fetch(`${getGatewayBaseUrl()}/auth/bootstrap-admin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = (await res.json().catch(() => ({}))) as GatewayLoginResponse & Record<string, unknown>;
+  if (!res.ok) {
+    return {
+      ok: false,
+      status: res.status,
+      error: data.error || `Failed to create admin (${res.status})`,
+    };
+  }
+  return { ...data, ok: true, status: res.status };
+}
+
 export async function gatewayLogout(): Promise<void> {
   const token = getSessionToken();
   if (!token) return;

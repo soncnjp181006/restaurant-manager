@@ -318,6 +318,28 @@ function callFunction(name, args, ctx) {
       }
       return out;
     }
+    case 'array::intersect': {
+      // SurrealQL: unique values present in BOTH arrays (first-array order)
+      const a = Array.isArray(args[0]) ? args[0] : toArray(args[0]);
+      const b = Array.isArray(args[1]) ? args[1] : toArray(args[1]);
+      const out = [];
+      for (const item of a) {
+        if (item === undefined || item === NONE) continue;
+        if (b.some((x) => deepEqual(x, item)) && !out.some((x) => deepEqual(x, item))) out.push(item);
+      }
+      return out;
+    }
+    case 'array::complement': {
+      // SurrealQL: unique values of the first array NOT present in the second
+      const a = Array.isArray(args[0]) ? args[0] : toArray(args[0]);
+      const b = Array.isArray(args[1]) ? args[1] : toArray(args[1]);
+      const out = [];
+      for (const item of a) {
+        if (item === undefined || item === NONE) continue;
+        if (!b.some((x) => deepEqual(x, item)) && !out.some((x) => deepEqual(x, item))) out.push(item);
+      }
+      return out;
+    }
     case 'array::flatten':
       return args.flat(2).filter((v) => v !== undefined);
     case 'array::len':
@@ -585,6 +607,14 @@ function evaluateBinary(node, row, params, ctx) {
   if (op === 'or') {
     return isTruthy(evaluate(node.l, row, params, ctx)) || isTruthy(evaluate(node.r, row, params, ctx));
   }
+  if (op === '??') {
+    // nullish coalescing: fall through only on null/undefined/none
+    const l = evaluate(node.l, row, params, ctx);
+    if (l === null || l === undefined || l === NONE) {
+      return evaluate(node.r, row, params, ctx);
+    }
+    return l;
+  }
   const l = evaluate(node.l, row, params, ctx);
   const r = evaluate(node.r, row, params, ctx);
   switch (op) {
@@ -678,6 +708,11 @@ function subValues(l, r) {
 
 /** Post-process evaluated values that carry markers into storage-normalizable form. */
 export function normalizeEvaluated(v) {
+  // Preserve record-id markers: they must survive nested object/array
+  // evaluation so the write path can store `table:id` strings ( SurrealDB
+  // semantics). Used to be flattened into {table,id} plain objects here,
+  // which broke gateway login for users created through the UI.
+  if (v instanceof SRid) return v;
   if (v instanceof DTMarker) return v;
   if (v && typeof v === 'object' && '__duration' in v) {
     return v;

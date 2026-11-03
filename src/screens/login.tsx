@@ -25,6 +25,8 @@ import { DocumentTitle } from "@/components/common/document-title.tsx";
 import { PageLoader } from "@/components/common/loader/page-loader.tsx";
 import {
   clearSessionTokens,
+  fetchAuthStatus,
+  gatewayBootstrapAdmin,
   gatewayLogin,
   getSessionToken,
   isGatewayAuthEnabled,
@@ -33,6 +35,7 @@ import {
 } from "@/lib/session.ts";
 import { fetchLoginBrandLogo } from "@/lib/branding.ts";
 import { LoginAurora } from "@/screens/login-aurora.tsx";
+import { AdminSetupWizard } from "@/components/auth/admin-setup.wizard";
 
 const TIME_ENTRY_CHECK_RETRIES = 3;
 const TIME_ENTRY_RETRY_DELAY_MS = 400;
@@ -73,6 +76,8 @@ export const Login = () => {
   const [pendingUser, setPendingUser] = useState<User | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [brandLogo, setBrandLogo] = useState<string | null>(null);
+  const [needsBootstrap, setNeedsBootstrap] = useState(false);
+  const [bootstrapMode, setBootstrapMode] = useState(false);
 
   const navigation = useNavigate();
   const location = useLocation();
@@ -81,6 +86,19 @@ export const Login = () => {
     let cancelled = false;
     void fetchLoginBrandLogo(gatewayAuth ? null : db).then((logo) => {
       if (!cancelled) setBrandLogo(logo);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [gatewayAuth]);
+
+  // First-run detection: when no user exists the gateway only accepts PIN
+  // 0000 and the app forces creating the admin account.
+  useEffect(() => {
+    if (!gatewayAuth) return;
+    let cancelled = false;
+    void fetchAuthStatus().then((status) => {
+      if (!cancelled && status.needsBootstrap) setNeedsBootstrap(true);
     });
     return () => {
       cancelled = true;
@@ -242,6 +260,13 @@ export const Login = () => {
       return false;
     }
 
+    // First-run bootstrap session: hold the app on the admin-setup wizard
+    // instead of entering (the bootstrap identity has no real account yet).
+    if ((result.user as { bootstrap?: boolean } | undefined)?.bootstrap === true) {
+      setBootstrapMode(true);
+      return true;
+    }
+
     const loggedInUser = result.user as User;
     const normalizedUser = {
       ...loggedInUser,
@@ -397,6 +422,36 @@ export const Login = () => {
     );
   }
 
+  if (bootstrapMode) {
+    return (
+      <AdminSetupWizard
+        onCompleted={async (result) => {
+          // Real admin session — proceed exactly like a normal login.
+          setSessionTokens(result.token!, result.surrealToken!);
+          try {
+            await connect();
+          } catch (err) {
+            console.error(err);
+            failConnection();
+            setBootstrapMode(false);
+            return;
+          }
+          const loggedInUser = result.user as User;
+          const normalizedUser = {
+            ...loggedInUser,
+            roles: (loggedInUser as User & { roles?: string[] }).roles?.length
+              ? (loggedInUser as User & { roles?: string[] }).roles!
+              : getUserModules(loggedInUser),
+          } as User;
+          await afterUserAuthenticated(normalizedUser);
+          window.dispatchEvent(new Event('restaurant-manager-session'));
+          setNeedsBootstrap(false);
+          setBootstrapMode(false);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="relative" data-testid="login-page">
       <DocumentTitle parts={[t('login.title')]} />
@@ -468,7 +523,16 @@ export const Login = () => {
               }}
             >
               {t('login.form')}
-            </button>
+            </button>            {needsBootstrap && (
+              <p
+                className="w-full text-center text-sm text-muted"
+                data-testid="login-bootstrap-hint"
+              >
+                {t('login.bootstrapHint', {
+                  defaultValue: 'First-time setup? Sign in with PIN 0000 to create the admin account.',
+                })}
+              </p>
+            )}
           </div>
           {page.locked && (
             <div className="alert alert-warning" data-testid="login-locked-banner">{t('login.systemLocked', {

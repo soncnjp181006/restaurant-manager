@@ -639,9 +639,18 @@ class Parser {
     const assignments = [];
     for (;;) {
       const path = this.parsePath();
-      this.expectOp('=');
+      // Compound assignment: `SET tags += 'a'`, `SET count -= 1` (SurrealQL).
+      // The tokenizer has no '+='/ '-=' token, so look for op('+'|'-') + op('=').
+      let op = '=';
+      if ((this.isOp('+') || this.isOp('-')) && this.isOp('=', 1)) {
+        op = this.peek().value + '=';
+        this.next();
+        this.next();
+      } else {
+        this.expectOp('=');
+      }
       const expr = this.parseExpression();
-      assignments.push([path, expr]);
+      assignments.push([path, expr, op]);
       if (!this.eatOp(',')) break;
     }
     return assignments;
@@ -654,7 +663,37 @@ class Parser {
     this.expectKw('into');
     const target = this.parseTarget();
     const stmt = { kind: 'insert', ignore, only, into: target };
-    if (this.eatKw('value')) {
+    if (this.isOp('(')) {
+      // Positional INSERT: `INSERT INTO t (a, b) VALUES (1, 2), (3, 4)` —
+      // column list followed by one or more value tuples (SurrealDB core
+      // syntax; used by the Users form/import).
+      const cols = [];
+      this.next();
+      for (;;) {
+        cols.push(this.expectIdent('column name'));
+        if (!this.eatOp(',')) break;
+      }
+      this.expectOp(')');
+      if (!this.eatKw('value') && !this.eatKw('values')) {
+        throw new Error(`Expected VALUES but got ${describe(this.peek())}`);
+      }
+      const objs = [];
+      for (;;) {
+        this.expectOp('(');
+        const vals = [];
+        for (;;) {
+          vals.push(this.parseExpression());
+          if (!this.eatOp(',')) break;
+        }
+        this.expectOp(')');
+        objs.push({
+          t: 'obj',
+          entries: cols.map((col, i) => [col, vals[i]]),
+        });
+        if (!this.eatOp(',')) break;
+      }
+      stmt.values = { mode: 'objs', objs };
+    } else if (this.eatKw('value')) {
       stmt.values = { mode: 'objs', objs: [this.parseExpression()] };
     } else if (this.eatKw('values')) {
       stmt.values = { mode: 'objs', objs: [] };
@@ -1060,6 +1099,14 @@ class Parser {
       this.next();
       return { mode: 'diff' };
     }
+    // RETURN BEFORE / RETURN AFTER — the pre-/post-write record (SurrealQL).
+    // Only the bare keyword; `after.items` still parses as a path expression.
+    if (
+      (this.isKw('before') || this.isKw('after'))
+      && !this.isOp('.', 1) && !this.isOp('[', 1) && !this.isOp('(', 1)
+    ) {
+      return { mode: this.next().value };
+    }
     const exprs = [];
     for (;;) {
       exprs.push(this.parseExpression());
@@ -1074,10 +1121,19 @@ class Parser {
     return this.parseOr();
   }
   parseOr() {
-    let left = this.parseAnd();
+    let left = this.parseNullish();
     while (this.isKw('or') || this.isOp('||')) {
       this.next();
-      left = { t: 'bin', op: 'or', l: left, r: this.parseAnd() };
+      left = { t: 'bin', op: 'or', l: left, r: this.parseNullish() };
+    }
+    return left;
+  }
+  parseNullish() {
+    // `??` nullish coalescing (SurrealQL): used e.g. as math::max([value ?? 0, $seed])
+    let left = this.parseAnd();
+    while (this.isOp('??')) {
+      this.next();
+      left = { t: 'bin', op: '??', l: left, r: this.parseAnd() };
     }
     return left;
   }

@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const { authenticatePosUser } = require('./auth.service');
+const { authenticatePosUser, needsBootstrap, authenticateBootstrapUser, createBootstrapAdmin } = require('./auth.service');
 const { signSession, verifySession, revokeSession, extractBearer } = require('./jwt');
 const { getClient, issueSurrealAccessToken } = require('./surreal-client');
 const { loginRateLimit, recordAuthResult } = require('./rate-limiter');
@@ -99,11 +99,47 @@ router.get('/branding', brandingLimit, async (_req, res) => {
   }
 });
 
+/**
+ * Public auth status for the login screen (no session required):
+ * needsBootstrap=true means the user table is empty and the app is in
+ * first-run mode (PIN 0000 + forced admin creation).
+ */
+router.get('/status', brandingLimit, async (_req, res) => {
+  try {
+    return res.json({ ok: true, needsBootstrap: await needsBootstrap() });
+  } catch (err) {
+    console.error('[auth/status]', err);
+    return res.status(500).json({ ok: false, error: 'Failed to read auth status' });
+  }
+});
+
 router.post('/login', loginRateLimit(), async (req, res) => {
   try {
     const method = req.body?.method === 'form' ? 'form' : 'pin';
     const login = req.body?.login;
     const password = req.body?.password;
+
+    // First-run bootstrap: PIN 0000 is accepted ONLY while no user exists.
+    if (method === 'pin' && String(login || '') === '0000' && (await needsBootstrap())) {
+      const bootstrapUser = await authenticateBootstrapUser({ login });
+      if (bootstrapUser) {
+        const session = await signSession({ userId: bootstrapUser.id, login: bootstrapUser.login });
+        let surrealToken = null;
+        try {
+          surrealToken = await issueSurrealAccessToken();
+        } catch (err) {
+          console.error('Failed to issue Surreal access token', err);
+          return res.status(503).json({ ok: false, error: 'Database session unavailable' });
+        }
+        return res.json({
+          ok: true,
+          token: session.token,
+          expiresIn: session.expiresIn,
+          surrealToken,
+          user: bootstrapUser,
+        });
+      }
+    }
 
     const user = await authenticatePosUser({ method, login, password });
     if (!user) {
@@ -230,6 +266,43 @@ router.post('/db-token', loginRateLimit(), async (req, res) => {
       ok: false,
       error: err.message || 'Failed to refresh database token',
     });
+  }
+});
+
+/**
+ * First-run only: create the initial admin account. Rejected with 409 once
+ * any user exists (the bootstrap is closed for good). Returns the same
+ * session shape as /auth/login so the client can proceed signed in.
+ */
+router.post('/bootstrap-admin', loginRateLimit(), async (req, res) => {
+  try {
+    const user = await createBootstrapAdmin({ name: req.body?.name, pin: req.body?.pin });
+    recordAuthResult(req, true);
+    const session = await signSession({ userId: user.id, login: user.login });
+    auditLog.logLoginSuccess(
+      user.id,
+      user.login,
+      user.roles,
+      req.socket?.remoteAddress || req.ip
+    ).catch(() => {});
+    let surrealToken = null;
+    try {
+      surrealToken = await issueSurrealAccessToken();
+    } catch (err) {
+      console.error('Failed to issue Surreal access token', err);
+      return res.status(503).json({ ok: false, error: 'Database session unavailable' });
+    }
+    return res.json({
+      ok: true,
+      token: session.token,
+      expiresIn: session.expiresIn,
+      surrealToken,
+      user,
+    });
+  } catch (err) {
+    const status = err?.status || 500;
+    if (status >= 500) console.error('[auth/bootstrap-admin]', err);
+    return res.status(status).json({ ok: false, error: err?.message || 'Failed to create admin' });
   }
 });
 

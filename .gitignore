@@ -76,3 +76,7 @@ __probe.tsx
 probe-tmp.ts
 # emitted by a build-time dependency during `npm run build`
 doc/
+.claude
+.opencode
+.qoder
+.zcode

@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {appPage} from "@/store/jotai.ts";
 import {LOGIN} from "@/routes/restaurant-manager.ts";
 import {WhatsNewDialog} from "@/components/whats-new/whats-new.dialog.tsx";
-import {getSessionToken, isGatewayAuthEnabled} from "@/lib/session.ts";
+import {clearSessionTokens, fetchAuthStatus, getSessionToken, isGatewayAuthEnabled} from "@/lib/session.ts";
 import {useHydrateCurrencySymbol} from "@/hooks/useCurrencySymbol.ts";
 
 export const ProtectedRoute = () => {
@@ -31,6 +31,29 @@ export const ProtectedRoute = () => {
       locked: false,
       lockedBy: undefined,
     }));
+  }, [sessionTick, user, setPage]);
+
+  // First-run guard: if the server reports the user table is empty (bootstrap
+  // mode), any stale local session is invalid — drop it and land on the
+  // admin-setup wizard via the login screen.
+  useEffect(() => {
+    if (!isGatewayAuthEnabled()) return;
+    if (!getSessionToken() && !user) return;
+    let cancelled = false;
+    void fetchAuthStatus().then((status) => {
+      if (cancelled || !status.needsBootstrap) return;
+      clearSessionTokens();
+      setPage((prev) => ({
+        ...prev,
+        page: 'Login',
+        user: undefined,
+        locked: false,
+        lockedBy: undefined,
+      }));
+    }).catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, [sessionTick, user, setPage]);
 
   if (!user) {

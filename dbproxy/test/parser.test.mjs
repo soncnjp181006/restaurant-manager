@@ -260,3 +260,69 @@ test('field named value and order table', () => {
   assert.deepEqual(u.from, [{ t: 'table', name: 'order' }]);
   assert.deepEqual(u.where.l.l, { t: 'path', parts: ['order'] });
 });
+
+test('compound assignment: SET x += v / x -= v (smart-menu import)', () => {
+  const [s] = parse('UPDATE $group SET modifiers += $modifier');
+  assert.equal(s.kind, 'update');
+  assert.equal(s.set.length, 1);
+  assert.deepEqual(s.set[0][0].parts, ['modifiers']);
+  assert.equal(s.set[0][2], '+=');
+
+  const [c] = parse("CREATE dish:pho SET tags += 'a', nums -= 2, name = 'x'");
+  assert.deepEqual(
+    c.set.map(([path, , op]) => [path.parts, op]),
+    [[['tags'], '+='], [['nums'], '-='], [['name'], '=']]
+  );
+
+  // plain '=' still parses to op '=' (third element present for all assignments)
+  const [p] = parse('UPDATE t SET a = 1, b = 2');
+  assert.deepEqual(p.set.map(([path, , op]) => [path.parts, op]), [[['a'], '='], [['b'], '=']]);
+});
+
+test('compound assignment in INSERT ON DUPLICATE KEY UPDATE', () => {
+  const [s] = parse('INSERT INTO counter $rows ON DUPLICATE KEY UPDATE n += 1');
+  assert.equal(s.kind, 'insert');
+  assert.deepEqual(s.onDuplicate[0][0].parts, ['n']);
+  assert.equal(s.onDuplicate[0][2], '+=');
+});
+
+test('RETURN BEFORE / RETURN AFTER are special modes, not paths', () => {
+  const [s] = parse('UPDATE sync_event_seq:singleton SET counter += 1 RETURN BEFORE');
+  assert.equal(s.return.mode, 'before');
+  const [u] = parse('UPDATE t SET x = 1 RETURN AFTER');
+  assert.equal(u.return.mode, 'after');
+  // a path starting with a field named after/after() still parses as expression
+  const [p] = parse('SELECT before FROM t');
+  assert.equal(p.return, undefined);
+  const [v] = parse('UPDATE t SET x = 1 RETURN after.items');
+  assert.equal(v.return.mode, 'exprs');
+});
+
+test('nullish coalescing ?? inside expressions (invoice order-number)', () => {
+  const [s] = parse(`UPSERT type::record('order_number_seq', $counterKey)
+     SET value = math::max([value ?? 0, $seed]) + 1
+     RETURN AFTER`);
+  assert.equal(s.kind, 'upsert');
+  assert.equal(s.return.mode, 'after');
+  // SET value = (math::max([value ?? 0, $seed]) + 1) parses with ?? inside args
+  assert.ok(s.set[0][1]);
+
+  const [p] = parse('SELECT * FROM t WHERE a ?? b || c');
+  // ?? binds tighter than ||
+  assert.equal(p.where.op, 'or');
+  assert.equal(p.where.l.op, '??');
+});
+
+test('positional INSERT INTO t (cols) VALUES (...) (Users form)', () => {
+  const [s] = parse(`INSERT INTO user (first_name, login, password, user_role) VALUES ($name, $login, crypto::bcrypt::generate($pin), $role) RETURN AFTER`);
+  assert.equal(s.kind, 'insert');
+  const entries = s.values.objs[0].entries;
+  assert.deepEqual(entries.map(([k]) => k), ['first_name', 'login', 'password', 'user_role']);
+  assert.equal(entries[2][1].t, 'func');
+  assert.equal(s.values.objs[0].t, 'obj');
+  assert.equal(s.return.mode, 'after');
+  // multi-row tuple form
+  const [m] = parse('INSERT INTO t (a, b) VALUES (1, 2), (3, 4)');
+  assert.equal(m.values.objs.length, 2);
+  assert.deepEqual(m.values.objs[1].entries, [['a', { t: 'lit', v: 3 }], ['b', { t: 'lit', v: 4 }]]);
+});

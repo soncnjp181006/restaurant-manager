@@ -290,9 +290,10 @@ export class Engine {
     // WHERE
     let rows = candidateRows;
     if (stmt.where) {
-      rows = rows.filter((row) => {
+      const evalRows = await this.hydrateTraversalRoots(candidateRows, collectPathRoots(stmt.where), client);
+      rows = rows.filter((row, i) => {
         try {
-          const v = evaluate(stmt.where, row, params, {});
+          const v = evaluate(stmt.where, evalRows[i], params, {});
           return v === true || (v !== undefined && v !== null && v !== false);
         } catch (err) {
           if (err instanceof QueryError && /not supported/i.test(err.message)) throw err;
@@ -313,7 +314,13 @@ export class Engine {
     if (grouped) {
       projected = applyGrouping(rows, stmt, params);
     } else if (stmt.value) {
-      projected = applyValueProjection(rows, stmt.value, params);
+      // SELECT VALUE a.b: SurrealDB resolves record links while projecting
+      const valueRoots = collectPathRoots(stmt.value);
+      let projRows = rows;
+      if (valueRoots.size > 0) {
+        projRows = await this.hydrateTraversalRoots(rows, valueRoots, client);
+      }
+      projected = applyValueProjection(projRows, stmt.value, params);
     } else {
       projected = applyFieldProjection(rows, stmt.fields, params);
     }
@@ -384,9 +391,9 @@ export class Engine {
       data = applyJsonPatch(data, Array.isArray(ops) ? ops : [ops]);
     }
     if (stmt.set) {
-      for (const [path, expr] of stmt.set) {
+      for (const [path, expr, op] of stmt.set) {
         const value = normalizeForWrite(evaluate(expr, data ? toRow(table, '', data) : null, params, {}), table, kinds, path);
-        setPathValue(data, path.parts, value === REMOVED ? undefined : value);
+        applyAssignmentToData(data, path, op, value);
       }
     }
     if (stmt.unset) {
@@ -424,9 +431,9 @@ export class Engine {
           if (stmt.onDuplicate) {
             const before = existing[0].data;
             let next = { ...before };
-            for (const [path, expr] of stmt.onDuplicate) {
+            for (const [path, expr, op] of stmt.onDuplicate) {
               const value = normalizeForWrite(evaluate(expr, toRow(table, recordId, before), { ...params, excluded: raw }, {}), table, kinds, path);
-              setPathValue(next, path.parts, value === REMOVED ? undefined : value);
+              applyAssignmentToData(next, path, op, value);
             }
             await this.store.updateRecord(client, table, recordId, () => next, kinds, { auth: session.auth });
             out.push(toRow(table, recordId, next));
@@ -457,8 +464,9 @@ export class Engine {
     }
     let filtered = matched;
     if (stmt.where) {
-      filtered = matched.filter(({ table, id, data }) => {
-        const row = toRow(table, id, data);
+      const evalRows = await this.hydrateTraversalRoots(matched.map(({ table, id, data }) => toRow(table, id, data)), collectPathRoots(stmt.where), client);
+      filtered = matched.filter(({ table, id, data }, i) => {
+        const row = evalRows[i];
         const v = evaluate(stmt.where, row, params, {});
         return v === true || (v !== undefined && v !== null && v !== false);
       });
@@ -490,8 +498,9 @@ export class Engine {
     }
     let filtered = matched;
     if (stmt.where) {
-      filtered = matched.filter(({ table, id, data }) => {
-        const row = toRow(table, id, data);
+      const evalRows = await this.hydrateTraversalRoots(matched.map(({ table, id, data }) => toRow(table, id, data)), collectPathRoots(stmt.where), client);
+      filtered = matched.filter(({ table, id, data }, i) => {
+        const row = evalRows[i];
         const v = evaluate(stmt.where, row, params, {});
         return v === true || (v !== undefined && v !== null && v !== false);
       });
@@ -529,9 +538,9 @@ export class Engine {
       const content = evaluate(stmt.content, null, params, {});
       data = { ...data, ...(content ?? {}) };
     } else if (stmt.set) {
-      for (const [path, expr] of stmt.set) {
+      for (const [path, expr, op] of stmt.set) {
         const value = normalizeForWrite(evaluate(expr, null, params, {}), table, kinds, path);
-        setPathValue(data, path.parts, value === REMOVED ? undefined : value);
+        applyAssignmentToData(data, path, op, value);
       }
     }
     const edgeId = newRecordId();
@@ -545,6 +554,8 @@ export class Engine {
     if (!returnClause) return row;
     if (returnClause.mode === 'none') return null;
     if (returnClause.mode === 'diff') return row;
+    if (returnClause.mode === 'before') return context?.before ?? null;
+    if (returnClause.mode === 'after') return context?.after ?? null;
     const scope = { ...row };
     return returnClause.exprs.map((expr) => evaluate(expr, scope, { ...params, ...context }, {}));
   }
@@ -675,6 +686,23 @@ export class Engine {
     for (const path of fetchPaths) {
       await this.hydratePath(rows, path.parts, client, 0);
     }
+  }
+
+  /**
+   * SurrealDB resolves record links implicitly while evaluating a query
+   * (e.g. `WHERE user_role.roles CONTAINS 'admin'` walks the user_role link).
+   * Returns evaluation COPIES of the rows with the linked records hydrated in
+   * for the given path roots; the original rows keep their rid values so
+   * `SELECT *` output stays a link. Roots that never hold rid values are
+   * simply left untouched by hydratePath.
+   */
+  async hydrateTraversalRoots(rows, roots, client) {
+    if (!roots || roots.size === 0) return rows;
+    const evalRows = rows.map((row) => ({ ...row }));
+    for (const root of roots) {
+      await this.hydratePath(evalRows, [root], client, 0);
+    }
+    return evalRows;
   }
 
   async hydratePath(rows, parts, client, depth) {
@@ -934,6 +962,30 @@ function collectFieldLocations(rows, parts) {
   return current;
 }
 
+/** First segments of every dotted path in an AST — the fields whose record
+ *  links must be hydrated for implicit traversal during evaluation. Dot
+ *  access parses as `{t:'get', base:{t:'path',...}, name}` chains, and plain
+ *  multi-part paths as `{t:'path', parts:[...]}`. */
+function collectPathRoots(node, out = new Set()) {
+  if (!node || typeof node !== 'object') return out;
+  if (Array.isArray(node)) {
+    for (const child of node) collectPathRoots(child, out);
+    return out;
+  }
+  if (node.t === 'get' && node.base?.t === 'path' && Array.isArray(node.base.parts) && node.base.parts.length > 0) {
+    if (node.base.parts[0] !== 'id') out.add(node.base.parts[0]);
+  }
+  if (node.t === 'path' && Array.isArray(node.parts) && node.parts.length > 1) {
+    if (node.parts[0] !== 'id') out.add(node.parts[0]);
+  }
+  for (const key of Object.keys(node)) {
+    if (key === 't') continue;
+    const value = node[key];
+    if (value && typeof value === 'object') collectPathRoots(value, out);
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------------------
 // Misc helpers
 // ---------------------------------------------------------------------------
@@ -1018,6 +1070,70 @@ export function setPathValue(obj, parts, value) {
     delete current[last];
   } else {
     current[last] = value;
+  }
+}
+
+export function getPathValue(obj, parts) {
+  let current = obj;
+  for (const part of parts) {
+    if (current === null || typeof current !== 'object') return undefined;
+    current = current[part];
+  }
+  return current;
+}
+
+function sameStoredValue(a, b) {
+  if (a === b) return true;
+  if (a === null || b === null) return false;
+  if (typeof a === 'object' && typeof b === 'object') {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+  return false;
+}
+
+/**
+ * SurrealQL compound assignment semantics for `SET x += v` / `SET x -= v`:
+ * array += appends a value that is not already present (arrays merge),
+ * array -= removes matching values, numbers add/subtract, strings concatenate.
+ * Anything else falls back to assigning the new value.
+ */
+export function applyCompoundAssign(op, current, value) {
+  if (op === '+=') {
+    if (Array.isArray(current)) {
+      if (Array.isArray(value)) {
+        const next = [...current];
+        for (const v of value) {
+          if (!next.some((e) => sameStoredValue(e, v))) next.push(v);
+        }
+        return next;
+      }
+      return current.some((e) => sameStoredValue(e, value)) ? current : [...current, value];
+    }
+    if (typeof current === 'number' && typeof value === 'number') return current + value;
+    if (typeof current === 'string' && typeof value === 'string') return current + value;
+    if (current === undefined || current === null) return Array.isArray(value) ? [...value] : value;
+    return value;
+  }
+  if (op === '-=') {
+    if (Array.isArray(current)) {
+      if (Array.isArray(value)) {
+        return current.filter((e) => !value.some((v) => sameStoredValue(e, v)));
+      }
+      return current.filter((e) => !sameStoredValue(e, value));
+    }
+    if (typeof current === 'number' && typeof value === 'number') return current - value;
+    return current;
+  }
+  return value;
+}
+
+/** Apply one parsed assignment (`[path, expr, op]` already evaluated) to data. */
+export function applyAssignmentToData(data, path, op, value) {
+  if (op && op !== '=') {
+    const current = getPathValue(data, path.parts);
+    setPathValue(data, path.parts, applyCompoundAssign(op, current, value === REMOVED ? undefined : value));
+  } else {
+    setPathValue(data, path.parts, value === REMOVED ? undefined : value);
   }
 }
 
