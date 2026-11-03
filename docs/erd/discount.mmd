@@ -1,0 +1,35 @@
+erDiagram
+  coupon {
+    string id PK "24 fields"
+  }
+  coupon_redemption {
+    string id PK "6 fields"
+  }
+  customer {
+    string id PK "14 fields"
+  }
+  discount {
+    string id PK "30 fields"
+  }
+  floor {
+    string id PK "5 fields"
+  }
+  order {
+    string id PK "46 fields"
+  }
+  role_discount_policy {
+    string id PK "7 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+  user_role {
+    string id PK "4 fields"
+  }
+
+    coupon_redemption }o--|| coupon : "1 field"
+    coupon_redemption }o--|| customer : "1 field"
+    coupon_redemption }o--|| order : "1 field"
+    coupon_redemption }o--|| user : "1 field"
+    discount }o--|| floor : "2 fields (incl. array)"
+    role_discount_policy }o--|| user_role : "1 field"

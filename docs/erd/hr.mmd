@@ -1,0 +1,149 @@
+erDiagram
+  auth_permission {
+    string id PK "0 fields"
+  }
+  cost_center {
+    string id PK "5 fields"
+  }
+  department {
+    string id PK "5 fields"
+  }
+  document {
+    string id PK "5 fields"
+  }
+  employee {
+    string id PK "17 fields"
+  }
+  employee_assignment_history {
+    string id PK "10 fields"
+  }
+  employee_document {
+    string id PK "7 fields"
+  }
+  employee_pay_profile {
+    string id PK "18 fields"
+  }
+  employee_performance_note {
+    string id PK "8 fields"
+  }
+  labor_adjustment {
+    string id PK "11 fields"
+  }
+  labor_audit_log {
+    string id PK "5 fields"
+  }
+  labor_cost_event {
+    string id PK "7 fields"
+  }
+  labor_policy {
+    string id PK "6 fields"
+  }
+  leave_balance {
+    string id PK "7 fields"
+  }
+  leave_request {
+    string id PK "12 fields"
+  }
+  leave_type {
+    string id PK "8 fields"
+  }
+  payroll_period {
+    string id PK "9 fields"
+  }
+  payroll_run {
+    string id PK "8 fields"
+  }
+  payroll_snapshot {
+    string id PK "29 fields"
+  }
+  position {
+    string id PK "6 fields"
+  }
+  public_holiday {
+    string id PK "8 fields"
+  }
+  schedule_template {
+    string id PK "12 fields"
+  }
+  scheduled_shift {
+    string id PK "10 fields"
+  }
+  shift {
+    string id PK "5 fields"
+  }
+  shift_swap_request {
+    string id PK "8 fields"
+  }
+  time_entry {
+    string id PK "16 fields"
+  }
+  time_entry_break {
+    string id PK "6 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+  work_schedule {
+    string id PK "6 fields"
+  }
+
+    employee }o--|| cost_center : "1 field"
+    employee }o--|| department : "1 field"
+    employee }o--|| employee : "1 field"
+    employee }o--|| position : "1 field"
+    employee }o--|| user : "1 field"
+    employee_assignment_history }o--|| user : "1 field"
+    employee_assignment_history }o--|| cost_center : "1 field"
+    employee_assignment_history }o--|| department : "1 field"
+    employee_assignment_history }o--|| employee : "2 fields"
+    employee_assignment_history }o--|| position : "1 field"
+    employee_document }o--|| document : "1 field"
+    employee_document }o--|| employee : "1 field"
+    employee_document }o--|| user : "1 field"
+    employee_pay_profile }o--|| user : "1 field"
+    employee_pay_profile }o--|| employee : "1 field"
+    employee_pay_profile }o--|| labor_policy : "4 fields"
+    employee_performance_note }o--|| user : "1 field"
+    employee_performance_note }o--|| employee : "1 field"
+    labor_adjustment }o--|| user : "2 fields"
+    labor_adjustment }o--|| employee : "1 field"
+    labor_adjustment }o--|| payroll_period : "1 field"
+    labor_audit_log }o--|| user : "1 field"
+    labor_cost_event }o--|| payroll_run : "1 field"
+    leave_balance }o--|| employee : "1 field"
+    leave_balance }o--|| leave_type : "1 field"
+    leave_request }o--|| user : "2 fields"
+    leave_request }o--|| auth_permission : "1 field"
+    leave_request }o--|| employee : "1 field"
+    leave_request }o--|| leave_type : "1 field"
+    payroll_period }o--|| user : "1 field"
+    payroll_run }o--|| user : "2 fields"
+    payroll_run }o--|| payroll_period : "1 field"
+    payroll_snapshot }o--|| employee : "1 field"
+    payroll_snapshot }o--|| user : "1 field"
+    payroll_snapshot }o--|| employee_pay_profile : "1 field"
+    payroll_snapshot }o--|| payroll_run : "1 field"
+    position }o--|| cost_center : "1 field"
+    position }o--|| department : "1 field"
+    public_holiday }o--|| labor_policy : "1 field"
+    schedule_template }o--|| cost_center : "1 field"
+    schedule_template }o--|| department : "1 field"
+    schedule_template }o--|| position : "1 field"
+    schedule_template }o--|| shift : "1 field"
+    scheduled_shift }o--|| cost_center : "1 field"
+    scheduled_shift }o--|| department : "1 field"
+    scheduled_shift }o--|| employee : "1 field"
+    scheduled_shift }o--|| position : "1 field"
+    scheduled_shift }o--|| shift : "1 field"
+    scheduled_shift }o--|| work_schedule : "1 field"
+    shift_swap_request }o--|| user : "1 field"
+    shift_swap_request }o--|| auth_permission : "1 field"
+    shift_swap_request }o--|| scheduled_shift : "2 fields"
+    shift_swap_request }o--|| employee : "2 fields"
+    time_entry }o--|| user : "2 fields"
+    time_entry }o--|| employee : "1 field"
+    time_entry }o--|| time_entry : "1 field"
+    time_entry }o--|| scheduled_shift : "1 field"
+    time_entry }o--|| shift : "1 field"
+    time_entry_break }o--|| user : "1 field"
+    time_entry_break }o--|| time_entry : "1 field"

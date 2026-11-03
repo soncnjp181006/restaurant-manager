@@ -1,0 +1,22 @@
+erDiagram
+  account {
+    string id PK "10 fields"
+  }
+  account_journal_entry {
+    string id PK "22 fields"
+  }
+  account_journal_line {
+    string id PK "6 fields"
+  }
+  document {
+    string id PK "5 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+
+    account_journal_entry }o--|| user : "1 field"
+    account_journal_entry }o--|| document : "2 fields (incl. array)"
+    account_journal_entry }o--|| account_journal_line : "2 fields (incl. array)"
+    account_journal_line }o--|| account : "1 field"
+    account_journal_line }o--|| account_journal_entry : "1 field"

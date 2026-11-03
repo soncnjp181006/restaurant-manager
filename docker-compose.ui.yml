@@ -1,0 +1,17 @@
+# Overlay cho dịch vụ `app` (frontend Vite/Bun) khi dự án được mount từ máy
+# Windows/WSL nhưng node_modules ở host được cài cho nền tảng khác (rolldown,
+# esbuild... gắn binary native theo OS). Overlay gắn named volume
+# `app-node_modules` che node_modules trên host, rồi `bun install` ngay trong
+# container (Linux x64) trước khi dev — cùng mô hình các sidecar đang dùng.
+#
+# Dùng:
+#   docker compose -f docker-compose.yml -f docker-compose.ui.yml up -d app
+services:
+  app:
+    volumes:
+      - .:/app
+      - app-node_modules:/app/node_modules
+    command: sh -c "bun install && bun run dev -- --host 0.0.0.0 --port 5173"
+
+volumes:
+  app-node_modules:

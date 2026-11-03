@@ -1,0 +1,13 @@
+erDiagram
+  shift {
+    string id PK "5 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+  user_role {
+    string id PK "4 fields"
+  }
+
+    user }o--|| user_role : "1 field"
+    user }o--|| shift : "1 field"

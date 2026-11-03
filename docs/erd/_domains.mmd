@@ -1,0 +1,57 @@
+graph LR
+  system[system\n(1 tables)]
+  core[core\n(16 tables)]
+  accounting[accounting\n(3 tables)]
+  auth[auth\n(6 tables)]
+  buffet[buffet\n(8 tables)]
+  catalog[catalog\n(2 tables)]
+  menu-recipe[menu-recipe\n(18 tables)]
+  hr[hr\n(27 tables)]
+  discount[discount\n(5 tables)]
+  floor[floor\n(4 tables)]
+  integration[integration\n(17 tables)]
+  inventory[inventory\n(24 tables)]
+  kitchen[kitchen\n(7 tables)]
+  order-payment[order-payment\n(20 tables)]
+  sync[sync\n(11 tables)]
+  core -->|"1 refs"| accounting
+  accounting -->|"1 refs"| auth
+  accounting -->|"2 refs"| hr
+  accounting -->|"1 refs"| core
+  buffet -->|"6 refs"| inventory
+  buffet -->|"6 refs"| auth
+  buffet -->|"3 refs"| menu-recipe
+  discount -->|"1 refs"| core
+  discount -->|"1 refs"| order-payment
+  discount -->|"2 refs"| auth
+  core -->|"11 refs"| auth
+  discount -->|"2 refs"| floor
+  hr -->|"20 refs"| auth
+  menu-recipe -->|"9 refs"| order-payment
+  menu-recipe -->|"2 refs"| floor
+  floor -->|"2 refs"| menu-recipe
+  floor -->|"4 refs"| order-payment
+  integration -->|"1 refs"| order-payment
+  inventory -->|"37 refs"| auth
+  inventory -->|"12 refs"| hr
+  inventory -->|"3 refs"| core
+  inventory -->|"2 refs"| order-payment
+  core -->|"4 refs"| menu-recipe
+  kitchen -->|"7 refs"| auth
+  kitchen -->|"9 refs"| inventory
+  kitchen -->|"1 refs"| order-payment
+  kitchen -->|"1 refs"| core
+  kitchen -->|"1 refs"| menu-recipe
+  menu-recipe -->|"1 refs"| hr
+  menu-recipe -->|"1 refs"| core
+  menu-recipe -->|"12 refs"| inventory
+  order-payment -->|"17 refs"| auth
+  order-payment -->|"5 refs"| core
+  order-payment -->|"6 refs"| discount
+  order-payment -->|"1 refs"| floor
+  order-payment -->|"2 refs"| menu-recipe
+  menu-recipe -->|"2 refs"| auth
+  hr -->|"1 refs"| core
+  core -->|"5 refs"| inventory
+  core -->|"1 refs"| hr
+  auth -->|"1 refs"| hr

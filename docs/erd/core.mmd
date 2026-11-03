@@ -1,0 +1,85 @@
+erDiagram
+  account {
+    string id PK "10 fields"
+  }
+  account_group {
+    string id PK "8 fields"
+  }
+  customer {
+    string id PK "14 fields"
+  }
+  customer_address {
+    string id PK "8 fields"
+  }
+  day_closing {
+    string id PK "25 fields"
+  }
+  inventory_item {
+    string id PK "16 fields"
+  }
+  inventory_location {
+    string id PK "6 fields"
+  }
+  inventory_store {
+    string id PK "1 fields"
+  }
+  kitchen {
+    string id PK "7 fields"
+  }
+  menu_item {
+    string id PK "22 fields"
+  }
+  printer {
+    string id PK "12 fields"
+  }
+  setting {
+    string id PK "4 fields"
+  }
+  shift {
+    string id PK "5 fields"
+  }
+  stock_transfer {
+    string id PK "18 fields"
+  }
+  stock_transfer_item {
+    string id PK "6 fields"
+  }
+  tip_distribution {
+    string id PK "8 fields"
+  }
+  tip_distribution_user_share {
+    string id PK "3 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+  work_schedule {
+    string id PK "6 fields"
+  }
+  workflow {
+    string id PK "3 fields"
+  }
+  workflow_stage {
+    string id PK "5 fields"
+  }
+
+    account }o--|| account_group : "1 field"
+    account }o--|| account : "1 field"
+    customer }o--|| customer_address : "2 fields (incl. array)"
+    day_closing }o--|| user : "2 fields"
+    kitchen }o--|| menu_item : "2 fields (incl. array)"
+    kitchen }o--|| printer : "2 fields (incl. array)"
+    setting }o--|| user : "1 field"
+    stock_transfer }o--|| user : "5 fields"
+    stock_transfer }o--|| kitchen : "2 fields"
+    stock_transfer }o--|| inventory_location : "2 fields"
+    stock_transfer }o--|| inventory_store : "2 fields"
+    stock_transfer_item }o--|| inventory_item : "1 field"
+    stock_transfer_item }o--|| stock_transfer : "1 field"
+    tip_distribution }o--|| user : "1 field"
+    tip_distribution }o--|| shift : "1 field"
+    tip_distribution }o--|| tip_distribution_user_share : "2 fields (incl. array)"
+    tip_distribution_user_share }o--|| user : "1 field"
+    work_schedule }o--|| user : "1 field"
+    workflow_stage }o--|| kitchen : "1 field"
+    workflow_stage }o--|| workflow : "1 field"

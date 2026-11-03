@@ -1,0 +1,69 @@
+erDiagram
+  inventory_item {
+    string id PK "16 fields"
+  }
+  inventory_item_waste_item {
+    string id PK "15 fields"
+  }
+  inventory_location {
+    string id PK "6 fields"
+  }
+  kitchen {
+    string id PK "7 fields"
+  }
+  kitchen_complimentary_item {
+    string id PK "7 fields"
+  }
+  kitchen_reconciliation {
+    string id PK "14 fields"
+  }
+  kitchen_reconciliation_item {
+    string id PK "20 fields"
+  }
+  kitchen_reconciliation_revision {
+    string id PK "8 fields"
+  }
+  kitchen_staff_meal {
+    string id PK "8 fields"
+  }
+  kitchen_stock_count {
+    string id PK "5 fields"
+  }
+  kitchen_waste {
+    string id PK "7 fields"
+  }
+  menu_item {
+    string id PK "22 fields"
+  }
+  order_item {
+    string id PK "30 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+
+    kitchen_complimentary_item }o--|| user : "1 field"
+    kitchen_complimentary_item }o--|| inventory_item : "1 field"
+    kitchen_complimentary_item }o--|| inventory_item_waste_item : "1 field"
+    kitchen_complimentary_item }o--|| order_item : "1 field"
+    kitchen_complimentary_item }o--|| kitchen_reconciliation : "1 field"
+    kitchen_reconciliation }o--|| user : "2 fields"
+    kitchen_reconciliation }o--|| kitchen : "1 field"
+    kitchen_reconciliation }o--|| inventory_location : "1 field"
+    kitchen_reconciliation }o--|| kitchen_reconciliation : "2 fields"
+    kitchen_reconciliation_item }o--|| inventory_item : "1 field"
+    kitchen_reconciliation_item }o--|| kitchen_reconciliation : "1 field"
+    kitchen_reconciliation_revision }o--|| user : "1 field"
+    kitchen_reconciliation_revision }o--|| kitchen_reconciliation : "1 field"
+    kitchen_staff_meal }o--|| user : "1 field"
+    kitchen_staff_meal }o--|| menu_item : "1 field"
+    kitchen_staff_meal }o--|| inventory_item : "1 field"
+    kitchen_staff_meal }o--|| inventory_item_waste_item : "1 field"
+    kitchen_staff_meal }o--|| kitchen_reconciliation : "1 field"
+    kitchen_stock_count }o--|| user : "1 field"
+    kitchen_stock_count }o--|| inventory_item : "1 field"
+    kitchen_stock_count }o--|| kitchen_reconciliation : "1 field"
+    kitchen_waste }o--|| user : "1 field"
+    kitchen_waste }o--|| inventory_item : "1 field"
+    kitchen_waste }o--|| inventory_item_waste_item : "1 field"
+    kitchen_waste }o--|| kitchen_reconciliation : "1 field"

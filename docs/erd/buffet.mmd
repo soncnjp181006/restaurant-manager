@@ -1,0 +1,69 @@
+erDiagram
+  buffet_consumption_log {
+    string id PK "13 fields"
+  }
+  buffet_guest_count {
+    string id PK "5 fields"
+  }
+  buffet_menu {
+    string id PK "7 fields"
+  }
+  buffet_menu_item {
+    string id PK "4 fields"
+  }
+  buffet_production_batch {
+    string id PK "5 fields"
+  }
+  buffet_session {
+    string id PK "19 fields"
+  }
+  buffet_stock_snapshot {
+    string id PK "8 fields"
+  }
+  buffet_waste_log {
+    string id PK "7 fields"
+  }
+  inventory_item {
+    string id PK "16 fields"
+  }
+  inventory_item_waste_item {
+    string id PK "15 fields"
+  }
+  inventory_location {
+    string id PK "6 fields"
+  }
+  inventory_store {
+    string id PK "1 fields"
+  }
+  production_batch {
+    string id PK "15 fields"
+  }
+  recipe {
+    string id PK "9 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+
+    buffet_consumption_log }o--|| inventory_item : "1 field"
+    buffet_consumption_log }o--|| buffet_session : "1 field"
+    buffet_guest_count }o--|| user : "1 field"
+    buffet_guest_count }o--|| buffet_session : "1 field"
+    buffet_menu }o--|| user : "1 field"
+    buffet_menu_item }o--|| buffet_menu : "1 field"
+    buffet_menu_item }o--|| recipe : "1 field"
+    buffet_production_batch }o--|| buffet_menu_item : "1 field"
+    buffet_production_batch }o--|| production_batch : "1 field"
+    buffet_production_batch }o--|| buffet_session : "1 field"
+    buffet_session }o--|| user : "2 fields"
+    buffet_session }o--|| inventory_location : "1 field"
+    buffet_session }o--|| buffet_menu : "1 field"
+    buffet_session }o--|| inventory_store : "1 field"
+    buffet_stock_snapshot }o--|| user : "1 field"
+    buffet_stock_snapshot }o--|| inventory_item : "1 field"
+    buffet_stock_snapshot }o--|| production_batch : "1 field"
+    buffet_stock_snapshot }o--|| buffet_session : "1 field"
+    buffet_waste_log }o--|| user : "1 field"
+    buffet_waste_log }o--|| inventory_item : "1 field"
+    buffet_waste_log }o--|| inventory_item_waste_item : "1 field"
+    buffet_waste_log }o--|| buffet_session : "1 field"

@@ -1,0 +1,178 @@
+erDiagram
+  document {
+    string id PK "5 fields"
+  }
+  inventory_adjustment {
+    string id PK "18 fields"
+  }
+  inventory_adjustment_item {
+    string id PK "10 fields"
+  }
+  inventory_category {
+    string id PK "2 fields"
+  }
+  inventory_issue {
+    string id PK "23 fields"
+  }
+  inventory_issue_item {
+    string id PK "12 fields"
+  }
+  inventory_issue_return {
+    string id PK "21 fields"
+  }
+  inventory_issue_return_item {
+    string id PK "13 fields"
+  }
+  inventory_item {
+    string id PK "16 fields"
+  }
+  inventory_item_group {
+    string id PK "4 fields"
+  }
+  inventory_item_group_item {
+    string id PK "2 fields"
+  }
+  inventory_item_waste {
+    string id PK "18 fields"
+  }
+  inventory_item_waste_item {
+    string id PK "15 fields"
+  }
+  inventory_ledger {
+    string id PK "17 fields"
+  }
+  inventory_location {
+    string id PK "6 fields"
+  }
+  inventory_purchase {
+    string id PK "30 fields"
+  }
+  inventory_purchase_item {
+    string id PK "24 fields"
+  }
+  inventory_purchase_order {
+    string id PK "17 fields"
+  }
+  inventory_purchase_order_item {
+    string id PK "8 fields"
+  }
+  inventory_purchase_payment {
+    string id PK "5 fields"
+  }
+  inventory_purchase_return {
+    string id PK "19 fields"
+  }
+  inventory_purchase_return_item {
+    string id PK "13 fields"
+  }
+  inventory_store {
+    string id PK "1 fields"
+  }
+  inventory_supplier {
+    string id PK "8 fields"
+  }
+  kitchen {
+    string id PK "7 fields"
+  }
+  payment_type {
+    string id PK "14 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+
+    inventory_adjustment }o--|| user : "5 fields"
+    inventory_adjustment }o--|| inventory_adjustment_item : "2 fields (incl. array)"
+    inventory_adjustment }o--|| inventory_location : "1 field"
+    inventory_adjustment }o--|| inventory_store : "1 field"
+    inventory_adjustment_item }o--|| inventory_adjustment : "1 field"
+    inventory_adjustment_item }o--|| inventory_item : "1 field"
+    inventory_adjustment_item }o--|| inventory_location : "1 field"
+    inventory_adjustment_item }o--|| inventory_store : "1 field"
+    inventory_issue }o--|| user : "6 fields"
+    inventory_issue }o--|| document : "2 fields (incl. array)"
+    inventory_issue }o--|| inventory_issue_item : "2 fields (incl. array)"
+    inventory_issue }o--|| kitchen : "1 field"
+    inventory_issue }o--|| inventory_location : "1 field"
+    inventory_issue }o--|| inventory_issue : "2 fields"
+    inventory_issue }o--|| inventory_store : "1 field"
+    inventory_issue_item }o--|| inventory_issue : "1 field"
+    inventory_issue_item }o--|| inventory_item : "1 field"
+    inventory_issue_item }o--|| inventory_location : "1 field"
+    inventory_issue_item }o--|| inventory_store : "1 field"
+    inventory_issue_return }o--|| user : "6 fields"
+    inventory_issue_return }o--|| document : "2 fields (incl. array)"
+    inventory_issue_return }o--|| inventory_issue : "1 field"
+    inventory_issue_return }o--|| inventory_issue_return_item : "2 fields (incl. array)"
+    inventory_issue_return }o--|| kitchen : "1 field"
+    inventory_issue_return }o--|| inventory_location : "1 field"
+    inventory_issue_return }o--|| inventory_store : "1 field"
+    inventory_issue_return_item }o--|| inventory_issue_return : "2 fields"
+    inventory_issue_return_item }o--|| inventory_issue_item : "1 field"
+    inventory_issue_return_item }o--|| inventory_item : "1 field"
+    inventory_issue_return_item }o--|| inventory_location : "1 field"
+    inventory_issue_return_item }o--|| inventory_store : "1 field"
+    inventory_item }o--|| inventory_category : "1 field"
+    inventory_item }o--|| inventory_location : "2 fields (incl. array)"
+    inventory_item }o--|| inventory_store : "2 fields (incl. array)"
+    inventory_item }o--|| inventory_supplier : "2 fields (incl. array)"
+    inventory_item_group }o--|| inventory_item : "1 field"
+    inventory_item_group }o--|| inventory_item_group_item : "2 fields (incl. array)"
+    inventory_item_group_item }o--|| inventory_item : "1 field"
+    inventory_item_waste }o--|| user : "5 fields"
+    inventory_item_waste }o--|| document : "2 fields (incl. array)"
+    inventory_item_waste }o--|| inventory_issue : "1 field"
+    inventory_item_waste }o--|| inventory_item_waste_item : "2 fields (incl. array)"
+    inventory_item_waste }o--|| inventory_purchase : "1 field"
+    inventory_item_waste_item }o--|| inventory_issue_item : "1 field"
+    inventory_item_waste_item }o--|| inventory_item : "1 field"
+    inventory_item_waste_item }o--|| inventory_location : "1 field"
+    inventory_item_waste_item }o--|| inventory_purchase_item : "1 field"
+    inventory_item_waste_item }o--|| inventory_store : "1 field"
+    inventory_item_waste_item }o--|| inventory_item_waste : "1 field"
+    inventory_ledger }o--|| user : "1 field"
+    inventory_ledger }o--|| inventory_item : "1 field"
+    inventory_ledger }o--|| inventory_location : "1 field"
+    inventory_ledger }o--|| inventory_ledger : "1 field"
+    inventory_location }o--|| kitchen : "1 field"
+    inventory_location }o--|| inventory_store : "1 field"
+    inventory_purchase }o--|| user : "5 fields"
+    inventory_purchase }o--|| document : "2 fields (incl. array)"
+    inventory_purchase }o--|| inventory_purchase_item : "2 fields (incl. array)"
+    inventory_purchase }o--|| inventory_location : "1 field"
+    inventory_purchase }o--|| inventory_purchase : "2 fields"
+    inventory_purchase }o--|| payment_type : "1 field"
+    inventory_purchase }o--|| inventory_purchase_order : "1 field"
+    inventory_purchase }o--|| inventory_store : "1 field"
+    inventory_purchase }o--|| inventory_supplier : "1 field"
+    inventory_purchase_item }o--|| inventory_item : "1 field"
+    inventory_purchase_item }o--|| inventory_location : "1 field"
+    inventory_purchase_item }o--|| inventory_purchase : "1 field"
+    inventory_purchase_item }o--|| inventory_store : "1 field"
+    inventory_purchase_item }o--|| inventory_supplier : "1 field"
+    inventory_purchase_order }o--|| user : "4 fields"
+    inventory_purchase_order }o--|| document : "2 fields (incl. array)"
+    inventory_purchase_order }o--|| inventory_purchase_order_item : "2 fields (incl. array)"
+    inventory_purchase_order }o--|| inventory_location : "1 field"
+    inventory_purchase_order }o--|| inventory_store : "1 field"
+    inventory_purchase_order }o--|| inventory_supplier : "1 field"
+    inventory_purchase_order_item }o--|| inventory_item : "1 field"
+    inventory_purchase_order_item }o--|| inventory_purchase_order : "1 field"
+    inventory_purchase_order_item }o--|| inventory_supplier : "1 field"
+    inventory_purchase_payment }o--|| payment_type : "1 field"
+    inventory_purchase_payment }o--|| inventory_purchase : "1 field"
+    inventory_purchase_payment }o--|| inventory_supplier : "1 field"
+    inventory_purchase_return }o--|| user : "5 fields"
+    inventory_purchase_return }o--|| document : "2 fields (incl. array)"
+    inventory_purchase_return }o--|| inventory_purchase_return_item : "2 fields (incl. array)"
+    inventory_purchase_return }o--|| inventory_location : "1 field"
+    inventory_purchase_return }o--|| inventory_purchase : "1 field"
+    inventory_purchase_return }o--|| inventory_store : "1 field"
+    inventory_purchase_return_item }o--|| inventory_item : "1 field"
+    inventory_purchase_return_item }o--|| inventory_location : "1 field"
+    inventory_purchase_return_item }o--|| inventory_purchase_item : "1 field"
+    inventory_purchase_return_item }o--|| inventory_purchase_return : "1 field"
+    inventory_purchase_return_item }o--|| inventory_store : "1 field"
+    inventory_purchase_return_item }o--|| inventory_supplier : "1 field"
+    inventory_supplier }o--|| inventory_purchase_payment : "2 fields (incl. array)"
+    inventory_supplier }o--|| inventory_purchase : "2 fields (incl. array)"

@@ -1,0 +1,21 @@
+erDiagram
+  category {
+    string id PK "8 fields"
+  }
+  floor {
+    string id PK "5 fields"
+  }
+  floor_table {
+    string id PK "26 fields"
+  }
+  order_type {
+    string id PK "5 fields"
+  }
+  payment_type {
+    string id PK "14 fields"
+  }
+
+    floor_table }o--|| category : "2 fields (incl. array)"
+    floor_table }o--|| floor : "1 field"
+    floor_table }o--|| order_type : "2 fields (incl. array)"
+    floor_table }o--|| payment_type : "2 fields (incl. array)"

@@ -1,0 +1,123 @@
+erDiagram
+  category {
+    string id PK "8 fields"
+  }
+  document {
+    string id PK "5 fields"
+  }
+  extras {
+    string id PK "8 fields"
+  }
+  floor_table {
+    string id PK "26 fields"
+  }
+  inventory_item {
+    string id PK "16 fields"
+  }
+  inventory_item_waste_item {
+    string id PK "15 fields"
+  }
+  inventory_location {
+    string id PK "6 fields"
+  }
+  inventory_store {
+    string id PK "1 fields"
+  }
+  menu {
+    string id PK "9 fields"
+  }
+  menu_item {
+    string id PK "22 fields"
+  }
+  menu_item_modifier_group {
+    string id PK "7 fields"
+  }
+  menu_item_recipe {
+    string id PK "8 fields"
+  }
+  menu_menu_item {
+    string id PK "9 fields"
+  }
+  menu_menu_item_tax {
+    string id PK "3 fields"
+  }
+  modifier {
+    string id PK "5 fields"
+  }
+  modifier_group {
+    string id PK "8 fields"
+  }
+  order_type {
+    string id PK "5 fields"
+  }
+  payment_type {
+    string id PK "14 fields"
+  }
+  production_batch {
+    string id PK "15 fields"
+  }
+  production_batch_input {
+    string id PK "7 fields"
+  }
+  production_batch_output {
+    string id PK "10 fields"
+  }
+  recipe {
+    string id PK "9 fields"
+  }
+  recipe_item {
+    string id PK "7 fields"
+  }
+  recipe_output {
+    string id PK "7 fields"
+  }
+  tax {
+    string id PK "5 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+  workflow {
+    string id PK "3 fields"
+  }
+
+    category }o--|| category : "1 field"
+    extras }o--|| order_type : "2 fields (incl. array)"
+    extras }o--|| payment_type : "2 fields (incl. array)"
+    extras }o--|| floor_table : "2 fields (incl. array)"
+    menu }o--|| menu_menu_item : "2 fields (incl. array)"
+    menu_item }o--|| category : "2 fields (incl. array)"
+    menu_item }o--|| document : "1 field"
+    menu_item }o--|| menu_item_recipe : "2 fields (incl. array)"
+    menu_item }o--|| tax : "1 field"
+    menu_item }o--|| workflow : "1 field"
+    menu_item_modifier_group }o--|| menu_item : "1 field"
+    menu_item_modifier_group }o--|| modifier_group : "1 field"
+    menu_item_recipe }o--|| inventory_item : "1 field"
+    menu_item_recipe }o--|| menu_item : "1 field"
+    menu_menu_item }o--|| menu_item : "1 field"
+    menu_menu_item }o--|| tax : "3 fields (incl. array)"
+    menu_menu_item_tax }o--|| menu_menu_item : "1 field"
+    menu_menu_item_tax }o--|| tax : "1 field"
+    modifier }o--|| modifier_group : "2 fields (incl. array)"
+    modifier }o--|| menu_item : "1 field"
+    modifier_group }o--|| modifier : "2 fields (incl. array)"
+    production_batch }o--|| user : "1 field"
+    production_batch }o--|| inventory_location : "1 field"
+    production_batch }o--|| recipe : "1 field"
+    production_batch }o--|| inventory_store : "1 field"
+    production_batch_input }o--|| production_batch : "1 field"
+    production_batch_input }o--|| inventory_item : "1 field"
+    production_batch_input }o--|| inventory_location : "1 field"
+    production_batch_input }o--|| inventory_store : "1 field"
+    production_batch_output }o--|| production_batch : "1 field"
+    production_batch_output }o--|| inventory_item : "1 field"
+    production_batch_output }o--|| inventory_item_waste_item : "1 field"
+    production_batch_output }o--|| inventory_location : "1 field"
+    production_batch_output }o--|| inventory_store : "1 field"
+    recipe }o--|| user : "1 field"
+    recipe }o--|| recipe_output : "1 field"
+    recipe_item }o--|| inventory_item : "1 field"
+    recipe_item }o--|| recipe : "1 field"
+    recipe_output }o--|| inventory_item : "1 field"
+    recipe_output }o--|| recipe : "1 field"

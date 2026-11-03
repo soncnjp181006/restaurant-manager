@@ -1,0 +1,133 @@
+erDiagram
+  category {
+    string id PK "8 fields"
+  }
+  coupon {
+    string id PK "24 fields"
+  }
+  customer {
+    string id PK "14 fields"
+  }
+  discount {
+    string id PK "30 fields"
+  }
+  discount_reason {
+    string id PK "5 fields"
+  }
+  floor {
+    string id PK "5 fields"
+  }
+  kitchen {
+    string id PK "7 fields"
+  }
+  menu_item {
+    string id PK "22 fields"
+  }
+  order {
+    string id PK "46 fields"
+  }
+  order_coupon {
+    string id PK "3 fields"
+  }
+  order_discount {
+    string id PK "21 fields"
+  }
+  order_extras {
+    string id PK "2 fields"
+  }
+  order_item {
+    string id PK "30 fields"
+  }
+  order_item_kitchen {
+    string id PK "14 fields"
+  }
+  order_merge {
+    string id PK "7 fields"
+  }
+  order_payment {
+    string id PK "4 fields"
+  }
+  order_print {
+    string id PK "6 fields"
+  }
+  order_refund {
+    string id PK "7 fields"
+  }
+  order_split {
+    string id PK "7 fields"
+  }
+  order_tax {
+    string id PK "3 fields"
+  }
+  order_type {
+    string id PK "5 fields"
+  }
+  order_void {
+    string id PK "9 fields"
+  }
+  payment_type {
+    string id PK "14 fields"
+  }
+  payment_type_gateway_config {
+    string id PK "7 fields"
+  }
+  tax {
+    string id PK "5 fields"
+  }
+  user {
+    string id PK "12 fields"
+  }
+  workflow {
+    string id PK "3 fields"
+  }
+  workflow_stage {
+    string id PK "5 fields"
+  }
+
+    order }o--|| user : "3 fields"
+    order }o--|| order_coupon : "1 field"
+    order }o--|| customer : "1 field"
+    order }o--|| discount : "1 field"
+    order }o--|| order_extras : "2 fields (incl. array)"
+    order }o--|| floor : "1 field"
+    order }o--|| order_item : "2 fields (incl. array)"
+    order }o--|| order_discount : "2 fields (incl. array)"
+    order }o--|| order_tax : "2 fields (incl. array)"
+    order }o--|| order_type : "1 field"
+    order }o--|| order_payment : "2 fields (incl. array)"
+    order }o--|| tax : "1 field"
+    order_coupon }o--|| coupon : "1 field"
+    order_discount }o--|| user : "3 fields"
+    order_discount }o--|| discount : "1 field"
+    order_discount }o--|| order : "1 field"
+    order_discount }o--|| order_item : "2 fields (incl. array)"
+    order_discount }o--|| discount_reason : "1 field"
+    order_item }o--|| category : "1 field"
+    order_item }o--|| user : "1 field"
+    order_item }o--|| menu_item : "1 field"
+    order_item }o--|| order : "1 field"
+    order_item }o--|| tax : "2 fields (incl. array)"
+    order_item }o--|| workflow : "1 field"
+    order_item_kitchen }o--|| user : "3 fields (incl. array)"
+    order_item_kitchen }o--|| kitchen : "1 field"
+    order_item_kitchen }o--|| order_item : "1 field"
+    order_item_kitchen }o--|| workflow_stage : "1 field"
+    order_item_kitchen }o--|| workflow : "1 field"
+    order_merge }o--|| user : "1 field"
+    order_merge }o--|| order : "3 fields (incl. array)"
+    order_payment }o--|| payment_type : "1 field"
+    order_print }o--|| order : "1 field"
+    order_print }o--|| user : "1 field"
+    order_refund }o--|| order_item : "2 fields (incl. array)"
+    order_refund }o--|| user : "2 fields"
+    order_refund }o--|| order : "1 field"
+    order_split }o--|| user : "1 field"
+    order_split }o--|| order : "3 fields (incl. array)"
+    order_tax }o--|| order : "1 field"
+    order_tax }o--|| tax : "1 field"
+    order_void }o--|| user : "2 fields"
+    order_void }o--|| order_item : "2 fields (incl. array)"
+    order_void }o--|| order : "1 field"
+    payment_type }o--|| discount : "2 fields (incl. array)"
+    payment_type }o--|| payment_type_gateway_config : "1 field"
+    payment_type }o--|| tax : "1 field"
