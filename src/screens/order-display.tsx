@@ -217,9 +217,13 @@ export const OrderDisplayScreen = () => {
 
         <div className="flex flex-1 gap-3 min-h-0" data-testid="order-display-boards">
           <div className="flex-1 flex flex-col rounded-xl bg-surface overflow-hidden">
-            <div className="flex-shrink-0 px-4 py-3 bg-warning text-white">
-              <h2 className="text-2xl font-bold uppercase tracking-wide">
+            <div className="relative flex-shrink-0 overflow-hidden border-b border-border/70 bg-warning/10 px-4 py-3">
+              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-warning" />
+              <h2 className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
                 {t('order-display:preparing')}
+                <span className="rounded-full bg-warning/20 px-2 py-0.5 text-xs font-semibold text-warning">
+                  {preparing.length}
+                </span>
               </h2>
             </div>
             <div className="flex-1 overflow-auto p-4">
@@ -232,9 +236,13 @@ export const OrderDisplayScreen = () => {
           </div>
 
           <div className="flex-1 flex flex-col rounded-xl bg-surface overflow-hidden">
-            <div className="flex-shrink-0 px-4 py-3 bg-success-600 text-white">
-              <h2 className="text-2xl font-bold uppercase tracking-wide">
+            <div className="relative flex-shrink-0 overflow-hidden border-b border-border/70 bg-success/10 px-4 py-3">
+              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-success" />
+              <h2 className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
                 {t('order-display:readyForPickup')}
+                <span className="rounded-full bg-success/20 px-2 py-0.5 text-xs font-semibold text-success">
+                  {ready.length}
+                </span>
               </h2>
             </div>
             <div className="flex-1 overflow-auto p-4">

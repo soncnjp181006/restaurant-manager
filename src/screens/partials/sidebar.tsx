@@ -126,7 +126,7 @@ export const Sidebar = () => {
   const showSettings = isBuildModuleEnabled('settings');
 
   return (
-    <div className="flex flex-col justify-between h-[calc(100vh_-_var(--app-toolbar-h))] items-center sidebar border border-y-0 border-border bg-surface-elevated/50 backdrop-blur text-foreground">
+    <div className="flex flex-col justify-between h-[calc(100vh_-_var(--app-toolbar-h))] items-center sidebar border-r border-border/70 bg-surface-elevated/60 backdrop-blur text-foreground">
       <div className="w-full">
         <ScrollContainer className="h-[calc(100vh_-_150px_-_var(--app-toolbar-h))]" hideScrollbars={false}>
           <div className="p-2 flex flex-col">
@@ -135,6 +135,7 @@ export const Sidebar = () => {
               return (
                 <button
                   type="button"
+                  aria-current={pathInfo === item.link ? 'page' : undefined}
                   data-testid={SIDEBAR_NAV_TEST_IDS[item.link] ?? undefined}
                   title={accessible ? undefined : t('sidebar.requiresApproval', {
                     defaultValue: 'Requires manager approval',
@@ -143,24 +144,35 @@ export const Sidebar = () => {
                     protectedNavigate(item.link, item.role);
                   }}
                   className={cn(
-                    'relative flex flex-col text-center cursor-pointer p-[0.4rem] gap-1 rounded-xl pressable no-underline w-full text-foreground',
-                    pathInfo === item.link ? 'shadow-xl bg-gradient active:shadow-none' : 'border-[3px] border-transparent'
+                    'relative flex flex-col text-center cursor-pointer px-1 py-[0.55rem] gap-1 rounded-xl pressable no-underline w-full text-foreground transition-colors',
+                    pathInfo === item.link
+                      ? 'bg-primary/12 text-primary'
+                      : 'hover:bg-foreground/5 border-[3px] border-transparent'
                   )}
                   key={item.title}
                   style={{
                     '--padding': '0.4rem'
                   } as CSSProperties}
                 >
-                  <span className={cn('flex flex-col gap-1', !accessible && 'opacity-50 grayscale blur-[1.5px]')}>
+                  {/* left indicator marks where you are — the one loud thing */}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full bg-primary transition-all',
+                      pathInfo === item.link ? 'h-[60%] w-[3px] opacity-100' : 'h-0 w-0 opacity-0'
+                    )}
+                  />
+                  <span className={cn('flex flex-col gap-[3px]', !accessible && 'opacity-45 grayscale')}>
                     <span className="icon text-current">{item.icon}</span>
-                    <span className="label text-[12px] text-current">{item.title}</span>
+                    <span className="label text-[12px] font-medium leading-tight text-current">{item.title}</span>
                   </span>
                   {!accessible && (
-                    <FontAwesomeIcon
-                      icon={faLock}
+                    <span
                       aria-hidden="true"
-                      className="absolute top-0.5 right-0.5 text-[9px] text-muted"
-                    />
+                      className="absolute top-1 right-1 flex h-[14px] w-[14px] items-center justify-center rounded-full bg-foreground/10"
+                    >
+                      <FontAwesomeIcon icon={faLock} className="text-[7px] text-muted" />
+                    </span>
                   )}
                   {item.link === ADMIN && <SecurityAlertsBadge />}
                 </button>

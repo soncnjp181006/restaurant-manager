@@ -30,12 +30,12 @@ const classicLight: BrandPalette = {
 };
 
 const classicDark: BrandPalette = {
-  canvas: '8 12 18',
-  surface: '15 22 32',
-  surfaceElevated: '24 33 46',
-  foreground: '226 236 245',
+  canvas: '7 11 18',
+  surface: '13 20 31',
+  surfaceElevated: '22 31 45',
+  foreground: '232 238 246',
   muted: '147 167 186',
-  border: '41 55 73',
+  border: '38 52 70',
   primary: '34 211 238',
   primaryFg: '6 20 28',
   warning: '251 191 36',

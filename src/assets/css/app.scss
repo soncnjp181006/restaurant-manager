@@ -49,12 +49,12 @@ body {
 }
 
 .dark {
-  --canvas: 8 12 18; /* deep blue-black */
-  --surface: 15 22 32;
-  --surface-elevated: 24 33 46;
-  --foreground: 226 236 245;
+  --canvas: 7 11 18; /* deep blue-black */
+  --surface: 13 20 31;
+  --surface-elevated: 22 31 45;
+  --foreground: 232 238 246;
   --muted: 147 167 186;
-  --border: 41 55 73;
+  --border: 38 52 70;
   --primary: 34 211 238;
   --primary-fg: 6 20 28;
   --warning: 251 191 36;
@@ -97,24 +97,49 @@ html[data-app-toolbar='1'] {
   background-clip: padding-box;
 }
 
+/*
+ * One family, real weights. Urbanist carries the whole UI: Regular for body,
+ * SemiBold mapped across the 500-700 range so font-medium/semibold/bold all
+ * render true glyphs (previously the SemiBold file was registered without a
+ * weight descriptor and every "bold" on screen was synthesized faux-bold).
+ */
 @font-face {
-  font-family: "Poppins";
-  src: url("../fonts/Poppins-Regular.ttf");
-}
-
-@font-face {
-  font-family: "Quicksand";
-  src: url("../fonts/Quicksand-Bold.ttf");
+  font-family: "Urbanist";
+  src: url("../fonts/Urbanist-Regular.ttf");
+  font-weight: 100 450;
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Urbanist";
   src: url("../fonts/Urbanist-SemiBold.ttf");
+  font-weight: 451 800;
+  font-display: swap;
 }
 
 @font-face {
-  font-family: "Orbitron";
-  src: url("../fonts/Orbitron-Regular.ttf");
+  font-family: "Poppins";
+  src: url("../fonts/Poppins-Regular.ttf");
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Shared motion language: one curve, two durations. Respect reduced motion. */
+:root {
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --dur-quick: 140ms;
+  --dur-move: 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 html,
@@ -138,7 +163,12 @@ textarea {
 
 
 .digital {
-  font-family: "Orbitron", "Poppins", "sans-serif";
+  /* Receipt-grade numbers: same family as the UI, tabular so columns of
+     prices align. Replaces Orbitron's sci-fi voice. */
+  font-family: "Urbanist", sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 a {
@@ -148,8 +178,16 @@ a {
   align-items: center;
   text-decoration: underline;
 }
-h1, h2, h3, h4, h5, h6, .title, .card-title, th{
-  font-family: "Quicksand", sans-serif;
+h1, h2, h3, h4, h5, h6, .title, .card-title {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  @apply text-foreground;
+}
+
+th {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 600;
   @apply text-foreground;
 }
 
@@ -263,25 +301,31 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
 .btn {
   --background: rgb(var(--surface-elevated));
   --color: rgb(var(--foreground));
-  --border: rgb(var(--surface-elevated));
+  --border: rgb(var(--border));
   --radius: theme('borderRadius.lg');
-  --scale: 0.9;
+  --scale: 0.985;
   --font-size: 14px;
   --padding: 0.5rem 0.75rem;
   --height: 40px;
 
+  /* Calm controls: sentence case, 600 weight, hairline border. Hierarchy
+     comes from weight and spacing, not from shouting. */
   @apply inline-flex justify-center items-center px-3 py-2 align-middle h-[40px]
-  active:shadow-none bg-surface-elevated uppercase font-bold border-2;
+  active:shadow-none bg-surface-elevated font-semibold border;
   font-size: var(--font-size);
-  line-height: 1;
-  transition: background-color 100ms linear, border-color 100ms linear,
-    color 100ms linear, box-shadow 140ms ease-out, transform 100ms linear;
+  line-height: 1.1;
+  transition: background-color var(--dur-quick) var(--ease-out-soft),
+    border-color var(--dur-quick) var(--ease-out-soft),
+    color var(--dur-quick) var(--ease-out-soft),
+    box-shadow var(--dur-move) var(--ease-out-soft),
+    transform var(--dur-quick) var(--ease-out-soft);
   border-radius: var(--radius);
   border-color: rgb(var(--border));
   box-shadow: var(--elev-1);
   white-space: nowrap;
   &:hover {
-    border-color: rgb(var(--primary) / 0.55);
+    background: rgb(var(--foreground) / 0.04);
+    border-color: rgb(var(--primary) / 0.45);
     box-shadow: var(--elev-2);
   }
   &:focus-visible {
@@ -421,17 +465,19 @@ h1, h2, h3, h4, h5, h6, .title, .card-title, th{
 }
 .form-control,
 .input {
-  @apply block leading-5 py-2 px-3 rounded-lg text-muted border-2
+  @apply block leading-5 py-2 px-3 rounded-lg text-muted border
   border-border disabled:bg-surface read-only:bg-surface focus:outline-none focus:border-primary
   h-[40px] w-full bg-surface-elevated
   dark:disabled:bg-neutral-800 dark:read-only:bg-neutral-800;
-  transition: border-color 100ms linear, box-shadow 140ms ease-out,
-    background-color 100ms linear;
+  transition: border-color var(--dur-quick) var(--ease-out-soft),
+    box-shadow var(--dur-move) var(--ease-out-soft),
+    background-color var(--dur-quick) var(--ease-out-soft);
   box-shadow: inset 0 1px 0 rgb(var(--foreground) / 0.03);
   &:hover:not(:disabled):not(:read-only) {
     border-color: rgb(var(--primary) / 0.4);
   }
   &:focus {
+    color: rgb(var(--foreground));
     box-shadow: 0 0 0 3px var(--ring);
   }
   &::placeholder {
@@ -1157,8 +1203,8 @@ table th {
   background: repeating-linear-gradient(0deg ,rgb(var(--surface-elevated)) 0 var(--space), rgb(var(--border)) 0 var(--size));
 }
 .pressable {
-  --scale: 0.9;
-  transition: 100ms linear transform;
+  --scale: 0.97;
+  transition: transform var(--dur-quick) var(--ease-out-soft);
   transform: scale(1);
 
   &:active, &.active {

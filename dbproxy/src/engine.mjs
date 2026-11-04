@@ -792,10 +792,31 @@ function applyValueProjection(rows, valueSpec, params) {
 
 function applyFieldProjection(rows, fields, params) {
   const hasStar = fields.some((f) => f.t === 'star');
+  const extra = hasStar ? fields.filter((f) => f.t !== 'star') : [];
   const out = [];
   for (const row of rows) {
     if (hasStar) {
-      out.push({ ...row });
+      const item = { ...row };
+      // `SELECT *, extra AS x` — merge the additional projections on top of
+      // the full row, matching SurrealDB semantics.
+      for (const field of extra) {
+        if (field.t === 'alias') {
+          const v = evaluate(field.expr, row, params, {});
+          if (v !== undefined) item[field.alias] = v;
+          continue;
+        }
+        if (field.t === 'path') {
+          const v = getPath(row, field.parts);
+          if (v !== undefined) item[field.parts[field.parts.length - 1]] = v;
+          continue;
+        }
+        const v = evaluate(field, row, params, {});
+        if (v !== undefined) {
+          const name = field.t === 'func' ? field.name.split('::').pop() : 'value';
+          item[name] = v;
+        }
+      }
+      out.push(item);
       continue;
     }
     const item = {};

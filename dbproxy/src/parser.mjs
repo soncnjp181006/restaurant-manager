@@ -359,6 +359,11 @@ class Parser {
       if (this.isOp('*')) {
         this.next();
         fields.push({ t: 'star' });
+        // SurrealQL: `SELECT *, extra AS x FROM t` — star followed by more
+        // projected fields (used by the dishes list subquery columns).
+        while (this.eatOp(',')) {
+          fields.push(this.parseProjectionField());
+        }
       } else {
         for (;;) {
           fields.push(this.parseProjectionField());

@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBackspace, faCircle, faClock } from "@fortawesome/free-solid-svg-icons";
-import {faCircle as circleRegular} from '@fortawesome/free-regular-svg-icons';
+import { faBackspace, faClock } from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useLayoutEffect, useState} from "react";
 import { useAtom } from "jotai";
 import { appPage } from "@/store/jotai.ts";
@@ -484,48 +483,41 @@ export const Login = () => {
         </aside>
         <div className="relative isolate flex-1 flex justify-center items-center flex-col gap-8 px-4 py-10 overflow-hidden">
           <LoginAurora />
-          <h4 className="text-4xl text-neutral-100">{t('login.title')}</h4>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              data-testid="login-method-pin"
-              className={cn(
-                "w-56 border-2 transition-all duration-150 btn btn-filled lg",
-                loginMethod === 'pin'
-                  ? "!bg-primary text-primary-fg border-primary"
-                  : "!bg-surface text-foreground border-border"
-              )}
-              onClick={() => {
-                setLoginMethod('pin');
-                setError(false);
-                setUsername('');
-                setPassword('');
-                setCode('');
-              }}
+          <h4 className="text-4xl font-semibold tracking-tight text-neutral-50">
+            {t('login.title')}
+          </h4>
+          <div className="flex flex-col items-center gap-3">
+            <div
+              className="flex rounded-full border border-neutral-700/80 bg-neutral-900/60 p-1 backdrop-blur"
+              data-testid="login-method-switcher"
             >
-              {t('login.pin')}
-            </button>
-            <button
-              type="button"
-              data-testid="login-method-form"
-              className={cn(
-                "w-56 border-2 transition-all duration-150 btn btn-filled lg",
-                loginMethod === 'form'
-                  ? "!bg-primary text-primary-fg border-primary"
-                  : "!bg-surface text-foreground border-border"
-              )}
-              onClick={() => {
-                setLoginMethod('form');
-                setError(false);
-                setUsername('');
-                setPassword('');
-                setCode('');
-              }}
-            >
-              {t('login.form')}
-            </button>            {needsBootstrap && (
+              {(['pin', 'form'] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  data-testid={m === 'pin' ? 'login-method-pin' : 'login-method-form'}
+                  aria-pressed={loginMethod === m}
+                  className={cn(
+                    'w-32 rounded-full px-6 py-2.5 text-[15px] font-semibold transition-all duration-200',
+                    loginMethod === m
+                      ? 'bg-primary text-primary-fg shadow-lg'
+                      : 'text-neutral-300 hover:text-neutral-100'
+                  )}
+                  onClick={() => {
+                    setLoginMethod(m);
+                    setError(false);
+                    setUsername('');
+                    setPassword('');
+                    setCode('');
+                  }}
+                >
+                  {m === 'pin' ? t('login.pin') : t('login.form')}
+                </button>
+              ))}
+            </div>
+            {needsBootstrap && (
               <p
-                className="w-full text-center text-sm text-muted"
+                className="max-w-[420px] text-center text-sm text-neutral-400"
                 data-testid="login-bootstrap-hint"
               >
                 {t('login.bootstrapHint', {
@@ -541,19 +533,24 @@ export const Login = () => {
           )}
           {loginMethod === 'pin' && (
             <>
-              <div className={
-                cn(
-                  "flex gap-3 text-neutral-100",
-                  error && 'login-error'
-                )
-              }>
-                <FontAwesomeIcon size="lg" icon={code.trim().length >= 1 ? faCircle : circleRegular} />
-                <FontAwesomeIcon size="lg" icon={code.trim().length >= 2 ? faCircle : circleRegular} />
-                <FontAwesomeIcon size="lg" icon={code.trim().length >= 3 ? faCircle : circleRegular} />
-                <FontAwesomeIcon size="lg" icon={code.trim().length === 4 ? faCircle : circleRegular} />
+              <div
+                className={cn('flex items-center gap-3', error && 'login-error')}
+                aria-hidden="true"
+              >
+                {[0, 1, 2, 3].map((idx) => (
+                  <span
+                    key={idx}
+                    className={cn(
+                      'h-3 rounded-full transition-all duration-200',
+                      code.trim().length > idx
+                        ? 'w-8 bg-primary shadow-[0_0_12px_rgb(var(--primary)/0.5)]'
+                        : 'w-3 bg-neutral-600/70'
+                    )}
+                  />
+                ))}
               </div>
               <div className="wrapper w-[400px]" data-testid="login-pin-pad">
-                <div className="grid grid-cols-3 gap-2 sm:gap-5 place-items-center">
+                <div className="grid grid-cols-3 gap-3 sm:gap-5 place-items-center">
                   <button type="button" onClick={() => onKey('1')} className="btn-login">1</button>
                   <button type="button" onClick={() => onKey('2')} className="btn-login">2</button>
                   <button type="button" onClick={() => onKey('3')} className="btn-login">3</button>

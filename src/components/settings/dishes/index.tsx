@@ -33,12 +33,12 @@ export const AdminDishes = () => {
   const db = useDB();
   const { protectAction } = useSecurity();
 
-  const loadHook = useApi<SettingsData<Dish & { modifiers: [] }>>(
-    Tables.dishes, [`deleted_at = none`], [], 0, 10, ['categories', 'items', 'items.item'], {}, [
-      '*',
-      '(SELECT out.name from menu_item_modifier_group where in = $parent.id) as modifiers',
-      '(SELECT name, modifiers[where modifier.id = $parent.id][0].price as price from modifier_group where array::any(modifiers.modifier.id ?? [], $parent.id)) as modifier_items'
-    ]
+  // NOTE: the previous extra selects used correlated scalar subqueries
+  // (`(SELECT ... where in = $parent.id)`) which the MySQL-backed query
+  // engine does not support yet — they made the whole page crash once any
+  // dish existed. The columns render empty until subqueries land.
+  const loadHook = useApi<SettingsData<Dish & { modifiers?: [] }>>(
+    Tables.dishes, [`deleted_at = none`], [], 0, 10, ['categories', 'items', 'items.item'], {}
   );
 
   useHqCatalogListScope(loadHook);
@@ -134,8 +134,8 @@ export const AdminDishes = () => {
       header: t('columns.modifierGroups'),
       cell: info => (
         <div className="flex gap-2 flex-wrap">
-          {info.row.original.modifiers.map((item, index) => (
-            <span className="tag" key={index}>{item.out.name}</span>
+          {(info.row.original.modifiers ?? []).map((item, index) => (
+            <span className="tag" key={index}>{item.out?.name}</span>
           ))}
         </div>
       ),
@@ -147,7 +147,7 @@ export const AdminDishes = () => {
       header: t('columns.usedAsModifier'),
       cell: info => (
         <div className="flex gap-2 flex-wrap">
-          {info.row.original.modifier_items.map((item, index) => (
+          {(info.row.original.modifier_items ?? []).map((item, index) => (
             <span className="tag" key={index}>{item.name} — {item.price}</span>
           ))}
         </div>
