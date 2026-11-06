@@ -16,6 +16,12 @@
     "items": "Món: {{count}}",
     "continued": "ĐƠN TIẾP"
   },
+  "empty": {
+    "noStation": "Chưa cấu hình trạm bếp nào, nên phiếu không có nơi để chuyển tới.",
+    "noStationFix": "Tạo trạm trong Quản lý → Bếp, rồi thêm các món trạm đó nấu (hoặc gán quy trình cho từng món ở Quản lý → Quy trình).",
+    "openAdmin": "Mở Quản lý",
+    "noTickets": "Không có phiếu đang chờ ở trạm này."
+  },
   "announcements": {
     "newOrder": "Đơn mới. {{context}}. {{number}}.",
     "addon": "Thêm món. {{context}}. {{number}}.",

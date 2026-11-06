@@ -231,6 +231,7 @@
   },
   "aiAssistant": {
     "open": "Open {{name}}",
+    "defaultName": "AI assistant",
     "title": "{{name}} - AI Assistant",
     "placeholder": "Ask about sales, inventory, manage—or request a create or update…",
     "reviewPrompt": "I've prepared {{count}} {{entity}} change(s) for you to review below.",

@@ -198,6 +198,15 @@ export const Payment = () => {
 
       const newLines = toCreateItems();
 
+      /**
+       * A line with no kitchen stage produces no `order_item_kitchen` row, so it
+       * never reaches the KDS and the cashier gets no signal. Count them here and
+       * warn after the order commits (see the toast below).
+       */
+      const unroutedLineCount = newLines.filter(
+        (line) => !line.isHold && (line.kitchenStages?.length ?? 0) === 0,
+      ).length;
+
       // Group kitchen print payload from stages embedded on dishes.
       for (const item of state.cart) {
         if (isPersistedCartItem(item) || item.isHold) continue;
@@ -370,6 +379,10 @@ export const Payment = () => {
             }
           }
         }).catch(() => undefined);
+      }
+
+      if (unroutedLineCount > 0) {
+        toast.warning(t('payment:errors.noKitchenRouting', { count: unroutedLineCount }));
       }
 
       return orderObj;

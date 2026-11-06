@@ -37,3 +37,18 @@ export interface Table extends ID, Name, Priority {
 }
 
 export const TABLE_FETCHES = ['floor', 'categories', 'payment_types', 'order_types'];
+
+/**
+ * Table tiles used to render `${name}${number}`, so "Bàn 1" + number "1" read
+ * as "Bàn 11". Join with a space, and skip the number when the name already
+ * ends with it — every surface that names a table goes through this.
+ */
+export const getTableLabel = (
+  table?: { name?: string | null; number?: string | number | null } | null,
+): string => {
+  const name = table?.name == null ? '' : String(table.name).trim();
+  const number = table?.number == null ? '' : String(table.number).trim();
+  if (!name) return number;
+  if (!number || name.endsWith(number)) return name;
+  return `${name} ${number}`;
+};

@@ -1,3 +1,4 @@
+import { getTableLabel } from "@/api/model/table.ts";
 import { Order, OrderStatus } from "@/api/model/order.ts";
 import { cn } from "@/lib/utils.ts";
 import {getInvoiceNumber, translateOrderStatus} from "@/lib/order.ts";
@@ -32,7 +33,7 @@ export const OrderHeader = ({
           <span className="p-3 text-lg rounded-xl min-w-[56px] flex justify-center items-center" style={{
             color: order?.table?.color,
             background: order?.table?.background
-          }}>{order?.table?.name}{order?.table?.number}</span>
+          }}>{getTableLabel(order?.table)}</span>
         )}
 
         <div className="flex flex-col items-start gap-1">

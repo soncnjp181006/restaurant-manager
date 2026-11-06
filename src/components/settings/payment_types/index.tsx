@@ -20,6 +20,7 @@ import {AiSparklesIcon} from "@/components/common/icons/ai-sparkles.tsx";
 import {createPaymentTypeImportConfig} from "@/components/settings/payment_types/payment-type.import.config.ts";
 import { HqCatalogBaseOnlyAction } from '@/components/settings/hq_catalog_base_only_action.tsx';
 import { useHqCatalogListScope } from '@/hooks/useHqCatalogListScope.ts';
+import { getPaymentTypeLabel } from '@/lib/payment/payment-type-labels.ts';
 
 export const AdminPaymentTypes = () => {
   const { t } = useTranslation(['admin', 'common', 'toast']);
@@ -45,7 +46,8 @@ export const AdminPaymentTypes = () => {
       header: t('columns.name')
     }),
     columnHelper.accessor("type", {
-      header: t('columns.type')
+      header: t('columns.type'),
+      cell: info => getPaymentTypeLabel(t, info.getValue())
     }),
     columnHelper.accessor("gateway", {
       header: t('columns.gateway'),

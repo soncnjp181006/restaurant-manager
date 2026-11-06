@@ -18,7 +18,7 @@ export function AssistantExamplesPanel({onClose, onSelectPrompt}: AssistantExamp
             {t("aiAssistant.examplesTitle")}
           </div>
           <div className="text-xs text-muted">
-            {t("aiAssistant.examplesHint", {name: AI_ASSISTANT_NAME})}
+            {t("aiAssistant.examplesHint", {name: AI_ASSISTANT_NAME || t("aiAssistant.defaultName")})}
           </div>
         </div>
         <button

@@ -4,7 +4,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import {useDB} from "@/api/db/db.ts";
 import {Tables} from "@/api/db/tables.ts";
 import {detectMimeType} from "@/utils/files.ts";
-import defaultImage from "@/assets/images/default-image.png";
+import defaultImage from "@/assets/images/default-dish.svg";
 import {useTranslation} from 'react-i18next';
 import {withCurrency} from "@/lib/utils.ts";
 import {roundInventory, withInventoryCurrency} from "@/lib/inventory/rounding.ts";

@@ -4,8 +4,10 @@
   "tableLocked": "{{user}} is already taking order on this table",
   "floor": {
     "switchTable": "Switch from Table {{table}} to another",
-    "reloadCachePrefix": "Press reload cache button from",
-    "settings": "settings",
+    "noFloors": "This terminal has no area or table to open a check on.",
+    "noFloorsFix": "Create an area and its tables in Admin, then reload the cache on this device if they already exist.",
+    "openAdmin": "Open Admin",
+    "reloadCache": "Reload cache",
     "ordersWarming": "Loading open checks… please wait a moment."
   },
   "guard": {

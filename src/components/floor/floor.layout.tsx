@@ -4,7 +4,7 @@ import {CSSProperties, useCallback, useEffect, useMemo, useState} from "react";
 import {Button} from "@/components/common/input/button.tsx";
 import {cn} from "@/lib/utils.ts";
 import {Tables} from "@/api/db/tables.ts";
-import {Table} from "@/api/model/table.ts";
+import {getTableLabel, Table} from "@/api/model/table.ts";
 import {FloorTable} from "@/components/settings/floors/layout/table.tsx";
 import {useDB} from "@/api/db/db.ts";
 import {useDatabase} from "@/hooks/useDatabase.ts";
@@ -16,6 +16,7 @@ import {postOrderTracking} from "@/lib/tracking.service.ts";
 import {terminalSyncService} from "@/infrastructure/sync/sync-service.ts";
 import {getClosingEnforcementStateLocal} from "@/lib/closing.guard.ts";
 import {Link} from "react-router";
+import {ADMIN} from "@/routes/restaurant-manager.ts";
 import {useTranslation} from "react-i18next";
 import i18n from "@/lib/i18n.ts";
 import {usePosOpenOrders} from "@/hooks/usePosOpenOrders.ts";
@@ -522,7 +523,7 @@ export const FloorLayout = () => {
       }}>
         <div className="h-[80px] bg-surface-elevated p-3 flex items-center">
           {state.switchTable && <div className="text-xl"><FontAwesomeIcon icon={faChair}/> {t('floor.switchTable', {
-            table: `${state?.table?.name ?? ''}${state?.table?.number ?? ''}`
+            table: getTableLabel(state?.table)
           })}</div>}
           {ordersWarming && (
             <div className="alert alert-info w-full" data-testid="floor-orders-warming">
@@ -544,8 +545,16 @@ export const FloorLayout = () => {
             </div>
           )}
           {!catalogLoading && floors?.length === 0 && (
-            <div className="flex items-center justify-center text-2xl">
-              {t('floor.reloadCachePrefix')}{" "}<span className="ml-2 btn btn-secondary"><Link to="/settings">{t('floor.settings')}</Link></span>
+            <div
+              className="max-w-[560px] mx-auto mt-6 rounded-xl border border-border bg-surface-elevated p-5 flex flex-col gap-3"
+              data-testid="floor-no-data"
+            >
+              <strong className="text-xl">{t('floor.noFloors')}</strong>
+              <span className="text-muted">{t('floor.noFloorsFix')}</span>
+              <div className="flex gap-3">
+                <Link to={ADMIN} className="btn btn-primary">{t('floor.openAdmin')}</Link>
+                <Link to="/settings" className="btn btn-secondary">{t('floor.reloadCache')}</Link>
+              </div>
             </div>
           )}
           {!catalogLoading && state.floor && (
@@ -573,7 +582,7 @@ export const FloorLayout = () => {
               data-testid="menu-floor-btn"
               className={
                 cn(
-                  "flex-1 relative outline-none pressable",
+                  "flex-1 max-w-[320px] relative outline-none pressable",
                   state?.floor && item.id.toString() === state?.floor?.id?.toString() && 'bg-gradient'
                 )
               }

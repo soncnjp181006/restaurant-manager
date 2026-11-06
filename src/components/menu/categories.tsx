@@ -39,7 +39,9 @@ export const MenuCategories = () => {
     }
   }, [categories, state.category]);
 
-  const categoryClasses = 'flex-auto whitespace-nowrap !h-[56px] pressable rounded-full px-5';
+  // Content-sized chips: `flex-auto` let a single category stretch across the
+  // whole bar, which reads as a full-width panel rather than a selector.
+  const categoryClasses = 'shrink-0 whitespace-nowrap !h-[56px] pressable rounded-full px-5';
   const categoryStyles = {
     '--padding': '0 1.25rem'
   } as CSSProperties;

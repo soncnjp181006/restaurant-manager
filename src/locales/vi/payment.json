@@ -15,7 +15,8 @@
     "numbersExhausted": "Hết mã đơn hàng đã đặt chỗ ngoại tuyến — hãy kết nối lại để tiếp tục",
     "invoicePendingSync": "Số hoá đơn đang chờ đồng bộ — hãy đợi đơn hàng trực tuyến trước khi gửi dữ liệu tài chính",
     "fiscalFailed": "Gửi dữ liệu tài chính thất bại",
-    "fireFailed": "Không thể gửi đi các món đang tạm giữ"
+    "fireFailed": "Không thể gửi đi các món đang tạm giữ",
+    "noKitchenRouting": "Không có phiếu bếp nào được tạo cho {{count}} món: món chưa gán quy trình và chưa có trạm bếp nào chứa món này. Hãy gán quy trình trong Quản lý → Quy trình, hoặc thêm món vào trạm ở Quản lý → Bếp."
   },
   "tracking": {
     "createOrder": "Tạo đơn hàng",

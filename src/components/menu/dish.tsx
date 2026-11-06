@@ -7,7 +7,7 @@ import {MenuDishModifiers} from "@/components/menu/modifiers.tsx";
 import {CartModifierGroup, MenuItem, MenuItemType} from "@/api/model/cart_item.ts";
 import {nanoid} from "nanoid";
 import {detectMimeType} from "@/utils/files.ts";
-import defaultImage from '@/assets/images/default-image.png';
+import defaultImage from '@/assets/images/default-dish.svg';
 import {useDB} from "@/api/db/db.ts";
 import {
   buildCartModifierGroups,
@@ -203,19 +203,19 @@ export const MenuDish = ({
         }}
       >
         <div
-          className="flex-1 bg-surface-elevated w-fit rounded-xl shadow-lg cursor-pointer menu-item active:shadow-none flex text-foreground active:text-warning"
+          className="flex-1 w-full min-h-[128px] bg-surface-elevated rounded-xl shadow-lg cursor-pointer menu-item active:shadow-none flex text-foreground active:text-warning"
           style={{
             '--padding': '0'
           } as any}
         >
-          <div className="flex-shrink-0 flex justify-start">
+          <div className="flex-shrink-0 self-center px-2">
             <img
               loading="lazy"
               src={imageSrc}
               alt={item.name}
-              className="rounded-xl rounded-r-none pointer-events-none h-full sm:w-[50px] md:w-[60px] lg:w-[90px] xl:w-[100px] object-cover"/>
+              className="rounded-lg pointer-events-none w-12 h-12 object-cover"/>
           </div>
-          <div className="flex flex-1 flex-col px-3 py-2">
+          <div className="flex flex-1 min-w-0 flex-col justify-between px-3 py-2">
             <span className="flex flex-row gap-2 mb-1 flex-wrap">
               {showDishNumber && item.number != null && String(item.number).trim() !== '' && (
                 <span
@@ -228,7 +228,7 @@ export const MenuDish = ({
               <span
                 className="bg-neutral-900 text-warning rounded-full border-2 border-warning py-1 px-3 text-sm font-bold">{withCurrency(price)}</span>
             </span>
-            <h6 className="text-ellipsis line-clamp-2 flex-shrink flex-grow-0 text-pretty text-foreground"
+            <h6 className="flex-1 min-h-0 text-ellipsis line-clamp-2 text-pretty text-foreground"
                 title={item.name}>
               {item.name}
             </h6>

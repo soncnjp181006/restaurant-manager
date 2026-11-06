@@ -1,3 +1,4 @@
+import {getTableLabel} from "@/api/model/table.ts";
 import {Order as OrderModel, OrderStatus} from "@/api/model/order.ts";
 import {calculateOrderTotal} from "@/lib/cart.ts";
 import React, {useMemo, useState} from "react";
@@ -77,7 +78,7 @@ export const OrderRow = ({
           color: order?.table?.color,
           background: order.table?.background
         }}>
-          {order?.table?.name}{order?.table?.number}
+          {getTableLabel(order?.table)}
         </div>
         <div className="flex justify-center items-center px-3 basis-[120px]">{order?.user?.first_name}</div>
         <div className="basis-[150px] p-4">

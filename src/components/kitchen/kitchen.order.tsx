@@ -1,3 +1,4 @@
+import { getTableLabel } from "@/api/model/table.ts";
 import { useState } from "react";
 import { Kitchen, KitchenOrderBatch } from "@/api/model/kitchen.ts";
 import { Order } from "@/api/model/order.ts";
@@ -138,7 +139,7 @@ export const KitchenOrder = ({
             <span className="p-2 text-base rounded-lg min-w-[48px] flex justify-center items-center shrink-0" style={{
               color: order?.table?.color,
               background: order?.table?.background
-            }}>{order?.table?.name}{order?.table?.number}</span>
+            }}>{getTableLabel(order?.table)}</span>
           )}
 
           <div className="flex flex-col items-start gap-0.5 min-w-0">

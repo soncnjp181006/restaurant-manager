@@ -1,4 +1,4 @@
-import { Table } from "@/api/model/table.ts";
+import { getTableLabel, Table } from "@/api/model/table.ts";
 import React, {CSSProperties, useCallback, useEffect, useMemo, useState} from "react";
 import { useMove } from 'react-aria';
 import { cn, withCurrency } from "@/lib/utils.ts";
@@ -182,7 +182,7 @@ export const FloorTable = ({
       {...moveProps}
       tabIndex={0}
       data-testid="floor-table"
-      data-table-name={`${table.name ?? ''}${table.number ?? ''}`}
+      data-table-name={getTableLabel(table)}
       style={{
         background: settings.background,
         color: settings.color,
@@ -243,7 +243,7 @@ export const FloorTable = ({
           )}
         </>
       )}
-      <span className="text-2xl">{table.name}{table.number}</span>
+      <span className="text-2xl">{getTableLabel(table)}</span>
       {order && (
         <span className="text-lg font-bold rounded-2xl py-[2px] px-2" style={{
           color: table.background,

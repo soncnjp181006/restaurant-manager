@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { getTableLabel } from '@/api/model/table.ts';
 import { useTranslation } from 'react-i18next';
 import { KitchenOrder } from '@/api/model/kitchen.ts';
 import { getInvoiceNumber } from '@/lib/order.ts';
@@ -29,9 +30,7 @@ type BatchSnapshot = {
 const orderContext = (group: KitchenOrder) => {
   const orderNumber = group.order ? getInvoiceNumber(group.order) : '-';
   const table = group.order?.table;
-  const tableLabel = table
-    ? `${table.name ?? ''}${table.number ?? ''}`.trim()
-    : '';
+  const tableLabel = table ? getTableLabel(table) : '';
   const context = tableLabel || group.order?.order_type?.name || orderNumber;
   return { orderNumber, context };
 };

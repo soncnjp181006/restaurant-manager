@@ -1,4 +1,6 @@
 import {Layout} from "@/screens/partials/layout.tsx";
+import {Link} from "react-router";
+import {ADMIN} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faClose} from "@fortawesome/free-solid-svg-icons";
@@ -558,14 +560,16 @@ export const KitchenScreen = () => {
     orders.forEach(group => {
       group.batches.forEach(batch => {
         batch.items.forEach(orderItem => {
-          const itemName = orderItem.order_item.item.name;
-          itemsMap.set(itemName, (itemsMap.get(itemName) ?? 0) + orderItem.order_item.quantity);
+          // Catalog references can dangle (dish deleted / demo row); the board
+          // must keep rendering instead of throwing on the summary modal.
+          const itemName = orderItem.order_item?.item?.name ?? t("announcements.itemFallback");
+          itemsMap.set(itemName, (itemsMap.get(itemName) ?? 0) + (orderItem.order_item?.quantity ?? 0));
         })
       });
     });
 
     return Array.from(itemsMap);
-  }, [orders]);
+  }, [orders, t]);
 
   const [dishesModal, setDishesModal] = useState(false);
   const speechUnlockedRef = useRef(false);
@@ -646,6 +650,26 @@ export const KitchenScreen = () => {
                   </div>
                 );
               })}
+              {boardTickets.length === 0 && (kitchens.length === 0 || ordersHydrated) && (
+                kitchens.length === 0 ? (
+                  <div
+                    className="max-w-[560px] rounded-xl border border-border bg-surface-elevated p-5 flex flex-col gap-3"
+                    data-testid="kitchen-no-station"
+                  >
+                    <strong className="text-lg">{t("empty.noStation")}</strong>
+                    <span className="text-muted">{t("empty.noStationFix")}</span>
+                    <Link
+                      to={ADMIN}
+                      className="btn btn-primary self-start"
+                    >{t("empty.openAdmin")}</Link>
+                  </div>
+                ) : (
+                  <div
+                    className="text-2xl text-muted p-3"
+                    data-testid="kitchen-no-tickets"
+                  >{t("empty.noTickets")}</div>
+                )
+              )}
             </div>
           </ScrollContainer>
 

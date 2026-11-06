@@ -92,7 +92,8 @@ export function AiAssistantWidget() {
   const [completionPulse, setCompletionPulse] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
 
-  const assistantName = AI_ASSISTANT_NAME;
+  // No VITE_AI_ASSISTANT_NAME set → translated generic label, not a demo name.
+  const assistantName = AI_ASSISTANT_NAME || t("common:aiAssistant.defaultName");
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -387,7 +388,9 @@ export function AiAssistantWidget() {
     >
       <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
         <span className="min-w-0 truncate text-sm font-semibold">
-          {t("common:aiAssistant.title", {name: assistantName})}
+          {AI_ASSISTANT_NAME
+            ? t("common:aiAssistant.title", {name: assistantName})
+            : t("common:aiAssistant.defaultName")}
         </span>
         <div className="flex shrink-0 items-center gap-3">
           <button

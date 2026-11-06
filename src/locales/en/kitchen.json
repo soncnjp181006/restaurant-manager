@@ -16,6 +16,12 @@
     "items": "Items: {{count}}",
     "continued": "CONTINUED"
   },
+  "empty": {
+    "noStation": "No kitchen station is configured, so tickets have nowhere to go.",
+    "noStationFix": "Create a station in Admin → Kitchen, then add the dishes it cooks (or give each dish a workflow in Admin → Workflow).",
+    "openAdmin": "Open Admin",
+    "noTickets": "No open tickets in this station."
+  },
   "announcements": {
     "newOrder": "New order. {{context}}. {{number}}.",
     "addon": "Addon. {{context}}. {{number}}.",

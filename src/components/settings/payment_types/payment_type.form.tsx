@@ -18,6 +18,7 @@ import {toRecordId} from "@/lib/utils.ts";
 import {useTranslation} from 'react-i18next';
 import i18n from '@/lib/i18n.ts';
 import {GATEWAY_CATALOG, getGatewayDescriptor} from "@/lib/payment/gateway-catalog.ts";
+import {getPaymentTypeLabel, PAYMENT_TYPE_VALUES} from "@/lib/payment/payment-type-labels.ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { TaxForm } from "@/components/settings/taxes/tax.form.tsx";
@@ -198,9 +199,7 @@ export const PaymentTypeForm = ({
     resolver: yupResolver(validationSchema)
   });
 
-  const types = [
-    'Cash', 'Card', 'Points', 'Remote'
-  ];
+  const types = PAYMENT_TYPE_VALUES;
   const gatewayModes = ['sandbox', 'live'];
   const selectedType = watch('type');
   const selectedGateway = watch('gateway');
@@ -371,7 +370,7 @@ export const PaymentTypeForm = ({
                     value={field.value}
                     onChange={field.onChange}
                     options={types.map(item => ({
-                      label: item,
+                      label: getPaymentTypeLabel(t, item),
                       value: item
                     }))}
                     isDisabled={structuralLocked}

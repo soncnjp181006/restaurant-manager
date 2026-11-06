@@ -1,4 +1,10 @@
 {
+  "paymentTypes": {
+    "Cash": "Cash",
+    "Card": "Card",
+    "Points": "Points",
+    "Remote": "Online gateway"
+  },
   "tabs": {
     "dishes": "Dishes",
     "menus": "Menus",

@@ -1,4 +1,10 @@
 {
+  "paymentTypes": {
+    "Cash": "Tiền mặt",
+    "Card": "Thẻ",
+    "Points": "Điểm",
+    "Remote": "Cổng thanh toán"
+  },
   "tabs": {
     "dishes": "Món",
     "menus": "Thực đơn",

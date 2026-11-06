@@ -1,3 +1,4 @@
+import {getTableLabel} from "@/api/model/table.ts";
 import {useAtom} from "jotai";
 import {appSettings, appState, closingEnforcementAtom} from "@/store/jotai.ts";
 import {Button} from "@/components/common/input/button.tsx";
@@ -220,7 +221,7 @@ export const MenuHeader = () => {
               onClick={switchTable}
               icon={faTable}
               data-testid="menu-table"
-            >{state?.table?.name}{state?.table?.number}</Button>
+            >{getTableLabel(state?.table)}</Button>
           )}
           <Button type="button"
                   className="btn btn-primary lg btn-flat"

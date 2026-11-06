@@ -231,6 +231,7 @@
   },
   "aiAssistant": {
     "open": "Mở {{name}}",
+    "defaultName": "Trợ lý AI",
     "title": "{{name}} - Trợ lý AI",
     "placeholder": "Hỏi về doanh thu, tồn kho, quản lý—hoặc yêu cầu tạo mới hay cập nhật…",
     "reviewPrompt": "Tôi đã chuẩn bị {{count}} thay đổi {{entity}} để bạn xem lại ở bên dưới.",
