@@ -71,7 +71,7 @@ This setting is:
 
 ### When Table Selection is Hidden
 - **No table prompt**: Users are not prompted to select a table when creating orders
-- **Simplified workflow**: Order creation process is faster for takeout or delivery orders
+- **Simplified workflow**: Order creation process is faster for takeout orders
 - **Table assignment optional**: Orders can be created without table assignment
 - **Floor plan access**: Floor plan interface may also be hidden or inaccessible
 
@@ -85,7 +85,6 @@ This setting is:
 
 ### Hide Table Selection
 - **Takeout-only operations**: Restaurants that only handle takeout orders
-- **Delivery-only operations**: Restaurants that only handle delivery orders
 - **Counter service**: Fast food or counter service restaurants
 - **Kiosk mode**: Self-service kiosks where table selection is not needed
 

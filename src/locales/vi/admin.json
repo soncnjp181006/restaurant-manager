@@ -159,7 +159,6 @@
     "used": "Đã dùng",
     "stackable": "Cộng dồn được",
     "firstOrderOnly": "Chỉ đơn đầu tiên",
-    "delivery": "Giao hàng",
     "applyToAll": "Áp dụng cho tất cả",
     "tables": "Bàn",
     "printers": "Máy in",
@@ -453,7 +452,6 @@
     "templatePrice": "Giá mẫu",
     "resetModifierPrices": "Đặt lại theo giá mẫu",
     "reset": "Đặt lại",
-    "deliveryOnly": "Chỉ giao hàng",
     "applyToAllSwitch": "Áp dụng cho tất cả",
     "showCategoryInMenu": "Hiện nhóm món này trong thực đơn",
     "importDishesTitle": "Nhập món từ CSV",
@@ -724,14 +722,8 @@
       "order_display": {
         "label": "Hiển thị đơn"
       },
-      "delivery": {
-        "label": "Giao hàng"
-      },
       "admin": {
         "label": "Quản trị"
-      },
-      "riders": {
-        "label": "Tài xế"
       },
       "tips": {
         "label": "Phân chia tiền tip"
@@ -784,7 +776,6 @@
       "summary.product_mix": "Báo cáo cơ cấu hàng bán",
       "summary.server_sales": "Doanh thu nhân viên phục vụ",
       "reports": "Báo cáo",
-      "reports.delivery_density": "Mật độ giao hàng",
       "reports.cash_closing": "Chốt tiền mặt",
       "reports.sales_dashboard": "Bảng điều khiển bán hàng",
       "reports.inventory_dashboard": "Bảng điều khiển tồn kho",
@@ -854,10 +845,6 @@
       "closing.edit": "Sửa chốt ca",
       "kitchen": "Bếp",
       "order_display": "Hiển thị đơn",
-      "delivery": "Giao hàng",
-      "delivery.orders": "Đơn giao hàng",
-      "delivery.areas": "Khu vực giao",
-      "delivery.settings": "Cài đặt giao hàng",
       "admin": "Quản trị",
       "admin.dishes": "Món",
       "admin.dishes.create": "Tạo món",

@@ -369,10 +369,6 @@ export class PosStore {
     return catalog.getOpenTablelessOrdersHydrated();
   }
 
-  getDeliveryOrdersHydrated(statuses?: string[]) {
-    return catalog.getDeliveryOrdersHydrated(statuses);
-  }
-
   getKitchenRowsSince(sinceIso: string) {
     return catalog.getKitchenRowsSince(sinceIso);
   }

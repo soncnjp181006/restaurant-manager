@@ -36,7 +36,7 @@ export const isHourlyLaborPrompt = (prompt: string): boolean => {
 
 export const isPrepTimePrompt = (prompt: string): boolean => {
   return /\b(prep|preparation|delay|ticket\s*time)\b/i.test(prompt)
-    && /\b(delivery|dine[\s-]?in|order\s+type)\b/i.test(prompt);
+    && /\b(dine[\s-]?in|take[\s_-]?away|order\s+type)\b/i.test(prompt);
 };
 
 export const isKitchenDelayPrompt = (prompt: string): boolean => {

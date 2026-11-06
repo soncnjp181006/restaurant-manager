@@ -112,7 +112,7 @@
     {
       "id": "extras",
       "title": "Extras",
-      "intro": "Configured extras (for example delivery fees tied to tables or payment types) show as rows under tip. There is no middle editor.",
+      "intro": "Configured extras (for example service charges tied to tables or payment types) show as rows under tip. There is no middle editor.",
       "steps": [
         "If extras apply to this order, each extra name and amount appears in the totals list.",
         "Tap an extra row to toggle it off (struck through / zero) or back on.",

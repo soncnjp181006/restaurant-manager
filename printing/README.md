@@ -237,7 +237,7 @@ The root [`docker-compose.yml`](../docker-compose.yml) and [`Dockerfile`](Docker
 ## Preview (no printer needed)
 
 - **GET http://localhost:3132/print/preview** — Tool page: choose print type, paste JSON (same shape as `/print`), click Preview. Opens the receipt layout in a new tab.
-- **POST http://localhost:3132/print/preview** — Same request body as `POST /print` (printers are ignored). Returns HTML that mimics the thermal receipt (temp, final, delivery, kitchen, summary).
+- **POST http://localhost:3132/print/preview** — Same request body as `POST /print` (printers are ignored). Returns HTML that mimics the thermal receipt (temp, final, kitchen, summary).
 
 Use this to check layout and content before printing.
 
@@ -247,7 +247,7 @@ Use this to check layout and content before printing.
 ```json
 {
   "printers": [ ... ],
-  "data": { "printType": "temp|summary|kitchen|delivery|final|refund|deletion|table|pulse", ... },
+  "data": { "printType": "temp|summary|kitchen|final|refund|deletion|table|pulse", ... },
   "config": {
     "printMode": "text",
     "paperWidthMm": 80,
@@ -293,18 +293,16 @@ Unknown `printMode` values fall back to `text`. New engines register in `lib/eng
 ]
 ```
 
-**config** (optional) — applies to temp, final, delivery, kitchen, summary:
+**config** (optional) — applies to temp, final, kitchen, summary:
 - **Margins:** `topMargin`, `bottomMargin`, `leftMargin`, `rightMargin` (string or number, lines/units)
 - **Branding:** `companyName`, `logo` (base64 or `data:image/png;base64,...`), `showCompanyName`
-- **Currency:** `currencySymbol` (default `$`) for amounts on temp, final, delivery
+- **Currency:** `currencySymbol` (default `$`) for amounts on temp, final
 - **Item columns:** `showItemName`, `showItemPrice`, `showItemQuantity`, `showItemTotal` — for summary / custom use
 - **VAT:** `showVatNumber`, `vatName`, `vatNumber`
 
 **temp** (Pre-Sale Bill, matches `presale.bill.tsx`): **CommonBillParts** only — Invoice#, date, table, user; items `Name xQty` / `$lineTotal`; **Items (n)**, **Tax (name rate%)**, **Discount**, **Service charges (X or X%)**, **extras**, **Tip** / **Tip %**; **Total**. No payments or Change.
 
 **final** (matches `final.bill.tsx` + `_common.bill.tsx`): CommonBillParts + **payments** (each `payment_type.name` / amount) + **Change** (`sum(payments) - total`). `data.duplicate: true` → title "Duplicate Final Bill".
-
-**delivery**: CommonBillParts + **Delivery Charges** (when `order.delivery.delivery_charges` or `order.delivery_charges`) + address/phone/notes + payments + Change.
 
 ## Drivers (escpos adapters)
 
@@ -317,14 +315,13 @@ Unknown `printMode` values fall back to `text`. New engines register in `lib/eng
 
 ## Print builders
 
-**temp, final, delivery, kitchen** — expect `data: { printType, order }` where `order` is an `Order` from `src/api/model/order.ts` (invoice_number, split, created_at, table, items, tax_amount, discount_amount, service_charge_amount, tip_amount, payments, customer, delivery, order_type, tags, …). Items are mapped from `order.items` (Dish name, quantity, price, comments); deleted/refunded/suspended items are omitted.
+**temp, final, kitchen** — expect `data: { printType, order }` where `order` is an `Order` from `src/api/model/order.ts` (invoice_number, split, created_at, table, items, tax_amount, discount_amount, service_charge_amount, tip_amount, payments, customer, order_type, tags, …). Items are mapped from `order.items` (Dish name, quantity, price, comments); deleted/refunded/suspended items are omitted.
 
 | printType | purpose |
 |-----------|---------|
 | `temp`    | Quick slip from `order` (items, totals) |
 | `final`   | Customer receipt from `order` (also sends cash drawer pulse) |
 | `pulse`   | Cash drawer pulse only (no receipt); uses same printers as `final` |
-| `delivery`| Delivery slip from `order` (delivery/customer address, phone, items, totals) |
 | `kitchen` | Kitchen ticket from `order` (table, items with comments, time, priority) |
 | `table`   | Generic table-only print; pass prebuilt `rows` with escpos `tableCustom` cells |
 

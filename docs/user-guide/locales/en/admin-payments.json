@@ -1,6 +1,6 @@
 {
   "title": "Payment types, taxes, and order types",
-  "intro": "Configure how orders are classified and settled: payment methods, tax rules, and service types (dine-in, delivery, etc.).",
+  "intro": "Configure how orders are classified and settled: payment methods, tax rules, and service types (dine-in, takeaway, etc.).",
   "sections": [
     {
       "id": "payment-types",
@@ -30,7 +30,7 @@
       "title": "Order types",
       "steps": [
         "Open the Order types tab.",
-        "Configure dine-in, takeaway, delivery, and other service modes.",
+        "Configure dine-in, takeaway, and other service modes.",
         "Order types drive kitchen routing, reporting, and default behaviors."
       ],
       "image": "admin-payments-order-types.png",
@@ -142,7 +142,7 @@
       "title": "Order type form",
       "steps": [
         "Open Payments → Order types.",
-        "Set name and behavior flags (dine-in, takeaway, delivery).",
+        "Set name and behavior flags (dine-in, takeaway).",
         "Save — used on tables, POS, and reporting."
       ],
       "image": "admin-payments-order-type-form.png",

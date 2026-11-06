@@ -36,7 +36,6 @@ import { TipsFilter } from "@/components/reports/filters/tips.filter.tsx";
 import {useSecurity} from "@/hooks/useSecurity.ts";
 import {SalesDashboardFilter} from "@/components/reports/filters/sales.dashboard.filter.tsx";
 import {InventoryDashboardFilter} from "@/components/reports/filters/inventory.dashboard.filter.tsx";
-import {DeliveryDensityFilter} from "@/components/reports/filters/delivery.density.filter.tsx";
 import {MergeOrdersFilter} from "@/components/reports/filters/merge.orders.filter.tsx";
 import {SplitOrdersFilter} from "@/components/reports/filters/split.orders.filter.tsx";
 import {TaxFilter} from "@/components/reports/filters/tax.filter.tsx";
@@ -83,7 +82,6 @@ const REPORT_PERMISSION_MODULES: Record<string, string> = {
   salesWeekly: 'reports.sales_weekly',
   tips: 'reports.tips',
   advancedSales: 'reports.advanced_sales',
-  deliveryDensity: 'reports.delivery_density',
   discount: 'reports.discount',
   tax: 'reports.tax',
   coupon: 'reports.coupon',
@@ -164,7 +162,6 @@ export const Reports = () => {
           { reportKey: 'salesWeekly', filter: <SalesWeeklyFilter /> },
           { reportKey: 'tips', filter: <TipsFilter /> },
           { reportKey: 'advancedSales', filter: <SalesAdvancedFilter /> },
-          { reportKey: 'deliveryDensity', filter: <DeliveryDensityFilter /> },
           { reportKey: 'discount', filter: <DiscountsFilter /> },
           { reportKey: 'tax', filter: <TaxFilter /> },
           { reportKey: 'coupon', filter: <CouponFilter /> },

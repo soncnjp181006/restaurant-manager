@@ -41,7 +41,7 @@ const buildGroups = (modules: string[], otherLabel: string): ModuleGroup[] => {
       }
     }
 
-    // Parent-only modules (e.g. Riders) still need a visible entry
+    // A module with no children still needs a visible entry when selected
     if (parentSelected && items.length === 0) {
       items.push({
         key: moduleKey,

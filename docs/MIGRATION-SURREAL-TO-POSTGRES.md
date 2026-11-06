@@ -192,11 +192,11 @@ PostgreSQL (docker) → 127.0.0.1:5434  (healthy)
 |------|------------------------|---------|
 | 1 | Mở `http://localhost:5173` | App render màn hình **Login** (PIN pad) |
 | 2 | Nhập PIN **1234** → đăng nhập | **Đăng nhập thành công** — bcrypt compare chạy trong dbproxy trên PostgreSQL; header hiện **Synced** (kết nối DB OK) |
-| 3 | App yêu cầu **Clock In Required** → bấm CLOCK IN | Vào thẳng hệ thống: Menu, Orders, Summary, Kitchen, Order Display, Delivery, Closing, Inventory, Manage, Reports, Tip Dist., Accounts, HR, Integrations, Settings |
+| 3 | App yêu cầu **Clock In Required** → bấm CLOCK IN | Vào thẳng hệ thống: Menu, Orders, Summary, Kitchen, Order Display, Closing, Inventory, Manage, Reports, Tip Dist., Accounts, HR, Integrations, Settings |
 | 4 | Mở **Orders** | **Dữ liệu thật từ PostgreSQL**: Order# 2 — Bàn 11, IN PROGRESS, "Cà phê sữa đá" ×2, Items (2), **₫58.000** |
 | 5 | Kiểm tra WRITE trong PG | `time_entry` mới (Clock In), `audit_log` (DEFINE EVENT tự chạy khi login), `sync_terminal`/`sync_number_reservation`/`sync_number_counter` — `change_log` tăng 2.270 → 2.299 row, toàn bộ do UI ghi |
 
-Ảnh chụp màn hình Orders (dữ liệu live từ PostgreSQL): trình duyệt in-app hiển thị order "Bàn 11 — Order# 2 / Delivery — IN PROGRESS — Cà phê sữa đá ×2 — ₫58.000".
+Ảnh chụp màn hình Orders (dữ liệu live từ PostgreSQL): trình duyệt in-app hiển thị order "Bàn 11 — Order# 2 — IN PROGRESS — Cà phê sữa đá ×2 — ₫58.000".
 
 > Kết luận: **App chạy được end-to-end trên PostgreSQL** — đọc (orders, users, catalog) lẫn ghi (clock-in, audit, sync handshake) đều qua dbproxy → PostgreSQL, không còn một byte dữ liệu nào đi qua SurrealDB.
 
@@ -226,9 +226,8 @@ PostgreSQL (docker) → 127.0.0.1:5434  (healthy)
 | **5555** | pin | Đã xác minh API (HTTP 200) |
 | **8888** | pin | Đã xác minh API (HTTP 200) |
 | **9999** | pin | Đã xác minh API (HTTP 200) — DB có 2 user trùng PIN 9999 (bản ghi đầu được dùng) |
-| `rider` (tab Form) | form | Mật khẩu dạng bcrypt hash từ data cũ — **không rõ plaintext**; cần reset nếu muốn dùng |
 
-Cách đặt lại mật khẩu cho tài khoản Form (nếu cần): hash mật khẩu mới bằng bcrypt (cost 10) rồi UPDATE vào `data->>'password'` của user tương ứng trong bảng `records`.
+Cách đặt lại mật khẩu cho tài khoản form (nếu cần): hash mật khẩu mới bằng bcrypt (cost 10) rồi UPDATE vào `data->>'password'` của user tương ứng trong bảng `records`.
 
 Thông tin kết nối PostgreSQL (máy dev, trùng `.env`):
 

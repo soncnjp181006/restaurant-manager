@@ -49,13 +49,6 @@ export function createExtraImportConfig({
       aliases: ["Apply to all"],
     },
     {
-      name: "delivery",
-      label: t("admin:columns.delivery"),
-      type: "boolean",
-      defaultValue: false,
-      aliases: ["Delivery"],
-    },
-    {
       name: "payment_types",
       label: t("admin:columns.paymentTypes"),
       type: "reference[]",
@@ -102,7 +95,7 @@ export function createExtraImportConfig({
     defaultMode: "create",
     db,
     extractionInstructions:
-      "Extract extras (service charges) with name, numeric value, apply_to_all, delivery, and optional pipe-separated payment types, order types, and tables. Do not invent names.",
+      "Extract extras (service charges) with name, numeric value, apply_to_all, and optional pipe-separated payment types, order types, and tables. Do not invent names.",
     onImportRow: async (record: ImportRecord, ctx) => {
       const values = record.values;
       const name = String(values.name ?? "").trim();
@@ -115,7 +108,6 @@ export function createExtraImportConfig({
         name,
         value,
         apply_to_all: parseImportBool(values.apply_to_all),
-        delivery: parseImportBool(values.delivery),
         payment_types: refIds(values.payment_types as ResolvedReference[]),
         order_types: refIds(values.order_types as ResolvedReference[]),
         tables: refIds(values.tables as ResolvedReference[]),
@@ -132,7 +124,7 @@ export function createExtraImportConfig({
           throw new Error(t("common:csvImport.unsupportedMatchField", {field}));
         }
         if (field === "value") return {column: "value", value: Number(value)};
-        if (field === "apply_to_all" || field === "delivery") {
+        if (field === "apply_to_all") {
           return {column: field, value: parseImportBool(value)};
         }
         return {column: field, value};

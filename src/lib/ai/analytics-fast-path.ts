@@ -137,7 +137,7 @@ export const tryAnalyticsFastPath = async (
       toolName: "get_prep_times_by_order_type",
       args: {...dateRange} as Record<string, unknown>,
       data,
-      hint: "Compare delivery vs dine-in using metricNote (ticket time).",
+      hint: "Compare dine-in vs takeaway using metricNote (ticket time).",
     };
   }
 

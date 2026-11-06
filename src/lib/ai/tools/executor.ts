@@ -330,7 +330,6 @@ export const executeAiReportTool = async (
       return getOrders(db, {
         ...parseOptionalDateRangeArgs(args),
         statuses: extractOrderStatusesFromArgs(args),
-        deliveryOnly: args.deliveryOnly === true || args.deliveryOnly === "true",
         limit: args.limit ? Number(args.limit) : 50,
       });
 

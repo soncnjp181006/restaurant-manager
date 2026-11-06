@@ -8,6 +8,5 @@ export interface Extra extends ID, Name {
   payment_types?: PaymentType[]
   order_types?: OrderType[]
   tables?: Table[]
-  delivery?: boolean
   apply_to_all?: boolean
 }

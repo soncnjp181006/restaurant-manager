@@ -14,7 +14,7 @@ Order display is a customer-facing board: orders in progress on one side and rea
 ### Filters
 
 1. Status filter is multi-select (defaults to In Progress).
-2. Order type filter limits which service types appear (dine-in, delivery, etc.).
+2. Order type filter limits which service types appear (dine-in, takeaway, etc.).
 3. Toggle sidebar shows or hides the left navigation on this screen.
 
 
@@ -25,7 +25,7 @@ Order display is a customer-facing board: orders in progress on one side and rea
 Orders move to Ready when kitchen workflow marks them complete. Ready orders may play a celebration when they first appear.
 
 1. Preparing tiles show orders still being made.
-2. Ready tiles show orders waiting for pickup or runner delivery.
+2. Ready tiles show orders waiting for pickup.
 3. Each tile shows order number and key header details.
 
 

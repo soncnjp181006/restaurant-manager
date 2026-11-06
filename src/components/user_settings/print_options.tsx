@@ -19,7 +19,6 @@ interface FormValues {
   copies_final: number;
   copies_refund: number;
   copies_kitchen: number;
-  copies_delivery: number;
   copies_summary: number;
   max_temp: number;
   max_final: number;
@@ -49,7 +48,6 @@ export const PrintOptionsSettingsCard = () => {
       copies_final: DEFAULT_PRINT_OPTIONS.copies.final,
       copies_refund: DEFAULT_PRINT_OPTIONS.copies.refund,
       copies_kitchen: DEFAULT_PRINT_OPTIONS.copies.kitchen,
-      copies_delivery: DEFAULT_PRINT_OPTIONS.copies.delivery,
       copies_summary: DEFAULT_PRINT_OPTIONS.copies.summary,
       max_temp: DEFAULT_PRINT_OPTIONS.max_attempts.temp,
       max_final: DEFAULT_PRINT_OPTIONS.max_attempts.final,
@@ -71,7 +69,6 @@ export const PrintOptionsSettingsCard = () => {
         final: clampCopies(values.copies_final),
         refund: clampCopies(values.copies_refund),
         kitchen: clampCopies(values.copies_kitchen),
-        delivery: clampCopies(values.copies_delivery),
         summary: clampCopies(values.copies_summary),
       },
       max_attempts: {
@@ -119,7 +116,6 @@ export const PrintOptionsSettingsCard = () => {
       copies_final: clampCopies(values.copies.final),
       copies_refund: clampCopies(values.copies.refund),
       copies_kitchen: clampCopies(values.copies.kitchen),
-      copies_delivery: clampCopies(values.copies.delivery),
       copies_summary: clampCopies(values.copies.summary),
       max_temp: clampAttempts(values.max_attempts.temp),
       max_final: clampAttempts(values.max_attempts.final),
@@ -131,7 +127,6 @@ export const PrintOptionsSettingsCard = () => {
     { name: "copies_final", labelKey: "printOptions.copies.final" },
     { name: "copies_refund", labelKey: "printOptions.copies.refund" },
     { name: "copies_kitchen", labelKey: "printOptions.copies.kitchen" },
-    { name: "copies_delivery", labelKey: "printOptions.copies.delivery" },
     { name: "copies_summary", labelKey: "printOptions.copies.summary" },
   ];
 

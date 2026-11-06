@@ -14,7 +14,6 @@ const CHAPTER_KEYS = [
   'summary',
   'kitchen',
   'order-display',
-  'delivery',
   'closing',
   'reports-ops',
   'tips-manager',
@@ -136,49 +135,6 @@ const T = {
             'Cada mosaico muestra número y datos clave.',
           ],
           caption: 'Grillas de mosaicos.',
-        },
-      },
-    },
-    delivery: {
-      title: 'Delivery',
-      intro: 'Delivery ayuda a rastrear pedidos en mapa, gestionar zonas y configurar opciones.',
-      sections: {
-        overview: {
-          title: 'Centro de delivery',
-          steps: [
-            'Pulse Delivery en la barra lateral.',
-            'Las pestañas cambian entre Pedidos, Zonas y Ajustes.',
-            'La pestaña Delivery muestra mapa y lista de pedidos.',
-          ],
-          caption: 'Pantalla Delivery con pestañas.',
-        },
-        map: {
-          title: 'Mapa y lista',
-          steps: [
-            'El mapa muestra zonas y marcadores si hay coordenadas.',
-            'Pulse marcador o fila para abrir el pedido.',
-            'Sin pedidos abiertos, la lista está vacía.',
-          ],
-          caption: 'Mapa y barra lateral de pedidos.',
-        },
-        areas: {
-          title: 'Zonas de delivery',
-          intro: 'Defina zonas geográficas para rutas y reportes.',
-          steps: [
-            'Abra la pestaña Zonas.',
-            'Dibuje o gestione polígonos en el mapa.',
-            'Guarde si su rol permite editar.',
-          ],
-          caption: 'Pestaña de zonas.',
-        },
-        settings: {
-          title: 'Ajustes de delivery',
-          steps: [
-            'Abra la pestaña Ajustes.',
-            'Configure centro del mapa, tarifas y opciones.',
-            'Guarde al terminar (puede pedir aprobación).',
-          ],
-          caption: 'Pestaña de ajustes.',
         },
       },
     },

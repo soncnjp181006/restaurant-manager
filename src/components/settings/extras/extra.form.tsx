@@ -50,7 +50,6 @@ const validationSchema = yup.object({
     label: yup.string(),
     value: yup.string(),
   })).default([]),
-  delivery: yup.boolean().default(false),
   apply_to_all: yup.boolean().default(false),
 });
 
@@ -93,7 +92,6 @@ export const ExtraForm = ({ open, onClose, data }: Props) => {
       payment_types: [],
       order_types: [],
       tables: [],
-      delivery: false,
       apply_to_all: false,
     });
   };
@@ -121,7 +119,6 @@ export const ExtraForm = ({ open, onClose, data }: Props) => {
           label: `${item.name}${item.number}`,
           value: item.id.toString(),
         })) || [],
-        delivery: !!data.delivery,
         apply_to_all: !!(src.apply_to_all ?? data.apply_to_all),
       });
     })();
@@ -310,15 +307,6 @@ export const ExtraForm = ({ open, onClose, data }: Props) => {
           </div>
 
           <div className="flex flex-col gap-3 mb-5">
-            <Controller
-              name="delivery"
-              control={control}
-              render={({ field }) => (
-                <Switch checked={field.value} onChange={field.onChange} disabled={structuralLocked}>
-                  {t('forms.deliveryOnly')}
-                </Switch>
-              )}
-            />
             <Controller
               name="apply_to_all"
               control={control}

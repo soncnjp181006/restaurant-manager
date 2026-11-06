@@ -7,9 +7,9 @@ Configure which printers are used for different types of receipts and documents 
 ## Features
 
 - **Multi-printer support**: Assign multiple printers to each print type
-- **Five print categories (user)**: Temp, final, refund, delivery, and summary
+- **Four print categories (user)**: Temp, final, refund, and summary
 - **System printers (this device)**: Temp, final, refund, and summary stored in the browser; ideal for shared terminals
-- **Use system printers switch**: Prefer this device’s assignments over the logged-in user’s (except delivery)
+- **Use system printers switch**: Prefer this device’s assignments over the logged-in user’s
 - **User-specific settings**: Each user can have their own printer configuration in the database
 - **Global fallback**: If no user-specific setting exists (and system printers are off), uses global configuration
 - **Dynamic printer list**: Automatically loads available printers from the system
@@ -20,7 +20,7 @@ Configure which printers are used for different types of receipts and documents 
 2. Locate the Printer Settings card
 3. Optionally enable **Use system printers on this device**
 4. Under **System printers**, select printers for temp, final, refund, and summary (saved immediately in this browser)
-5. Under **User printers**, for each print type (including delivery):
+5. Under **User printers**, for each print type:
    - Click the dropdown field
    - Select one or more printers from the available list
 6. Click **Save printer settings** to save user assignments to the database
@@ -29,7 +29,6 @@ Configure which printers are used for different types of receipts and documents 
 ## Business Rules
 
 - **System printers priority**: When the switch is on, temp/final/refund/summary use this browser’s system assignments (no user/global fallback if empty)
-- **Delivery always user/global**: Delivery print is never terminal-scoped; it always resolves user setting then global
 - **User-specific priority**: When system printers are off, user-specific settings override global settings
 - **Global fallback**: If no user-specific configuration exists (and system mode is off), the system uses global settings
 - **Multi-printer support**: You can select multiple printers for each print type
@@ -54,10 +53,9 @@ Configure which printers are used for different types of receipts and documents 
 - **Purpose**: Terminal-scoped printer routing for shared POS browsers
 - **Type**: Multi-select dropdowns
 - **Storage**: Browser only
-- **Not included**: Delivery
 
-### Temp / Final / Refund / Delivery / Summary (user)
-- **Purpose**: Per-user printer routing (delivery always uses this path)
+### Temp / Final / Refund / Summary (user)
+- **Purpose**: Per-user printer routing
 - **Type**: Multi-select dropdown
 - **Options**: All available printers in the system
 - **Default**: None (no printers selected); falls back to global when unset
@@ -78,7 +76,6 @@ Configure which printers are used for different types of receipts and documents 
 - `temp_print_printers` - Array of printer IDs for temp prints
 - `final_print_printers` - Array of printer IDs for final prints
 - `refund_print_printers` - Array of printer IDs for refund prints
-- `delivery_print_printers` - Array of printer IDs for delivery prints
 - `summary_print_printers` - Array of printer IDs for summary prints
 
 Each setting contains:

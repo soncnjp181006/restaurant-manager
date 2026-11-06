@@ -407,15 +407,11 @@ export const AI_REPORT_TOOLS: OpenAIToolDefinition[] = [
     type: "function",
     function: {
       name: "get_orders",
-      description: "List orders filtered by status and/or delivery channel. For delivery orders use deliveryOnly=true. 'Pending delivery orders' means delivery orders awaiting fulfillment (status Pending or In Progress), NOT a date phrase. For a specific order id / full order dossier use get_order_detail instead.",
+      description: "List orders filtered by status. 'Pending orders' means orders awaiting fulfillment (status Pending or In Progress), NOT a date phrase. For a specific order id / full order dossier use get_order_detail instead.",
       parameters: {
         type: "object",
         properties: {
           ...dateRangeProps,
-          deliveryOnly: {
-            type: "boolean",
-            description: "When true, only orders with a delivery object (online/delivery channel)",
-          },
           statuses: {
             type: "array",
             items: {type: "string"},
@@ -608,7 +604,7 @@ export const AI_REPORT_TOOLS: OpenAIToolDefinition[] = [
     type: "function",
     function: {
       name: "get_server_ticket_times",
-      description: "Server speed rankings using ticket time (created_at to completed_at). Returns fastest/slowest servers, turnaround vs check size. Not rider delivery time.",
+      description: "Server speed rankings using ticket time (created_at to completed_at). Returns fastest/slowest servers, turnaround vs check size.",
       parameters: {
         type: "object",
         properties: {
@@ -703,7 +699,7 @@ export const AI_REPORT_TOOLS: OpenAIToolDefinition[] = [
     type: "function",
     function: {
       name: "get_prep_times_by_order_type",
-      description: "Average ticket time (created to completed) by order type — e.g. delivery vs dine-in.",
+      description: "Average ticket time (created to completed) by order type — e.g. dine-in vs takeaway.",
       parameters: {type: "object", properties: dateRangeProps},
     },
   },

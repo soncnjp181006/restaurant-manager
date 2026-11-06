@@ -202,7 +202,7 @@ Bật mirror tracking: `docker compose -f docker-compose.yml -f docker-compose.a
 
 ### Tài khoản đăng nhập (dữ liệu đã migrate, không đổi)
 
-PIN trên màn hình Login: **1234** (đã xác minh lại bằng UI), `0000`, `5555`, `8888`, `9999` (đã xác minh qua API). Tài khoản Form `rider` vẫn là bcrypt hash không rõ plaintext — cần reset nếu muốn dùng.
+PIN trên màn hình Login: **1234** (đã xác minh lại bằng UI), `0000`, `5555`, `8888`, `9999` (đã xác minh qua API).
 
 ### Thông tin kết nối MySQL (máy dev)
 

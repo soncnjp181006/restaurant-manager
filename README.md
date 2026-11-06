@@ -1,8 +1,8 @@
 # Restaurant Manager — AI-Powered Restaurant POS & Management System
 
-**Offline-first, source-available restaurant POS software** for ordering, kitchen display (KDS), inventory, recipes, staff scheduling, payroll, accounting, delivery, fiscalization, and AI-powered restaurant analytics — delivered by **Kashif**, Restaurant Manager's in-app AI assistant — in one platform.
+**Offline-first, source-available restaurant POS software** for ordering, kitchen display (KDS), inventory, recipes, staff scheduling, payroll, accounting, fiscalization, and AI-powered restaurant analytics — with a built-in AI assistant — in one platform.
 
-Restaurant Manager is a **source-available restaurant POS and restaurant management system** built for modern food businesses. It combines point-of-sale ordering, kitchen display systems (KDS), inventory and recipe management, staff scheduling and payroll, accounting, delivery, fiscalization (FBR / PRA), and AI restaurant analytics powered by **Kashif** in one **offline-first** platform.
+Restaurant Manager is a **source-available restaurant POS and restaurant management system** built for modern food businesses. It combines point-of-sale ordering, kitchen display systems (KDS), inventory and recipe management, staff scheduling and payroll, accounting, fiscalization (FBR / PRA), and AI restaurant analytics powered by **Kashif** in one **offline-first** platform.
 
 React · TypeScript · Vite · Bun · MySQL · WebSockets · IndexedDB
 
@@ -22,12 +22,12 @@ Restaurant Manager is designed for **restaurants, cafés, coffee shops, bakeries
 
 ## Why Restaurant Manager?
 
-Traditional restaurant POS software often depends on cloud connectivity and separate tools for inventory, accounting, staff, delivery, and analytics. Restaurant Manager combines those workflows in one **offline-first, extensible** platform.
+Traditional restaurant POS software often depends on cloud connectivity and separate tools for inventory, accounting, staff, and analytics. Restaurant Manager combines those workflows in one **offline-first, extensible** platform.
 
 - **Source-available** — inspect, modify, extend, and self-host under PSAL
 - **Offline-first** — keep selling during internet outages; sync when back online
 - **AI-native** — **Kashif** for natural-language reporting, inventory/staff forecasts, and proposed configuration changes; plus AI Import for bulk file uploads
-- **Real-time** — WebSocket sync across POS, KDS, manager, and delivery apps
+- **Real-time** — WebSocket sync across POS, KDS, and manager apps
 - **Restaurant-specific** — tables, seats, modifiers, recipes, kitchen production, buffet, fiscalization
 - **Extensible** — event-driven Integration Manager for fiscal, accounting, logging, and more
 
@@ -39,7 +39,7 @@ Traditional restaurant POS software often depends on cloud connectivity and sepa
 
 **Where Kashif appears**
 
-- **Floating assistant** — Manage, Inventory, Reports, HR, Accounts, Integrations, Tips, and Clock (hidden on cashier POS, KDS, and delivery screens)
+- **Floating assistant** — Manage, Inventory, Reports, HR, Accounts, Integrations, Tips, and Clock (hidden on cashier POS and KDS screens)
 - **AI Report** — dedicated reporting page with tables, charts, and analysis formats
 
 **Ask Kashif (read-only, live data)**
@@ -95,9 +95,9 @@ Write proposals use the same review-and-confirm pipeline as **AI Import** — Ka
 - **Order lifecycle** — split / merge / cancel / transfer / refunds
 - **Modifiers** — groups, nested modifiers, price overrides, min/max rules
 - **Visual menu builder** — dishes, categories, multi-category, tax rules
-- **Multiple menus** — breakfast/lunch/dinner, dynamic pricing, delivery menu link
+- **Multiple menus** — breakfast/lunch/dinner, dynamic pricing
 - **Extras & service charges** — fixed/%, rule-based by order type / payment / table
-- **Discounts & coupons** — fixed/%, Buy X Get Y, payment-type promos, delivery coupons
+- **Discounts & coupons** — fixed/%, Buy X Get Y, payment-type promos; usage limits, time windows, first-order rules
 - **Closing cycles** — auto check close, shift/day close, enforcement + notifications
 - **Tips** — pooling, staff rules, shift allocation
 - **Waiter app** — mobile order entry, table select, touch-optimized
@@ -129,7 +129,7 @@ Write proposals use the same review-and-confirm pipeline as **AI Import** — Ka
 - **Pay profiles** — hourly, daily wage, or flat period (monthly/weekly/contract)
 - **Payroll runs** — preview, overrides, approve/post
 - **Org structure** — employees, departments, positions, cost centers, branch assignment
-- **RBAC** — admin, manager, waiter, kitchen, delivery, custom roles; protected modules (web + mobile)
+- **RBAC** — admin, manager, waiter, kitchen, custom roles; protected modules (web + mobile)
 
 ### Restaurant accounting & payments
 
@@ -138,11 +138,6 @@ Write proposals use the same review-and-confirm pipeline as **AI Import** — Ka
 - **Payment gateways** — Stripe, PayPal, JazzCash, M-Pesa, Telebirr, Razorpay (sandbox/live, webhooks)
 - **QuickBooks Online** — OAuth; sync sales, payments, customers, refunds; journals for inventory/payroll/waste; import COA / vendors / tax codes
 - **Fiscal (Pakistan)** — **FBR** and **PRA** invoice submission at settlement (API-proxied); receipt logos / QR
-
-### Restaurant delivery management
-
-- **Delivery app** — dispatch, driver tracking, Google Maps, realtime customer updates
-- **Smart coupons** — fixed/%/free shipping, usage limits, time windows, first-order rules
 
 ### Integration Manager
 
@@ -164,7 +159,7 @@ Write proposals use the same review-and-confirm pipeline as **AI Import** — Ka
 
 - **Offline-first** — IndexedDB + realtime WebSocket sync; automatic cloud backups
 - **Auth gateway** — session JWT; Surreal credentials not shipped to browser ([GATEWAY.md](docs/security/GATEWAY.md))
-- **ESC/POS printing** — USB, Serial, Network, Bluetooth; kitchen tickets, receipts, delivery slips, pre-sale bills, sales summaries; custom logos
+- **ESC/POS printing** — USB, Serial, Network, Bluetooth; kitchen tickets, receipts, pre-sale bills, sales summaries; custom logos
 - **Multi-lingual** — English, Tiếng Việt; live language switch
 - **Tech stack** — React + TypeScript, Bun + Vite, MySQL (via the wire-compatible dbproxy service), WebSockets
 

@@ -429,7 +429,6 @@ const extraFields: WriteFieldSpec[] = [
   {name: "name", type: "string", requiredOnCreate: true},
   {name: "value", type: "number", requiredOnCreate: true},
   {name: "apply_to_all", type: "boolean"},
-  {name: "delivery", type: "boolean"},
   {name: "tables", type: "string[]", description: "Table numbers when not apply_to_all"},
   {name: "payment_types", type: "string[]"},
   {name: "order_types", type: "string[]"},
@@ -476,7 +475,7 @@ const printerFields: WriteFieldSpec[] = [
 ];
 
 const printSettingsFields: WriteFieldSpec[] = [
-  {name: "key", type: "string", requiredOnCreate: true, description: "Temp Print, Final Print, Kitchen Print, Summary Print, or Delivery Print"},
+  {name: "key", type: "string", requiredOnCreate: true, description: "Temp Print, Final Print, Kitchen Print, or Summary Print"},
   {name: "top_margin", type: "number"},
   {name: "bottom_margin", type: "number"},
   {name: "left_margin", type: "number"},

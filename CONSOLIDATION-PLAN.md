@@ -131,6 +131,8 @@ flowchart LR
 
 15 module: `menu, orders, summary, kitchen, order_display, delivery, closing, inventory, admin, reports, tips, accounts, hr, integrations, settings`. Cờ `VITE_APP_MODULES` / `VITE_APP_MODULES_EXCLUDE` được nạp **lúc build** (`vite.config.ts:14-17` → `define`), tiêu thụ ở `lazy-screens.ts` (66 tham chiếu) và `app.routes.tsx` (66 tham chiếu). Tắt module ⇒ không tạo chunk, không đăng ký route, ẩn sidebar/tab.
 
+*(Đo ngày 2026-10-30. Từ 2026-11-06 module `delivery` bị gỡ hoàn toàn theo yêu cầu nghiệp vụ — danh sách build hiện còn 14 module, và `delivery` không còn là một giá trị hợp lệ của hai cờ trên.)*
+
 Hệ quả cho kế hoạch: gating chỉ cắt được **chunk**, không cắt được **tree**. Toàn bộ `src/api/**`, component, locale key vẫn nằm trong repo. Muốn giảm dung lượng thật sự phải xoá file, không phải tắt cờ.
 
 ### 1.5 Bản đồ khối lượng
@@ -509,7 +511,11 @@ Năm quyết định này thay đổi phạm vi, không suy ra được từ cod
 
 ## 7. Những gì kế hoạch này KHÔNG làm
 
-Không xoá tính năng nghiệp vụ (HR, accounts, inventory, delivery, promotions...). Không đổi UI framework: `antd` chỉ chạm 7 file nhưng thay nó nghĩa là viết lại họ date/time picker cho 30 file consumer — đó là redesign, để riêng ở backlog, không lẫn vào thu gọn. Không đổi DB sang engine khác: SurrealDB vẫn là engine của mọi bảng nghiệp vụ và mọi đường đọc; PostgreSQL chỉ xuất hiện như bản sao phân tích của riêng log tracking (Phase 5, ADR 0006) và không phục vụ màn hình nào. Không rewrite 12 922 LOC `src/lib/ai`. Không đụng logic tiền (payment/`fiscal`) ngoài việc chuyển sang thư viện dùng chung.
+Không xoá tính năng nghiệp vụ (HR, accounts, inventory, delivery, promotions...).
+
+*(Ngoại lệ đã thực hiện ngày 2026-11-06: `delivery` bị gỡ khỏi app, tài liệu, thiết bị in và schema theo yêu cầu trực tiếp — `migrations/2026_11_06_remove_delivery.surql`. Ràng buộc này vẫn còn hiệu lực với HR, accounts, inventory, promotions.)*
+
+Không đổi UI framework: `antd` chỉ chạm 7 file nhưng thay nó nghĩa là viết lại họ date/time picker cho 30 file consumer — đó là redesign, để riêng ở backlog, không lẫn vào thu gọn. Không đổi DB sang engine khác: SurrealDB vẫn là engine của mọi bảng nghiệp vụ và mọi đường đọc; PostgreSQL chỉ xuất hiện như bản sao phân tích của riêng log tracking (Phase 5, ADR 0006) và không phục vụ màn hình nào. Không rewrite 12 922 LOC `src/lib/ai`. Không đụng logic tiền (payment/`fiscal`) ngoài việc chuyển sang thư viện dùng chung.
 
 Trạng thái áp dụng (đo lại ngày 2026-10-30, sau ADR 0007): Phase 1 đã xong trong working tree (xem ghi chú ở đầu Phase 1). Phase 0 xong toàn bộ phần cổng: `eslint.config.js` flat config nên `npm run lint` chạy được và **0 error / 278 warning**; `package-lock.json` sinh lại nên `npm ci --dry-run` và `npm install --dry-run` exit 0; **`tsc --noEmit` 0 lỗi** (từ 183); **`vitest run` 77 file / 566 pass / 0 fail** (từ 12 test đỏ); `npm run build` exit 0; ba cổng i18n (`i18n:verify`, `i18n:verify-keys`, `i18n:pair`) exit 0 — 22 namespace, 4 634 khoá lá `vi`, parity en↔vi OK. Cổng sidecar chạy thật: `node --test gateway/src` **59/59 pass** (cần `npm install` trong `gateway/` vì `jose` không có ở root), `npm run test:tracking` 26 pass + 2 skip hiển thị khi không có Postgres, `node --test migrations/scripts/*.test.cjs` exit 0. `docker compose config -q` exit 0 cho cả stack mặc định lẫn stack ghép analytics. Phase 2, 3 chưa làm. Phase 5 (Postgres mirror) đã làm. §4 (CI/CD + deploy) **hoãn theo quyết định local-only ở §4.0**; riêng hạ tầng key đã được gỡ giá trị commit (xem bảng §4.3).
 

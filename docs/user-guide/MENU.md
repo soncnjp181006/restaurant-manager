@@ -36,7 +36,7 @@ The ordering screen shows a menu header and dishes on the left, and the cart on 
 
 ### Choose an order type
 
-1. On the right side of the header, select Dine-in, Takeaway, Delivery, or other configured types.
+1. On the right side of the header, select Dine-in, Takeaway, or other configured types.
 2. The active order type applies to kitchen routing and pricing rules when configured.
 
 

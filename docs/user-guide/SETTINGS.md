@@ -63,7 +63,7 @@ When enabled, printed receipt text follows the terminal language settings where 
 
 1. Open the Default printers card.
 2. Optionally enable system printers for this browser/terminal.
-3. Assign printers for temp, final, refund, delivery, and summary prints.
+3. Assign printers for temp, final, refund, and summary prints.
 4. Save printer settings when finished.
 
 

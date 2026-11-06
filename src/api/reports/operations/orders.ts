@@ -46,16 +46,12 @@ export const normalizeOrderStatus = (status: string): string => {
 export interface GetOrdersOptions extends DateRangeFilter {
   statuses?: string[];
   limit?: number;
-  /** Only orders with a delivery payload (online / delivery channel). */
-  deliveryOnly?: boolean;
 }
 
-const DELIVERY_ORDER_CONDITION = "delivery != NONE AND delivery != {} AND delivery != []";
-
-const resolveOrderFetches = (deliveryOnly?: boolean, statuses?: string[]) => {
+const resolveOrderFetches = (statuses?: string[]) => {
   const openStatuses = new Set<string>([OrderStatus.Pending, OrderStatus["In Progress"]]);
-  const needsFullFetch = deliveryOnly
-    || (statuses?.some(status => openStatuses.has(normalizeOrderStatus(status))) ?? false);
+  const needsFullFetch =
+    statuses?.some(status => openStatuses.has(normalizeOrderStatus(status))) ?? false;
   const base = needsFullFetch ? ORDER_FETCHES : ORDER_PAYMENT_FETCHES;
   return [...base, "floor"];
 };
@@ -74,12 +70,6 @@ const formatOrderRow = (order: Order) => {
   });
   const user = order.user as {first_name?: string; last_name?: string} | undefined;
   const customer = order.customer as {name?: string; phone?: string | number} | undefined;
-  const delivery = order.delivery as {
-    state?: string;
-    address?: string;
-    place?: string;
-    rider?: {first_name?: string; last_name?: string};
-  } | undefined;
   const table = order.table as {name?: string; number?: string | number} | undefined;
   const orderType = order.order_type as {name?: string} | undefined;
   const jsDate = toJsDate(order.created_at as Parameters<typeof toJsDate>[0]);
@@ -92,11 +82,6 @@ const formatOrderRow = (order: Order) => {
     server: user ? `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim() : undefined,
     customer: customer?.name,
     customerPhone: customer?.phone != null ? String(customer.phone) : undefined,
-    deliveryState: delivery?.state,
-    deliveryAddress: delivery?.place ?? delivery?.address,
-    rider: delivery?.rider
-      ? `${delivery.rider.first_name ?? ""} ${delivery.rider.last_name ?? ""}`.trim()
-      : undefined,
     table: table?.name ?? (table?.number != null ? String(table.number) : undefined),
     orderType: orderType?.name,
     itemCount: getOrderFilteredItems(order).length,
@@ -107,13 +92,9 @@ const formatOrderRow = (order: Order) => {
 };
 
 export const getOrders = async (db: DbClient, options: GetOrdersOptions = {}) => {
-  const {limit = 50, statuses, deliveryOnly = false, ...dateRange} = options;
+  const {limit = 50, statuses, ...dateRange} = options;
   const conditions: string[] = [];
   const params: Record<string, string> = {};
-
-  if (deliveryOnly) {
-    conditions.push(DELIVERY_ORDER_CONDITION);
-  }
 
   if (statuses?.length) {
     const normalized = statuses.map(normalizeOrderStatus);
@@ -134,7 +115,7 @@ export const getOrders = async (db: DbClient, options: GetOrdersOptions = {}) =>
     ${conditions.length ? `WHERE ${conditions.join(" AND ")}` : ""}
     ORDER BY created_at DESC
     LIMIT ${Math.min(limit, 200)}
-    FETCH ${resolveOrderFetches(deliveryOnly, statuses).join(", ")}
+    FETCH ${resolveOrderFetches(statuses).join(", ")}
   `;
 
   const orders = unwrapQueryResult<Order>(await db.query(query, params));

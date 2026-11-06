@@ -4,6 +4,7 @@ import {ReportsLayout} from "@/screens/partials/reports.layout.tsx";
 import {useDB} from "@/api/db/db.ts";
 import {Tables} from "@/api/db/tables.ts";
 import {Order, OrderStatus} from "@/api/model/order.ts";
+import {getTableLabel} from "@/api/model/table.ts";
 import {parseDateRangeFromParams} from "@/api/reports/shared/filters.ts";
 import {aggregateTopSellingDishes, fetchDashboardOrders, getOrderFigures} from "@/api/reports/sales";
 import {Tracking} from "@/api/model/tracking.ts";
@@ -735,207 +736,6 @@ const ActivitySection = () => {
   );
 }
 
-const DeliverySection = ({orders}: {orders: Order[]}) => {
-  const { t } = useTranslation('reports');
-  const db = useDB();
-  const [selectedTab, setSelectedTab] = useState<'map' | 'table'>('map');
-  const [mapCenter, setMapCenter] = useState({lat: 0, lng: 0});
-  const [mapLoading, setMapLoading] = useState(true);
-
-  // Create custom icon for delivery markers - same as delivery.tsx
-  // Load map center from settings - same as delivery.tsx
-  useEffect(() => {
-    const loadMapCenter = async () => {
-      try {
-        setMapLoading(true);
-        const [r] = await db.query(
-          `SELECT * FROM ${Tables.settings} WHERE key = 'map_center' LIMIT 1`
-        );
-
-        if (r.length > 0 && r[0].values) {
-          setMapCenter({
-            lat: r[0].values.lat,
-            lng: r[0].values.lng
-          });
-        }
-      } catch (error) {
-        console.error("Error loading map center:", error);
-      } finally {
-        setMapLoading(false);
-      }
-    };
-
-    loadMapCenter();
-  }, []);
-
-  useEffect(() => {
-    if(orders.length > 0){
-      setMapCenter({
-        lat: orders[0].delivery.lat,
-        lng: orders[0].delivery.lng,
-      });
-    }
-  }, [orders]);
-
-  const tabs = {
-    'map': {
-      title: 'Map View',
-      component: mapLoading ? (
-        <div className="h-[400px] w-full rounded-lg bg-surface flex items-center justify-center">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
-            <p className="text-sm text-muted">{t('loading.map')}</p>
-          </div>
-        </div>
-      ) : (
-        <div className="h-[400px] w-full rounded-lg overflow-hidden">
-          {/*<MapContainer
-            center={[mapCenter.lat, mapCenter.lng]}
-            zoom={11}
-            scrollWheelZoom={true}
-            style={{ height: '100%', width: '100%' }}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {orders.map(order => {
-              // Check for location in delivery object first, then customer (same as delivery.tsx)
-              const lat = order.delivery?.lat || order.customer?.lat;
-              const lng = order.delivery?.lng || order.customer?.lng;
-              const address = order.delivery?.address || order.customer?.address;
-              const customerName = order.customer?.name || "Walk-in";
-
-              if (!lat || !lng) return null;
-
-              const icon = order.status === 'Paid' ? completedIcon : deliveryIcon;
-
-              return (
-                <Marker
-                  key={order.id.toString()}
-                  position={[Number(lat), Number(lng)]}
-                  icon={icon}
-                >
-                  <Popup>
-                    <div className="p-2 min-w-[200px]">
-                      <p className="font-bold text-sm mb-1">Order #{order.invoice_number}</p>
-                      <p className="text-xs text-muted mb-1">
-                        Status: <span className="font-semibold">{order.status}</span>
-                      </p>
-                      <p className="text-xs text-muted mb-1">
-                        Customer: <span className="font-semibold">{customerName}</span>
-                      </p>
-                      {address && (
-                        <p className="text-xs text-muted mb-1">
-                          Address: <span className="font-semibold">{address}</span>
-                        </p>
-                      )}
-                      <p className="text-xs text-muted">
-                        Total: <span className="font-bold text-primary">{withCurrency(getOrderPaymentTotals(order).amountCollected)}</span>
-                      </p>
-                    </div>
-                  </Popup>
-                </Marker>
-              );
-            })}
-          </MapContainer>*/}
-        </div>
-      )
-    },
-    'table': {
-      title: 'Table View',
-      component: (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-neutral-200">
-            <thead className="bg-surface">
-              <tr>
-                <th className="py-3 pl-4 pr-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('orderFiscal.order')}</th>
-                <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('labels.customer')}</th>
-                <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('common:actions.type')}</th>
-                <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('filters.status')}</th>
-                <th className="py-3 px-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">{t('common:actions.time')}</th>
-                <th className="py-3 pr-4 text-right text-xs font-semibold text-muted uppercase tracking-wider">{t('columns.total')}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100 bg-surface-elevated">
-              {orders.length > 0 ? orders.slice(0, 10).map(order => (
-                <tr key={order.id} className="hover:bg-surface transition-colors">
-                  <td className="py-3 pl-4 pr-3 text-sm">
-                    <span className="font-mono text-sm font-semibold text-primary">#{order.invoice_number}</span>
-                  </td>
-                  <td className="py-3 px-3 text-sm text-foreground">
-                    {order.customer?.name || 'Walk-in'}
-                  </td>
-                  <td className="py-3 px-3 text-sm text-muted">
-                    {order.order_type?.name || 'Dine-in'}
-                  </td>
-                  <td className="py-3 px-3 text-sm">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      order.status === 'Pending' ? 'bg-warning-100 text-warning-700' :
-                      order.status === 'In Progress' ? 'bg-info-100 text-info-700' :
-                      'bg-success-100 text-success-700'
-                    }`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-3 text-sm text-muted">
-                    {toLuxonDateTime(order.created_at).toFormat('HH:mm')}
-                  </td>
-                  <td className="py-3 pr-4 text-right text-sm font-semibold text-foreground">
-                    {withCurrency(getOrderPaymentTotals(order).amountCollected)}
-                  </td>
-                </tr>
-              )) : (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-sm text-muted">
-                    {t('labels.noActiveDeliveryOrders')}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )
-    }
-  };
-
-  return (
-    <div className="bg-surface-elevated p-5 rounded-lg shadow-xl border col-span-2">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="p-3 rounded-full bg-primary-100">
-            <Truck className="w-5 h-5 text-primary-600" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-foreground">{t('labels.deliveryOrders')}</h2>
-            <p className="text-xs text-muted">{t('labels.activeDeliveries')}</p>
-          </div>
-        </div>
-        <span className="bg-primary-100 text-primary text-xs font-semibold px-3 py-1.5 rounded-full">
-          {orders.length} active
-        </span>
-      </div>
-      
-      <Tabs
-        className="w-full"
-        selectedKey={selectedTab}
-        onSelectionChange={(key: string) => setSelectedTab(key as 'map' | 'table')}
-      >
-        <TabList aria-label={t('labels.deliveryTabs')} className="flex flex-row gap-3 mb-4">
-          <Tab activeClass="bg-neutral-900 text-warning" id="map" key="map">{t('labels.mapView')}</Tab>
-          <Tab activeClass="bg-neutral-900 text-warning" id="table" key="table">{t('labels.tableView')}</Tab>
-        </TabList>
-        <TabPanel id="map" key="map">
-          {tabs.map.component}
-        </TabPanel>
-        <TabPanel id="table" key="table">
-          {tabs.table.component}
-        </TabPanel>
-      </Tabs>
-    </div>
-  );
-};
-
 const UserSessionsWidget = () => {
   const { t } = useTranslation('reports');
   const db = useDB();
@@ -1553,7 +1353,10 @@ const SalesDashboardBody = ({
 
     paidOrders.forEach(order => {
       const figures = getOrderFigures(order);
-      const table = order?.table ? `${order.table?.name}${order.table?.number}` : 'Delivery';
+      // Tableless checks are grouped by how they were taken, not by a fake table name.
+      const table = order?.table
+        ? getTableLabel(order.table)
+        : (order?.order_type?.name ?? String(order?.invoice_number ?? '-'));
       const current = map.get(table) || {orders: 0, revenue: 0};
       current.orders += 1;
       current.revenue += figures.totalRevenue;
@@ -1623,14 +1426,6 @@ const SalesDashboardBody = ({
   const paymentTypesBreakdown = useMemo<BreakdownDatum[]>(() => (
     paymentTypes.map(type => ({name: type.name, count: type.count, amount: type.amount}))
   ), [paymentTypes]);
-
-  const deliveryOrders = useMemo(() => {
-    return orders.filter(o =>
-      o.delivery && o.status !== 'Paid' && o.status !== 'Cancelled'
-    ).sort((a, b) =>
-      toJsDate(b.created_at).getTime() - toJsDate(a.created_at).getTime()
-    );
-  }, [orders]);
 
   const latestOrders = useMemo(() => {
     return [...orders].sort((a, b) =>
@@ -1808,11 +1603,10 @@ const SalesDashboardBody = ({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <DeliverySection orders={deliveryOrders} />
           {showGlobalWidgets && <ActivitySection />}
         </div>
 
-        {/* Sales Chart and Delivery Section */}
+        {/* Sales chart row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2">
             <SalesLineChart

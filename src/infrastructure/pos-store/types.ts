@@ -188,8 +188,6 @@ export interface OrderRecord {
   tip_amount?: number;
   tip_type?: string;
   notes?: string;
-  /** Delivery payload when the order is a delivery ticket. */
-  delivery?: any;
   /**
    * Local-only cashier progress on the payment screen (tendered lines before
    * settle). Never pushed to Surreal — stripped at the gateway.

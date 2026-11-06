@@ -1,13 +1,12 @@
 export const PRINT_OPTIONS_KEY = 'print_options';
 
-export type PrintCopyType = 'temp' | 'final' | 'refund' | 'kitchen' | 'delivery' | 'summary';
+export type PrintCopyType = 'temp' | 'final' | 'refund' | 'kitchen' | 'summary';
 
 export interface PrintCopies {
   temp: number;
   final: number;
   refund: number;
   kitchen: number;
-  delivery: number;
   summary: number;
 }
 
@@ -27,7 +26,6 @@ export const DEFAULT_PRINT_OPTIONS: PrintOptions = {
     final: 1,
     refund: 1,
     kitchen: 1,
-    delivery: 1,
     summary: 1,
   },
   max_attempts: {
@@ -48,8 +46,6 @@ export function copiesKeyForTemplate(template: string): PrintCopyType | null {
     case 'kitchen':
     case 'deletion':
       return 'kitchen';
-    case 'delivery':
-      return 'delivery';
     case 'summary':
       return 'summary';
     default:

@@ -21,7 +21,7 @@ const {
   wrapReceiptText,
   STORE_LOGO_BOX_PX,
 } = require('./receipt-helpers');
-const { mapOrderToTemp, mapOrderToFinal, mapOrderToDelivery, mapOrderToRefund } = require('./order-mapping');
+const { mapOrderToTemp, mapOrderToFinal, mapOrderToRefund } = require('./order-mapping');
 const { computeSummary, formatNum } = require('./summary-mapping');
 const { ensureRasterFonts } = require('./raster-fonts');
 const { getRasterMetrics, calibrateMetrics, buildCtxFont } = require('./raster-metrics');
@@ -400,12 +400,10 @@ async function renderBillRaster(bill, config, opts) {
     address: o.address,
     phone: o.phone,
     customerName: o.customerName,
-    deliveryTime: o.deliveryTime,
     notes: o.notes || bill.note || bill.notes,
     thankYou: o.thankYou,
     showPayments: o.showPayments,
     showChange: o.showChange,
-    showDeliveryLine: o.showDeliveryLine,
   });
 
   paintSections(rc, cfg.footerSections);
@@ -441,7 +439,6 @@ async function renderTempRaster(data, config) {
     notes: bill.note || undefined,
     showPayments: false,
     showChange: false,
-    showDeliveryLine: false,
     qrcodes: data && data.qrcodes,
     qrcode: data && data.qrcode,
   });
@@ -463,33 +460,7 @@ async function renderFinalRaster(data, config) {
     thankYou: bill.thankYou,
     showPayments: true,
     showChange: true,
-    showDeliveryLine: false,
     isFinal: true,
-    qrcodes: data && data.qrcodes,
-    qrcode: data && data.qrcode,
-  });
-}
-
-async function renderDeliveryRaster(data, config) {
-  const cfg = normalizeConfig(config || {});
-  const order = data && data.order;
-  if (!order) throw new Error('data.order is required for delivery raster');
-  const bill = mapOrderToDelivery(order, {
-    labels: cfg.labels,
-    timezone: cfg.timezone,
-    locale: cfg.locale,
-    showInclusivePrices: !!cfg.showInclusivePrices,
-  });
-  return renderBillRaster(bill, cfg, {
-    title: bill.title,
-    address: bill.address,
-    phone: bill.phone,
-    customerName: bill.customerName,
-    deliveryTime: bill.deliveryTime,
-    notes: bill.notes || undefined,
-    showPayments: true,
-    showChange: true,
-    showDeliveryLine: true,
     qrcodes: data && data.qrcodes,
     qrcode: data && data.qrcode,
   });
@@ -746,7 +717,6 @@ async function renderRasterPngs(printType, data, config) {
   let png;
   if (t === 'temp') png = await renderTempRaster(data, cfg);
   else if (t === 'final') png = await renderFinalRaster(data, cfg);
-  else if (t === 'delivery') png = await renderDeliveryRaster(data, cfg);
   else if (t === 'refund') png = await renderRefundRaster(data, cfg);
   else if (t === 'kitchen') png = await renderKitchenRaster(data, cfg);
   else if (t === 'summary') png = await renderSummaryRaster(data, cfg);
@@ -780,7 +750,6 @@ module.exports = {
   renderBillRaster,
   renderTempRaster,
   renderFinalRaster,
-  renderDeliveryRaster,
   renderRefundRaster,
   renderKitchenRaster,
   renderSummaryRaster,

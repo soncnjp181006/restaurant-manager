@@ -63,12 +63,11 @@ export const GUIDES = [
     pdfName: 'restaurant-manager-manager-guide.pdf',
     defaultTitle: 'Manager Guide',
     defaultIntro:
-      'Shift leadership screens: sales summary, kitchen board, delivery, closing, and operational reports.',
+      'Shift leadership screens: sales summary, kitchen board, closing, and operational reports.',
     chapters: [
       { key: 'summary' },
       { key: 'kitchen' },
       { key: 'order-display' },
-      { key: 'delivery' },
       { key: 'closing' },
       { key: 'reports-ops' },
       { key: 'tips-manager' },

@@ -146,7 +146,7 @@ export const appPage = atomWithStorage<AppPageInterface>(
   {getOnInit: true}
 );
 
-/** Terminal-scoped printer routing (this browser). Delivery stays user/global DB. */
+/** Terminal-scoped printer routing (this browser). */
 export interface SystemPrinterSettings {
   useSystemPrinters: boolean
   temp_print_printers: string[]

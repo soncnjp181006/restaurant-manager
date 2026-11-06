@@ -17,10 +17,10 @@
     {
       "id": "print-settings",
       "title": "Print settings",
-      "intro": "Print settings control templates and options for temp bills, final receipts, kitchen tickets, summaries, and delivery slips.",
+      "intro": "Print settings control templates and options for temp bills, final receipts, kitchen tickets, and summaries.",
       "steps": [
         "Open the Print settings tab.",
-        "Edit each print type (Temp, Final, Kitchen, Summary, Delivery).",
+        "Edit each print type (Temp, Final, Kitchen, Summary).",
         "Save so new orders use the updated layout and fields."
       ],
       "image": "admin-print-settings.png",
@@ -59,7 +59,7 @@
     {
       "id": "print-setting-form",
       "title": "Print setting form",
-      "intro": "Each print job type (temp bill, final receipt, kitchen, summary, delivery) has its own template.",
+      "intro": "Each print job type (temp bill, final receipt, kitchen, summary) has its own template.",
       "steps": [
         "Open Print settings tab and pick a job type.",
         "Configure logo, header/footer sections, VAT block, and margins.",

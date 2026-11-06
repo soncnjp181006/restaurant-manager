@@ -1351,7 +1351,7 @@
           fields: [
             {
               name: "Tipo de impressão",
-              effect: "Provisório, final, cozinha, resumo, delivery."
+              effect: "Provisório, final, cozinha, resumo."
             },
             {
               name: "Editor de seções",

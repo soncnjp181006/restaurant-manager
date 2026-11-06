@@ -130,11 +130,6 @@ export const AdminMenus = () => {
       db,
       id,
       entityLabel: t('entities.menu'),
-      usageChecks: [
-        {
-          query: `SELECT count() AS count FROM ${Tables.settings} WHERE key = 'delivery_menu' AND value = $idRecord GROUP ALL`
-        }
-      ],
       cleanupQueries: [
         {
           query: `DELETE (SELECT VALUE items FROM ONLY $idRecord)`

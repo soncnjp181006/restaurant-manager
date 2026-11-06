@@ -325,9 +325,9 @@ export const runAiReportAgent = async (
 
   if (isOrderListByStatusPrompt(trimmedPrompt)) {
     options.onToolStart?.("get_orders");
-    const {statuses, deliveryOnly} = resolveOrderListQueryFromPrompt(trimmedPrompt);
-    const data = await getOrders(db, {statuses, deliveryOnly});
-    toolsUsed.push({name: "get_orders", args: {statuses, deliveryOnly}});
+    const {statuses} = resolveOrderListQueryFromPrompt(trimmedPrompt);
+    const data = await getOrders(db, {statuses});
+    toolsUsed.push({name: "get_orders", args: {statuses}});
     toolResults.push({name: "get_orders", result: data});
 
     const response = await callOpenAIChat({

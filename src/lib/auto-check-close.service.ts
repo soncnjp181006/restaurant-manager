@@ -59,19 +59,6 @@ export function hasPaymentTypeConfigured(paymentTypeId: unknown): boolean {
   return true;
 }
 
-export function isDeliveryOrder(order: Order): boolean {
-  const delivery = order.delivery;
-  if (delivery === null || delivery === undefined) {
-    return false;
-  }
-
-  if (typeof delivery === 'object') {
-    return Object.keys(delivery as Record<string, unknown>).length > 0;
-  }
-
-  return true;
-}
-
 export function formatCountdown(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
@@ -168,7 +155,7 @@ async function fetchOpenOrders(db: DBLike, window: ClosingCycleWindow): Promise<
     ) as [Order[] | undefined];
 
     const orders = Array.isArray(rows) ? rows : [];
-    return orders.filter((order) => !isDeliveryOrder(order));
+    return orders;
   };
 
   const cycleOrders = await queryOrders(true);

@@ -60,9 +60,7 @@ const LEGACY_MODULE_MAP = {
   Closing: 'closing',
   Kitchen: 'kitchen',
   'Order Display': 'order_display',
-  Delivery: 'delivery',
   Admin: 'admin',
-  Riders: 'riders',
   Tips: ['tips', 'reports.tips'],
   Inventory: 'inventory',
   HR: 'hr',
@@ -98,7 +96,6 @@ const LEGACY_MODULE_MAP = {
   'Print summary': 'summary.print',
   'Product mix report': 'summary.product_mix',
   'Server sales': 'summary.server_sales',
-  'Delivery Density': 'reports.delivery_density',
   'Cash closing': 'reports.cash_closing',
   'Sales dashboard': 'reports.sales_dashboard',
   'Inventory dashboard': 'reports.inventory_dashboard',
@@ -161,9 +158,6 @@ const LEGACY_MODULE_MAP = {
   'Labor Trend': 'reports.labor_trend',
   'Labor Forecast Dataset': 'reports.labor_forecast_dataset',
   'Edit Closing': 'closing.edit',
-  'Delivery orders': 'delivery.orders',
-  'Delivery areas': 'delivery.areas',
-  'Delivery settings': 'delivery.settings',
   Dishes: 'admin.dishes',
   Menus: ['admin.menus', 'settings.menus'],
   Categories: 'admin.categories',
@@ -302,7 +296,7 @@ async function remapTable(db, table, stats) {
       continue;
     }
     stats.updated += 1;
-    const unknown = after.filter((id) => !id.includes('.') && !LEGACY_MODULE_MAP[id] && !['menu','orders','summary','reports','closing','kitchen','order_display','delivery','admin','riders','tips','inventory','hr','settings','accounts','integrations'].includes(id));
+    const unknown = after.filter((id) => !id.includes('.') && !LEGACY_MODULE_MAP[id] && !['menu','orders','summary','reports','closing','kitchen','order_display','admin','tips','inventory','hr','settings','accounts','integrations'].includes(id));
     if (unknown.length) {
       stats.unknown.push({ id: toId(row.id), unknown });
     }

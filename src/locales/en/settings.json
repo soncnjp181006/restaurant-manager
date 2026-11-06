@@ -83,18 +83,17 @@
   },
   "printers": {
     "title": "Default printers",
-    "description": "Assign printers per user or for this terminal. When system printers are enabled, temp, final, refund, and summary use this device’s assignments. Delivery always uses user or global settings.",
+    "description": "Assign printers per user or for this terminal. When system printers are enabled, temp, final, refund, and summary use this device’s assignments.",
     "loading": "Loading printer settings…",
     "useSystemPrinters": "Use system printers on this device",
-    "useSystemPrintersDescription": "When enabled, this browser/terminal uses the system printer assignments below instead of the logged-in user’s printers (except delivery).",
+    "useSystemPrintersDescription": "When enabled, this browser/terminal uses the system printer assignments below instead of the logged-in user’s printers.",
     "systemTitle": "System printers (this device)",
-    "systemDescription": "Stored in this browser only. Ideal for shared terminals so prints go to nearby printers. Delivery is not included — it stays user or global.",
+    "systemDescription": "Stored in this browser only. Ideal for shared terminals so prints go to nearby printers.",
     "userTitle": "User printers",
-    "userDescription": "Stored per logged-in user. Used when system printers are off, and always for delivery.",
+    "userDescription": "Stored per logged-in user. Used when system printers are off.",
     "tempPrint": "Printers for temp print",
     "finalPrint": "Printers for final print",
     "refundPrint": "Printers for refund print",
-    "deliveryPrint": "Printers for delivery print",
     "summaryPrint": "Printers for summary print",
     "selectPrinters": "Select printers…",
     "saving": "Saving…",
@@ -116,7 +115,6 @@
       "final": "Final bill copies",
       "refund": "Refund bill copies",
       "kitchen": "Kitchen / KOT copies",
-      "delivery": "Delivery bill copies",
       "summary": "Summary copies"
     },
     "maxAttempts": {
@@ -145,7 +143,7 @@
   },
   "autoCheckClose": {
     "title": "Auto check close",
-    "description": "Automatically close open table checks at closing cycle end time. Delivery orders are excluded. A warning appears 1 minute before close.",
+    "description": "Automatically close open table checks at closing cycle end time. A warning appears 1 minute before close.",
     "printOnClose": "Print final bill on close",
     "paymentType": "Payment type",
     "paymentTypeRequired": "Payment type is required when auto close is enabled",
@@ -235,7 +233,7 @@
     "updated": "Inventory settings updated",
     "save": "Save",
     "saveDescription": "Save inventory settings"
-  },
+  },
   "sessionSecurity": {
     "title": "Session security",
     "description": "Automatically lock or log out this user after a period of inactivity. Choose one action.",

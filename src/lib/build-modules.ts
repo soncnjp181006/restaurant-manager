@@ -9,7 +9,6 @@ import {
   ADMIN,
   CLOCK,
   CLOSING,
-  DELIVERY,
   HR,
   INVENTORY,
   INTEGRATIONS,
@@ -97,11 +96,6 @@ export function isTopLevelBuildModuleEnabled(id: TopLevelBuildModule): boolean {
           : undefined,
         'order_display',
       );
-    case 'delivery':
-      return topLevelFlag(
-        typeof __BUILD_MODULE_delivery__ !== 'undefined' ? __BUILD_MODULE_delivery__ : undefined,
-        'delivery',
-      );
     case 'closing':
       return topLevelFlag(
         typeof __BUILD_MODULE_closing__ !== 'undefined' ? __BUILD_MODULE_closing__ : undefined,
@@ -160,7 +154,6 @@ const HOME_CANDIDATES: { path: string; module: TopLevelBuildModule }[] = [
   { path: SUMMARY, module: 'summary' },
   { path: KITCHEN, module: 'kitchen' },
   { path: ORDER_DISPLAY, module: 'order_display' },
-  { path: DELIVERY, module: 'delivery' },
   { path: CLOSING, module: 'closing' },
   { path: INVENTORY, module: 'inventory' },
   { path: ADMIN, module: 'admin' },

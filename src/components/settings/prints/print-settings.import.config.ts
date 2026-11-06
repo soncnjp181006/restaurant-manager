@@ -13,7 +13,6 @@ const PRINT_SETTING_KEYS = [
   "Final Print",
   "Kitchen Print",
   "Summary Print",
-  "Delivery Print",
 ] as const;
 
 export function createPrintSettingsImportConfig({db, t}: {db: ImportDbLike; t: TFunc}): ImportConfiguration {
@@ -38,7 +37,7 @@ export function createPrintSettingsImportConfig({db, t}: {db: ImportDbLike; t: T
     matchFields: ["key"],
     defaultMode: "update",
     db,
-    extractionInstructions: "Update print settings by key (Temp Print, Final Print, Kitchen Print, Summary Print, Delivery Print).",
+    extractionInstructions: "Update print settings by key (Temp Print, Final Print, Kitchen Print, Summary Print).",
     onImportRow: async (record: ImportRecord) => {
       const key = String(record.values.key ?? "").trim();
       if (!key) throw new Error(t("validation:required"));

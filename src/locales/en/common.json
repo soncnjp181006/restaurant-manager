@@ -251,7 +251,7 @@
     "examplesHint": "Click a prompt to try it with {{name}}:",
     "examples": {
       "salesToday": "Show me today's sales summary",
-      "tablesFloor": "List tables on the Delivery floor",
+      "tablesFloor": "List tables on the Terrace floor",
       "bogoDiscount": "Create automatic BOGO discount for starters",
       "addDish": "Add a new dish Margherita for x price",
       "listUsers": "List all POS users",

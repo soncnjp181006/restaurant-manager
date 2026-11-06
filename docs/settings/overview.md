@@ -2,14 +2,13 @@
 
 ## Purpose
 
-The Settings module provides comprehensive configuration options for the restaurant POS application, allowing administrators and users to customize system behavior, printing, language, delivery services, and various operational parameters.
+The Settings module provides comprehensive configuration options for the restaurant POS application, allowing administrators and users to customize system behavior, printing, language, and various operational parameters.
 
 ## Navigation
 
-The Settings module is accessible through two main URLs:
+The Settings module is accessible through the main settings URL:
 
 - **Main Settings**: `/settings` - General application settings
-- **Delivery Settings**: `/delivery/settings` - Delivery-specific configuration
 
 ## Module Organization
 
@@ -27,17 +26,6 @@ The main settings page is organized into a grid layout with the following config
 8. **Touch Settings** - Toggle touch-optimized interface
 9. **Table Selection Settings** - Show/hide table selection interface
 10. **Items Visibility Settings** - Configure item display options
-
-### Delivery Settings (`/delivery/settings`)
-
-The delivery settings page provides comprehensive delivery service configuration:
-
-- Enable/disable delivery service
-- Configure delivery charges and minimum order amounts
-- Set delivery timing schedules (daily and custom dates)
-- Select delivery menu
-- Configure map center coordinates for delivery zones
-- Manage delivery banners
 
 ## User Workflow
 
@@ -71,8 +59,6 @@ Settings are stored in the database with the following structure:
 ## Known Limitations
 
 - Printer settings do not support printer-specific formatting
-- Only one delivery menu can be selected
-- No zone-based delivery pricing
 - Single closing cycle per day
 - Limited to supported languages (9 languages)
 
@@ -80,7 +66,6 @@ Settings are stored in the database with the following structure:
 
 - Printer-specific receipt formatting
 - Conditional service charges based on order type or time
-- Multiple delivery zones with dynamic pricing
 - User-specific menu selection
 - Time-based menu activation
 - Custom language support

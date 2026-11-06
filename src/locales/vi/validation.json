@@ -26,8 +26,6 @@
   "addAtLeastOneSubItem": "Thêm ít nhất một mục con",
   "atLeastOneItemRequired": "Cần ít nhất một dòng",
   "invalidTransferEndpoints": "Điểm chuyển không hợp lệ",
-  "deliveryChargesPositive": "Phí giao hàng phải là số dương",
-  "deliveryTimePositive": "Thời gian giao phải là số dương",
   "minimumOrderPositive": "Đơn tối thiểu phải là số dương",
   "invoiceNumberExists": "Số hoá đơn đã tồn tại",
   "poNumberExists": "Số đơn đặt hàng đã tồn tại",

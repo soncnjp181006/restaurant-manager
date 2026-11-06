@@ -83,18 +83,17 @@
   },
   "printers": {
     "title": "Máy in mặc định",
-    "description": "Gán máy in theo từng người dùng hoặc cho máy POS này. Khi bật máy in hệ thống, hoá đơn tạm, hoá đơn cuối, hoàn tiền và bảng tổng hợp dùng cấu hình của thiết bị này. Đơn giao hàng luôn dùng cài đặt theo người dùng hoặc cài đặt chung.",
+    "description": "Gán máy in theo từng người dùng hoặc cho máy POS này. Khi bật máy in hệ thống, hoá đơn tạm, hoá đơn cuối, hoàn tiền và bảng tổng hợp dùng cấu hình của thiết bị này.",
     "loading": "Đang tải cài đặt máy in…",
     "useSystemPrinters": "Dùng máy in hệ thống trên thiết bị này",
-    "useSystemPrintersDescription": "Khi bật, trình duyệt/máy POS này dùng cấu hình máy in hệ thống bên dưới thay vì máy in của người dùng đang đăng nhập (ngoại trừ đơn giao hàng).",
+    "useSystemPrintersDescription": "Khi bật, trình duyệt/máy POS này dùng cấu hình máy in hệ thống bên dưới thay vì máy in của người dùng đang đăng nhập.",
     "systemTitle": "Máy in hệ thống (thiết bị này)",
-    "systemDescription": "Chỉ lưu trong trình duyệt này. Phù hợp với máy POS dùng chung để bản in ra máy in ở gần. Không áp dụng cho đơn giao hàng — phần đó vẫn theo người dùng hoặc cài đặt chung.",
+    "systemDescription": "Chỉ lưu trong trình duyệt này. Phù hợp với máy POS dùng chung để bản in ra máy in ở gần.",
     "userTitle": "Máy in của người dùng",
-    "userDescription": "Lưu theo từng người dùng đang đăng nhập. Được dùng khi máy in hệ thống đang tắt và luôn dùng cho đơn giao hàng.",
+    "userDescription": "Lưu theo từng người dùng đang đăng nhập. Được dùng khi máy in hệ thống đang tắt.",
     "tempPrint": "Máy in cho hoá đơn tạm",
     "finalPrint": "Máy in cho hoá đơn cuối",
     "refundPrint": "Máy in cho hoá đơn hoàn tiền",
-    "deliveryPrint": "Máy in cho hoá đơn giao hàng",
     "summaryPrint": "Máy in cho bảng tổng hợp",
     "selectPrinters": "Chọn máy in…",
     "saving": "Đang lưu…",
@@ -116,7 +115,6 @@
       "final": "Số bản hoá đơn cuối",
       "refund": "Số bản hoá đơn hoàn tiền",
       "kitchen": "Số bản phiếu bếp / KOT",
-      "delivery": "Số bản hoá đơn giao hàng",
       "summary": "Số bản bảng tổng hợp"
     },
     "maxAttempts": {
@@ -145,7 +143,7 @@
   },
   "autoCheckClose": {
     "title": "Đóng hoá đơn tự động",
-    "description": "Tự động đóng các hoá đơn bàn đang mở khi đến giờ kết thúc chu kỳ đóng ca. Đơn giao hàng không bị ảnh hưởng. Cảnh báo xuất hiện 1 phút trước khi đóng.",
+    "description": "Tự động đóng các hoá đơn bàn đang mở khi đến giờ kết thúc chu kỳ đóng ca. Cảnh báo xuất hiện 1 phút trước khi đóng.",
     "printOnClose": "In hoá đơn cuối khi đóng",
     "paymentType": "Loại thanh toán",
     "paymentTypeRequired": "Cần chọn loại thanh toán khi bật đóng tự động",
@@ -235,7 +233,7 @@
     "updated": "Đã cập nhật cài đặt tồn kho",
     "save": "Lưu",
     "saveDescription": "Lưu cài đặt tồn kho"
-  },
+  },
   "sessionSecurity": {
     "title": "Bảo mật phiên",
     "description": "Tự động khóa hoặc đăng xuất người dùng này sau một khoảng thời gian không hoạt động. Hãy chọn một hành động.",

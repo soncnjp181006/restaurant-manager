@@ -24,7 +24,6 @@ Restaurant Manager Documentation
 │   ├── Summary
 │   ├── Kitchen
 │   ├── Order display
-│   ├── Delivery
 │   ├── Closing
 │   ├── Reports (operations)
 │   └── Tip oversight
@@ -103,7 +102,6 @@ Guide titles/intros: `locales/{lang}/guides.json`. Chapter body: `locales/{lang}
 | 2 | Manager | Summary | Done |
 | 2 | Manager | Kitchen | Done |
 | 2 | Manager | Order display | Done |
-| 2 | Manager | Delivery | Done |
 | 2 | Manager | Closing | Done |
 | 2 | Manager | Reports (operations) | Done |
 | 2 | Manager | Tip oversight | Done |
@@ -206,7 +204,6 @@ If capture fails with “No floor tables”, “No dishes”, or “No payment t
 **Summary** — calendar, print actions, daily sales report  
 **Kitchen** — station selector, toolbar, ticket board  
 **Order display** — filters, preparing / ready columns  
-**Delivery** — map + orders, areas, settings tabs  
 **Closing** — terminal cash, expenses, save / complete  
 **Reports** — category hub, sub-reports, filters  
 **Tip oversight** — shift/date, distribution table  

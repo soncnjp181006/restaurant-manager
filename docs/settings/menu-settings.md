@@ -82,7 +82,7 @@ When menus are activated, the following data is loaded for each selected menu:
 
 - **Single menu set**: Cannot configure different menus for different users or roles
 - **No time-based activation**: Cannot automatically activate menus based on time of day or date
-- **No conditional menus**: Cannot show different menus based on order type (dine-in vs delivery)
+- **No conditional menus**: Cannot show different menus based on order type (dine-in vs takeout)
 - **No menu hierarchy**: All selected menus are shown equally; no parent-child menu relationships
 - **No menu preview**: Cannot preview menu contents before selection
 - **All-or-nothing**: Cannot selectively load parts of a menu

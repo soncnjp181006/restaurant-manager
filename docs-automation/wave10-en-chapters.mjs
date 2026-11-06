@@ -1119,7 +1119,7 @@ export const WAVE10_EN = {
       {
         id: 'print-setting-form',
         title: 'Print setting form',
-        intro: 'Each print job type (temp bill, final receipt, kitchen, summary, delivery) has its own template.',
+        intro: 'Each print job type (temp bill, final receipt, kitchen, summary) has its own template.',
         steps: [
           'Open Print settings tab and pick a job type.',
           'Configure logo, header/footer sections, VAT block, and margins.',
@@ -1190,7 +1190,7 @@ export const WAVE10_EN = {
         title: 'Order type form',
         steps: [
           'Open Payments → Order types.',
-          'Set name and behavior flags (dine-in, takeaway, delivery).',
+          'Set name and behavior flags (dine-in, takeaway).',
           'Save — used on tables, POS, and reporting.',
         ],
         image: 'admin-payments-order-type-form.png',

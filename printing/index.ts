@@ -5,8 +5,8 @@
  * Body: {
  *   printers: Array<{ type, ...driverConfig }>,
  *   data: {
- *     printType: 'temp'|'summary'|'kitchen'|'delivery'|'final',
- *     // temp, final, delivery, kitchen: order (Order from @/api/model/order)
+ *     printType: 'temp'|'summary'|'kitchen'|'final',
+ *     // temp, final, kitchen: order (Order from @/api/model/order)
  *     order?: Order,
  *     // summary only: title?, date?, orders?, subtotal?, tax?, total?, payments?
  *   },

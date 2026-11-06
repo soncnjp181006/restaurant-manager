@@ -42,7 +42,7 @@
       "id": "order-type",
       "title": "Choose an order type",
       "steps": [
-        "On the right side of the header, select Dine-in, Takeaway, Delivery, or other configured types.",
+        "On the right side of the header, select Dine-in, Takeaway, or other configured types.",
         "The active order type applies to kitchen routing and pricing rules when configured."
       ],
       "image": "menu-overview.png",

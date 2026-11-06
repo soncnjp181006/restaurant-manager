@@ -68,7 +68,6 @@ export interface OrderDetailResult {
     orderType?: string;
     covers?: number;
     notes?: string;
-    delivery?: unknown;
     tags?: unknown;
     figures: ReturnType<typeof getOrderSettlementFigures>;
   };
@@ -814,7 +813,6 @@ export const getOrderDetail = async (
       orderType: order.order_type?.name,
       covers: order.covers,
       notes: order.notes,
-      delivery: order.delivery,
       tags: order.tags,
       figures,
     },

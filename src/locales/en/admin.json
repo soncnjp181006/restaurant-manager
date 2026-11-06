@@ -159,7 +159,6 @@
     "used": "Used",
     "stackable": "Stackable",
     "firstOrderOnly": "First order only",
-    "delivery": "Delivery",
     "applyToAll": "Apply to all",
     "tables": "Tables",
     "printers": "Printers",
@@ -453,7 +452,6 @@
     "templatePrice": "Template price",
     "resetModifierPrices": "Reset to template",
     "reset": "Reset",
-    "deliveryOnly": "Delivery only",
     "applyToAllSwitch": "Apply to all",
     "showCategoryInMenu": "Show this category in menu",
     "importDishesTitle": "Import dishes from CSV",
@@ -724,14 +722,8 @@
       "order_display": {
         "label": "Order Display"
       },
-      "delivery": {
-        "label": "Delivery"
-      },
       "admin": {
         "label": "Administration"
-      },
-      "riders": {
-        "label": "Riders"
       },
       "tips": {
         "label": "Tip Distribution"
@@ -784,7 +776,6 @@
       "summary.product_mix": "Product mix report",
       "summary.server_sales": "Server sales",
       "reports": "Reports",
-      "reports.delivery_density": "Delivery Density",
       "reports.cash_closing": "Cash closing",
       "reports.sales_dashboard": "Sales dashboard",
       "reports.inventory_dashboard": "Inventory dashboard",
@@ -854,10 +845,6 @@
       "closing.edit": "Edit Closing",
       "kitchen": "Kitchen",
       "order_display": "Order Display",
-      "delivery": "Delivery",
-      "delivery.orders": "Delivery orders",
-      "delivery.areas": "Delivery areas",
-      "delivery.settings": "Delivery settings",
       "admin": "Admin",
       "admin.dishes": "Dishes",
       "admin.dishes.create": "Create dishes",

@@ -26,8 +26,6 @@
   "addAtLeastOneSubItem": "Add at least one sub item",
   "atLeastOneItemRequired": "At least one item is required",
   "invalidTransferEndpoints": "Invalid transfer endpoints",
-  "deliveryChargesPositive": "Delivery charges must be positive",
-  "deliveryTimePositive": "Delivery time must be positive",
   "minimumOrderPositive": "Minimum order must be positive",
   "invoiceNumberExists": "Invoice number already exists",
   "poNumberExists": "PO number already exists",

@@ -13,31 +13,6 @@ const STATUS_PATTERNS: Array<{pattern: RegExp; status: string}> = [
   {pattern: /\b(split|spilt)\b/i, status: OrderStatus.Spilt},
 ];
 
-export const isDeliveryOrderListPrompt = (prompt: string): boolean => {
-  // Require an explicit delivery channel mention — not just "pending" or "progress"
-  return /\bdelivery\b/i.test(prompt) && /\borders?\b/i.test(prompt) && !isPurchaseOrderPrompt(prompt);
-};
-
-/** Active delivery pipeline — matches the Delivery screen, not OrderStatus.Pending alone. */
-export const inferDeliveryOrderStatuses = (prompt: string): string[] => {
-  const lower = prompt.toLowerCase();
-
-  if (/\bpaid\b/.test(lower)) {
-    return [OrderStatus.Paid];
-  }
-
-  if (/\bcancel(?:led|ed)\b/.test(lower)) {
-    return [OrderStatus.Cancelled];
-  }
-
-  if (/\bin[\s_-]*progress\b/.test(lower) && !/\bpending\b/.test(lower)) {
-    return [OrderStatus["In Progress"]];
-  }
-
-  // "pending delivery", "active delivery", or plain "delivery orders" → both open statuses
-  return [OrderStatus.Pending, OrderStatus["In Progress"]];
-};
-
 export const isOrderStatusPhrase = (value: string): boolean => {
   const trimmed = value.trim();
   if (!trimmed) {
@@ -50,12 +25,7 @@ export const isOrderStatusPhrase = (value: string): boolean => {
 
 export const inferOrderStatusesFromPrompt = (prompt: string): string[] => {
   const statuses = new Set<string>();
-  const isDelivery = isDeliveryOrderListPrompt(prompt);
-
   for (const {pattern, status} of STATUS_PATTERNS) {
-    if (isDelivery && status === OrderStatus.Pending) {
-      continue;
-    }
     if (pattern.test(prompt)) {
       statuses.add(status);
     }
@@ -140,10 +110,6 @@ export const isOrderListByStatusPrompt = (prompt: string): boolean => {
     return false;
   }
 
-  if (isDeliveryOrderListPrompt(prompt)) {
-    return true;
-  }
-
   return inferOrderStatusesFromPrompt(prompt).length > 0;
 };
 
@@ -165,17 +131,8 @@ export const extractOrderStatusesFromArgs = (args: Record<string, unknown>): str
 
 export const resolveOrderListQueryFromPrompt = (prompt: string): {
   statuses: string[];
-  deliveryOnly: boolean;
 } => {
-  if (isDeliveryOrderListPrompt(prompt)) {
-    return {
-      statuses: inferDeliveryOrderStatuses(prompt),
-      deliveryOnly: true,
-    };
-  }
-
   return {
     statuses: inferOrderStatusesFromPrompt(prompt),
-    deliveryOnly: false,
   };
 };

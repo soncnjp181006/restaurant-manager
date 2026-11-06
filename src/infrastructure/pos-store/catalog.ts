@@ -358,7 +358,6 @@ export type ExtraApplicabilityContext = {
   paymentTypeIds?: Iterable<string>;
   orderTypeId?: string | null;
   tableId?: string | null;
-  isDelivery?: boolean;
 };
 
 export function isExtraApplicable(
@@ -370,10 +369,8 @@ export function isExtraApplicable(
   const hasPaymentTypeRule = (extra?.payment_types?.length || 0) > 0;
   const hasOrderTypeRule = (extra?.order_types?.length || 0) > 0;
   const hasTableRule = (extra?.tables?.length || 0) > 0;
-  const hasDeliveryRule = !!extra?.delivery;
-  const hasAnyRule = hasPaymentTypeRule || hasOrderTypeRule || hasTableRule || hasDeliveryRule;
+  const hasAnyRule = hasPaymentTypeRule || hasOrderTypeRule || hasTableRule;
   if (!hasAnyRule) return false;
-  if (hasDeliveryRule && !context.isDelivery) return false;
 
   if (hasOrderTypeRule) {
     const orderTypeIds = new Set(
@@ -913,14 +910,6 @@ function isTablelessOrder(order: OrderRecord): boolean {
   return raw === 'none' || raw === 'NONE';
 }
 
-function hasDeliveryPayload(order: OrderRecord): boolean {
-  const delivery = (order as any).delivery;
-  if (delivery == null || delivery === 'NONE' || delivery === 'none') return false;
-  if (Array.isArray(delivery)) return delivery.length > 0;
-  if (typeof delivery === 'object') return Object.keys(delivery).length > 0;
-  return Boolean(delivery);
-}
-
 /** Open tableless checks (counter / quick-service sidebar). */
 export async function getOpenTablelessOrdersHydrated(): Promise<HydratedOrder[]> {
   await reconcileOrderItemLinks();
@@ -930,26 +919,6 @@ export async function getOpenTablelessOrdersHydrated(): Promise<HydratedOrder[]>
     .equals('In Progress')
     .filter((order) => !order.deleted_at && isTablelessOrder(order) && !isGhostOperationalOrder(order))
     .sortBy('created_at');
-  return hydrateOrders(rows);
-}
-
-/** Open + pending delivery tickets for the delivery board / auto-popup. */
-export async function getDeliveryOrdersHydrated(
-  statuses: string[] = ['In Progress', 'Pending'],
-): Promise<HydratedOrder[]> {
-  await reconcileOrderItemLinks();
-  const db = getPosStoreDatabase();
-  const statusSet = new Set(statuses);
-  const rows = await db.orders
-    .filter(
-      (order) =>
-        !order.deleted_at &&
-        statusSet.has(String(order.status)) &&
-        hasDeliveryPayload(order) &&
-        !isGhostOperationalOrder(order),
-    )
-    .toArray();
-  rows.sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
   return hydrateOrders(rows);
 }
 

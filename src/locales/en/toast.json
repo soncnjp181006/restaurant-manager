@@ -27,23 +27,6 @@
     "unableGeneratePoNumber": "Unable to generate next PO number",
     "itemsExceedQuantity": "One or more items exceed available quantity"
   },
-  "delivery": {
-    "settingsSaved": "Delivery settings saved successfully",
-    "settingsLoadFailed": "Failed to load delivery settings",
-    "settingsSaveFailed": "Failed to save delivery settings",
-    "mapAreasSaved": "Map areas saved successfully",
-    "mapAreasSaveFailed": "Failed to save map areas",
-    "mapAreasLoadFailed": "Failed to load map areas",
-    "shapeTooSmall": "Shape is too small. Drag a larger area.",
-    "rectangleTooSmall": "Rectangle is too small. Drag a larger area.",
-    "circleTooSmall": "Circle is too small. Drag a larger radius.",
-    "polygonTooSmall": "Polygon is too small. Drag a larger outline.",
-    "fetchRidersFailed": "Failed to fetch riders",
-    "acceptFailed": "Failed to accept order",
-    "rejectFailed": "Failed to reject order",
-    "sendFailed": "Failed to send order",
-    "attachRiderFailed": "Failed to attach rider"
-  },
   "reports": {
     "mapAreasSaveFailed": "Failed to save map areas"
   },

@@ -51,14 +51,6 @@ const GUARDED_FILES: Array<{ file: string; reason: string }> = [
     reason: 'customer search uses Dexie',
   },
   {
-    file: 'hooks/useFetchDeliveryOrders.ts',
-    reason: 'delivery list is local-first',
-  },
-  {
-    file: 'providers/delivery-orders.provider.tsx',
-    reason: 'delivery popup/print hydrate from PosStore',
-  },
-  {
     file: 'screens/order-display.tsx',
     reason: 'order display reads recent orders from PosStore',
   },
@@ -93,11 +85,6 @@ const ALLOWLIST: Array<{ file: string; pattern: RegExp; reason: string }> = [
   },
   {
     file: 'screens/menu.tsx',
-    pattern: /\bdb\.live\s*\(/,
-    reason: 'Surreal live is sync-wake only; list data comes from PosStore',
-  },
-  {
-    file: 'providers/delivery-orders.provider.tsx',
     pattern: /\bdb\.live\s*\(/,
     reason: 'Surreal live is sync-wake only; list data comes from PosStore',
   },

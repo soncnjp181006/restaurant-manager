@@ -1,7 +1,7 @@
 'use strict';
 
 const { formatMoney, normalizeConfig, normalizeSections, formatPrintingTimestamp, wrapReceiptText, STORE_LOGO_BOX_PX } = require('./receipt-helpers');
-const { mapOrderToTemp, mapOrderToFinal, mapOrderToDelivery, mapOrderToRefund } = require('./order-mapping');
+const { mapOrderToTemp, mapOrderToFinal, mapOrderToRefund } = require('./order-mapping');
 const { computeSummary, formatNum } = require('./summary-mapping');
 
 /**
@@ -172,7 +172,6 @@ function renderBillToHtml(bill, config, opts) {
     thankYou,
     showPayments = false,
     showChange = false,
-    showDeliveryLine = false,
   } = opts || {};
 
   const invoiceLabel = L.invoice || 'Invoice#';
@@ -183,7 +182,6 @@ function renderBillToHtml(bill, config, opts) {
   const discountLabel = L.discount || 'Discount';
   const extraLabel = L.extra || 'Extra';
   const tipLabel = L.tip || 'Tip';
-  const deliveryChargesLabel = L.deliveryCharges || 'Delivery Charges';
   const totalLabel = L.total || 'Total';
   const paymentLabel = L.payment || 'Payment';
   const changeLabel = L.change || 'Change';
@@ -242,9 +240,6 @@ function renderBillToHtml(bill, config, opts) {
   });
   if (bill.tipAmount != null && Number(bill.tipAmount) !== 0) {
     parts.push(row(bill.tipLabel || tipLabel, formatMoney(bill.tipAmount, sym)));
-  }
-  if (showDeliveryLine && bill.deliveryCharges != null && Number(bill.deliveryCharges) !== 0) {
-    parts.push(row(deliveryChargesLabel, formatMoney(bill.deliveryCharges, sym)));
   }
   parts.push('<hr/>');
 
@@ -629,7 +624,7 @@ function renderRefundToHtml(data, config) {
 
 /**
  * Generate HTML preview for the given print type, data, and config.
- * @param {string} printType - temp | final | delivery | kitchen | summary | refund
+ * @param {string} printType - temp | final | kitchen | summary | refund
  * @param {Object} data - { order?, originalOrder?, printType?, duplicate?, ... }
  * @param {Object} config - printer config
  * @returns {string} HTML
@@ -652,7 +647,6 @@ function renderPreview(printType, data, config) {
       notes: bill.note || undefined,
       showPayments: false,
       showChange: false,
-      showDeliveryLine: false,
       qrcodes: data && data.qrcodes,
       qrcode: data && data.qrcode,
     });
@@ -673,29 +667,6 @@ function renderPreview(printType, data, config) {
       thankYou: bill.thankYou,
       showPayments: true,
       showChange: true,
-      showDeliveryLine: false,
-      qrcodes: data && data.qrcodes,
-      qrcode: data && data.qrcode,
-    });
-  }
-
-  if (t === 'delivery') {
-    const order = data && data.order;
-    if (!order) throw new Error('data.order is required for delivery preview');
-    const bill = mapOrderToDelivery(order, {
-      labels: cfg.labels,
-      timezone: cfg.timezone,
-      locale: cfg.locale,
-      showInclusivePrices: !!cfg.showInclusivePrices,
-    });
-    return renderBillToHtml(bill, cfg, {
-      title: bill.title,
-      address: bill.address,
-      phone: bill.phone,
-      notes: bill.notes || undefined,
-      showPayments: true,
-      showChange: true,
-      showDeliveryLine: true,
       qrcodes: data && data.qrcodes,
       qrcode: data && data.qrcode,
     });
@@ -713,7 +684,7 @@ function renderPreview(printType, data, config) {
     return renderRefundToHtml(data, config);
   }
 
-  throw new Error(`Unknown printType: ${printType}. Use: temp, final, delivery, kitchen, summary, refund`);
+  throw new Error(`Unknown printType: ${printType}. Use: temp, final, kitchen, summary, refund`);
 }
 
 module.exports = { renderPreview, renderBillToHtml, renderSummaryToHtml, renderKitchenToHtml, renderRefundToHtml };

@@ -45,11 +45,11 @@ function formatDiscountMinimalPrint(name, valueType, rate, fallback) {
 }
 
 /**
- * Print bill layout for ESC/POS final/temp/delivery receipts.
+ * Print bill layout for ESC/POS final/temp receipts.
  * @param {Object} printer - escpos Printer
- * @param {Object} bill - from mapOrderToTemp/Final/Delivery
+ * @param {Object} bill - from mapOrderToTemp/Final
  * @param {Object} config - normalized config (currencySymbol, showVatNumber, vatName, vatNumber, labels, locale)
- * @param {Object} opts - { title, address?, phone?, notes?, thankYou?, showPayments?, showChange?, showDeliveryLine?, isFinal?, qrcode?, qrcodes? }
+ * @param {Object} opts - { title, address?, phone?, notes?, thankYou?, showPayments?, showChange?, isFinal?, qrcode?, qrcodes? }
  * @returns {Promise<void>}
  */
 function printBillLayout(printer, bill, config, opts) {
@@ -61,14 +61,12 @@ function printBillLayout(printer, bill, config, opts) {
     address,
     phone,
     customerName,
-    deliveryTime,
     qrcode,
     qrcodes,
     notes,
     thankYou,
     showPayments = false,
     showChange = false,
-    showDeliveryLine = false,
     isFinal = false,
   } = opts || {};
 
@@ -85,13 +83,11 @@ function printBillLayout(printer, bill, config, opts) {
   const customerLabel = L.customer || 'Customer';
   const phoneLabel = L.phone || 'Phone';
   const addressLabel = L.address || 'Address';
-  const deliveryTimeLabel = L.deliveryTime || 'Delivery Time';
   const itemsLabel = L.items || 'Items';
   const taxLabel = L.tax || 'Tax';
   const discountLabel = L.discount || 'Discount';
   const extraLabel = L.extra || 'Extra';
   const tipLabel = L.tip || 'Tip';
-  const deliveryChargesLabel = L.deliveryCharges || 'Delivery Charges';
   const totalLabel = L.total || 'Total';
   const paymentLabel = L.payment || 'Payment';
   const changeLabel = L.change || 'Change';
@@ -104,7 +100,6 @@ function printBillLayout(printer, bill, config, opts) {
   if (customerName) printFixedLine(printer, `${customerLabel}: ${String(customerName)}`, { align: 'left' });
   if (phone) printFixedLine(printer, `${phoneLabel}: ${String(phone)}`, { align: 'left' });
   if (address) printFixedLine(printer, `${addressLabel}: ${String(address).slice(0, 40)}`, { align: 'left' });
-  if (deliveryTime) printFixedLine(printer, `${deliveryTimeLabel}: ${String(deliveryTime)}`, { align: 'left' });
   printDivider(printer);
 
   printFixedLine(printer, buildItemHeaderString(cfg), { align: 'left', style: 'bold' });
@@ -143,9 +138,6 @@ function printBillLayout(printer, bill, config, opts) {
   });
   if (bill.tipAmount != null && Number(bill.tipAmount) !== 0) {
     printLineLeftRight(printer, bill.tipLabel || tipLabel, formatMoney(bill.tipAmount, sym));
-  }
-  if (showDeliveryLine && bill.deliveryCharges != null && Number(bill.deliveryCharges) !== 0) {
-    printLineLeftRight(printer, deliveryChargesLabel, formatMoney(bill.deliveryCharges, sym));
   }
   printDivider(printer);
 

@@ -113,12 +113,17 @@ const parseMapCenter = (raw: unknown): {lat: number; lng: number} | undefined =>
   return {lat, lng};
 };
 
-const fetchMapCenter = async (db: DbClient): Promise<{lat: number; lng: number} | undefined> => {
+/**
+ * Weather needs a restaurant coordinate, read from the `forecast_location`
+ * setting ({lat,lng}). No screen edits it yet — the value carried over from the
+ * old map-centre row, and the report degrades to a warning when it is absent.
+ */
+const fetchForecastCenter = async (db: DbClient): Promise<{lat: number; lng: number} | undefined> => {
   try {
     const rows = unwrapQueryResult<{key?: string; value?: unknown}>(
       await db.query(
         `SELECT * FROM ${Tables.settings} WHERE key = $key LIMIT 1`,
-        {key: "map_center"},
+        {key: "forecast_location"},
       ),
     );
     return parseMapCenter(rows[0]);
@@ -221,9 +226,9 @@ export const getDemandContext = async (
     .filter(row => row.date);
 
   let weather: DemandWeatherDay[] = [];
-  const center = dates.length ? await fetchMapCenter(db) : undefined;
+  const center = dates.length ? await fetchForecastCenter(db) : undefined;
   if (!center) {
-    warnings.push("Weather omitted: delivery map center (lat/lng) is not configured.");
+    warnings.push("Weather omitted: forecast location (lat/lng) is not configured.");
   } else if (dates.length) {
     try {
       weather = await fetchWeather(center.lat, center.lng, dates[0], dates[dates.length - 1]);

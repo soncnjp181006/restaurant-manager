@@ -61,7 +61,7 @@ export const DOMAIN_PROMPT_SNIPPETS: Record<AiReportToolDomain, string> = {
 - Ledger movement totals by item: get_inventory_movements (type=purchase, issue, waste, etc.). Waste shortcut: get_waste_summary. Consumption (recipe×sold Paid dishes): get_consumption. Issuance (ledger issues): get_issuance. Sale vs consumption report: get_sale_vs_consumption.
 - Inventory needed for this Friday / next N days / what to buy: forecast_inventory_need only. Report items[] (prior Friday actual, on-hand, adjusted need, suggestedPurchaseQty) and purchaseList. Pass localEvents from the prompt; never invent events.`,
   operations: `- Orders: ${Tables.orders}. Statuses: In Progress, Paid, Cancelled, Pending, etc.
-- List orders by status: get_orders with statuses. Delivery only when user says "delivery" (deliveryOnly=true). When listing orders, make invoice numbers markdown links to /reports/order-receipt?id={orderId} so they open the printable receipt.
+- List orders by status: get_orders with statuses. When listing orders, make invoice numbers markdown links to /reports/order-receipt?id={orderId} so they open the printable receipt.
 - Specific order id / "everything about this order": get_order_detail (items[].dishName are the dishes — never infer dishes from tracking alone; include fiscals + prints). Include a markdown link to /reports/order-receipt?id={order.id}.
 - Void/cancel/comp reasons: get_void_and_cancel_summary. Prep delays: get_prep_times_by_order_type, get_kitchen_station_delays.
 - Cash audit: get_cash_settlement_audit. Expenses: ${Tables.closings}. Activity/tracking: ${Tables.tracking} via get_activity_log.
@@ -103,8 +103,8 @@ export const DOMAIN_PROMPT_SNIPPETS: Record<AiReportToolDomain, string> = {
 const FULL_DATABASE_CONTEXT = `Database context:
 - Orders table: ${Tables.orders} (fields include created_at, status, items, payments, discount, tax, user, order_type)
 - Order statuses: In Progress (aliases: "in progress", "progress"), Paid, Cancelled, Spilt, Merged, Refunded, Pending
-- Delivery orders: only when the user says "delivery" — use get_orders with deliveryOnly=true. Otherwise list ALL orders for the requested statuses (dine-in, takeaway, delivery, etc.).
-- "Pending or progress" means statuses Pending AND In Progress — never restrict to delivery unless asked.
+- List ALL orders for the requested statuses (dine-in, takeaway, etc.) — never narrow to one order type unless asked.
+- "Pending or progress" means statuses Pending AND In Progress.
 - Use get_orders to list/filter orders by status (e.g. open In Progress orders). Use get_sales_summary only for completed/paid sales KPIs.
 - Order items link to dishes (menu_item / ${Tables.dishes})
 - Menu catalog: ${Tables.dishes} (active items have deleted_at = NONE). Use list_menu_items for the full catalog.

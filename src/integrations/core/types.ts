@@ -1,7 +1,6 @@
 export type IntegrationCategory =
   | 'fiscal'
   | 'payment'
-  | 'delivery'
   | 'accounting'
   | 'communication'
   | 'loyalty'

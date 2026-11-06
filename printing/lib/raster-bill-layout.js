@@ -25,12 +25,10 @@ function paintBillLayoutRaster(rc, bill, config, opts) {
     address,
     phone,
     customerName,
-    deliveryTime,
     notes,
     thankYou,
     showPayments = false,
     showChange = false,
-    showDeliveryLine = false,
   } = o;
 
   const invoiceLabel = L.invoice || 'Invoice#';
@@ -40,13 +38,11 @@ function paintBillLayoutRaster(rc, bill, config, opts) {
   const customerLabel = L.customer || 'Customer';
   const phoneLabel = L.phone || 'Phone';
   const addressLabel = L.address || 'Address';
-  const deliveryTimeLabel = L.deliveryTime || 'Delivery Time';
   const itemsLabel = L.items || 'Items';
   const taxLabel = L.tax || 'Tax';
   const discountLabel = L.discount || 'Discount';
   const extraLabel = L.extra || 'Extra';
   const tipLabel = L.tip || 'Tip';
-  const deliveryChargesLabel = L.deliveryCharges || 'Delivery Charges';
   const totalLabel = L.total || 'Total';
   const paymentLabel = L.payment || 'Payment';
   const changeLabel = L.change || 'Change';
@@ -63,7 +59,6 @@ function paintBillLayoutRaster(rc, bill, config, opts) {
   if (customerName) rc.fixedLine(`${customerLabel}: ${String(customerName)}`, { align: 'left' });
   if (phone) rc.fixedLine(`${phoneLabel}: ${String(phone)}`, { align: 'left' });
   if (address) rc.fixedLine(`${addressLabel}: ${String(address).slice(0, 40)}`, { align: 'left' });
-  if (deliveryTime) rc.fixedLine(`${deliveryTimeLabel}: ${String(deliveryTime)}`, { align: 'left' });
   rc.divider();
 
   rc.fixedLine(buildItemHeaderString(cfg), { align: 'left', style: 'bold' });
@@ -109,9 +104,6 @@ function paintBillLayoutRaster(rc, bill, config, opts) {
   });
   if (bill.tipAmount != null && Number(bill.tipAmount) !== 0) {
     rc.lineLeftRight(bill.tipLabel || tipLabel, formatMoney(bill.tipAmount, sym));
-  }
-  if (showDeliveryLine && bill.deliveryCharges != null && Number(bill.deliveryCharges) !== 0) {
-    rc.lineLeftRight(deliveryChargesLabel, formatMoney(bill.deliveryCharges, sym));
   }
   rc.divider();
 

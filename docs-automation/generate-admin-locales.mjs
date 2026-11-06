@@ -162,7 +162,7 @@ const T = {
           title: 'Tipos de orden',
           steps: [
             'Abra la pestaña Tipos de orden.',
-            'Configure comedor, para llevar, delivery y otros modos.',
+            'Configure comedor, para llevar y otros modos.',
             'Los tipos de orden afectan cocina, informes y comportamiento predeterminado.',
           ],
           caption: 'Pestaña Tipos de orden.',

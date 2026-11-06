@@ -15,10 +15,10 @@ Printer records store connection details used across receipt, kitchen, and repor
 
 ### Print settings
 
-Print settings control templates and options for temp bills, final receipts, kitchen tickets, summaries, delivery slips, and refunds.
+Print settings control templates and options for temp bills, final receipts, kitchen tickets, summaries, and refunds.
 
 1. Open the Print settings tab.
-2. Edit each print type (Temp, Final, Kitchen, Summary, Delivery).
+2. Edit each print type (Temp, Final, Kitchen, Summary).
 3. Save so new orders use the updated layout and fields.
 
 
@@ -45,7 +45,7 @@ Print settings control templates and options for temp bills, final receipts, kit
 
 ### Print setting form
 
-Each print job type (temp bill, final receipt, kitchen, summary, delivery, refund) has its own template.
+Each print job type (temp bill, final receipt, kitchen, summary, refund) has its own template.
 
 1. Open Print settings tab and pick a job type.
 2. Choose **Print mode** (Text ESC/POS or Raster image) and **Paper width** (58 mm or 80 mm).

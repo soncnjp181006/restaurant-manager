@@ -59,7 +59,6 @@ export const ACCESS_RULE_MODULES: Record<string, AccessRuleModule> = {
     label: "Reports",
     children: [
       "reports",
-      "reports.delivery_density",
       "reports.cash_closing",
       "reports.sales_dashboard",
       "reports.inventory_dashboard",
@@ -138,15 +137,6 @@ export const ACCESS_RULE_MODULES: Record<string, AccessRuleModule> = {
   order_display: {
     label: "Order Display",
     children: ["order_display"],
-  },
-  delivery: {
-    label: "Delivery",
-    children: [
-      "delivery",
-      "delivery.orders",
-      "delivery.areas",
-      "delivery.settings",
-    ],
   },
   admin: {
     label: "Administration",
@@ -243,10 +233,6 @@ export const ACCESS_RULE_MODULES: Record<string, AccessRuleModule> = {
       "admin.security_alerts",
       "admin.catalog_publish",
     ],
-  },
-  riders: {
-    label: "Riders",
-    children: [],
   },
   tips: {
     label: "Tip Distribution",
@@ -378,9 +364,7 @@ export const LEGACY_MODULE_MAP: Record<string, string | string[]> = {
   Closing: "closing",
   Kitchen: "kitchen",
   "Order Display": "order_display",
-  Delivery: "delivery",
   Admin: "admin",
-  Riders: "riders",
   Tips: ["tips", "reports.tips"],
   Inventory: "inventory",
   HR: "hr",
@@ -425,7 +409,6 @@ export const LEGACY_MODULE_MAP: Record<string, string | string[]> = {
   "Server sales": "summary.server_sales",
 
   // Reports
-  "Delivery Density": "reports.delivery_density",
   "Cash closing": "reports.cash_closing",
   "Sales dashboard": "reports.sales_dashboard",
   "Inventory dashboard": "reports.inventory_dashboard",
@@ -493,11 +476,6 @@ export const LEGACY_MODULE_MAP: Record<string, string | string[]> = {
 
   // Closing
   "Edit Closing": "closing.edit",
-
-  // Delivery
-  "Delivery orders": "delivery.orders",
-  "Delivery areas": "delivery.areas",
-  "Delivery settings": "delivery.settings",
 
   // Admin
   Dishes: "admin.dishes",

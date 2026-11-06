@@ -16,7 +16,7 @@ import {calculateOrderItemPrice} from "@/lib/cart.ts";
 import {safeNumber} from "@/lib/utils.ts";
 
 const TICKET_TIME_NOTE =
-  "Ticket time = order created_at to completed_at (check close). Not rider delivery time.";
+  "Ticket time = order created_at to completed_at (check close).";
 
 const formatUserName = (user?: {first_name?: string; last_name?: string; login?: string} | null): string => {
   if (!user || typeof user !== "object") {

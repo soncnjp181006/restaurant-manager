@@ -53,20 +53,16 @@ export const AdminExtras = () => {
       cell: info => withCurrency(Number(info.getValue() || 0)),
     }),
     columnHelper.accessor("payment_types", {
-      header: "Payment types",
+      header: t('columns.paymentTypes'),
       cell: info => info.getValue()?.length || "-",
     }),
     columnHelper.accessor("order_types", {
-      header: "Order types",
+      header: t('columns.orderTypes'),
       cell: info => info.getValue()?.length || "-",
     }),
     columnHelper.accessor("tables", {
       header: t('columns.tables'),
       cell: info => info.getValue()?.length || "-",
-    }),
-    columnHelper.accessor("delivery", {
-      header: t('columns.delivery'),
-      cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck} className="text-success-500" /> : <FontAwesomeIcon icon={faTimes} className="text-danger-500" />,
     }),
     columnHelper.accessor("apply_to_all", {
       header: t('columns.applyToAll'),
@@ -163,7 +159,6 @@ export const AdminExtras = () => {
               name: row.name ?? '',
               value: String(row.value ?? ''),
               apply_to_all: row.apply_to_all ? 'true' : 'false',
-              delivery: row.delivery ? 'true' : 'false',
               payment_types: (row.payment_types ?? []).map((item) => item.name).join('|'),
               order_types: (row.order_types ?? []).map((item) => item.name).join('|'),
               tables: (row.tables ?? []).map((item) => item.name).join('|'),

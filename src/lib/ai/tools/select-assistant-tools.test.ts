@@ -60,8 +60,8 @@ describe("selectAssistantToolsForPrompt", () => {
     expect(names).not.toContain("propose_create_dishes");
   });
 
-  it("tables on delivery floor includes manage read tools", () => {
-    const names = toolNames("show tables on delivery floor", ["admin.tables", "admin.floors"]);
+  it("tables on terrace floor includes manage read tools", () => {
+    const names = toolNames("show tables on terrace floor", ["admin.tables", "admin.floors"]);
     expect(names).toContain("list_tables");
     expect(names).toContain("list_floors");
   });

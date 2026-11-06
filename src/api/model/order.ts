@@ -54,8 +54,6 @@ export interface Order extends ID{
   cashier?: User
   tags?: string[]
 
-  delivery?: any
-
   extras?: OrderExtra[]
 
   payments?: OrderPayment[]

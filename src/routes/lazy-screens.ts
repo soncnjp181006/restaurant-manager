@@ -31,10 +31,6 @@ export const OrderDisplayScreen = maybeLazy(
   __BUILD_MODULE_order_display__,
   () => import('@/screens/order-display.tsx').then((m) => ({ default: m.OrderDisplayScreen })),
 );
-export const Delivery = maybeLazy(
-  __BUILD_MODULE_delivery__,
-  () => import('@/screens/delivery/').then((m) => ({ default: m.Index })),
-);
 export const Admin = maybeLazy(
   __BUILD_MODULE_admin__,
   () => import('@/screens/admin').then((m) => ({ default: m.Admin })),
@@ -195,10 +191,6 @@ export const SalesDashboardReport = maybeLazy(
 export const InventoryDashboardReport = maybeLazy(
   __BUILD_MODULE_reports__,
   () => import('@/screens/reports/inventory.dashboard.report.tsx').then((m) => ({ default: m.InventoryDashboardReport })),
-);
-export const DeliveryDensityReport = maybeLazy(
-  __BUILD_MODULE_reports__,
-  () => import('@/screens/reports/delivery.density.report.tsx').then((m) => ({ default: m.DeliveryDensityReport })),
 );
 export const TaxReport = maybeLazy(
   __BUILD_MODULE_reports__,

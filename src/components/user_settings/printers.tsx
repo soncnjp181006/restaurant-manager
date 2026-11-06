@@ -19,7 +19,6 @@ const PRINTER_SETTING_KEYS = {
   temp_print_printers: "temp_print_printers",
   final_print_printers: "final_print_printers",
   refund_print_printers: "refund_print_printers",
-  delivery_print_printers: "delivery_print_printers",
   summary_print_printers: "summary_print_printers",
 } as const;
 
@@ -38,7 +37,6 @@ interface PrinterSettingsForm {
   temp_print_printers: PrinterOption[];
   final_print_printers: PrinterOption[];
   refund_print_printers: PrinterOption[];
-  delivery_print_printers: PrinterOption[];
   summary_print_printers: PrinterOption[];
 }
 
@@ -46,7 +44,6 @@ const defaultFormValues: PrinterSettingsForm = {
   temp_print_printers: [],
   final_print_printers: [],
   refund_print_printers: [],
-  delivery_print_printers: [],
   summary_print_printers: [],
 };
 
@@ -326,23 +323,6 @@ export const Printersettings = () => {
             <label className="form-label">{t('settings:printers.refundPrint')}</label>
             <Controller
               name="refund_print_printers"
-              control={control}
-              render={({ field }) => (
-                <ReactSelect<PrinterOption, true>
-                  isMulti
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={printerOptions}
-                  placeholder={t('settings:printers.selectPrinters')}
-                />
-              )}
-            />
-          </div>
-
-          <div>
-            <label className="form-label">{t('settings:printers.deliveryPrint')}</label>
-            <Controller
-              name="delivery_print_printers"
               control={control}
               render={({ field }) => (
                 <ReactSelect<PrinterOption, true>

@@ -31,7 +31,6 @@ function build(printer, data = {}, config = {}) {
       thankYou: bill.thankYou,
       showPayments: true,
       showChange: true,
-      showDeliveryLine: false,
       isFinal: true,
     }).then(() => {
       sendCashDrawerPulse(printer);

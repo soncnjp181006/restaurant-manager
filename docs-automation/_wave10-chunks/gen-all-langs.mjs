@@ -201,7 +201,7 @@ function secAdminKitchenPt() {
 function secAdminPrintPt() {
   return { sections: {
     'printer-form': { title: 'Formulário de impressora', steps: ['Impressoras → Adicionar.', 'Conexão e tipo.'], caption: 'Formulário de impressora.', fields: [f('Nome','Nome amigável.'), f('Tipo','Rede, USB, etc.'), f('IP / Porta','Destino de rede.'), f('VID / PID','USB.')] },
-    'print-setting-form': { title: 'Configuração de impressão', steps: ['Configurações → tipo de modelo.', 'Seções do recibo.', 'Salve para novos pedidos.'], caption: 'Modelo de impressão.', fields: [f('Tipo de impressão','Provisório, final, cozinha, resumo, delivery.'), f('Editor de seções','Blocos ordenados.'), f('Cópias / Opções','Padrões.')] },
+    'print-setting-form': { title: 'Configuração de impressão', steps: ['Configurações → tipo de modelo.', 'Seções do recibo.', 'Salve para novos pedidos.'], caption: 'Modelo de impressão.', fields: [f('Tipo de impressão','Provisório, final, cozinha, resumo.'), f('Editor de seções','Blocos ordenados.'), f('Cópias / Opções','Padrões.')] },
   }};
 }
 

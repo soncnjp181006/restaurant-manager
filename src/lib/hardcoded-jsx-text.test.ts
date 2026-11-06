@@ -5,19 +5,22 @@ import { describe, expect, it } from 'vitest';
 /**
  * Regression gate for English text leaking into the Vietnamese UI.
  *
- * Contract: operator/customer facing text comes from i18n. The scanner has four
+ * Contract: operator/customer facing text comes from i18n. The scanner has seven
  * passes, each added after a real leak it would have caught:
- *   1. sentences in JSX text nodes   ("No delivery orders...")
+ *   1. sentences in JSX text nodes   ("No open orders...")
  *   2. literal attributes            placeholder="Search dishes"
  *   3. single-word labels            "Taxes", "Qty", "Notes"  (button/column labels)
- *   4. prop expressions              title={data ? `…` : "Create new supplier"}
+ *   4. inline button labels          `…> Item</Button>`
+ *   5. prop expressions              title={data ? `…` : "Create new supplier"}
+ *   6. column config literals        header: "Payment types"  (react-table `columns`)
+ *   7. bare JSX text lines           a lone "Add item" under a button
  * Code-heavy lines (`{}`, backticks, t(...)) are skipped; labels are capitalised by
  * convention, so requiring an uppercase first letter filters out fragments like
  * `info.getValue()` without a per-file allowlist. Brands are allowed by content.
  */
 const SRC = path.resolve(__dirname, '..');
 const SCANNED_DIRS = ['components', 'screens'];
-const ALLOWED_TEXT = new Set<string>(['PayPal', 'M-Pesa', 'Google Maps', 'FBR', 'PRA', 'OpenStreetMap']);
+const ALLOWED_TEXT = new Set<string>(['PayPal', 'M-Pesa', 'FBR', 'PRA']);
 
 type Hit = { file: string; line: number; text: string; kind: string };
 
@@ -95,13 +98,13 @@ function scan(): Hit[] {
           hits.push({ file: relative, line: index + 1, text, kind: 'label' });
         }
       }
-      // 5. inline button labels on the same line as the tag (`…> Item</Button>`)
+      // 4. inline button labels on the same line as the tag (`…> Item</Button>`)
       for (const match of line.matchAll(/>\s*([A-Z][A-Za-z]{2,})\s*<\/Button>/g)) {
         const text = match[1];
         if (ALLOWED_TEXT.has(text)) continue;
         hits.push({ file: relative, line: index + 1, text, kind: 'button' });
       }
-      // 4. English literals inside prop expressions
+      // 5. English literals inside prop expressions
       for (const match of line.matchAll(/(title|label|placeholder|aria-label|alt)=\{([^}]+)\}/g)) {
         const expression = match[2];
         if (/\bt\(|i18n\.t\(/.test(expression)) continue;
@@ -111,7 +114,14 @@ function scan(): Hit[] {
           hits.push({ file: relative, line: index + 1, text, kind: `${match[1]} expr` });
         }
       }
-      // 5. bare JSX text on its own line (no tag, no braces) — e.g. a caret
+      // 6. English literals in react-table column configs — `header: "Payment types"`
+      // sat next to six translated siblings in the same array and stayed English.
+      for (const match of line.matchAll(/^\s*(header|footer|emptyText)\s*:\s*(["'])([A-Z][A-Za-z0-9 ,.'’?!:&()/–—-]{2,60})\2/g)) {
+        const text = match[3];
+        if (ALLOWED_TEXT.has(text) || NON_LABELS.test(text)) continue;
+        hits.push({ file: relative, line: index + 1, text, kind: `${match[1]} col` });
+      }
+      // 7. bare JSX text on its own line (no tag, no braces) — e.g. a caret
       //    "Add item" under a button; SQL keywords are query strings, not text.
       const bare = line.trim();
       if (

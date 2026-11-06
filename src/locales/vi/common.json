@@ -251,7 +251,7 @@
     "examplesHint": "Nhấp vào một gợi ý để thử với {{name}}:",
     "examples": {
       "salesToday": "Cho tôi xem bảng tổng kết doanh thu hôm nay",
-      "tablesFloor": "Liệt kê các bàn ở khu vực Delivery",
+      "tablesFloor": "Liệt kê các bàn ở khu vực Terrace",
       "bogoDiscount": "Tạo tự động giảm giá BOGO cho món khai vị",
       "addDish": "Thêm món mới Margherita với giá x",
       "listUsers": "Liệt kê tất cả người dùng POS",

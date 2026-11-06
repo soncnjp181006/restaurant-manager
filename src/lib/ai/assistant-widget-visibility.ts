@@ -13,7 +13,7 @@ import {
 
 /**
  * Routes where the floating AI assistant should appear. Hidden on cashier-facing
- * screens (menu, orders, kitchen, delivery, etc.).
+ * screens (menu, orders, kitchen, etc.).
  */
 export const isAssistantWidgetPath = (pathname: string): boolean => {
   if (!pathname || pathname === LOGIN) return false;

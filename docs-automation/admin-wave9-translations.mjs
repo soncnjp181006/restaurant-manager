@@ -90,8 +90,8 @@ export const WAVE9 = {
         },
         'print-settings': {
           title: 'Ajustes de impresión',
-          intro: 'Controlan plantillas para cuenta provisional, recibo final, cocina, resumen y delivery.',
-          steps: ['Abra Ajustes de impresión.', 'Edite cada tipo (Provisional, Final, Cocina, Resumen, Delivery).', 'Guarde para que los nuevos pedidos usen el diseño actualizado.'],
+          intro: 'Controlan plantillas para cuenta provisional, recibo final, cocina y resumen.',
+          steps: ['Abra Ajustes de impresión.', 'Edite cada tipo (Provisional, Final, Cocina, Resumen).', 'Guarde para que los nuevos pedidos usen el diseño actualizado.'],
           caption: 'Pestaña Ajustes de impresión.',
         },
       },

@@ -75,7 +75,7 @@
       "steps": [
         "Open the Default printers card.",
         "Optionally enable system printers for this browser/terminal.",
-        "Assign printers for temp, final, refund, delivery, and summary prints.",
+        "Assign printers for temp, final, refund, and summary prints.",
         "Save printer settings when finished."
       ],
       "image": "settings-printers.png",

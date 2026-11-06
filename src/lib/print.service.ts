@@ -41,7 +41,6 @@ const PRINTER_SETTING_KEYS: Record<string, string> = {
   temp: 'temp_print_printers',
   final: 'final_print_printers',
   refund: 'refund_print_printers',
-  delivery: 'delivery_print_printers',
   summary: 'summary_print_printers',
   kitchen: 'kitchen_print_printers',
   deletion: 'kitchen_print_printers',
@@ -55,7 +54,6 @@ const PRINT_CONFIG_KEYS: Record<string, string> = {
   refund: 'Refund Print',
   kitchen: 'Kitchen Print',
   deletion: 'Deletion Print',
-  delivery: 'Delivery Print',
   summary: 'Summary Print',
   pulse: 'Final Print',
 };
@@ -233,8 +231,7 @@ export async function getPrintersForType(db: PrintDB, template: string, userId?:
   const key = PRINTER_SETTING_KEYS[template];
   if (!key) return [];
 
-  // Delivery always uses user/global DB settings (not terminal-scoped).
-  if (template !== 'delivery' && isSystemPrinterKey(key)) {
+  if (isSystemPrinterKey(key)) {
     const system = getDefaultStore().get(systemPrinterSettings);
     if (system.useSystemPrinters) {
       const ids = Array.isArray(system[key]) ? system[key] : [];

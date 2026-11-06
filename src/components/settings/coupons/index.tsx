@@ -42,7 +42,7 @@ export const AdminCoupons = () => {
       header: t('columns.description'),
     }),
     columnHelper.accessor("coupon_type", {
-      header: "Type",
+      header: t('columns.type'),
     }),
     columnHelper.accessor("discount_type", {
       header: t('columns.discountType'),
@@ -67,18 +67,18 @@ export const AdminCoupons = () => {
     }),
     columnHelper.accessor("stackable", {
       header: t('columns.stackable'),
-      cell: (info) => (info.getValue() ? "Yes" : "No"),
+      cell: (info) => (info.getValue() ? t('columns.yes') : t('columns.no')),
     }),
     columnHelper.accessor("first_order_only", {
       header: t('columns.firstOrderOnly'),
-      cell: (info) => (info.getValue() ? "Yes" : "No"),
+      cell: (info) => (info.getValue() ? t('columns.yes') : t('columns.no')),
     }),
     columnHelper.accessor("priority", {
-      header: "Priority",
+      header: t('columns.priority'),
     }),
     columnHelper.accessor("is_active", {
-      header: "Active",
-      cell: (info) => (info.getValue() ? "Yes" : "No"),
+      header: t('columns.active'),
+      cell: (info) => (info.getValue() ? t('columns.yes') : t('columns.no')),
     }),
     columnHelper.accessor("id", {
       id: "actions",

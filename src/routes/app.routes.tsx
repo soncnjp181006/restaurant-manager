@@ -9,7 +9,6 @@ import {
   ADMIN,
   CLOCK,
   CLOSING,
-  DELIVERY,
   INVENTORY,
   INVENTORY_PRINT,
   HR,
@@ -26,7 +25,6 @@ import {
   REPORTS_CONSUMPTION,
   REPORTS_COUPON,
   REPORTS_CURRENT_INVENTORY,
-  REPORTS_DELIVERY_DENSITY,
   REPORTS_DETAILED_INVENTORY,
   REPORTS_DISCOUNTS,
   REPORTS_EXPENSE,
@@ -82,7 +80,6 @@ import {
   AuditReport,
   BuffetReport,
   Closing,
-  Delivery,
   HrScreen,
   IntegrationsScreen,
   Inventory,
@@ -98,7 +95,6 @@ import {
   ConsumptionReport,
   CouponReport,
   CurrentInventoryReport,
-  DeliveryDensityReport,
   DetailedInventoryReport,
   DiscountsReport,
   ExpenseReport,
@@ -164,7 +160,6 @@ export const AppRoutes = () => (
         <Route path={CLOCK} element={<Clock/>}/>
         {gated(__BUILD_MODULE_closing__, Closing, CLOSING)}
         {gated(__BUILD_MODULE_order_display__, OrderDisplayScreen, ORDER_DISPLAY)}
-        {gated(__BUILD_MODULE_delivery__, Delivery, DELIVERY)}
         {gated(__BUILD_MODULE_admin__, Admin, ADMIN)}
         {gated(__BUILD_MODULE_settings__, Settings, SETTINGS)}
         {gated(__BUILD_MODULE_integrations__, IntegrationsScreen, INTEGRATIONS)}
@@ -194,7 +189,6 @@ export const AppRoutes = () => (
         {gated(__BUILD_MODULE_reports__, ProductMixSummaryReport, REPORTS_PRODUCT_MIX_SUMMARY)}
         {gated(__BUILD_MODULE_reports__, ProductMixWeeklyReport, REPORTS_PRODUCT_MIX_WEEKLY)}
         {gated(__BUILD_MODULE_reports__, SalesAdvancedReport, REPORTS_SALES_ADVANCED)}
-        {gated(__BUILD_MODULE_reports__, DeliveryDensityReport, REPORTS_DELIVERY_DENSITY)}
         {gated(__BUILD_MODULE_reports__, SalesHourlyLabourReport, REPORTS_SALES_HOURLY_LABOUR)}
         {gated(__BUILD_MODULE_reports__, SalesHourlyLabourWeeklyReport, REPORTS_SALES_HOURLY_LABOUR_WEEKLY)}
         {gated(__BUILD_MODULE_reports__, SalesServerReport, REPORTS_SALES_SERVER)}

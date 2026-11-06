@@ -104,7 +104,7 @@ Tips use the same draft-then-OK pattern as tax and service charges.
 
 ### Extras
 
-Configured extras (for example delivery fees tied to tables or payment types) show as rows under tip. There is no middle editor.
+Configured extras (for example service charges tied to tables or payment types) show as rows under tip. There is no middle editor.
 
 1. If extras apply to this order, each extra name and amount appears in the totals list.
 2. Tap an extra row to toggle it off (struck through / zero) or back on.

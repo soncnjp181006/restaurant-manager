@@ -1,6 +1,6 @@
 # Payment types, taxes, and order types
 
-Configure how orders are classified and settled: payment methods, tax rules, and service types (dine-in, delivery, etc.).
+Configure how orders are classified and settled: payment methods, tax rules, and service types (dine-in, takeaway, etc.).
 
 ### Payment types
 
@@ -25,7 +25,7 @@ Taxes apply to dishes and appear on receipts and reports.
 ### Order types
 
 1. Open the Order types tab.
-2. Configure dine-in, takeaway, delivery, and other service modes.
+2. Configure dine-in, takeaway, and other service modes.
 3. Order types drive kitchen routing, reporting, and default behaviors.
 
 
@@ -88,7 +88,7 @@ Payment types include local methods and Remote gateway types that delegate to St
 ### Order type form
 
 1. Open Payments → Order types.
-2. Set name and behavior flags (dine-in, takeaway, delivery).
+2. Set name and behavior flags (dine-in, takeaway).
 3. Save — used on tables, POS, and reporting.
 
 **Fields**

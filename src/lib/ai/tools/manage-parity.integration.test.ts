@@ -17,7 +17,7 @@ describe("manage parity routing", () => {
   ];
 
   it.each([
-    ["tables on Delivery floor", ["list_tables", "list_floors"]],
+    ["tables on Terrace floor", ["list_tables", "list_floors"]],
     ["list active automatic discounts", ["list_discounts"]],
     ["list users", ["list_users"]],
     ["list modifier groups", ["list_modifier_groups"]],
@@ -29,7 +29,7 @@ describe("manage parity routing", () => {
   });
 
   it.each([
-    ["add table 20 on Delivery floor", "propose_create_tables"],
+    ["add table 20 on Terrace floor", "propose_create_tables"],
     ["buy 2 get 1 free on Classic Pizzas category", "propose_create_discounts"],
     ["create user John PIN 1234 role Manager", "propose_create_users"],
     ["create modifier group Sizes", "propose_create_modifier_groups"],

@@ -79,7 +79,7 @@ Vào `http://localhost:5173` → render "Login", tab PIN/FORM, bàn phím số 1
 
 ### T2 — Đăng nhập PIN `1234` ✅
 
-Nhập PIN bằng click bàn phím → vào thẳng màn hình chính: sidebar đầy đủ (Menu, Orders, Summary, Kitchen, Order Display, Delivery, Closing, Inventory, Manage, Reports, Tip Dist., Accounts, HR, Integrations, Settings), trạng thái sync, user "(Manager)". App mở dialog "AI dish recipe lookup" (what's-new) — bấm **GOT IT** để đóng, hiển thị đúng.
+Nhập PIN bằng click bàn phím → vào thẳng màn hình chính: sidebar đầy đủ (Menu, Orders, Summary, Kitchen, Order Display, Closing, Inventory, Manage, Reports, Tip Dist., Accounts, HR, Integrations, Settings), trạng thái sync, user "(Manager)". App mở dialog "AI dish recipe lookup" (what's-new) — bấm **GOT IT** để đóng, hiển thị đúng.
 
 ![T2 dialog what's-new](../scratch/gui-test-screenshots/t2_whatsnew_dialog.png)
 
@@ -97,7 +97,7 @@ Mở đơn có sẵn **ORDER# 2 / Bàn 11**: menu "Món chính" hiện "Cà phê
 
 ### T5 — Màn Order Display (danh sách đơn) ✅
 
-2 thẻ đơn khớp đúng 2 dòng `order` trong MySQL: **Order# AB8GRT** (Delivery, IN PROGRESS, Kashif, 4 món ₫116.000) và **Order# 2** (Delivery, IN PROGRESS, Manager, 2 món ₫58.000). Bộ lọc status/types/floors/users/date + OPEN CASH DRAWER/BLOCKS hiển thị đúng.
+2 thẻ đơn khớp đúng 2 dòng `order` trong MySQL: **Order# AB8GRT** (IN PROGRESS, Kashif, 4 món ₫116.000) và **Order# 2** (IN PROGRESS, Manager, 2 món ₫58.000). Bộ lọc status/types/floors/users/date + OPEN CASH DRAWER/BLOCKS hiển thị đúng.
 
 ![T5 Order Display](../scratch/gui-test-screenshots/t5_order_display.png)
 
@@ -231,7 +231,7 @@ Mọi lỗi ở §5 đã được sửa, kiểm thử bằng unit/integration te
 
 | PIN | User | Role | Module chính |
 |---|---|---|---|
-| `1234` | Kashif | **order taker** | menu, orders (đầy đủ action), reports (nhiều loại), closing, delivery, settings (một phần) |
+| `1234` | Kashif | **order taker** | menu, orders (đầy đủ action), reports (nhiều loại), closing, settings (một phần) |
 | `5555` | Manager | **Master** | gần như toàn bộ (summary, kitchen, order_display, inventory, admin, tips, accounts, hr, integrations, settings.*) |
 | `0000` | Ahmed | order taker | như Kashif |
 | `8888` | cashier | Cashier | menu, orders |
@@ -243,7 +243,6 @@ Mọi lỗi ở §5 đã được sửa, kiểm thử bằng unit/integration te
 |---|---|---|
 | Menu | ✅ mở tự do | — |
 | Orders | ✅ mở tự do | — |
-| Delivery | ✅ mở tự do | — |
 | Closing | ✅ mở tự do | — |
 | Reports | ✅ mở tự do | — |
 | Settings | ✅ mở tự do | — |
@@ -269,7 +268,7 @@ Mọi lỗi ở §5 đã được sửa, kiểm thử bằng unit/integration te
 
 ### 9.3 BUG-4 (P1): dbproxy không resolve record link khi truy vấn — `user_role.roles` luôn rỗng
 
-- **Phát hiện tiếp:** sau khi cài `array::intersect`, query xác thực vẫn trả 0 dòng. Debug từng predicate cho thấy **dbproxy không tự đi qua record link** khi đánh giá biểu thức: `user_role.roles` thấy `user_role` là chuỗi rid `"user_role:manager"` → `.roles` trên chuỗi → rỗng. SurrealDB gốc traverse link ngầm (tính năng cốt lõi), nên mọi query dạng `WHERE <link>.<field> …` **im lặng trả rỗng** trên dbproxy+MySQL — ảnh hưởng pin-auth, password-auth và danh sách rider ở popup Delivery (`array::find(user_role.roles, 'Riders')`).
+- **Phát hiện tiếp:** sau khi cài `array::intersect`, query xác thực vẫn trả 0 dòng. Debug từng predicate cho thấy **dbproxy không tự đi qua record link** khi đánh giá biểu thức: `user_role.roles` thấy `user_role` là chuỗi rid `"user_role:manager"` → `.roles` trên chuỗi → rỗng. SurrealDB gốc traverse link ngầm (tính năng cốt lõi), nên mọi query dạng `WHERE <link>.<field> …` **im lặng trả rỗng** trên dbproxy+MySQL — ảnh hưởng pin-auth và password-auth.
 - **Sửa (đúng tầng engine):** `dbproxy/src/engine.mjs` thêm `collectPathRoots()` (quét AST tìm mọi đường dẫn chấm — node `get` lồng `path` — kể cả `SELECT VALUE`) + `hydrateTraversalRoots()` (nạp bản ghi liên kết vào **bản sao** các dòng trước khi evaluate WHERE/projection — `SELECT *` vẫn trả rid như SurrealDB, đã có test bảo vệ). Áp dụng cho WHERE của SELECT, UPDATE, DELETE và projection `SELECT VALUE`.
 - **Test:** integration test chạy **đúng query** của `pin-auth.tsx` (đúng module → xác thực được manager; sai module → từ chối) + test traversal cho SELECT VALUE/WHERE/UPDATE WHERE — **dbproxy 65/65 pass**.
 
@@ -285,14 +284,13 @@ Mỗi PIN đều được **đăng nhập thật qua màn hình Login** (PIN pad
 
 | PIN | User (xác minh trên UI) | Role | Đăng nhập | Trang mở tự do | Trang khóa (mở được bằng PIN manager `5555`) |
 |---|---|---|---|---|---|
-| `1234` | **Kashif ali** | order taker | ✅ thẳng (đang có time_entry mở) | menu, orders, delivery, closing, reports, settings (một phần) | summary, kitchen, order-display, inventory, admin, tip-dist., accounts, hr, integrations |
+| `1234` | **Kashif ali** | order taker | ✅ thẳng (đang có time_entry mở) | menu, orders, closing, reports, settings (một phần) | summary, kitchen, order-display, inventory, admin, tip-dist., accounts, hr, integrations |
 | `5555` | **Manager 1** | **Master** | ✅ thẳng, không gate | **tất cả 11 mục — không có 🔒** | — |
 | `0000` | **Ahmed Ali** | order taker | ✅ qua gate "Clock In Required" | như Kashif (cùng role) | như Kashif |
 | `8888` | **cashier 2** | Cashier | ✅ qua gate | menu, orders | cả 10 mục quản lý kể cả reports |
 | `9999` | **Inventory User** | Inventory | ✅ qua gate | inventory, reports | còn lại (⚠️ DB có 2 user trùng PIN 9999 — "Inventory User" và "Cashier"; đăng nhập vào user khớp bcrypt đầu tiên) |
 
 Ghi chú:
-- Tài khoản **`rider`** chỉ có **Form login** (username + password) và password trong DB là bcrypt hash không rõ plaintext — không kiểm thử được; cần reset mật khẩu nếu muốn dùng (đã ghi nhận từ [`MIGRATION-MYSQL.md`](MIGRATION-MYSQL.md)).
 - Chu kỳ Clock In/Clock Out của các tài khoản test đã được đóng đủ — trong DB chỉ còn time_entry đang mở của Kashif (1234) như trước phiên kiểm thử.
 - Sau khi đăng nhập bằng một PIN, **nhấn Lock** trên sidebar cũng yêu cầu duyệt manager cho `settings.access_control` — cùng cơ chế protectAction.
 

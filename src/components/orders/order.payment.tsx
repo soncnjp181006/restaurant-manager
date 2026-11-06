@@ -158,7 +158,6 @@ export const OrderPayment = ({
     return new Set((paymentTypes || []).map(item => item.payment_type?.id?.toString()).filter(Boolean));
   }, [paymentTypes]);
 
-  const isDeliveryOrder = !!order?.delivery;
   const orderTypeId = order?.order_type?.id?.toString();
   const tableId = order?.table?.id?.toString();
 
@@ -172,7 +171,6 @@ export const OrderPayment = ({
           paymentTypeIds: selectedPaymentTypeIds,
           orderTypeId,
           tableId,
-          isDelivery: isDeliveryOrder,
         }),
       )
       .forEach((item) => {
@@ -180,7 +178,7 @@ export const OrderPayment = ({
       });
 
     return mapped;
-  }, [settings.extras, selectedPaymentTypeIds, orderTypeId, tableId, isDeliveryOrder]);
+  }, [settings.extras, selectedPaymentTypeIds, orderTypeId, tableId]);
 
   useEffect(() => {
     setExtraToggles(prev => {

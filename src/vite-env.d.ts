@@ -32,7 +32,6 @@ declare const __BUILD_MODULE_orders__: boolean;
 declare const __BUILD_MODULE_summary__: boolean;
 declare const __BUILD_MODULE_kitchen__: boolean;
 declare const __BUILD_MODULE_order_display__: boolean;
-declare const __BUILD_MODULE_delivery__: boolean;
 declare const __BUILD_MODULE_closing__: boolean;
 declare const __BUILD_MODULE_inventory__: boolean;
 declare const __BUILD_MODULE_admin__: boolean;

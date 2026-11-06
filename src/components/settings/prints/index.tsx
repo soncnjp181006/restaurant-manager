@@ -17,7 +17,7 @@ export const AdminPrints = () => {
   const { t } = useTranslation(['admin', 'common', 'toast']);
   const { protectAction } = useSecurity();
   const loadHook = useApi<SettingsData<Setting>>(Tables.settings, [
-    '(key = "Temp Print" or key = "Final Print" or key = "Kitchen Print" or key = "Summary Print" or key = "Delivery Print" or key = "Refund Print")'
+    '(key = "Temp Print" or key = "Final Print" or key = "Kitchen Print" or key = "Summary Print" or key = "Refund Print")'
   ], ['priority asc']);
 
   const [data, setData] = useState<Setting>();

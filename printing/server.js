@@ -54,7 +54,7 @@ app.get('/print/preview', (req, res) => {
 <body>
   <h1>Receipt preview</h1>
   <p>Same JSON as <code>POST /print</code> (printers ignored). Choose type and paste <code>data</code> + <code>config</code>.</p>
-  <label>Print type <select id="pt"><option value="temp">temp (Pre-Sale)</option><option value="final">final</option><option value="delivery">delivery</option><option value="kitchen">kitchen</option><option value="summary">summary</option><option value="refund">refund</option></select></label>
+  <label>Print type <select id="pt"><option value="temp">temp (Pre-Sale)</option><option value="final">final</option><option value="kitchen">kitchen</option><option value="summary">summary</option><option value="refund">refund</option></select></label>
   <label>JSON body (must include <code>data</code> with <code>order</code>; for refund include <code>data.originalOrder</code> too)</label>
   <textarea id="json">{
   "data": {
@@ -73,7 +73,6 @@ app.get('/print/preview', (req, res) => {
       "service_charge": 1,
       "service_charge_type": "Fixed",
       "service_charge_amount": 1,
-      "delivery": { "delivery_charges": 149 },
       "payments": [{ "payment_type": { "name": "Cash" }, "amount": 697.56 }]
     }
   },

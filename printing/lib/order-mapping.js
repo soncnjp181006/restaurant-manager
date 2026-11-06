@@ -2,7 +2,7 @@
 
 /**
  * Map Order (from src/api/model/order.ts) plain object to print-builder shapes.
- * Order: { invoice_number, split, created_at, table, items, tax_amount, discount_amount, service_charge_amount, tip_amount, payments, customer, delivery, order_type, tags, ... }
+ * Order: { invoice_number, split, created_at, table, items, tax_amount, discount_amount, service_charge_amount, payments, customer, order_type, tags, ... }
  * OrderItem: { item (Dish), quantity, price, comments, deleted_at, is_refunded, is_suspended, modifiers, ... }
  */
 
@@ -166,16 +166,8 @@ function getOrderItems(order, showInclusivePrices) {
 }
 
 /**
- * Delivery charges from order.delivery_charges or order.delivery. Not from extras (extras are in extrasTotal).
+ * Tax label built from order item taxes, falling back to the legacy order-level tax.
  */
-function getOrderDeliveryCharges(order) {
-  if (!order) return 0;
-  if (order.delivery_charges != null) return Number(order.delivery_charges);
-  const d = order.delivery;
-  if (d && (d.delivery_charges != null || d.charges != null)) return Number(d.delivery_charges || d.charges || 0);
-  return 0;
-}
-
 function getOrderTaxLabel(order) {
   if (!order) return 'Tax';
   // Handle multiple taxes from order items
@@ -249,8 +241,7 @@ function getOrderPaymentSummary(order, total) {
 
 /**
  * Totals to match final.bill / _common.bill:
- * total = itemsTotal + extrasTotal - discount_amount + tax_amount + service_charge_amount + tip_amount.
- * totalWithDelivery = total + deliveryCharges (for delivery slip).
+ * total = itemsTotal + extrasTotal - discount_amount + tax_amount + service_charge_amount.
  * itemsTotal is always net (exclusive), even when display line amounts are gross.
  */
 function getOrderTotals(order) {
@@ -279,11 +270,8 @@ function getOrderTotals(order) {
   }
   
   const service = Number(order.service_charge_amount || 0);
-  const deliveryCharges = getOrderDeliveryCharges(order);
-  const tip = Number(order.tip_amount || 0);
-  const total = itemsTotal + extrasTotal - discountAmount + tax + service + tip;
-  const totalWithDelivery = total + deliveryCharges;
-  return { itemsTotal, discountAmount, extrasTotal, tax, service, deliveryCharges, tip, total, totalWithDelivery };
+  const total = itemsTotal + extrasTotal - discountAmount + tax + service;
+  return { itemsTotal, discountAmount, extrasTotal, tax, service, total };
 }
 
 /**
@@ -335,34 +323,9 @@ function getOrderType(order) {
   return '';
 }
 
-/**
- * @param {Object} order
- * @returns {string}
- */
-function getOrderDeliveryAddress(order) {
-  if (!order) return '';
-  const d = order.delivery;
-  const c = order.customer;
-  return (d && d.place) || (d && d.address) || (c && c.address) || '';
-}
-
 function getOrderCustomerName(order) {
   if (!order || !order.customer) return '';
   return order.customer.name || '';
-}
-
-function getOrderDeliveryTime(order) {
-  if (!order || !order.delivery) return '';
-  const dt = order.delivery.deliveryTime;
-  if (!dt) return '';
-  if (dt === 'now' || dt === 'asap') return 'ASAP';
-  const d = dt instanceof Date ? dt : new Date(dt);
-  if (isNaN(d.getTime())) return String(dt);
-  const h = d.getHours();
-  const min = String(d.getMinutes()).padStart(2, '0');
-  const am = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-  return `${String(h12).padStart(2, '0')}:${min} ${am}`;
 }
 
 /**
@@ -373,16 +336,6 @@ function getOrderPhone(order) {
   if (!order || !order.customer) return '';
   const p = order.customer.phone;
   return p != null ? String(p) : '';
-}
-
-/**
- * @param {Object} order
- * @returns {string}
- */
-function getOrderDeliveryNotes(order) {
-  if (!order) return '';
-  const d = order.delivery;
-  return (d && (d.notes || d.notes_extra)) || '';
 }
 
 /**
@@ -514,13 +467,12 @@ function formatDiscountMinimal(name, valueType, rate, fallback) {
 /**
  * Common bill shape aligned with _common.bill.tsx and final.bill.tsx.
  * @param {Object} order
- * @param {{ forDelivery?: boolean, showInclusivePrices?: boolean, timezone?: string, locale?: string }} opts - forDelivery: use totalWithDelivery and include deliveryCharges in total
+ * @param {{ showInclusivePrices?: boolean, timezone?: string, locale?: string }} opts
  */
 function mapOrderToBill(order, opts) {
   const tot = getOrderTotals(order);
-  const forDelivery = opts && opts.forDelivery;
   const showInclusivePrices = !!(opts && opts.showInclusivePrices);
-  const total = forDelivery ? tot.totalWithDelivery : tot.total;
+  const total = tot.total;
   const pay = getOrderPaymentSummary(order, total);
   const items = getOrderItems(order, showInclusivePrices);
   const tipLabel = order && order.tip_type === 'Percent' ? 'Tip %' : 'Tip';
@@ -569,7 +521,6 @@ function mapOrderToBill(order, opts) {
     extras: (order.extras || []).filter(Boolean),
     tipAmount: tot.tip,
     tipLabel,
-    deliveryCharges: tot.deliveryCharges,
     total,
     payments: pay.payments,
     change: pay.change,
@@ -583,7 +534,6 @@ function mapOrderToTemp(order, options) {
   const L = (options && options.labels) || {};
   return {
     ...mapOrderToBill(order, {
-      forDelivery: false,
       showInclusivePrices: !!(options && options.showInclusivePrices),
       timezone: options && options.timezone,
       locale: options && options.locale,
@@ -601,7 +551,6 @@ function mapOrderToFinal(order, options) {
   const L = (options && options.labels) || {};
   return {
     ...mapOrderToBill(order, {
-      forDelivery: false,
       showInclusivePrices: !!(options && options.showInclusivePrices),
       timezone: options && options.timezone,
       locale: options && options.locale,
@@ -610,27 +559,6 @@ function mapOrderToFinal(order, options) {
       ? (L.duplicateFinalBill || 'Duplicate Final Bill')
       : (L.finalBill || 'Final Bill'),
     thankYou: L.thankYou || 'Thank you!',
-  };
-}
-
-/**
- * Delivery: CommonBillParts + Delivery line + address/phone/notes + payments + Change.
- */
-function mapOrderToDelivery(order, options) {
-  const L = (options && options.labels) || {};
-  return {
-    ...mapOrderToBill(order, {
-      forDelivery: true,
-      showInclusivePrices: !!(options && options.showInclusivePrices),
-      timezone: options && options.timezone,
-      locale: options && options.locale,
-    }),
-    title: L.delivery || 'DELIVERY',
-    address: getOrderDeliveryAddress(order),
-    phone: getOrderPhone(order),
-    notes: getOrderDeliveryNotes(order),
-    customerName: getOrderCustomerName(order),
-    deliveryTime: getOrderDeliveryTime(order),
   };
 }
 
@@ -733,20 +661,16 @@ module.exports = {
   getOrderPaymentsString,
   getOrderTable,
   getOrderType,
-  getOrderDeliveryAddress,
   getOrderPhone,
-  getOrderDeliveryNotes,
   getOrderDate,
   getOrderCreatedAt,
   getOrderPriority,
   getOrderItemModifierLines,
   calculateOrderItemPricePrint,
   getOrderCustomerName,
-  getOrderDeliveryTime,
   getOrderUserName,
   mapOrderToTemp,
   mapOrderToFinal,
-  mapOrderToDelivery,
   mapOrderToKitchen,
   getRefundOrderItems,
   mapOrderToRefund,

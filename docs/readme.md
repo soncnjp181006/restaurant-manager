@@ -13,7 +13,6 @@ This is built with **React + TypeScript + TailwindCSS + SurrealDB**
 - Multiple seats on same table
 - Modifiers
 - Kitchen module
-- Delivery module
 - Integrated Admin panel
 
 ### Screenshots

@@ -23,7 +23,7 @@ describe("isPurchaseOrderPrompt", () => {
 
   it("does not treat normal customer order prompts as purchase orders", () => {
     expect(isPurchaseOrderPrompt("Show me orders with in progress status")).toBe(false);
-    expect(isPurchaseOrderPrompt("Pending delivery orders")).toBe(false);
+    expect(isPurchaseOrderPrompt("Pending dine in orders")).toBe(false);
   });
 });
 

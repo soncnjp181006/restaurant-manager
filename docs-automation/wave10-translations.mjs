@@ -1554,7 +1554,7 @@ export const WAVE10_T = {
             "Guarde — la próxima impresión usa el diseño actualizado."
           ],
           caption: "Editor de plantilla de impresión.",
-          intro: "Cada tipo de trabajo (cuenta provisional, recibo final, cocina, resumen, delivery) tiene plantilla propia.",
+          intro: "Cada tipo de trabajo (cuenta provisional, recibo final, cocina, resumen) tiene plantilla propia.",
           fields: [
             {
               name: "Mostrar logo",
@@ -1671,7 +1671,7 @@ export const WAVE10_T = {
           title: "Formulario de tipo de pedido",
           steps: [
             "Abra Pagos → Tipos de pedido.",
-            "Defina nombre y banderas (local, para llevar, delivery).",
+            "Defina nombre y banderas (local, para llevar).",
             "Guarde — usado en mesas, POS e informes."
           ],
           caption: "Formulario de tipo de pedido.",

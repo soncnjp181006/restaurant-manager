@@ -27,23 +27,6 @@
     "unableGeneratePoNumber": "Không tạo được số phiếu đặt hàng tiếp theo",
     "itemsExceedQuantity": "Một hoặc nhiều mặt hàng vượt quá số lượng hiện có"
   },
-  "delivery": {
-    "settingsSaved": "Đã lưu cài đặt giao hàng thành công",
-    "settingsLoadFailed": "Không tải được cài đặt giao hàng",
-    "settingsSaveFailed": "Không lưu được cài đặt giao hàng",
-    "mapAreasSaved": "Đã lưu các khu vực trên bản đồ thành công",
-    "mapAreasSaveFailed": "Không lưu được các khu vực trên bản đồ",
-    "mapAreasLoadFailed": "Không tải được các khu vực trên bản đồ",
-    "shapeTooSmall": "Hình bạn vẽ quá nhỏ. Hãy kéo một vùng lớn hơn.",
-    "rectangleTooSmall": "Hình chữ nhật quá nhỏ. Hãy kéo một vùng lớn hơn.",
-    "circleTooSmall": "Hình tròn quá nhỏ. Hãy kéo bán kính lớn hơn.",
-    "polygonTooSmall": "Đa giác quá nhỏ. Hãy kéo đường viền lớn hơn.",
-    "fetchRidersFailed": "Không tải được danh sách tài xế",
-    "acceptFailed": "Không nhận được đơn hàng",
-    "rejectFailed": "Không từ chối được đơn hàng",
-    "sendFailed": "Không gửi được đơn hàng",
-    "attachRiderFailed": "Không gán được tài xế cho đơn"
-  },
   "reports": {
     "mapAreasSaveFailed": "Không lưu được các khu vực trên bản đồ"
   },

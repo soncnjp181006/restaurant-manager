@@ -18,7 +18,7 @@ export const AI_MANAGE_READ_TOOLS: OpenAIToolDefinition[] = [
     type: "function",
     function: {
       name: "list_tables",
-      description: "List tables. Filter by floor_name (e.g. Delivery) and optional search.",
+      description: "List tables. Filter by floor_name (e.g. Terrace) and optional search.",
       parameters: {
         type: "object",
         properties: {
@@ -86,7 +86,7 @@ export const AI_MANAGE_READ_TOOLS: OpenAIToolDefinition[] = [
     type: "function",
     function: {
       name: "list_order_types",
-      description: "List order types (dine-in, delivery, etc.).",
+      description: "List order types (dine-in, takeaway, etc.).",
       parameters: {type: "object", properties: searchLimitProps},
     },
   },

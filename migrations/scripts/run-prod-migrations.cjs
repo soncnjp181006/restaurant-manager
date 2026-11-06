@@ -142,7 +142,6 @@ const MIGRATION_PLAN = [
     backfill: 'backfill-security-alerts-access.cjs',
   },
   { id: '2026_09_04_terminal_sync', file: '2026_09_04_terminal_sync.surql' },
-  { id: '2026_09_05_delivery_menu_function', file: '2026_09_05_delivery_menu_function.surql' },
   { id: '2026_09_06_sync_schemaless_reset', file: '2026_09_06_sync_schemaless_reset.surql' },
   { id: '2026_09_06_order_sync_ownership_fields', file: '2026_09_06_order_sync_ownership_fields.surql' },
   { id: '2026_09_12_refund_print_settings', file: '2026_09_12_refund_print_settings.surql' },
@@ -165,6 +164,11 @@ const MIGRATION_PLAN = [
   { id: '2026_10_22_kitchen_recon_entered_uom', file: '2026_10_22_kitchen_recon_entered_uom.surql' },
   { id: '2026_10_31_brand_rename', file: '2026_10_31_brand_rename.surql' },
   { id: '2026_10_31_optional_array_null', file: '2026_10_31_optional_array_null.surql' },
+  { id: '2026_11_06_remove_delivery', file: '2026_11_06_remove_delivery.surql' },
+  {
+    id: '2026_11_06_strip_delivery_role_modules',
+    backfill: 'backfill-strip-delivery-role-modules.cjs',
+  },
 ];
 
 const rows = (result) => {

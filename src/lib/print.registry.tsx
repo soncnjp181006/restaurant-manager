@@ -3,7 +3,6 @@ export enum PRINT_TYPE {
   final_bill = 'final',
   refund_bill = 'refund',
   kitchen_bill = 'kitchen',
-  delivery_bill = 'delivery',
   summary = 'summary',
   pulse = 'pulse',
 }

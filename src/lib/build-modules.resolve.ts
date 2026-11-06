@@ -9,7 +9,6 @@ export const TOP_LEVEL_BUILD_MODULES = [
   'summary',
   'kitchen',
   'order_display',
-  'delivery',
   'closing',
   'inventory',
   'admin',

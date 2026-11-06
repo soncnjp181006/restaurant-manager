@@ -320,12 +320,11 @@ export const AI_REPORT_COMPACT_TOOLS: OpenAIToolDefinition[] = [
     type: "function",
     function: {
       name: "get_orders",
-      description: "List orders by status and/or delivery channel.",
+      description: "List orders by status.",
       parameters: {
         type: "object",
         properties: {
           ...dateParams,
-          deliveryOnly: {type: "boolean"},
           statuses: {type: "array", items: {type: "string"}},
           status: {type: "string"},
         },
@@ -734,7 +733,7 @@ export const AI_REPORT_COMPACT_TOOLS: OpenAIToolDefinition[] = [
     type: "function",
     function: {
       name: "get_prep_times_by_order_type",
-      description: "Ticket time by order type (delivery vs dine-in).",
+      description: "Ticket time by order type (dine-in vs takeaway).",
       parameters: dateOnly,
     },
   },

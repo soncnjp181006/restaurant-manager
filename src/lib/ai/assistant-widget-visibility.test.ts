@@ -20,7 +20,6 @@ describe("isAssistantWidgetPath", () => {
     expect(isAssistantWidgetPath("/orders")).toBe(false);
     expect(isAssistantWidgetPath("/summary")).toBe(false);
     expect(isAssistantWidgetPath("/kitchen")).toBe(false);
-    expect(isAssistantWidgetPath("/delivery")).toBe(false);
     expect(isAssistantWidgetPath("/closing")).toBe(false);
     expect(isAssistantWidgetPath("/order-display")).toBe(false);
     expect(isAssistantWidgetPath("/settings")).toBe(false);

@@ -8,11 +8,8 @@ import {Alert} from "./components/common/alert/dialog.tsx";
 import React, {useEffect} from "react";
 import {PrintProvider} from "@/providers/print.provider.tsx";
 import {DatabaseProvider} from "@/providers/database.provider.tsx";
-import {DeliveryOrdersProvider} from "@/providers/delivery-orders.provider.tsx";
 import {SecurityProvider} from "@/providers/security.provider.tsx";
 import {SecurityModal} from "@/components/security/security-modal.tsx";
-import {useDeliveryOrders} from "@/hooks/useDeliveryOrders.ts";
-import {DeliveryOrderPopup} from "@/components/delivery/delivery-order-popup.tsx";
 import {BrowserRouter} from "react-router";
 import {TableLockProvider} from "@/providers/table.lock.provider.tsx";
 import {AutoCheckCloseProvider} from "@/providers/auto-check-close.provider.tsx";
@@ -31,24 +28,6 @@ import {TerminalSyncProvider} from "@/providers/terminal-sync.provider.tsx";
 import {SessionExpiryBridge} from "@/providers/session-expiry.bridge.tsx";
 
 const queryClient = new QueryClient();
-
-/** Renders the delivery order popup when a new order is detected or opened from context (works on any page). */
-function GlobalDeliveryOrderPopup() {
-  const {selectedOrder, isPopupOpen, closeOrderPopup, refetchDeliveryOrders} = useDeliveryOrders();
-  if (!selectedOrder || !isPopupOpen) return null;
-  const handleClose = () => {
-    closeOrderPopup();
-    refetchDeliveryOrders();
-  };
-  return (
-    <DeliveryOrderPopup
-      order={selectedOrder}
-      open={true}
-      onClose={handleClose}
-      onOrderUpdate={refetchDeliveryOrders}
-    />
-  );
-}
 
 function AntdThemeBridge({ children }: { children: React.ReactNode }) {
   const { isDark, palette } = useTheme();
@@ -91,29 +70,26 @@ function App() {
                 <IntegrationProvider>
                   <AutoCheckCloseProvider>
                     <ClosingCycleEnforcementProvider>
-                      <DeliveryOrdersProvider>
-                        <PrintProvider>
-                          <TableLockProvider>
-                            <SecurityProvider>
-                              <BrowserRouter>
-                                <SessionExpiryBridge />
-                                <AppToolbar />
-                                <I18nProvider>
-                                  <SessionIdleProvider>
-                                    <AutoClockOutProvider>
-                                      <GlobalDeliveryOrderPopup/>
-                                      <MasterNotificationCenter/>
-                                      <AiAssistantWidget/>
-                                      <AppRoutes/>
-                                    </AutoClockOutProvider>
-                                  </SessionIdleProvider>
-                                </I18nProvider>
-                              </BrowserRouter>
-                              <SecurityModal/>
-                            </SecurityProvider>
-                          </TableLockProvider>
-                        </PrintProvider>
-                      </DeliveryOrdersProvider>
+                      <PrintProvider>
+                        <TableLockProvider>
+                          <SecurityProvider>
+                            <BrowserRouter>
+                              <SessionExpiryBridge />
+                              <AppToolbar />
+                              <I18nProvider>
+                                <SessionIdleProvider>
+                                  <AutoClockOutProvider>
+                                    <MasterNotificationCenter/>
+                                    <AiAssistantWidget/>
+                                    <AppRoutes/>
+                                  </AutoClockOutProvider>
+                                </SessionIdleProvider>
+                              </I18nProvider>
+                            </BrowserRouter>
+                            <SecurityModal/>
+                          </SecurityProvider>
+                        </TableLockProvider>
+                      </PrintProvider>
                     </ClosingCycleEnforcementProvider>
                   </AutoCheckCloseProvider>
                 </IntegrationProvider>

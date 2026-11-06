@@ -20,7 +20,6 @@ Restaurant Manager Documentation
 │   ├── Summary
 │   ├── Kitchen
 │   ├── Order display
-│   ├── Delivery
 │   ├── Closing
 │   ├── Reports (operations)
 │   └── Tip oversight

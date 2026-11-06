@@ -61,7 +61,6 @@ function build(printer, data = {}, config = {}) {
       notes: bill.note || undefined,
       showPayments: true,
       showChange: false,
-      showDeliveryLine: false,
     }).then(() => printer);
   });
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Applies i18n to inventory, reports, delivery target files.
+ * Applies i18n to inventory and reports target files.
  * Run: node scripts/i18n-migrate-targets.mjs
  */
 import fs from 'fs';
@@ -16,13 +16,10 @@ const TARGET_DIRS = [
   'src/screens/reports',
   'src/screens/partials/reports.layout.tsx',
   'src/components/reports',
-  'src/screens/delivery',
-  'src/components/delivery',
 ];
 
 const NAMESPACE_BY_PATH = (filePath) => {
   if (filePath.includes('/inventory/') || filePath.includes('screens/inventory')) return 'inventory';
-  if (filePath.includes('/delivery/') || filePath.includes('components/delivery')) return 'delivery';
   if (filePath.includes('/reports/') || filePath.includes('reports.layout')) return 'reports';
   return 'common';
 };
@@ -68,7 +65,7 @@ function flattenTranslations(obj, prefix = '') {
 }
 
 function loadNamespaceMaps() {
-  const namespaces = ['inventory', 'reports', 'delivery', 'common', 'toast', 'validation'];
+  const namespaces = ['inventory', 'reports', 'common', 'toast', 'validation'];
   const byNs = {};
   for (const ns of namespaces) {
     const file = path.join(ROOT, `src/locales/en/${ns}.json`);

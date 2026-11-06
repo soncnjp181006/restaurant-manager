@@ -2088,7 +2088,6 @@ DEFINE FIELD covers ON order TYPE none | int | null PERMISSIONS FULL;
 DEFINE FIELD created_at ON order TYPE datetime PERMISSIONS FULL;
 DEFINE FIELD customer ON order TYPE none | record<customer> | null PERMISSIONS FULL;
 DEFINE FIELD deleted_at ON order TYPE none | datetime | null PERMISSIONS FULL;
-DEFINE FIELD delivery ON order TYPE any PERMISSIONS FULL;
 DEFINE FIELD discount ON order TYPE none | record<discount> | null PERMISSIONS FULL;
 DEFINE FIELD discount_amount ON order TYPE none | float | null PERMISSIONS FULL;
 DEFINE FIELD discount_manager ON order TYPE none | record<user> | null PERMISSIONS FULL;

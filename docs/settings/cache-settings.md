@@ -42,7 +42,7 @@ Manage the application's data cache by manually reloading data from the database
 The cache reload fetches the following data types:
 
 ### Order Types
-- **Purpose**: Available order types (dine-in, takeout, delivery, etc.)
+- **Purpose**: Available order types (dine-in, takeout, etc.)
 - **Filter**: Only active order types (deleted_at = none)
 - **Order**: Priority ascending
 
