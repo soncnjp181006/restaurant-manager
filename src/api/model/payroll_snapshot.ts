@@ -39,7 +39,6 @@ export interface PayrollSnapshot {
   bonuses?: number;
   deductions?: number;
   adjustments?: number;
-  tips?: number;
   gross_pay?: number;
   net_pay?: number;
   rule_applications?: RuleApplication[];

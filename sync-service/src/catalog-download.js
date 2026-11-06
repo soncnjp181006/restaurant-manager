@@ -116,7 +116,7 @@ class CatalogDownloadManager {
       remoteVersion: 0,
       /** Tables used on the last Sync now (allowlist ∩ release.tables). */
       lastSyncTables: null,
-      /** Tip release tables from master (may be null when legacy / full). */
+      /** Release tables from master, global + branch (may be null when legacy / full). */
       releaseTables: null,
       tables: {},
       progress: {

@@ -77,7 +77,6 @@ export const OrderRefundModal = ({
         discountAmount: 0,
         serviceChargeAmount: 0,
         extras: [] as Array<{ name: string; value: number }>,
-        tipAmount: 0,
         total: 0,
       };
     }
@@ -86,7 +85,6 @@ export const OrderRefundModal = ({
     const taxAmount = order.tax_amount ? Number(order.tax_amount) * ratio : 0;
     const discountAmount = order.discount_amount ? Number(order.discount_amount) * ratio : 0;
     const serviceChargeAmount = order.service_charge_amount ? Number(order.service_charge_amount) * ratio : 0;
-    const tipAmount = order.tip_amount ? Number(order.tip_amount) * ratio : 0;
     const extras = order.extras
       ? order.extras
           .filter((extra): extra is NonNullable<typeof extra> => !!extra)
@@ -97,7 +95,7 @@ export const OrderRefundModal = ({
       : [];
 
     const extrasTotal = extras.reduce((sum, extra) => sum + extra.value, 0);
-    const total = selectedItemsTotal + taxAmount + serviceChargeAmount + tipAmount + extrasTotal - discountAmount;
+    const total = selectedItemsTotal + taxAmount + serviceChargeAmount + extrasTotal - discountAmount;
 
     return {
       itemsTotal: selectedItemsTotal,
@@ -105,7 +103,6 @@ export const OrderRefundModal = ({
       discountAmount,
       serviceChargeAmount,
       extras,
-      tipAmount,
       total,
     };
   }, [selectedItemsList, selectedItemsTotal, originalOrderTotal, order]);
@@ -146,7 +143,6 @@ export const OrderRefundModal = ({
         subtotal: refundCharges.itemsTotal,
         taxAmount: refundCharges.taxAmount,
         discountAmount: refundCharges.discountAmount,
-        tipAmount: refundCharges.tipAmount,
         total: refundCharges.total,
         itemIds: selectedItemsList.map((item) => String(item.id)),
       }).catch((err) => console.warn('Failed publishing SaleRefunded event', err));
@@ -170,7 +166,6 @@ export const OrderRefundModal = ({
         tax_amount: refundCharges.taxAmount,
         discount_amount: refundCharges.discountAmount,
         service_charge_amount: refundCharges.serviceChargeAmount,
-        tip_amount: refundCharges.tipAmount,
         extras: refundCharges.extras.map((extra, idx) => ({
           id: `refund-extra-${idx}`,
           name: extra.name,
@@ -261,12 +256,6 @@ export const OrderRefundModal = ({
                     <span>{withCurrency(extra.value)}</span>
                   </div>
                 ))}
-                {order.tip_amount && refundCharges.tipAmount > 0 ? (
-                  <div className="flex justify-between items-center text-sm">
-                    <span>{t('refund.tip')}</span>
-                    <span>{withCurrency(refundCharges.tipAmount)}</span>
-                  </div>
-                ) : null}
                 <div className="border-t border-border pt-2 mt-2">
                   <div className="flex justify-between items-center">
                     <span className="font-semibold">{t('refund.refundTotal')}</span>

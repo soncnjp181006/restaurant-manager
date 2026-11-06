@@ -9,7 +9,6 @@
     "inventory": "Inventory",
     "manage": "Manage",
     "reports": "Reports",
-    "tipDist": "Tip Dist.",
     "accounts": "Accounts",
     "settings": "Settings",
     "clock": "Clock",
@@ -26,7 +25,6 @@
     "Kitchen": "Kitchen",
     "Order Display": "Order Display",
     "Admin": "Administration",
-    "Tips": "Tip Distribution",
     "Inventory": "Inventory",
     "Accounts": "Accounts",
     "Settings": "Settings",
@@ -34,4 +32,4 @@
     "Integrations": "Integrations"
   },
   "authenticateToAccess": "Authenticate to access {{module}}"
-}
+}

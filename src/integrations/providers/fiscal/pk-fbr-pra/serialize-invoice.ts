@@ -126,7 +126,7 @@ export const serializePkFiscalInvoice = (
   const items = getOrderFilteredItems(order);
   const usePunjabTotal = authority === 'fbr' && Boolean(config.punjabMode);
   const settlement = getOrderSettlementFigures(order);
-  const totalBillAmount = Math.max(0, settlement.grandTotalDue - settlement.tips - settlement.serviceCharges);
+  const totalBillAmount = Math.max(0, settlement.grandTotalDue - settlement.serviceCharges);
   const discountTotal = settlement.discounts;
 
   let totalSaleValue = 0;

@@ -300,7 +300,7 @@ Unknown `printMode` values fall back to `text`. New engines register in `lib/eng
 - **Item columns:** `showItemName`, `showItemPrice`, `showItemQuantity`, `showItemTotal` — for summary / custom use
 - **VAT:** `showVatNumber`, `vatName`, `vatNumber`
 
-**temp** (Pre-Sale Bill, matches `presale.bill.tsx`): **CommonBillParts** only — Invoice#, date, table, user; items `Name xQty` / `$lineTotal`; **Items (n)**, **Tax (name rate%)**, **Discount**, **Service charges (X or X%)**, **extras**, **Tip** / **Tip %**; **Total**. No payments or Change.
+**temp** (Pre-Sale Bill, matches `presale.bill.tsx`): **CommonBillParts** only — Invoice#, date, table, user; items `Name xQty` / `$lineTotal`; **Items (n)**, **Tax (name rate%)**, **Discount**, **Service charges (X or X%)**, **extras**; **Total**. No payments or Change.
 
 **final** (matches `final.bill.tsx` + `_common.bill.tsx`): CommonBillParts + **payments** (each `payment_type.name` / amount) + **Change** (`sum(payments) - total`). `data.duplicate: true` → title "Duplicate Final Bill".
 
@@ -315,7 +315,7 @@ Unknown `printMode` values fall back to `text`. New engines register in `lib/eng
 
 ## Print builders
 
-**temp, final, kitchen** — expect `data: { printType, order }` where `order` is an `Order` from `src/api/model/order.ts` (invoice_number, split, created_at, table, items, tax_amount, discount_amount, service_charge_amount, tip_amount, payments, customer, order_type, tags, …). Items are mapped from `order.items` (Dish name, quantity, price, comments); deleted/refunded/suspended items are omitted.
+**temp, final, kitchen** — expect `data: { printType, order }` where `order` is an `Order` from `src/api/model/order.ts` (invoice_number, split, created_at, table, items, tax_amount, discount_amount, service_charge_amount, payments, customer, order_type, tags, …). Items are mapped from `order.items` (Dish name, quantity, price, comments); deleted/refunded/suspended items are omitted.
 
 | printType | purpose |
 |-----------|---------|
@@ -325,7 +325,7 @@ Unknown `printMode` values fall back to `text`. New engines register in `lib/eng
 | `kitchen` | Kitchen ticket from `order` (table, items with comments, time, priority) |
 | `table`   | Generic table-only print; pass prebuilt `rows` with escpos `tableCustom` cells |
 
-**summary** — same props as `Summary` (summary.tsx): `{ orders: { data: Order[] }, date: string }`. All totals (exclusive, gross, refunds, service charges, discounts, taxes, net, amount due, amount collected, extras, rounding, voids, tips, covers, categories, dishes, payment types, taxes list, discounts list, extras) are computed from `orders.data` in the print server to match the Summary logic.
+**summary** — same props as `Summary` (summary.tsx): `{ orders: { data: Order[] }, date: string }`. All totals (exclusive, gross, refunds, service charges, discounts, taxes, net, amount due, amount collected, extras, rounding, voids, covers, categories, dishes, payment types, taxes list, discounts list, extras) are computed from `orders.data` in the print server to match the Summary logic.
 
 **table** — generic table-only builder for reusable structured slips:
 

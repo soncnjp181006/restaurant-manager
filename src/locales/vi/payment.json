@@ -32,7 +32,6 @@
     "discount": "Giảm giá",
     "coupon": "Mã giảm giá",
     "serviceCharges": "Phí phục vụ ({{value}}{{unit}})",
-    "tip": "Tiền tip ({{value}}{{unit}})",
     "notes": "Ghi chú",
     "total": "Tổng cộng"
   },
@@ -77,9 +76,6 @@
   "serviceCharges": {
     "defaultFromSettings": "Mặc định từ thiết lập:",
     "noServiceCharge": "Không có phí phục vụ"
-  },
-  "tip": {
-    "noTip": "Không có tiền tip"
   },
   "notes": {
     "title": "Ghi chú",

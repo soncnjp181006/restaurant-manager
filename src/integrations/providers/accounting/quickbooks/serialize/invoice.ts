@@ -17,7 +17,6 @@ export interface QboInvoiceInput {
   }>;
   subtotal: number;
   taxAmount?: number;
-  tipAmount?: number;
   discountAmount?: number;
   total: number;
   taxCodeId?: string;
@@ -73,15 +72,6 @@ export const serializeInvoice = (input: QboInvoiceInput): QboInvoicePayload => {
       DetailType: 'SalesItemLineDetail',
       Amount: -Math.abs(input.discountAmount),
       Description: 'Discount',
-      SalesItemLineDetail: {},
-    });
-  }
-
-  if (input.tipAmount && input.tipAmount > 0) {
-    lines.push({
-      DetailType: 'SalesItemLineDetail',
-      Amount: input.tipAmount,
-      Description: 'Tip / Service Charge',
       SalesItemLineDetail: {},
     });
   }

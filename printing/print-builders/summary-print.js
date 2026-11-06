@@ -134,8 +134,6 @@ function printDailySalesSummary(printer, data, cfg) {
   printer.style('normal');
 
   sect(printer, L.settlementCashier || '3. Settlement and cashier');
-  line(L.amountDueBeforeTips || 'Amount due (before tips)', formatMoney(s.amountDue, sym));
-  line(L.tips || 'Tips', formatMoney(s.tips, sym));
   printer.style('bu');
   line(L.grandTotalDue || 'Grand total (due)', formatMoney(s.grandTotalDue, sym));
   printer.style('normal');

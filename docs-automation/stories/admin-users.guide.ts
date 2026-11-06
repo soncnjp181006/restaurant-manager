@@ -27,9 +27,4 @@ test('capture admin users', async ({ page }) => {
   await highlightAndReady(page, page.getByTestId('admin-page'));
   await capturePage(page, 'admin-users-shifts', { fullPage: false });
   await clearHighlights(page);
-
-  await openAdminUsersSubTab(page, 'tips_definition');
-  await highlightAndReady(page, page.getByTestId('admin-page'));
-  await capturePage(page, 'admin-users-tips-definition', { fullPage: false });
-  await clearHighlights(page);
 });

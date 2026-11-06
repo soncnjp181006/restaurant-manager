@@ -27,7 +27,6 @@ import {createPrintSettingsImportConfig} from "@/components/settings/prints/prin
 import {createUserImportConfig} from "@/components/settings/users/user.import.config.ts";
 import {createRoleImportConfig} from "@/components/settings/users/roles/role.import.config.ts";
 import {createShiftImportConfig} from "@/components/settings/users/shifts/shift.import.config.ts";
-import {createTipDistributionImportConfig} from "@/components/settings/prints/print-settings.import.config.ts";
 import {createEmployeeImportConfig} from "@/components/hr/employees/employee.import.config.ts";
 import {createDepartmentImportConfig} from "@/components/hr/departments/department.import.config.ts";
 import {createSupplierImportConfig} from "@/components/inventory/suppliers/supplier.import.config.ts";
@@ -506,10 +505,6 @@ const shiftFields: WriteFieldSpec[] = [
   {name: "start_time", type: "string", requiredOnCreate: true},
   {name: "end_time", type: "string", requiredOnCreate: true},
   {name: "ends_next_day", type: "boolean"},
-];
-
-const tipDistributionFields: WriteFieldSpec[] = [
-  {name: "distribution", type: "string", requiredOnCreate: true, description: "JSON {roles:[{role_name,weight}],users:[{user_login,weight}]}"},
 ];
 
 const smartMenuFields: WriteFieldSpec[] = [
@@ -1088,24 +1083,6 @@ export const WRITE_TOOL_REGISTRY: WriteToolRegistryEntry[] = [
       updateToolName: "propose_update_shifts",
       matchFields: ["name"],
       fields: shiftFields,
-    }),
-  },
-  {
-    configId: "tip_distribution",
-    recordsArgKey: "tip_distributions",
-    createToolName: "propose_update_tip_distribution",
-    permissionModules: {create: "admin.tips_definition.update", update: "admin.tips_definition.update"},
-    keywords: /\b(tip distribution|tips definition|tip weights?)\b/i,
-    domains: ["manage", "sales"],
-    actionKeywords: /\b(update|change|set|configure)\b/i,
-    createConfig: createTipDistributionImportConfig,
-    buildToolDefinitions: () => buildWriteToolDefinitionsFromFields({
-      entityLabel: "Tip distribution",
-      recordsArgKey: "tip_distributions",
-      createToolName: "propose_update_tip_distribution",
-      matchFields: ["distribution"],
-      fields: tipDistributionFields,
-      createDescription: "Propose updating tip distribution weights by role name and user login.",
     }),
   },
   {

@@ -69,11 +69,6 @@
     "clockedOut": "Đã tự động chấm công tan ca",
     "failed": "Tự động chấm công tan ca thất bại"
   },
-  "tipDistribution": {
-    "selectShiftAndDate": "Vui lòng chọn ca và ngày",
-    "unableToDeriveRange": "Không xác định được khoảng thời gian từ ca làm việc",
-    "saved": "Đã lưu bảng phân bổ tiền boa"
-  },
   "admin": {
     "dishSaved": "Đã lưu món {{name}}",
     "menuSaved": "Đã lưu thực đơn {{name}}",
@@ -97,7 +92,6 @@
     "userAndEmployeeSaved": "Đã lưu người dùng {{name}} và hồ sơ nhân viên",
     "employeeLinkFailed": "Đã lưu người dùng nhưng không liên kết được nhân viên. Bạn hãy tạo nhân viên thủ công trong phần Nhân sự.",
     "workflowSaved": "Đã lưu quy trình {{name}}",
-    "tipDistributionSaved": "Đã lưu bảng phân bổ tiền boa",
     "categoriesBulkUpdated": "Đã cập nhật {{count}} nhóm",
     "dishesBulkUpdated": "Đã cập nhật {{count}} món",
     "tablesBulkUpdated": "Đã cập nhật {{count}} bàn",

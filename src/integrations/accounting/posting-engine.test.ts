@@ -18,7 +18,6 @@ const fullMapping = {
   CASH_MAIN: 'account:cash',
   CARD_RECEIVABLE: 'account:card',
   DISCOUNT: 'account:discount',
-  TIPS: 'account:tips',
   INVENTORY: 'account:inventory',
   COGS: 'account:cogs',
   ACCOUNTS_PAYABLE: 'account:ap',
@@ -33,7 +32,6 @@ const salePayload: SaleCompletedPayload = {
   subtotal: 100,
   taxAmount: 16,
   discountAmount: 0,
-  tipAmount: 0,
   totalCollected: 116,
   tenders: {
     cashAmount: 50,
@@ -90,7 +88,6 @@ describe('Accounting posting engine', () => {
       subtotal: 100,
       taxAmount: 16,
       discountAmount: 0,
-      tipAmount: 0,
       totalCollected: 116,
       tenders: { cashAmount: 116, cardAmount: 0, otherAmount: 0 },
     };

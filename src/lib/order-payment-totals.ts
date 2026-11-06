@@ -14,8 +14,6 @@ export interface OrderPaymentTotalsParams {
   serviceCharge: number;
   serviceChargeType: DiscountType;
   couponAmount: number;
-  tip: number;
-  tipType: DiscountType;
   itemsTotal: number;
   /** Last selected payment type — enables payment-gated automatic discounts */
   paymentTypeId?: string;
@@ -26,7 +24,6 @@ export interface OrderPaymentTotalsResult {
   discountTotal: number;
   discountLines: AppliedDiscountLine[];
   serviceChargeAmount: number;
-  tipAmount: number;
   grandTotal: number;
   total: number;
 }
@@ -42,8 +39,6 @@ export const computeOrderPaymentTotals = (
     serviceCharge,
     serviceChargeType,
     couponAmount,
-    tip,
-    tipType,
     itemsTotal,
     paymentTypeId,
   } = params;
@@ -52,7 +47,6 @@ export const computeOrderPaymentTotals = (
   const serviceChargeAmount = serviceCharge
     ? (serviceChargeType === DiscountType.Percent ? itemsTotal * serviceCharge / 100 : serviceCharge)
     : 0;
-  const tipAmount = tipType === DiscountType.Fixed ? tip : itemsTotal * tip / 100;
   const resolvedTax = tax ?? order.tax ?? null;
 
   const base = recalculateCart(order, {
@@ -61,7 +55,6 @@ export const computeOrderPaymentTotals = (
     extrasTotal,
     serviceChargeAmount,
     couponAmount,
-    tipAmount,
     taxRate: resolvedTax?.rate,
     rules: getDiscountCache().all,
     paymentTypeId,
@@ -78,7 +71,6 @@ export const computeOrderPaymentTotals = (
     discountTotal: base.discountTotal,
     serviceChargeAmount,
     couponAmount,
-    tipAmount,
   });
 
   return {
@@ -86,7 +78,6 @@ export const computeOrderPaymentTotals = (
     discountTotal: base.discountTotal,
     discountLines: base.discountLines,
     serviceChargeAmount,
-    tipAmount,
     grandTotal,
     total,
   };

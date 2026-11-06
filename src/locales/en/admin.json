@@ -26,7 +26,6 @@
     "users": "Users",
     "roles": "Roles",
     "shifts": "Shifts",
-    "tipsDefinition": "Tips definition",
     "accessTab": "Access {{title}}",
     "ariaLabel": "Administration tabs",
     "securityAlerts": "Security Alerts",
@@ -410,7 +409,6 @@
     "weight": "Weight",
     "orderTypesLabel": "Order types",
     "categoriesLabel": "Categories",
-    "tipDistribution": "Tip distribution",
     "byRoles": "By roles",
     "byUsers": "By users",
     "roleWeight": "Role weight",
@@ -725,9 +723,6 @@
       "admin": {
         "label": "Administration"
       },
-      "tips": {
-        "label": "Tip Distribution"
-      },
       "inventory": {
         "label": "Inventory"
       },
@@ -763,7 +758,6 @@
       "orders.apply_discount": "Apply discount",
       "orders.apply_coupon": "Apply coupon",
       "orders.apply_service_charges": "Apply service charges",
-      "orders.apply_tips": "Apply tips",
       "orders.change_extras": "Change extras",
       "orders.complete": "Complete order",
       "orders.complete_payment": "Complete order payment",
@@ -785,7 +779,6 @@
       "reports.sales_summary": "Sales Summary",
       "reports.sales_summary_2": "Sales Summary 2",
       "reports.sales_weekly": "Sales Weekly",
-      "reports.tips": "Tips",
       "reports.advanced_sales": "Advanced Sales",
       "reports.discount": "Discount",
       "reports.tax": "Tax",
@@ -930,15 +923,8 @@
       "admin.shifts.create": "Create shifts",
       "admin.shifts.update": "Update shifts",
       "admin.shifts.delete": "Delete shifts",
-      "admin.tips_definition": "Tips definition",
-      "admin.tips_definition.create": "Create tips definition",
-      "admin.tips_definition.update": "Update tips definition",
-      "admin.tips_definition.delete": "Delete tips definition",
       "admin.security_alerts": "Security alerts",
       "admin.catalog_publish": "Catalog publish",
-      "tips": "Tips",
-      "tips.calculation": "Tip Calculation",
-      "tips.payout": "Payout Management",
       "inventory": "Inventory",
       "inventory.current_inventory": "Current Inventory",
       "inventory.items": "Items",

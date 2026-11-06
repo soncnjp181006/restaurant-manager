@@ -84,7 +84,6 @@
     "discounts": "Discounts",
     "tax": "Tax",
     "serviceCharge": "Service charge",
-    "tips": "Tips",
     "voids": "Voids",
     "refunds": "Refunds"
   },
@@ -138,4 +137,4 @@
     "total": "Paid online",
     "testWarning": "{{count}} test order(s) ({{amount}}) — no money was collected for these."
   }
-}
+}

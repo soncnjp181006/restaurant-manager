@@ -39,12 +39,12 @@ Traditional restaurant POS software often depends on cloud connectivity and sepa
 
 **Where Kashif appears**
 
-- **Floating assistant** — Manage, Inventory, Reports, HR, Accounts, Integrations, Tips, and Clock (hidden on cashier POS and KDS screens)
+- **Floating assistant** — Manage, Inventory, Reports, HR, Accounts, Integrations, and Clock (hidden on cashier POS and KDS screens)
 - **AI Report** — dedicated reporting page with tables, charts, and analysis formats
 
 **Ask Kashif (read-only, live data)**
 
-- **Sales & service** — today's sales, voids, tips, discounts, coupons, menu mix, unsold items, server speed, staff accountability
+- **Sales & service** — today's sales, voids, discounts, coupons, menu mix, unsold items, server speed, staff accountability
 - **Orders** — open orders by status, full **order dossier** (items, payments, kitchen, fiscal, prints)
 - **Inventory** — stock on hand, purchases, issues, waste, adjustments, transfers, consumption vs issuance, purchase orders, suppliers, locations, **what to buy** (forecast from history, on-hand, holidays, weather, events)
 - **Operations** — kitchen routing and station delays, cash/close audit, activity and fraud signals
@@ -99,7 +99,6 @@ Write proposals use the same review-and-confirm pipeline as **AI Import** — Ka
 - **Extras & service charges** — fixed/%, rule-based by order type / payment / table
 - **Discounts & coupons** — fixed/%, Buy X Get Y, payment-type promos; usage limits, time windows, first-order rules
 - **Closing cycles** — auto check close, shift/day close, enforcement + notifications
-- **Tips** — pooling, staff rules, shift allocation
 - **Waiter app** — mobile order entry, table select, touch-optimized
 - **Manager app** — dashboard, analytics, config, branch reporting
 

@@ -1,12 +1,12 @@
 # Payment screen
 
-Pay now opens a full-screen payment layout: order summary and adjustable totals on the left, an editor in the middle for tax/discount/coupon/service charge/tip/notes, and tender tools on the right.
+Pay now opens a full-screen payment layout: order summary and adjustable totals on the left, an editor in the middle for tax/discount/coupon/service charge/notes, and tender tools on the right.
 
 ### Payment layout
 
 The screen is arranged in three zones so you can review the check, adjust charges, and collect money without leaving the dialog.
 
-1. Left column: invoice header, line items, tax, discount, coupon, service charge, tip, extras, notes, and grand total.
+1. Left column: invoice header, line items, tax, discount, coupon, service charge, extras, notes, and grand total.
 2. Middle column: editor for the totals row you selected. Changes stay draft until you confirm with OK or Apply (except notes and extras).
 3. Right two columns: tendered amount, remaining/change, quick amounts, payment types, keypad, temp bill, Complete, and listed payments.
 
@@ -28,8 +28,8 @@ The left card shows who ordered, when, and which items are on the check.
 
 Each line under the items feeds the grand total used for tendering.
 
-1. Items subtotal is shown first, then tax, discount, coupon, service charges, tip, extras (when configured), and notes.
-2. Tap Tax, Discount, Coupon, Service charges, Tip, or Notes to open the middle editor.
+1. Items subtotal is shown first, then tax, discount, coupon, service charges, extras (when configured), and notes.
+2. Tap Tax, Discount, Coupon, Service charges, or Notes to open the middle editor.
 3. Selecting a draft value alone does not change the bill — you must confirm with OK or Apply where shown.
 4. Some rows may ask for a manager PIN if your security settings require it.
 
@@ -89,22 +89,9 @@ Service charge is drafted with percent or fixed options, then applied with OK.
 
 *Service charge panel; confirm with OK.*
 
-### Tips
-
-Tips use the same draft-then-OK pattern as tax and service charges.
-
-1. Tap the Tip row (manager PIN may be required).
-2. Choose No tip, or Percent vs Fixed amount.
-3. Pick a quick tip (for example 10%, 15%) or type a value on the keypad.
-4. Tap OK to apply. Leaving the panel without OK keeps the previous tip.
-5. Tip increases the payable total used for tendering.
-
-
-*Tip panel; confirm with OK.*
-
 ### Extras
 
-Configured extras (for example service charges tied to tables or payment types) show as rows under tip. There is no middle editor.
+Configured extras (for example service charges tied to tables or payment types) show as rows under the service charge line. There is no middle editor.
 
 1. If extras apply to this order, each extra name and amount appears in the totals list.
 2. Tap an extra row to toggle it off (struck through / zero) or back on.
@@ -127,7 +114,7 @@ Notes are free text on the payment record. Typing updates the note immediately (
 
 ### Receive payment
 
-After totals are correct (including any applied tax, discount, coupon, service charge, tip, and extras), use the tender panel on the right.
+After totals are correct (including any applied tax, discount, coupon, service charge, and extras), use the tender panel on the right.
 
 1. Large figure at the top is total tendered so far.
 2. Below it, remaining (red) or change (green) updates as you add payments.
@@ -140,7 +127,7 @@ After totals are correct (including any applied tax, discount, coupon, service c
 
 1. Tendered starts at zero until you add a payment line.
 2. Remaining must reach zero (or change due ≥ 0) before Complete is enabled.
-3. If you change tax, tip, or discounts after tendering, remaining updates — adjust payments as needed.
+3. If you change tax or discounts after tendering, remaining updates — adjust payments as needed.
 4. Split payments by adding more than one line with different types or amounts.
 
 

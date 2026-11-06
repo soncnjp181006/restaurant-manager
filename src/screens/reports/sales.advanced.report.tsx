@@ -443,7 +443,7 @@ const SalesAdvancedBody = ({
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
   const filteredOrders = orders;
   const baseColumns = 10;
-  const detailsColumns = filters.showDetails ? 14 : 1;
+  const detailsColumns = filters.showDetails ? 13 : 1;
   const tableColSpan = baseColumns + detailsColumns + (filters.showMenuItems ? 1 : 0);
   const ordersWithItems = useMemo(
     () => filteredOrders.filter(order => Boolean(filters.showMenuItems && order.items && order.items.length > 0)),
@@ -512,7 +512,6 @@ const SalesAdvancedBody = ({
       covers,
       salePriceWithoutTax: figures.itemsTotal,
       taxes: figures.tax,
-      tips: figures.tips,
       amountDue,
       serviceCharges: figures.serviceCharges,
       discounts: safeNumber(figures.lineDiscounts + figures.cartDiscount),
@@ -532,7 +531,6 @@ const SalesAdvancedBody = ({
         const orderTotals = calculateOrderTotals(order);
         acc.salePriceWithoutTax += orderTotals.salePriceWithoutTax;
         acc.taxes += orderTotals.taxes;
-        acc.tips += orderTotals.tips;
         acc.amountDue += orderTotals.amountDue;
         acc.serviceCharges += orderTotals.serviceCharges;
         acc.discounts += orderTotals.discounts;
@@ -546,7 +544,6 @@ const SalesAdvancedBody = ({
       {
         salePriceWithoutTax: 0,
         taxes: 0,
-        tips: 0,
         amountDue: 0,
         serviceCharges: 0,
         discounts: 0,
@@ -601,10 +598,6 @@ const SalesAdvancedBody = ({
               <tr>
                 <td className="py-2 text-foreground">{t('reports.voids')}</td>
                 <td className="py-2 text-right font-semibold text-red-600">{withCurrency(-totalVoids)}</td>
-              </tr>
-              <tr>
-                <td className="py-2 text-foreground">{t('reports.tips')}</td>
-                <td className="py-2 text-right font-semibold text-foreground">{withCurrency(totals.tips)}</td>
               </tr>
               <tr>
                 <td className="py-2 text-foreground">{t('labels.amountDue')}</td>
@@ -665,7 +658,6 @@ const SalesAdvancedBody = ({
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('columns.covers')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.saleWithoutTax')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.taxes')}</th>
-                    <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.tip')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('labels.serviceCharges')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.discounts')}</th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-foreground">{t('metrics.coupons')}</th>
@@ -754,8 +746,6 @@ const SalesAdvancedBody = ({
                             className="py-3 px-3 text-right text-sm text-foreground">{withCurrency(orderTotals.salePriceWithoutTax)}</td>
                           <td
                             className="py-3 px-3 text-right text-sm text-foreground">{withCurrency(orderTotals.taxes)}</td>
-                          <td
-                            className="py-3 px-3 text-right text-sm text-foreground">{withCurrency(orderTotals.tips)}</td>
                           <td
                             className="py-3 px-3 text-right text-sm text-foreground">{withCurrency(orderTotals.serviceCharges)}</td>
                           <td

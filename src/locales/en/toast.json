@@ -69,11 +69,6 @@
     "clockedOut": "Automatically clocked out",
     "failed": "Auto clock-out failed"
   },
-  "tipDistribution": {
-    "selectShiftAndDate": "Please select shift and date",
-    "unableToDeriveRange": "Unable to derive time range from shift",
-    "saved": "Tip distribution saved"
-  },
   "admin": {
     "dishSaved": "Dish {{name}} saved",
     "menuSaved": "Menu {{name}} saved",
@@ -97,7 +92,6 @@
     "userAndEmployeeSaved": "User {{name}} and employee record saved",
     "employeeLinkFailed": "User was saved but employee could not be linked. Create the employee manually in HR.",
     "workflowSaved": "Workflow {{name}} saved",
-    "tipDistributionSaved": "Tip distribution saved",
     "categoriesBulkUpdated": "{{count}} categories updated",
     "dishesBulkUpdated": "{{count}} dishes updated",
     "tablesBulkUpdated": "{{count}} tables updated",

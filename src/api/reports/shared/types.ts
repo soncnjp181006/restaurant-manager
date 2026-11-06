@@ -24,7 +24,6 @@ export interface OrderFigures {
   netSales: number;
   serviceCharge: number;
   tax: number;
-  tips: number;
   totalRevenue: number;
   grandTotal: number;
   couponDiscount: number;

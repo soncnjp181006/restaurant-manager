@@ -1218,7 +1218,6 @@ const SalesDashboardBody = ({
         void: acc.void + figures.voidAmount,
         serviceCharge: acc.serviceCharge + figures.serviceCharge,
         totalCover: acc.totalCover + coverCount,
-        tips: acc.tips + figures.tips,
         coupon: acc.coupon + figures.couponDiscount,
         refundOrder: acc.refundOrder + (figures.isRefundedOrder ? 1 : 0),
         lateOrders: acc.lateOrders + (isLateOrder ? 1 : 0),
@@ -1233,7 +1232,6 @@ const SalesDashboardBody = ({
       void: 0,
       serviceCharge: 0,
       totalCover: 0,
-      tips: 0,
       coupon: 0,
       refundOrder: 0,
       lateOrders: 0,
@@ -1578,16 +1576,6 @@ const SalesDashboardBody = ({
               borderColor="border-warning-300"
               textColor="text-warning-900"
               labelColor="text-warning-700"
-            />
-            <KPIMetricWidget
-              title={t('reports.tips')}
-              value={withCurrency(kpis.tips)}
-              icon={DollarSign}
-              gradientFrom="from-primary-100"
-              gradientTo="primary-200"
-              borderColor="border-primary-300"
-              textColor="text-primary-900"
-              labelColor="text-primary-700"
             />
             <KPIMetricWidget
               title={t('reports.coupon')}

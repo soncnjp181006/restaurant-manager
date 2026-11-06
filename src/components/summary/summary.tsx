@@ -193,13 +193,6 @@ export const Summary = ({
   // G Sales (Gross Sales) = sale price without tax
   const gSales = salePriceWithoutTax;
 
-  // Tips
-  const tips = useMemo(() => {
-    return safeNumber(
-      orders?.reduce((prev, item) => prev + safeNumber(item.tip_amount), 0) ?? 0
-    );
-  }, [orders]);
-
   const discountsList = useMemo(() => {
     const list = {};
     orders?.forEach(order => {
@@ -455,24 +448,6 @@ export const Summary = ({
         }}>
           <span></span>
           <span></span>
-        </div>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-around',
-          borderBottom: '1px solid rgb(var(--border))',
-          padding: '0.75rem',
-          fontWeight: 700
-        }}>
-          <span>{t('report.legacy.tips')}</span>
-        </div>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          borderBottom: '1px solid rgb(var(--border))',
-          padding: '0.75rem'
-        }}>
-          <span>{t('report.rows.totalTips')}</span>
-          <span>{withCurrency(tips)}</span>
         </div>
         <div style={{
           display: 'flex',

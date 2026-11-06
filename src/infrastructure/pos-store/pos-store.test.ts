@@ -279,8 +279,6 @@ describe('PosStore draft + settle (Phase 3)', () => {
     const draft = [{ id: 'abc', amount: 5, payment_type: { id: 'payment_type:cash', name: 'Cash' } }];
     const next = await posStore.saveOrderDraft(order.id, {
       draft_payments: draft,
-      tip: 2,
-      tip_amount: 2,
       notes: 'no onions',
       extras: [{ id: 'order_extras:x_bag', name: 'bag', value: 1 }],
       coupon: { couponId: 'coupon:c1', discount: 3 },
@@ -293,7 +291,7 @@ describe('PosStore draft + settle (Phase 3)', () => {
     const ops = (await posStore.getPendingOutbox()).map((row) => row.operation!);
     const merge = ops.find((op) => op.operationType === 'MERGE_RECORD' && op.payload.table === 'order');
     expect(merge?.payload.data.draft_payments).toBeUndefined();
-    expect(merge?.payload.data.tip).toBe(2);
+    expect(merge?.payload.data.notes).toBe('no onions');
     expect(ops.find((op) => op.payload.table === 'order_coupon')?.payload.linkField).toBe('coupon');
     expect(ops.find((op) => op.operationType === 'REPLACE_ORDER_RELATION')?.payload.relation).toBe('extras');
   });
@@ -308,7 +306,6 @@ describe('PosStore draft + settle (Phase 3)', () => {
         { id: 'p2', paymentTypeId: 'payment_type:card', amount: 9, payable: 19 },
       ],
       cashierId: 'user:u1',
-      tip: 0,
       couponRedemption: { userId: 'user:u1', discountAmount: 3 },
     });
     expect(result.order.status).toBe('Paid');

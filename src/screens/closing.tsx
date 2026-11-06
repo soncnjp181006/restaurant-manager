@@ -200,7 +200,6 @@ export const Closing = () => {
       discounts: 0,
       tax: 0,
       service_charge: 0,
-      tips: 0,
       voids: 0,
       refunds: 0,
       paid_orders: 0,
@@ -217,7 +216,6 @@ export const Closing = () => {
           math::sum(discount_amount ?? 0) AS discounts,
           math::sum(tax_amount ?? 0) AS tax,
           math::sum(service_charge_amount ?? 0) AS service_charge,
-          math::sum(tip_amount ?? 0) AS tips,
           count() AS paid_orders
         FROM ${Tables.orders}
         WHERE created_at >= $start
@@ -254,7 +252,6 @@ export const Closing = () => {
         discounts: safeNumber(paidRow?.discounts),
         tax: safeNumber(paidRow?.tax),
         service_charge: safeNumber(paidRow?.service_charge),
-        tips: safeNumber(paidRow?.tips),
         voids: voidsTotal,
         refunds: safeNumber(refundRow?.refunds),
         paid_orders: safeNumber(paidRow?.paid_orders),
@@ -1193,10 +1190,6 @@ export const Closing = () => {
               <div className="border rounded-lg p-3">
                 <div className="text-xs text-muted">{t("closing:recap.serviceCharge")}</div>
                 <div className="text-lg font-semibold">{withCurrency(shiftRecap?.service_charge ?? 0)}</div>
-              </div>
-              <div className="border rounded-lg p-3">
-                <div className="text-xs text-muted">{t("closing:recap.tips")}</div>
-                <div className="text-lg font-semibold">{withCurrency(shiftRecap?.tips ?? 0)}</div>
               </div>
               <div className="border rounded-lg p-3">
                 <div className="text-xs text-muted">{t("closing:recap.voids")}</div>

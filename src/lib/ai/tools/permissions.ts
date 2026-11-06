@@ -10,7 +10,6 @@ export const TOOL_PERMISSION_MODULES: Record<string, string | string[]> = {
   get_product_mix: "reports.product_mix_summary",
   get_unsold_products: "reports.product_mix_summary",
   get_voids: "reports.voids",
-  get_tips: "reports.tips",
   get_server_sales: "reports.server_sales",
   get_current_session_sales: "reports.server_sales",
   list_active_sessions: "reports.sales_hourly_labour",

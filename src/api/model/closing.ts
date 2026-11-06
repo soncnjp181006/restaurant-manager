@@ -42,7 +42,6 @@ export interface ShiftRecap {
   discounts: number;
   tax: number;
   service_charge: number;
-  tips: number;
   voids: number;
   refunds: number;
   paid_orders: number;

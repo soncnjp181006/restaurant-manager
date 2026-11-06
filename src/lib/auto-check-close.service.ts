@@ -80,7 +80,6 @@ export function computeOrderGrandTotalFromOrder(order: Order): number {
     discountAmount: order.discount_amount ?? 0,
     serviceChargeAmount: order.service_charge_amount ?? 0,
     couponAmount,
-    tipAmount: order.tip_amount ?? 0,
   });
 }
 

@@ -181,7 +181,6 @@ function renderBillToHtml(bill, config, opts) {
   const taxLabel = L.tax || 'Tax';
   const discountLabel = L.discount || 'Discount';
   const extraLabel = L.extra || 'Extra';
-  const tipLabel = L.tip || 'Tip';
   const totalLabel = L.total || 'Total';
   const paymentLabel = L.payment || 'Payment';
   const changeLabel = L.change || 'Change';
@@ -238,9 +237,6 @@ function renderBillToHtml(bill, config, opts) {
   (bill.extras || []).forEach((e) => {
     parts.push(row(e.name || extraLabel, formatMoney(e.value, sym)));
   });
-  if (bill.tipAmount != null && Number(bill.tipAmount) !== 0) {
-    parts.push(row(bill.tipLabel || tipLabel, formatMoney(bill.tipAmount, sym)));
-  }
   parts.push('<hr/>');
 
   // Total
@@ -329,8 +325,6 @@ function renderSummaryToHtml(data, config) {
   parts.push(`<div class="row bold"><span>${escapeHtml(L.totalRevenue || 'Total revenue')}</span><span>${escapeHtml(formatMoney(s.totalRevenue, sym))}</span></div>`);
   parts.push('<hr/>');
   parts.push(sect(L.settlementCashier || '3. Settlement and cashier'));
-  parts.push(row(L.amountDueBeforeTips || 'Amount due (before tips)', formatMoney(s.amountDue, sym)));
-  parts.push(row(L.tips || 'Tips', formatMoney(s.tips, sym)));
   parts.push(`<div class="row bold"><span>${escapeHtml(L.grandTotalDue || 'Grand total (due)')}</span><span>${escapeHtml(formatMoney(s.grandTotalDue, sym))}</span></div>`);
   parts.push(row(L.amountCollected || 'Amount collected', formatMoney(s.amountCollected, sym)));
   parts.push(row(L.rounding || 'Rounding', formatMoney(s.rounding, sym)));
@@ -567,7 +561,6 @@ function renderRefundToHtml(data, config) {
   const taxLabel = L.tax || 'Tax';
   const discountLabel = L.discount || 'Discount';
   const extraLabel = L.extra || 'Extra';
-  const tipLabel = L.tip || 'Tip';
   const refundTotalLabel = L.refundTotal || 'Refund Total';
 
   const parts = [];
@@ -600,9 +593,6 @@ function renderRefundToHtml(data, config) {
   (bill.extras || []).forEach((e) => {
     parts.push(row(e.name || extraLabel, formatMoney(e.value, sym)));
   });
-  if (bill.tipAmount != null && Number(bill.tipAmount) !== 0) {
-    parts.push(row(bill.tipLabel || tipLabel, formatMoney(bill.tipAmount, sym)));
-  }
   parts.push('<hr/>');
   parts.push(`<div class="row bold"><span>${escapeHtml(refundTotalLabel)}</span><span>${escapeHtml(formatMoney(bill.total, sym))}</span></div>`);
   const footerSections = renderSectionsToHtml(cfg.footerSections);

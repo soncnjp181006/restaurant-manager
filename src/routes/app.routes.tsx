@@ -64,13 +64,12 @@ import {
   REPORTS_SPLIT_ORDERS,
   REPORTS_TABLES_SUMMARY,
   REPORTS_TAX,
-  REPORTS_TIPS,
   REPORTS_VOIDS,
   REPORTS_WASTE,
   SETTINGS,
   INTEGRATIONS,
   SUMMARY,
-  TIP_DISTRIBUTION, ACCOUNTS,
+  ACCOUNTS,
 } from "@/routes/restaurant-manager.ts";
 import {
   AccountsScreen,
@@ -133,8 +132,6 @@ import {
   Summary,
   TablesSummaryReport,
   TaxReport,
-  TipDistributionScreen,
-  TipsReport,
   VoidsReport,
   WasteReport,
 } from "@/routes/lazy-screens.ts";
@@ -165,7 +162,6 @@ export const AppRoutes = () => (
         {gated(__BUILD_MODULE_integrations__, IntegrationsScreen, INTEGRATIONS)}
         {gated(__BUILD_MODULE_inventory__, Inventory, INVENTORY)}
         {gated(__BUILD_MODULE_hr__, HrScreen, HR)}
-        {gated(__BUILD_MODULE_tips__, TipDistributionScreen, TIP_DISTRIBUTION)}
         {gated(__BUILD_MODULE_accounts__, AccountsScreen, ACCOUNTS)}
         {gated(__BUILD_MODULE_reports__, Reports, REPORTS)}
         {gated(__BUILD_MODULE_inventory__, InventoryDocumentPrintPage, INVENTORY_PRINT)}
@@ -194,7 +190,6 @@ export const AppRoutes = () => (
         {gated(__BUILD_MODULE_reports__, SalesServerReport, REPORTS_SALES_SERVER)}
         {gated(__BUILD_MODULE_reports__, SalesSummaryReport, REPORTS_SALES_SUMMARY)}
         {gated(__BUILD_MODULE_reports__, SalesSummary2Report, REPORTS_SALES_SUMMARY2)}
-        {gated(__BUILD_MODULE_reports__, TipsReport, REPORTS_TIPS)}
         {gated(__BUILD_MODULE_reports__, SalesWeeklyReport, REPORTS_SALES_WEEKLY)}
         {gated(__BUILD_MODULE_reports__, TablesSummaryReport, REPORTS_TABLES_SUMMARY)}
         {gated(__BUILD_MODULE_reports__, VoidsReport, REPORTS_VOIDS)}

@@ -72,7 +72,6 @@ const schema: ProviderConfigurationSchema = {
         { key: 'SALES_REVENUE', label: 'Sales Revenue', type: 'account', required: true },
         { key: 'VAT_OUTPUT', label: 'VAT / Tax Payable', type: 'account' },
         { key: 'DISCOUNT', label: 'Discount', type: 'account' },
-        { key: 'TIPS', label: 'Tips', type: 'account' },
         { key: 'CASH_MAIN', label: 'Cash', type: 'account', required: true },
         { key: 'CARD_RECEIVABLE', label: 'Card Receivable', type: 'account', required: true },
         { key: 'OTHER_RECEIVABLE', label: 'Other Receivable', type: 'account' },

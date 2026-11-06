@@ -8,7 +8,6 @@ import {
   LOGIN,
   REPORTS,
   REPORTS_AI,
-  TIP_DISTRIBUTION,
 } from "@/routes/restaurant-manager.ts";
 
 /**
@@ -21,7 +20,6 @@ export const isAssistantWidgetPath = (pathname: string): boolean => {
   if (pathname === CLOCK) return true;
   if (pathname === ADMIN) return true;
   if (pathname === HR) return true;
-  if (pathname === TIP_DISTRIBUTION) return true;
   if (pathname === ACCOUNTS) return true;
   if (pathname === INTEGRATIONS) return true;
 

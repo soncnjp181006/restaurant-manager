@@ -21,7 +21,6 @@ export const recalculateCart = (
     extrasTotal?: number
     serviceChargeAmount?: number
     couponAmount?: number
-    tipAmount?: number
     taxRate?: number
     now?: Date
     rules?: EvaluationContext['rules']
@@ -43,7 +42,6 @@ export const recalculateCart = (
   const extrasTotal = options?.extrasTotal ?? 0
   const serviceChargeAmount = options?.serviceChargeAmount ?? 0
   const couponAmount = options?.couponAmount ?? 0
-  const tipAmount = options?.tipAmount ?? 0
 
   const grandTotal = calculateOrderGrandTotal({
     itemsTotal: ctx.itemsTotal,
@@ -52,7 +50,6 @@ export const recalculateCart = (
     discountAmount: result.discountTotal,
     serviceChargeAmount,
     couponAmount,
-    tipAmount,
   })
 
   return {
@@ -64,7 +61,6 @@ export const recalculateCart = (
     extrasTotal,
     serviceChargeAmount,
     couponAmount,
-    tipAmount,
     grandTotal,
   }
 }

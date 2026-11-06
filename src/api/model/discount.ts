@@ -1,7 +1,7 @@
 import { ID, Name, Priority } from "@/api/model/common.ts";
 import { DateTime } from "surrealdb";
 
-/** @deprecated Use DiscountValueType instead — kept for service charge / tip compatibility */
+/** @deprecated Use DiscountValueType instead — kept for service charge compatibility */
 export enum DiscountType {
   Fixed = 'Fixed',
   Percent = 'Percent',

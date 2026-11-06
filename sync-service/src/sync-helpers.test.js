@@ -329,7 +329,7 @@ describe('resolveCatalogSyncTables (Phase 5)', () => {
     );
   });
 
-  it('unions tables from tip releases newer than local', () => {
+  it('unions tables from both release rows newer than local', () => {
     assert.deepEqual(
       resolveCatalogSyncTables({
         allowlist,
@@ -341,7 +341,7 @@ describe('resolveCatalogSyncTables (Phase 5)', () => {
     );
   });
 
-  it('ignores tip releases already applied locally', () => {
+  it('ignores release rows already applied locally', () => {
     assert.deepEqual(
       resolveCatalogSyncTables({
         allowlist,
@@ -349,7 +349,7 @@ describe('resolveCatalogSyncTables (Phase 5)', () => {
         globalRelease: { version: 3, tables: ['menu_item'] },
         branchRelease: { version: 4, tables: ['tax'] },
       }),
-      // force / already current → use winning tip (branch 4)
+      // force / already current → use winning release (branch 4)
       ['tax']
     );
   });

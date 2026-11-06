@@ -45,7 +45,7 @@ Clock shows your active time entry, shift, elapsed time, and sale metrics for th
 
 ### Session sale summary
 
-1. Metrics cover sales, refunds, service charges, discounts, taxes, extras, voids, and tips for the current clock-in session.
+1. Metrics cover sales, refunds, service charges, discounts, taxes, extras, and voids for the current clock-in session.
 2. Use this before clock-out for a quick performance check.
 
 

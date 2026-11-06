@@ -51,15 +51,15 @@ export function resolveCatalogSyncTables(opts: {
   if (!allowed.length) return [];
 
   const local = Number(opts.localVersion) || 0;
-  const tips = [opts.globalRelease, opts.branchRelease].filter(
+  const candidates = [opts.globalRelease, opts.branchRelease].filter(
     (row): row is { version?: number; tables?: string[] | null } =>
       !!row && typeof row === 'object'
   );
 
-  const newer = tips.filter((row) => Number(row.version) > local);
+  const newer = candidates.filter((row) => Number(row.version) > local);
   const consider = newer.length
     ? newer
-    : tips.length
+    : candidates.length
       ? [pickWinningCatalogRelease(opts.globalRelease, opts.branchRelease)].filter(
           (row): row is { version?: number; tables?: string[] | null } => !!row
         )

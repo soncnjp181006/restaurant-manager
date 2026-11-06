@@ -138,7 +138,6 @@ export const QBO_SCHEMA: ProviderConfigurationSchema = {
         { key: 'SALES_REVENUE', label: 'Sales Revenue', type: 'externalEntity', entityType: 'account', required: true },
         { key: 'VAT_OUTPUT', label: 'VAT / Tax Payable', type: 'externalEntity', entityType: 'account' },
         { key: 'DISCOUNT', label: 'Discount', type: 'externalEntity', entityType: 'account' },
-        { key: 'TIPS', label: 'Tips', type: 'externalEntity', entityType: 'account' },
         { key: 'CASH_MAIN', label: 'Cash', type: 'externalEntity', entityType: 'account', required: true },
         { key: 'CARD_RECEIVABLE', label: 'Card Receivable', type: 'externalEntity', entityType: 'account', required: true },
         { key: 'OTHER_RECEIVABLE', label: 'Other Receivable', type: 'externalEntity', entityType: 'account' },

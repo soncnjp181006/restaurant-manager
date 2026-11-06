@@ -54,8 +54,6 @@
     "tax": "Thuế",
     "discount": "Giảm giá",
     "serviceCharges": "Phí phục vụ ({{value}}{{unit}})",
-    "tip": "Tiền tip",
-    "tipPercent": "% tiền tip",
     "total": "Tổng cộng",
     "totalWithTax": "Tổng cộng gồm {{name}} {{rate}}%",
     "change": "Tiền thừa",
@@ -102,7 +100,6 @@
     "tax": "Thuế ({{name}} {{rate}}%):",
     "discount": "Giảm giá:",
     "serviceCharges": "Phí phục vụ ({{value}}{{unit}}):",
-    "tip": "Tiền tip:",
     "refundTotal": "Tổng hoàn tiền:",
     "itemsSelected": "Đã chọn {{count}} món",
     "reason": "Lý do",
@@ -199,4 +196,4 @@
   },
   "telebirrScanToPay": "Quét bằng ứng dụng Telebirr để thanh toán",
   "telebirrAmount": "Số tiền: {{amount}} ETB"
-}
+}

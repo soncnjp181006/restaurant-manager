@@ -31,7 +31,7 @@ branches** (`catalog_release:<sanitized_client_id>`).
 ## Consequences
 
 - Branches keep using Settings → Sync now; they take `max(global, mine)`.
-- Sync now intersects `tables[]` from tip releases newer than the branch’s
+- Sync now intersects `tables[]` from the two release rows newer than the branch’s
   applied version with the Phase 2 download allowlist (Phase 5).
 - Manual Surreal upsert of `catalog_release` remains valid for ops without UI.
 - Per-branch field overrides (base + sparse patch, merge on download) are

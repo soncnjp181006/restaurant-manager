@@ -39,7 +39,6 @@ DEFINE FIELD premium_pay ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FO
 DEFINE FIELD bonuses ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FOR create FULL FOR select FULL FOR update FULL;
 DEFINE FIELD deductions ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FOR create FULL FOR select FULL FOR update FULL;
 DEFINE FIELD adjustments ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FOR create FULL FOR select FULL FOR update FULL;
-DEFINE FIELD tips ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FOR create FULL FOR select FULL FOR update FULL;
 DEFINE FIELD gross_pay ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FOR create FULL FOR select FULL FOR update FULL;
 DEFINE FIELD net_pay ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FOR create FULL FOR select FULL FOR update FULL;
 DEFINE FIELD rule_applications ON payroll_snapshot TYPE any DEFAULT [] PERMISSIONS FOR create FULL FOR select FULL FOR update FULL;

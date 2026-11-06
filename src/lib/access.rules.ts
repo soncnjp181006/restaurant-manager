@@ -36,7 +36,6 @@ export const ACCESS_RULE_MODULES: Record<string, AccessRuleModule> = {
       "orders.apply_discount",
       "orders.apply_coupon",
       "orders.apply_service_charges",
-      "orders.apply_tips",
       "orders.change_extras",
       "orders.complete",
       "orders.complete_payment",
@@ -68,7 +67,6 @@ export const ACCESS_RULE_MODULES: Record<string, AccessRuleModule> = {
       "reports.sales_summary",
       "reports.sales_summary_2",
       "reports.sales_weekly",
-      "reports.tips",
       "reports.advanced_sales",
       "reports.discount",
       "reports.tax",
@@ -226,17 +224,9 @@ export const ACCESS_RULE_MODULES: Record<string, AccessRuleModule> = {
       "admin.shifts.create",
       "admin.shifts.update",
       "admin.shifts.delete",
-      "admin.tips_definition",
-      "admin.tips_definition.create",
-      "admin.tips_definition.update",
-      "admin.tips_definition.delete",
       "admin.security_alerts",
       "admin.catalog_publish",
     ],
-  },
-  tips: {
-    label: "Tip Distribution",
-    children: ["tips", "tips.calculation", "tips.payout"],
   },
   inventory: {
     label: "Inventory",
@@ -365,7 +355,6 @@ export const LEGACY_MODULE_MAP: Record<string, string | string[]> = {
   Kitchen: "kitchen",
   "Order Display": "order_display",
   Admin: "admin",
-  Tips: ["tips", "reports.tips"],
   Inventory: "inventory",
   HR: "hr",
   Settings: "settings",
@@ -394,7 +383,6 @@ export const LEGACY_MODULE_MAP: Record<string, string | string[]> = {
   "Apply discount": "orders.apply_discount",
   "Apply coupon": "orders.apply_coupon",
   "Apply service charges": "orders.apply_service_charges",
-  "Apply tips": "orders.apply_tips",
   "Change extras": "orders.change_extras",
   "Complete order": "orders.complete",
   "Complete order payment": "orders.complete_payment",
@@ -497,13 +485,8 @@ export const LEGACY_MODULE_MAP: Record<string, string | string[]> = {
   Users: "admin.users",
   Roles: "admin.roles",
   Shifts: "admin.shifts",
-  "Tips definition": "admin.tips_definition",
   "Security Alerts": "admin.security_alerts",
   "Catalog publish": "admin.catalog_publish",
-
-  // Tips distribution
-  "Tip Calculation": "tips.calculation",
-  "Payout Management": "tips.payout",
 
   // Inventory
   Items: "inventory.items",

@@ -346,4 +346,4 @@
     "progressCount": "{{completed}} / {{total}} tables ({{percent}}%)",
     "reloadCacheHint": "Catalog sync finished. Reload cache in Settings so the POS UI picks up the new menu."
   }
-}
+}

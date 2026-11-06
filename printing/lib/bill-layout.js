@@ -87,7 +87,6 @@ function printBillLayout(printer, bill, config, opts) {
   const taxLabel = L.tax || 'Tax';
   const discountLabel = L.discount || 'Discount';
   const extraLabel = L.extra || 'Extra';
-  const tipLabel = L.tip || 'Tip';
   const totalLabel = L.total || 'Total';
   const paymentLabel = L.payment || 'Payment';
   const changeLabel = L.change || 'Change';
@@ -136,9 +135,6 @@ function printBillLayout(printer, bill, config, opts) {
   (bill.extras || []).forEach((e) => {
     printLineLeftRight(printer, e.name || extraLabel, formatMoney(e.value, sym));
   });
-  if (bill.tipAmount != null && Number(bill.tipAmount) !== 0) {
-    printLineLeftRight(printer, bill.tipLabel || tipLabel, formatMoney(bill.tipAmount, sym));
-  }
   printDivider(printer);
 
   if (Array.isArray(bill.totalRows) && bill.totalRows.length > 0) {

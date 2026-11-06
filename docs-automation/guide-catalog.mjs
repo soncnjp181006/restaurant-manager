@@ -70,7 +70,6 @@ export const GUIDES = [
       { key: 'order-display' },
       { key: 'closing' },
       { key: 'reports-ops' },
-      { key: 'tips-manager' },
     ],
   },
   {
@@ -111,7 +110,7 @@ export const GUIDES = [
     folder: 'hr',
     pdfName: 'restaurant-manager-hr-guide.pdf',
     defaultTitle: 'HR Guide',
-    defaultIntro: 'People operations: employees, attendance, leave, payroll, documents, performance, and tip distribution.',
+    defaultIntro: 'People operations: employees, attendance, leave, payroll, documents, and performance.',
     chapters: [
       { key: 'hr-overview' },
       { key: 'hr-employees' },
@@ -122,7 +121,6 @@ export const GUIDES = [
       { key: 'hr-payroll' },
       { key: 'hr-documents' },
       { key: 'hr-performance' },
-      { key: 'tip-distribution' },
     ],
   },
   {

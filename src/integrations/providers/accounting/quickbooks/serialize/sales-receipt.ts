@@ -19,7 +19,6 @@ export interface QboSalesReceiptInput {
   }>;
   subtotal: number;
   taxAmount?: number;
-  tipAmount?: number;
   discountAmount?: number;
   total: number;
   taxCodeId?: string;
@@ -83,16 +82,6 @@ export const serializeSalesReceipt = (input: QboSalesReceiptInput): QboSalesRece
       DetailType: 'SalesItemLineDetail',
       Amount: -Math.abs(input.discountAmount),
       Description: 'Discount',
-      SalesItemLineDetail: {},
-    });
-  }
-
-  // Add tip line if applicable
-  if (input.tipAmount && input.tipAmount > 0) {
-    lines.push({
-      DetailType: 'SalesItemLineDetail',
-      Amount: input.tipAmount,
-      Description: 'Tip / Service Charge',
       SalesItemLineDetail: {},
     });
   }

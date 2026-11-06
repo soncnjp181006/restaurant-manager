@@ -66,7 +66,6 @@ const formatOrderRow = (order: Order) => {
     taxAmount: getOrderTaxAmount(order),
     discountAmount: getOrderCartDiscountAmount(order),
     serviceChargeAmount: safeNumber(order.service_charge_amount),
-    tipAmount: safeNumber(order.tip_amount),
   });
   const user = order.user as {first_name?: string; last_name?: string} | undefined;
   const customer = order.customer as {name?: string; phone?: string | number} | undefined;

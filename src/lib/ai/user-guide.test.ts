@@ -32,7 +32,6 @@ describe("suggestUserGuideChapterForPath", () => {
     expect(suggestUserGuideChapterForPath("/hr")).toBe("hr-overview");
     expect(suggestUserGuideChapterForPath("/accounts")).toBe("accounts-overview");
     expect(suggestUserGuideChapterForPath("/integrations")).toBe("integrations");
-    expect(suggestUserGuideChapterForPath("/tip-distribution")).toBe("tip-distribution");
     expect(suggestUserGuideChapterForPath("/clock")).toBe("session");
     expect(suggestUserGuideChapterForPath("/admin")).toBe("admin-overview");
     expect(suggestUserGuideChapterForPath("/reports")).toBe("reports-ops");

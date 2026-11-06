@@ -169,6 +169,11 @@ const MIGRATION_PLAN = [
     id: '2026_11_06_strip_delivery_role_modules',
     backfill: 'backfill-strip-delivery-role-modules.cjs',
   },
+  { id: '2026_11_06_remove_tips', file: '2026_11_06_remove_tips.surql' },
+  {
+    id: '2026_11_06_strip_tips_role_modules',
+    backfill: 'backfill-strip-tips-role-modules.cjs',
+  },
 ];
 
 const rows = (result) => {

@@ -494,7 +494,6 @@ const CashClosingBranchBlock = ({
                   <div><div className="text-xs text-muted">{t('labels.discounts')}</div><div className="font-semibold">{withCurrency(Number(shiftRecap.discounts || 0))}</div></div>
                   <div><div className="text-xs text-muted">{t('columns.tax')}</div><div className="font-semibold">{withCurrency(Number(shiftRecap.tax || 0))}</div></div>
                   <div><div className="text-xs text-muted">{t('labels.serviceCharge')}</div><div className="font-semibold">{withCurrency(Number(shiftRecap.service_charge || 0))}</div></div>
-                  <div><div className="text-xs text-muted">{t('labels.tips')}</div><div className="font-semibold">{withCurrency(Number(shiftRecap.tips || 0))}</div></div>
                   <div><div className="text-xs text-muted">{t('labels.voids')}</div><div className="font-semibold">{withCurrency(Number(shiftRecap.voids || 0))}</div></div>
                   <div><div className="text-xs text-muted">{t('labels.refunds')}</div><div className="font-semibold">{Number(shiftRecap.refunds || 0)}</div></div>
                 </div>

@@ -35,7 +35,7 @@ import {
   SETTINGS,
   INTEGRATIONS,
   SUMMARY,
-  TIP_DISTRIBUTION, ACCOUNTS
+  ACCOUNTS
 } from "@/routes/restaurant-manager.ts";
 import { getAccessRuleChildLabel } from "@/lib/access.rules.i18n.ts";
 import { getUserModules, moduleMatchCandidates } from "@/lib/access.rules.ts";
@@ -56,7 +56,6 @@ const SIDEBAR_NAV_TEST_IDS: Partial<Record<string, string>> = {
   [INVENTORY]: 'nav-inventory',
   [ADMIN]: 'nav-admin',
   [REPORTS]: 'nav-reports',
-  [TIP_DISTRIBUTION]: 'nav-tip-distribution',
   [ACCOUNTS]: 'nav-accounts',
   [HR]: 'nav-hr',
   [INTEGRATIONS]: 'nav-integrations',
@@ -99,7 +98,6 @@ export const Sidebar = () => {
     { title: t('sidebar.inventory'), icon: <FontAwesomeIcon icon={faWarehouse} size="lg"/>, link: INVENTORY, role: 'inventory' },
     { title: t('sidebar.manage'), icon: <FontAwesomeIcon icon={faGear} size="lg"/>, link: ADMIN, role: 'admin' },
     { title: t('sidebar.reports'), icon: <FontAwesomeIcon icon={faLineChart} size="lg"/>, link: REPORTS, role: 'reports' },
-    { title: t('sidebar.tipDist'), icon: <FontAwesomeIcon icon={faBarChart} size="lg"/>, link: TIP_DISTRIBUTION, role: 'tips' },
     { title: t('sidebar.accounts'), icon: <FontAwesomeIcon icon={faReceipt} size="lg"/>, link: ACCOUNTS, role: 'accounts' },
     { title: t('sidebar.hr'), icon: <FontAwesomeIcon icon={faUsers} size="lg"/>, link: HR, role: 'hr' },
     { title: t('sidebar.integrations'), icon: <FontAwesomeIcon icon={faPlug} size="lg"/>, link: INTEGRATIONS, role: 'integrations' },

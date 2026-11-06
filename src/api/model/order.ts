@@ -46,10 +46,6 @@ export interface Order extends ID{
   service_charge?: number
   service_charge_amount?: number
 
-  tip?: number
-  tip_amount?: number
-  tip_type?: DiscountType
-
   user: User
   cashier?: User
   tags?: string[]

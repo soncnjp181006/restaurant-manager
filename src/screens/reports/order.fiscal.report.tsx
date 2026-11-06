@@ -235,7 +235,7 @@ const OrderFiscalBody = ({submissions}: {submissions: OrderFiscalSubmission[]}) 
         const order = getOrder(sub);
         if (!order) return acc;
         const figures = getOrderSettlementFigures(order);
-        // items only so: gross + tax - discount + service + extras (+ tips) = grand
+        // items only so: gross + tax - discount + service + extras = grand
         acc.gross += figures.itemsTotal;
         acc.tax += figures.tax;
         acc.discount += figures.discounts;

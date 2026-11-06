@@ -115,7 +115,7 @@ function Section({
   );
 }
 
-/** Active lines + extras only (no tax, service, tips); voided / refunded / suspended lines excluded. */
+/** Active lines + extras only (no tax or service charge); voided / refunded / suspended lines excluded. */
 function useDailySalesFigures(orders: Order[] | undefined) {
   const {t} = useTranslation('summary');
   return useMemo(() => {
@@ -142,10 +142,8 @@ function useDailySalesFigures(orders: Order[] | undefined) {
     const serviceCharges = settlementFigures.reduce((sum, figures) => sum + figures.serviceCharges, 0);
     const taxCollected = settlementFigures.reduce((sum, figures) => sum + figures.tax, 0);
 
-    const amountDue = settlementFigures.reduce((sum, figures) => sum + figures.amountDueBeforeTips, 0);
+    const amountDue = settlementFigures.reduce((sum, figures) => sum + figures.grandTotalDue, 0);
     const totalRevenue = amountDue;
-
-    const tips = settlementFigures.reduce((sum, figures) => sum + figures.tips, 0);
 
     const grandTotalDue = settlementFigures.reduce((sum, figures) => sum + figures.grandTotalDue, 0);
 
@@ -335,7 +333,6 @@ function useDailySalesFigures(orders: Order[] | undefined) {
       taxCollected,
       amountDue,
       totalRevenue,
-      tips,
       grandTotalDue,
       amountCollected,
       amountCollectedRaw,
@@ -436,16 +433,6 @@ export function DailySalesSummaryReport({orders, date}: Props) {
       </Section>
 
       <Section title={t('report.sections.settlementCashier')} subtitle={t('report.subtitles.settlementCashier')}>
-        <Row
-          label={t('report.rows.amountDueBeforeTips')}
-          value={withCurrency(f.amountDue)}
-          hint={t('report.hints.amountDueBeforeTips')}
-        />
-        <Row
-          label={t('report.rows.tips')}
-          value={withCurrency(f.tips)}
-          hint={t('report.hints.tips')}
-        />
         <div className="border-b border-border py-2">
           <div className="flex justify-between gap-3 text-sm font-bold">
             <span>{t('report.rows.grandTotalDue')}</span>

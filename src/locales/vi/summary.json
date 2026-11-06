@@ -59,8 +59,6 @@
       "serviceCharges": "Phí phục vụ",
       "taxes": "Thuế",
       "totalRevenue": "Tổng doanh thu",
-      "amountDueBeforeTips": "Số tiền phải thu (chưa gồm tiền tip)",
-      "tips": "Tiền tip",
       "grandTotalDue": "Tổng cộng (phải thu)",
       "amountCollected": "Số tiền đã thu",
       "rounding": "Làm tròn",
@@ -70,8 +68,7 @@
       "covers": "Số khách",
       "averageCover": "Trung bình mỗi khách",
       "ordersChecks": "Đơn hàng / hoá đơn",
-      "averageOrderCheck": "Trung bình mỗi đơn hàng / hoá đơn",
-      "totalTips": "Tổng tiền tip"
+      "averageOrderCheck": "Trung bình mỗi đơn hàng / hoá đơn"
     },
     "hints": {
       "exclusiveSales": "Chỉ doanh thu món (trước phụ thu, phí phục vụ và thuế).",
@@ -84,19 +81,18 @@
       "netSales": "Doanh thu gộp − giảm giá.",
       "serviceCharges": "Số tiền trên đơn hàng; dựa trên giá ròng sau giảm giá",
       "taxes": "Thuế nhà nước được ghi nhận theo từng đơn hàng.",
-      "totalRevenue": "Doanh thu ròng + phí phục vụ + thuế (chưa gồm tiền tip).",
+      "totalRevenue": "Doanh thu ròng + phí phục vụ + thuế.",
       "amountDueBeforeTips": "Doanh thu ròng + phí phục vụ + thuế.",
-      "tips": "Từ trường tiền tip của đơn hàng / trên tổng cộng (không nằm trong doanh thu gộp).",
-      "grandTotalDue": "Tổng doanh thu + tiền tip.",
+      "grandTotalDue": "Tổng doanh thu (doanh thu ròng + phí phục vụ + thuế).",
       "amountCollected": "Tổng thanh toán đã nhận theo phương thức (không gồm tiền thừa đã trả lại).",
       "rounding": "Số tiền đã thu − tổng cộng (phải thu); thừa/thiếu so với số phải thu tính được.",
       "changeVariance": "Tiền mặt thanh toán vượt quá số tiền đã nhận.",
       "voids": "Giá trị các dòng bị xoá sau khi ghi nhận (không nằm trong doanh thu gộp ở trên).",
       "refunds": "Các khoản hoàn từ thanh toán âm hoặc hoá đơn đã huỷ.",
       "covers": "Số lượng khách.",
-      "averageCover": "Số tiền phải thu (chưa gồm tiền tip) ÷ số khách.",
+      "averageCover": "Số tiền phải thu ÷ số khách.",
       "ordersChecks": "Số lượng hoá đơn/đơn hàng đã đóng.",
-      "averageOrderCheck": "Số tiền phải thu (chưa gồm tiền tip) ÷ số đơn hàng.",
+      "averageOrderCheck": "Số tiền phải thu ÷ số đơn hàng.",
       "roundingLegacy": "Số tiền đã thu - Số tiền phải thu"
     },
     "columns": {
@@ -113,9 +109,8 @@
       "noExtras": "Không tìm thấy phụ thu nào cho ngày này.",
       "noCoupons": "Không có mã giảm giá nào được sử dụng cho ngày này."
     },
-    "footer": "Thứ tự: doanh thu gộp → giảm giá → doanh thu ròng → phí phục vụ → thuế → tiền tip → tổng cộng → số tiền đã thu. Cơ cấu sản phẩm được gom theo nhóm, các món đặt lồng bên trong.",
+    "footer": "Thứ tự: doanh thu gộp → giảm giá → doanh thu ròng → phí phục vụ → thuế → tổng cộng → số tiền đã thu. Cơ cấu sản phẩm được gom theo nhóm, các món đặt lồng bên trong.",
     "legacy": {
-      "tips": "Tiền tip",
       "categories": "Nhóm",
       "dishes": "Món ăn",
       "paymentTypes": "Hình thức thanh toán",
@@ -149,22 +144,7 @@
       "discounts": "Giảm giá",
       "taxes": "Thuế",
       "extras": "Phụ thu",
-      "voids": "Huỷ bỏ",
-      "tips": "Tiền tip"
+      "voids": "Huỷ bỏ"
     }
-  },
-  "tipDistribution": {
-    "shift": "Ca làm việc",
-    "date": "Ngày",
-    "loadTips": "Tải dữ liệu tip",
-    "submit": "Gửi",
-    "totalTips": "Tổng tiền tip: {{amount}}",
-    "columns": {
-      "user": "Người dùng",
-      "role": "Vai trò",
-      "weight": "Trọng số",
-      "amount": "Số tiền"
-    },
-    "empty": "Chưa tính khoản phân bổ nào."
   }
 }

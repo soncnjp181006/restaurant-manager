@@ -21,8 +21,7 @@ Restaurant Manager Documentation
 │   ├── Kitchen
 │   ├── Order display
 │   ├── Closing
-│   ├── Reports (operations)
-│   └── Tip oversight
+│   └── Reports (operations)
 │
 ├── 📙 Inventory Guide
 │   ├── Inventory overview
@@ -49,8 +48,7 @@ Restaurant Manager Documentation
 │   ├── Pay profiles & rules
 │   ├── Payroll periods & runs
 │   ├── Employee documents
-│   ├── Performance notes
-│   └── Tip distribution
+│   └── Performance notes
 │
 └── 📓 Administrator Guide
     ├── Manage overview

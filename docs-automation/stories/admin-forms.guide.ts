@@ -77,11 +77,4 @@ test('capture manage form modals', async ({ page }) => {
   await capturePage(page, 'admin-users-shift-form', { fullPage: false });
   await clearHighlights(page);
   await closeAllModals(page);
-
-  // Tips definition panel
-  await page.getByTestId('admin-users-tab-tips_definition').click();
-  await page.waitForTimeout(800);
-  await highlightAndReady(page, page.getByTestId('admin-page'));
-  await capturePage(page, 'admin-users-tips-definition', { fullPage: false });
-  await clearHighlights(page);
 });

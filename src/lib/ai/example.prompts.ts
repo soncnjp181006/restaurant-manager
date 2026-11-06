@@ -32,7 +32,6 @@ export const AI_EXAMPLE_PROMPTS: AiExamplePrompt[] = [
   {category: "sales", prompt: "Who were the top 5 servers by net sales last month?"},
   {category: "sales", prompt: "Which products haven't sold in 60 days?"},
   {category: "sales", prompt: "Sales summary for every order taker during their current session"},
-  {category: "sales", prompt: "How much tips were collected today and how would they be distributed?"},
   {category: "sales", prompt: "Summarize promotional discounts applied today over 20% of the bill"},
   {category: "sales", prompt: "Menu engineering matrix for this month — show Plowhorses and Puzzles"},
   {category: "sales", prompt: "High-profit dishes with month over month volume drop"},

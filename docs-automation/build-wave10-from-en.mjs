@@ -103,7 +103,6 @@ const ES = {
   'User form': 'Formulario de usuario',
   'Role form': 'Formulario de rol',
   'Shift template form': 'Formulario de plantilla de turno',
-  'Tips definition (tip distribution)': 'Definición de propinas (distribución)',
   'Reason': 'Motivo',
   'Select all items': 'Seleccionar todos los ítems',
   'Partial void': 'Anulación parcial',

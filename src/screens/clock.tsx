@@ -340,12 +340,6 @@ export const Clock = () => {
     );
   }, [orders]);
 
-  const tips = useMemo(() => {
-    return safeNumber(
-      orders?.filter(order => order.status === OrderStatus.Paid).reduce((prev, item) => prev + safeNumber(item.tip_amount), 0) ?? 0
-    );
-  }, [orders]);
-
   const handleClockOut = async () => {
     if (!timeEntry || !page.user) return;
 
@@ -447,12 +441,6 @@ export const Clock = () => {
           <div className="bg-gradient-to-br from-danger-100 to-danger-200 dark:from-danger-900/50 dark:to-danger-800/40 p-2 rounded-lg border border-danger-300 dark:border-danger-700">
             <p className="text-sm text-danger-700 dark:text-danger-300 font-medium mb-1">{t("summary:clock.metrics.voids")}</p>
             <p className="text-2xl font-bold text-danger-900 dark:text-danger-400">{withCurrency(voids)}</p>
-          </div>
-
-          {/* Tips Widget */}
-          <div className="bg-gradient-to-br from-success-100 to-success-200 dark:from-success-900/50 dark:to-success-800/40 p-2 rounded-lg border border-success-300 dark:border-success-700">
-            <p className="text-sm text-success-700 dark:text-success-300 font-medium mb-1">{t("summary:clock.metrics.tips")}</p>
-            <p className="text-2xl font-bold text-success-900 dark:text-success-400">{withCurrency(tips)}</p>
           </div>
         </div>
         )}

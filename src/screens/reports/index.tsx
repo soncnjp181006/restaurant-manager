@@ -32,7 +32,6 @@ import {SaleVsConsumptionFilter} from "@/components/reports/filters/sale.vs.cons
 import {KitchenReconciliationFilter} from "@/components/reports/filters/kitchen.reconciliation.filter.tsx";
 import {ProductionReportFilter} from "@/components/reports/filters/production.filter.tsx";
 import {BuffetReportFilter} from "@/components/reports/filters/buffet.filter.tsx";
-import { TipsFilter } from "@/components/reports/filters/tips.filter.tsx";
 import {useSecurity} from "@/hooks/useSecurity.ts";
 import {SalesDashboardFilter} from "@/components/reports/filters/sales.dashboard.filter.tsx";
 import {InventoryDashboardFilter} from "@/components/reports/filters/inventory.dashboard.filter.tsx";
@@ -80,7 +79,6 @@ const REPORT_PERMISSION_MODULES: Record<string, string> = {
   salesSummary: 'reports.sales_summary',
   salesSummary2: 'reports.sales_summary_2',
   salesWeekly: 'reports.sales_weekly',
-  tips: 'reports.tips',
   advancedSales: 'reports.advanced_sales',
   discount: 'reports.discount',
   tax: 'reports.tax',
@@ -160,7 +158,6 @@ export const Reports = () => {
           { reportKey: 'salesSummary', filter: <SalesSummaryFilter /> },
           { reportKey: 'salesSummary2', filter: <SalesSummary2Filter /> },
           { reportKey: 'salesWeekly', filter: <SalesWeeklyFilter /> },
-          { reportKey: 'tips', filter: <TipsFilter /> },
           { reportKey: 'advancedSales', filter: <SalesAdvancedFilter /> },
           { reportKey: 'discount', filter: <DiscountsFilter /> },
           { reportKey: 'tax', filter: <TaxFilter /> },

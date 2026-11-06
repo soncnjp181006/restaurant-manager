@@ -94,22 +94,6 @@ export const AI_REPORT_TOOLS: OpenAIToolDefinition[] = [
   {
     type: "function",
     function: {
-      name: "get_tips",
-      description: "Get tips collected from paid orders (matches Advanced Sales report tip column). Returns tipsCollected, tipsByCashier, projectedShares (weighted split using tip_distribution settings), and savedDistributions (finalized records if any). For 'today' pass phrase: today.",
-      parameters: {
-        type: "object",
-        properties: {
-          ...dateRangeProps,
-          phrase: {type: "string", description: "Natural date phrase e.g. today, yesterday, this week"},
-          shiftId: {type: "string", description: "Optional shift id to filter cashiers and distribution pool"},
-          includeProjectedDistribution: {type: "boolean", default: true},
-        },
-      },
-    },
-  },
-  {
-    type: "function",
-    function: {
       name: "get_current_session_sales",
       description: "Sales summary for every order taker during their current active clock-in session (time_entry where clock_out is empty). Returns session duration, net sales, checks, guests, average check, and average guest sale per order taker.",
       parameters: {type: "object", properties: {}},

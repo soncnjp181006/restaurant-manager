@@ -1,6 +1,6 @@
 {
   "title": "Users and roles",
-  "intro": "Manage staff accounts, PINs, role permissions, shifts, and tip-pool definitions that control who can access each screen and tab.",
+  "intro": "Manage staff accounts, PINs, role permissions and shifts that control who can access each screen and tab.",
   "sections": [
     {
       "id": "list",
@@ -32,22 +32,10 @@
       "steps": [
         "Switch to the Shifts sub-tab.",
         "Add shift names with start and end times.",
-        "Assign shifts to users for scheduling and tip-distribution context."
+        "Assign shifts to users for scheduling and labor reports."
       ],
       "image": "admin-users-shifts.png",
       "caption": "Shifts sub-tab."
-    },
-    {
-      "id": "tips-definition",
-      "title": "Tip definition",
-      "intro": "Tip definition sets pool weights and rules used when managers run tip distribution (see HR Guide → Tip distribution for payout runs).",
-      "steps": [
-        "Switch to the Tip definition sub-tab.",
-        "Configure how tips are pooled and weighted by role or shift.",
-        "Save so tip distribution calculations use the latest rules."
-      ],
-      "image": "admin-users-tips-definition.png",
-      "caption": "Tip definition sub-tab."
     },
     {
       "id": "user-form",

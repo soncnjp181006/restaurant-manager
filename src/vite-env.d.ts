@@ -36,7 +36,6 @@ declare const __BUILD_MODULE_closing__: boolean;
 declare const __BUILD_MODULE_inventory__: boolean;
 declare const __BUILD_MODULE_admin__: boolean;
 declare const __BUILD_MODULE_reports__: boolean;
-declare const __BUILD_MODULE_tips__: boolean;
 declare const __BUILD_MODULE_accounts__: boolean;
 declare const __BUILD_MODULE_hr__: boolean;
 declare const __BUILD_MODULE_integrations__: boolean;

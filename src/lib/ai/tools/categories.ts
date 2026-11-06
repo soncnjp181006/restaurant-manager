@@ -18,7 +18,6 @@ export const AI_REPORT_TOOL_CATEGORIES: Record<AiReportToolDomain | "core", read
     "get_product_mix",
     "get_unsold_products",
     "get_voids",
-    "get_tips",
     "get_server_sales",
     "get_current_session_sales",
     "get_tax_summary",

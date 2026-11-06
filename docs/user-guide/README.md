@@ -25,8 +25,7 @@ Restaurant Manager Documentation
 │   ├── Kitchen
 │   ├── Order display
 │   ├── Closing
-│   ├── Reports (operations)
-│   └── Tip oversight
+│   └── Reports (operations)
 │
 ├── 📙 Inventory Guide
 │   ├── Inventory overview
@@ -53,8 +52,7 @@ Restaurant Manager Documentation
 │   ├── Pay profiles and rules
 │   ├── Payroll
 │   ├── Documents
-│   ├── Performance
-│   └── Tip distribution
+│   └── Performance
 │
 └── 📓 Administrator Guide
     ├── Manage overview
@@ -104,7 +102,6 @@ Guide titles/intros: `locales/{lang}/guides.json`. Chapter body: `locales/{lang}
 | 2 | Manager | Order display | Done |
 | 2 | Manager | Closing | Done |
 | 2 | Manager | Reports (operations) | Done |
-| 2 | Manager | Tip oversight | Done |
 | 3 | Admin | Settings advanced / Manage-only options | Done (chapter settings-advanced; Settings cards also under Employee) |
 | 4 | Admin | Manage overview | Done |
 | 4 | Admin | Menus, categories, dishes | Done |
@@ -127,13 +124,12 @@ Guide titles/intros: `locales/{lang}/guides.json`. Chapter body: `locales/{lang}
 | 6 | HR | Employees | Done |
 | 6 | HR | Attendance | Done |
 | 6 | HR | Leave | Done |
-| 6 | HR | Tip distribution | Done |
 | 7 | Admin | Reports hub (administrator packs) | Done |
 | 8 | Admin | Integrations | Done |
 | 10 | Employee | Orders — cancel/void, refund, split, merge (forms + field lists) | Done |
 | 10 | Accounts | Profit & loss and cash flow statements | Done |
 | 10 | Inventory | Kitchen reconciliation, recipes/production, buffet menus/sessions | Done |
-| 10 | Admin | All Manage Add/Edit forms (22 modals + tips definition panel) | Done |
+| 10 | Admin | All Manage Add/Edit forms (22 modals) | Done |
 | 10 | HR | Cost centers, pay, payroll, documents, performance + all HR forms | Done |
 
 ## Contents
@@ -195,7 +191,7 @@ If capture fails with “No floor tables”, “No dishes”, or “No payment t
 **Settings** — nav, overview, all page cards: What’s new, cache, language, translate receipts, printers, print options, menus, service charges, closing cycle, auto check close, session security, auto clock-out, inclusive prices, currency symbol, on-screen keyboard, table selection, inventory, items visibility  
 **Menu** — floor, table tile, covers pad (if enabled), ordering overview, categories, dishes  
 **Cart** — cart with line items, To kitchen / Pay / Cancel  
-**Payment** — tax/discount/coupon/service/tip require OK or Apply; tender panel  
+**Payment** — tax/discount/coupon/service require OK or Apply; tender panel  
 **Orders** — list, filters, card, actions  
 **Session** — lock, logout, clock  
 
@@ -206,14 +202,13 @@ If capture fails with “No floor tables”, “No dishes”, or “No payment t
 **Order display** — filters, preparing / ready columns  
 **Closing** — terminal cash, expenses, save / complete  
 **Reports** — category hub, sub-reports, filters  
-**Tip oversight** — shift/date, distribution table  
 
 ### Wave 10 — deep-dive forms and missing modules
 
 **Employee — Orders** — cancel/void modal, refund modal, split by seats/items/amount, merge bar (field lists per section)  
 **Accounts** — profit & loss and cash flow tabs  
 **Inventory** — kitchen reconciliation, recipes/production/history, buffet menus and sessions (lists + forms)  
-**Administrator — Manage** — every Add/Edit form documented with `fields[]` (remote payment gateways, discount categories, nested modifier groups, users/roles/shifts, tips definition panel)  
+**Administrator — Manage** — every Add/Edit form documented with `fields[]` (remote payment gateways, discount categories, nested modifier groups, users/roles/shifts)  
 **HR** — cost centers, pay profiles/rules, payroll periods/runs/adjustments, documents, performance; all 19 HR modals including scheduling sub-forms  
 
 Regenerate Wave 10 screenshots:

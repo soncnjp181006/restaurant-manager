@@ -59,8 +59,6 @@
       "serviceCharges": "Service charges",
       "taxes": "Taxes",
       "totalRevenue": "Total revenue",
-      "amountDueBeforeTips": "Amount due (before tips)",
-      "tips": "Tips",
       "grandTotalDue": "Grand total (due)",
       "amountCollected": "Amount collected",
       "rounding": "Rounding",
@@ -70,8 +68,7 @@
       "covers": "Covers",
       "averageCover": "Average cover",
       "ordersChecks": "Orders / checks",
-      "averageOrderCheck": "Average order / check",
-      "totalTips": "Total Tips"
+      "averageOrderCheck": "Average order / check"
     },
     "hints": {
       "exclusiveSales": "Item sales only (before extras, service and tax).",
@@ -84,19 +81,18 @@
       "netSales": "Gross sales − discounts.",
       "serviceCharges": "Amount on orders; based on net after discount",
       "taxes": "Government tax as recorded per order.",
-      "totalRevenue": "Net sales + service charges + taxes (before tips).",
+      "totalRevenue": "Net sales + service charges + taxes.",
       "amountDueBeforeTips": "Net sales + service charges + taxes.",
-      "tips": "From order tip fields / over-total (not included in gross sales).",
-      "grandTotalDue": "Total revenue + tips.",
+      "grandTotalDue": "Total revenue (net sales + service charges + taxes).",
       "amountCollected": "Applied payment totals by method (excludes change returned).",
       "rounding": "Amount collected − grand total (due); over/short vs calculated due.",
       "changeVariance": "Cash tendered in excess of applied payment amounts.",
       "voids": "Value of lines removed after ring (not in gross sales above).",
       "refunds": "Returns from negative payments or cancelled checks.",
       "covers": "Guest count (pax).",
-      "averageCover": "Amount due (before tips) ÷ covers.",
+      "averageCover": "Amount due ÷ covers.",
       "ordersChecks": "Number of closed checks/orders.",
-      "averageOrderCheck": "Amount due (before tips) ÷ orders.",
+      "averageOrderCheck": "Amount due ÷ orders.",
       "roundingLegacy": "Amount collected - Amount due"
     },
     "columns": {
@@ -113,9 +109,8 @@
       "noExtras": "No extras found for this date.",
       "noCoupons": "No coupon usage for this date."
     },
-    "footer": "Sequence: gross sales → discounts → net sales → service charges → taxes → tips → grand total → collected. Product mix is grouped by category with dishes nested inside.",
+    "footer": "Sequence: gross sales → discounts → net sales → service charges → taxes → grand total → collected. Product mix is grouped by category with dishes nested inside.",
     "legacy": {
-      "tips": "Tips",
       "categories": "Categories",
       "dishes": "Dishes",
       "paymentTypes": "Payment types",
@@ -149,22 +144,7 @@
       "discounts": "Discounts",
       "taxes": "Taxes",
       "extras": "Extras",
-      "voids": "Voids",
-      "tips": "Tips"
+      "voids": "Voids"
     }
-  },
-  "tipDistribution": {
-    "shift": "Shift",
-    "date": "Date",
-    "loadTips": "Load tips",
-    "submit": "Submit",
-    "totalTips": "Total tips: {{amount}}",
-    "columns": {
-      "user": "User",
-      "role": "Role",
-      "weight": "Weight",
-      "amount": "Amount"
-    },
-    "empty": "No distribution calculated yet."
   }
 }

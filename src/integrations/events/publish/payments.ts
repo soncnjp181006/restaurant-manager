@@ -7,7 +7,6 @@ export type PaymentCompletedPayload = {
   amount: number;
   paymentTypeId?: string;
   paymentTypeName?: string;
-  tipAmount?: number;
   currency?: string;
   completedAt?: string;
 };

@@ -24,7 +24,6 @@ const saleLikeAmounts = (payload: {
   subtotal: number;
   taxAmount: number;
   discountAmount: number;
-  tipAmount: number;
   totalCollected: number;
   tenders: { cashAmount: number; cardAmount: number; otherAmount: number };
 }): TemplateAmountContext => {
@@ -35,7 +34,6 @@ const saleLikeAmounts = (payload: {
     otherAmount: payload.tenders.otherAmount,
     taxAmount: payload.taxAmount,
     discountAmount: payload.discountAmount,
-    tipAmount: payload.tipAmount,
     salesRevenue,
     totalCollected: payload.totalCollected,
   };

@@ -184,9 +184,6 @@ export interface OrderRecord {
   service_charge?: number;
   service_charge_amount?: number;
   service_charge_type?: string;
-  tip?: number;
-  tip_amount?: number;
-  tip_type?: string;
   notes?: string;
   /**
    * Local-only cashier progress on the payment screen (tendered lines before

@@ -92,7 +92,6 @@ export interface CartTotals {
   extrasTotal: number
   serviceChargeAmount: number
   couponAmount: number
-  tipAmount: number
   grandTotal: number
 }
 

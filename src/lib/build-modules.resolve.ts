@@ -13,7 +13,6 @@ export const TOP_LEVEL_BUILD_MODULES = [
   'inventory',
   'admin',
   'reports',
-  'tips',
   'accounts',
   'hr',
   'integrations',

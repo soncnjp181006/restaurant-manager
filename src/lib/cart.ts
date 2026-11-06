@@ -93,7 +93,6 @@ export interface OrderTotalsInput {
   discountTotal?: number;
   serviceChargeAmount?: number;
   couponAmount?: number;
-  tipAmount?: number;
 }
 
 export const calculateOrderGrandTotal = ({
@@ -104,7 +103,6 @@ export const calculateOrderGrandTotal = ({
   discountTotal,
   serviceChargeAmount = 0,
   couponAmount = 0,
-  tipAmount = 0,
 }: OrderTotalsInput) => {
   const resolvedDiscount = discountTotal ?? discountAmount;
   return (
@@ -113,8 +111,7 @@ export const calculateOrderGrandTotal = ({
     taxAmount +
     serviceChargeAmount -
     resolvedDiscount -
-    couponAmount +
-    tipAmount
+    couponAmount
   );
 };
 
@@ -150,12 +147,6 @@ export const calculateOrderTotalsPreview = (order: Order, cart?: MenuItem[]) => 
       : Number(order.discount_amount ?? 0)
     : 0;
 
-  const tipAmount = order?.tip_amount > 0
-    ? order.tip_type === DiscountType.Percent
-      ? itemsTotal * Number(order.tip ?? 0) / 100
-      : Number(order.tip_amount ?? 0)
-    : 0;
-
   const extrasTotal = order?.extras?.filter(item => item !== undefined)?.reduce((prev, item) => prev + item.value, 0) ?? 0;
 
   const total = calculateOrderGrandTotal({
@@ -164,7 +155,6 @@ export const calculateOrderTotalsPreview = (order: Order, cart?: MenuItem[]) => 
     taxAmount,
     discountAmount,
     serviceChargeAmount,
-    tipAmount,
   });
 
   return {
@@ -173,7 +163,6 @@ export const calculateOrderTotalsPreview = (order: Order, cart?: MenuItem[]) => 
     taxAmount,
     serviceChargeAmount,
     discountAmount,
-    tipAmount,
     total,
   };
 };

@@ -20,8 +20,6 @@ const DEFAULT_UPLOAD_TABLES = [
   'day_closing',
   'shift',
   'time_entry',
-  'tip_distribution',
-  'tip_distribution_user_share',
   'customer',
   'integration_order_fiscal',
 ];

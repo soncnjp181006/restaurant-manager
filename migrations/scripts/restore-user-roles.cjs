@@ -46,8 +46,7 @@ const UNLOCK_LOGIN = String(process.env.UNLOCK_LOGIN || '').trim();
 /** Minimal full-access set so Manage + Settings open; prefer copying real HQ roles. */
 const EMERGENCY_MODULES = [
   'menu', 'orders', 'summary', 'reports', 'admin', 'settings', 'inventory',
-  'hr', 'accounts', 'integrations', 'closing', 'kitchen', 'tips',
-  'order_display',
+  'hr', 'accounts', 'integrations', 'closing', 'kitchen', 'order_display',
   'admin.users', 'admin.users.create', 'admin.users.update', 'admin.users.delete',
   'admin.roles', 'admin.roles.create', 'admin.roles.update', 'admin.roles.delete',
   'admin.catalog_publish',

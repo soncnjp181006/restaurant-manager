@@ -42,7 +42,6 @@ function paintBillLayoutRaster(rc, bill, config, opts) {
   const taxLabel = L.tax || 'Tax';
   const discountLabel = L.discount || 'Discount';
   const extraLabel = L.extra || 'Extra';
-  const tipLabel = L.tip || 'Tip';
   const totalLabel = L.total || 'Total';
   const paymentLabel = L.payment || 'Payment';
   const changeLabel = L.change || 'Change';
@@ -102,9 +101,6 @@ function paintBillLayoutRaster(rc, bill, config, opts) {
   (bill.extras || []).forEach((e) => {
     rc.lineLeftRight(e.name || extraLabel, formatMoney(e.value, sym));
   });
-  if (bill.tipAmount != null && Number(bill.tipAmount) !== 0) {
-    rc.lineLeftRight(bill.tipLabel || tipLabel, formatMoney(bill.tipAmount, sym));
-  }
   rc.divider();
 
   if (Array.isArray(bill.totalRows) && bill.totalRows.length > 0) {

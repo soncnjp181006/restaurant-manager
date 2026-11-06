@@ -75,7 +75,6 @@ interface DayMetrics {
   cashPayments: number;
   nonCashPayments: number;
   amountCollected: number;
-  tips: number;
   coupons: number;
   salesByDayPart: Record<DayPartLabel, number>;
   voids: number;
@@ -220,7 +219,6 @@ const SalesWeeklyBody = ({
         cashPayments: 0,
         nonCashPayments: 0,
         amountCollected: 0,
-        tips: 0,
         coupons: 0,
         salesByDayPart: DAY_PART_LABELS.reduce((acc, label) => {
           acc[label] = 0;
@@ -254,7 +252,6 @@ const SalesWeeklyBody = ({
       dayMetric.amountCollected += paymentTotals.amountCollected;
       dayMetric.cashPayments += paymentTotals.cashAmount;
       dayMetric.nonCashPayments += paymentTotals.nonCashAmount;
-      dayMetric.tips += safeNumber(order.tip_amount);
 
       // Sales by day part
       const dayPart = getDayPartLabel(toJsDate(order.created_at));
@@ -352,14 +349,6 @@ const SalesWeeklyBody = ({
       label: t('labels.amountCollected'),
       values: amountCollectedValues,
       total: amountCollectedValues.reduce((sum, val) => sum + val, 0),
-      formatter: withCurrency,
-    });
-
-    const tipsValues = dayHeaders.map(h => dayMetrics[h.dateKey]?.tips || 0);
-    rowData.push({
-      label: t('reports.tips'),
-      values: tipsValues,
-      total: tipsValues.reduce((sum, val) => sum + val, 0),
       formatter: withCurrency,
     });
 

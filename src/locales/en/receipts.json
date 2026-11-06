@@ -19,7 +19,6 @@
   "tax": "Tax",
   "discount": "Discount",
   "extra": "Extra",
-  "tip": "Tip",
   "total": "Total",
   "payment": "Payment",
   "change": "Change",
@@ -39,4 +38,4 @@
   "time": "Time",
   "reason": "Reason",
   "note": "Note"
-}
+}

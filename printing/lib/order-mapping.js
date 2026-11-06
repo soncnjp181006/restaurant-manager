@@ -475,7 +475,6 @@ function mapOrderToBill(order, opts) {
   const total = tot.total;
   const pay = getOrderPaymentSummary(order, total);
   const items = getOrderItems(order, showInclusivePrices);
-  const tipLabel = order && order.tip_type === 'Percent' ? 'Tip %' : 'Tip';
   let discountLines = (order.order_discounts || [])
     .filter((od) => od && !od.removed_at)
     .map((od) => ({
@@ -519,8 +518,6 @@ function mapOrderToBill(order, opts) {
     serviceChargeLabel: getOrderServiceChargeLabel(order),
     serviceChargeAmount: tot.service,
     extras: (order.extras || []).filter(Boolean),
-    tipAmount: tot.tip,
-    tipLabel,
     total,
     payments: pay.payments,
     change: pay.change,
@@ -606,7 +603,7 @@ function getRefundOrderItems(order, showInclusivePrices) {
 /**
  * Map refund order + originalOrder to refund receipt shape. Matches refund.bill.tsx.
  * data: { order: refundOrder, originalOrder }
- * refundOrder has: items (selected), tax_amount, discount_amount, service_charge_amount, tip_amount, extras.
+ * refundOrder has: items (selected), tax_amount, discount_amount, service_charge_amount, extras.
  */
 function mapOrderToRefund(refundOrder, originalOrder, options) {
   const showInclusivePrices = !!(options && options.showInclusivePrices);
@@ -616,12 +613,10 @@ function mapOrderToRefund(refundOrder, originalOrder, options) {
   const taxAmount = Number(refundOrder.tax_amount ?? 0);
   const discountAmount = Number(refundOrder.discount_amount ?? 0);
   const serviceChargeAmount = Number(refundOrder.service_charge_amount ?? 0);
-  const tipAmount = Number(refundOrder.tip_amount ?? 0);
   const extrasTotal = (refundOrder.extras || []).reduce((s, e) => s + Number(e?.value || 0), 0);
-  const total = itemsTotal + taxAmount + serviceChargeAmount + tipAmount + extrasTotal + discountAmount;
+  const total = itemsTotal + taxAmount + serviceChargeAmount + extrasTotal + discountAmount;
   const orig = originalOrder || refundOrder;
   const serviceChargeLabel = getOrderServiceChargeLabel(refundOrder);
-  const tipLabel = refundOrder && refundOrder.tip_type === 'Percent' ? 'Tip %' : 'Tip';
   const { timezone, locale } = getDateFormatOpts(options);
   const refundFormatOpts = {
     year: 'numeric',
@@ -648,8 +643,6 @@ function mapOrderToRefund(refundOrder, originalOrder, options) {
     serviceChargeLabel,
     serviceChargeAmount,
     extras: refundOrder.extras || [],
-    tipAmount,
-    tipLabel,
     total,
   };
 }

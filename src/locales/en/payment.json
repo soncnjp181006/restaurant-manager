@@ -32,7 +32,6 @@
     "discount": "Discount",
     "coupon": "Coupon",
     "serviceCharges": "Service charges ({{value}}{{unit}})",
-    "tip": "Tip ({{value}}{{unit}})",
     "notes": "Notes",
     "total": "Total"
   },
@@ -77,9 +76,6 @@
   "serviceCharges": {
     "defaultFromSettings": "Default from settings:",
     "noServiceCharge": "No Service charge"
-  },
-  "tip": {
-    "noTip": "No Tip"
   },
   "notes": {
     "title": "Any notes",

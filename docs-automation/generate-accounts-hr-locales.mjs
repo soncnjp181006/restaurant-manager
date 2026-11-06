@@ -18,7 +18,6 @@ const CHAPTER_KEYS = [
   'hr-employees',
   'hr-attendance',
   'hr-leave',
-  'tip-distribution',
 ];
 
 const LANGS = ['es', 'tr', 'pt-br', 'fr', 'nl', 'de', 'it', 'ar', 'ru'];
@@ -86,15 +85,6 @@ const T = {
         holidays: { title: 'Festivos', intro: 'Marcan días no laborables o de pago premium.', steps: ['Abra Festivos.', 'Agregue festivos del local.', 'Alimentan horarios y reglas de pago.'], caption: 'Pestaña Festivos.' },
       },
     },
-    'tip-distribution': {
-      title: 'Distribución de propinas',
-      intro: 'Calcula cómo repartir propinas del turno según pesos y guarda el registro oficial. Los gerentes usan la misma pantalla desde la barra lateral.',
-      sections: {
-        overview: { title: 'Pantalla de distribución', steps: ['Pulse Distribución de propinas en la barra lateral.', 'Seleccione turno y fecha.', 'Cargar propinas calcula totales de órdenes pagadas.'], caption: 'Pantalla de distribución de propinas.' },
-        filters: { title: 'Turno y fecha', steps: ['Elija el turno.', 'Elija la fecha (no futura).', 'Pulse Cargar propinas.'], caption: 'Turno, fecha y cargar.' },
-        table: { title: 'Tabla de distribución', steps: ['Total de propinas muestra el monto del turno.', 'Cada fila: usuario, rol, peso y parte.', 'Enviar guarda tras revisar.'], caption: 'Totales y tabla por usuario.' },
-      },
-    },
   },
   tr: {
     'accounts-overview': {
@@ -155,15 +145,6 @@ const T = {
       sections: {
         leave: { title: 'İzin talepleri', steps: ['İzin sekmesini açın.', 'Bekleyen ve onaylıları inceleyin.', 'Rolünüze göre onaylayın veya reddedin.'], caption: 'İzin sekmesi.' },
         holidays: { title: 'Tatiller', intro: 'Çalışılmayan veya primli günleri işaretler.', steps: ['Tatiller sekmesini açın.', 'Yıllık tatilleri ekleyin.', 'Vardiya ve ödeme kurallarını besler.'], caption: 'Tatiller sekmesi.' },
-      },
-    },
-    'tip-distribution': {
-      title: 'Bahşiş dağıtımı',
-      intro: 'Vardiya bahşişlerini ağırlıklara göre bölüştürür ve kaydı saklar.',
-      sections: {
-        overview: { title: 'Dağıtım ekranı', steps: ['Yan menüde Bahşiş dağıtımı\'na dokunun.', 'Vardiya ve tarih seçin.', 'Bahşişleri yükle toplamları hesaplar.'], caption: 'Bahşiş dağıtım ekranı.' },
-        filters: { title: 'Vardiya ve tarih', steps: ['Vardiyayı seçin.', 'Tarihi seçin (gelecek olamaz).', 'Bahşişleri yükle\'ye dokunun.'], caption: 'Vardiya, tarih ve yükle.' },
-        table: { title: 'Dağıtım tablosu', steps: ['Toplam bahşiş vardiya tutarını gösterir.', 'Her satır: kullanıcı, rol, ağırlık ve pay.', 'Gönder kaydı saklar.'], caption: 'Toplamlar ve kullanıcı tablosu.' },
       },
     },
   },
@@ -228,15 +209,6 @@ const T = {
         holidays: { title: 'Feriados', intro: 'Marcam dias não úteis ou de pagamento premium.', steps: ['Abra Feriados.', 'Adicione feriados do local.', 'Alimentam escalas e regras de pagamento.'], caption: 'Aba Feriados.' },
       },
     },
-    'tip-distribution': {
-      title: 'Distribuição de gorjetas',
-      intro: 'Calcula como dividir gorjetas do turno e salva o registro oficial.',
-      sections: {
-        overview: { title: 'Tela de distribuição', steps: ['Toque em Distribuição de gorjetas.', 'Selecione turno e data.', 'Carregar gorjetas calcula totais.'], caption: 'Tela de distribuição.' },
-        filters: { title: 'Turno e data', steps: ['Escolha o turno.', 'Escolha a data.', 'Toque em Carregar gorjetas.'], caption: 'Turno, data e carregar.' },
-        table: { title: 'Tabela de distribuição', steps: ['Total mostra o valor do turno.', 'Cada linha: usuário, função, peso e parte.', 'Enviar salva após revisar.'], caption: 'Totais e tabela.' },
-      },
-    },
   },
   fr: {
     'accounts-overview': {
@@ -297,15 +269,6 @@ const T = {
       sections: {
         leave: { title: 'Demandes de congé', steps: ['Ouvrez Congés.', 'Examinez en attente et approuvés.', 'Approuvez ou refusez selon le rôle.'], caption: 'Onglet Congés.' },
         holidays: { title: 'Jours fériés', intro: 'Marquent les jours non travaillés ou à prime.', steps: ['Ouvrez Jours fériés.', 'Ajoutez les fériés du site.', 'Alimentent planning et règles de paie.'], caption: 'Onglet Jours fériés.' },
-      },
-    },
-    'tip-distribution': {
-      title: 'Répartition des pourboires',
-      intro: 'Calcule la répartition des pourboires du shift et enregistre le résultat.',
-      sections: {
-        overview: { title: 'Écran de répartition', steps: ['Appuyez sur Répartition des pourboires.', 'Sélectionnez shift et date.', 'Charger calcule les totaux.'], caption: 'Écran de répartition.' },
-        filters: { title: 'Shift et date', steps: ['Choisissez le shift.', 'Choisissez la date.', 'Appuyez sur Charger.'], caption: 'Shift, date et chargement.' },
-        table: { title: 'Tableau de répartition', steps: ['Le total montre le montant du shift.', 'Chaque ligne : utilisateur, rôle, poids et part.', 'Envoyer enregistre après contrôle.'], caption: 'Totaux et tableau.' },
       },
     },
   },
@@ -370,15 +333,6 @@ const T = {
         holidays: { title: 'Feestdagen', intro: 'Markeren niet-werkdagen of premium dagen.', steps: ['Open Feestdagen.', 'Voeg locatiefeestdagen toe.', 'Voeden rooster en betaalregels.'], caption: 'Tabblad Feestdagen.' },
       },
     },
-    'tip-distribution': {
-      title: 'Fooienverdeling',
-      intro: 'Berekent hoe fooien per shift worden verdeeld en slaat het record op.',
-      sections: {
-        overview: { title: 'Verdelingsscherm', steps: ['Tik op Fooienverdeling.', 'Selecteer shift en datum.', 'Fooien laden berekent totalen.'], caption: 'Fooienverdelingsscherm.' },
-        filters: { title: 'Shift en datum', steps: ['Kies de shift.', 'Kies de datum.', 'Tik op Fooien laden.'], caption: 'Shift, datum en laden.' },
-        table: { title: 'Verdelingstabel', steps: ['Totaal toont het shiftbedrag.', 'Elke rij: gebruiker, rol, gewicht en aandeel.', 'Indienen slaat op na controle.'], caption: 'Totalen en tabel.' },
-      },
-    },
   },
   de: {
     'accounts-overview': {
@@ -439,15 +393,6 @@ const T = {
       sections: {
         leave: { title: 'Urlaubsanträge', steps: ['Tab Urlaub öffnen.', 'Offene und genehmigte prüfen.', 'Je nach Rolle genehmigen oder ablehnen.'], caption: 'Tab Urlaub.' },
         holidays: { title: 'Feiertage', intro: 'Markieren arbeitsfreie oder Premium-Tage.', steps: ['Tab Feiertage öffnen.', 'Standortfeiertage hinzufügen.', 'Speisen Dienstplan und Lohnregeln.'], caption: 'Tab Feiertage.' },
-      },
-    },
-    'tip-distribution': {
-      title: 'Trinkgeldverteilung',
-      intro: 'Berechnet die Schichtverteilung und speichert den Datensatz.',
-      sections: {
-        overview: { title: 'Verteilungsbildschirm', steps: ['Trinkgeldverteilung tippen.', 'Schicht und Datum wählen.', 'Trinkgeld laden berechnet Totale.'], caption: 'Verteilungsbildschirm.' },
-        filters: { title: 'Schicht und Datum', steps: ['Schicht wählen.', 'Datum wählen.', 'Trinkgeld laden tippen.'], caption: 'Schicht, Datum und Laden.' },
-        table: { title: 'Verteilungstabelle', steps: ['Gesamt zeigt den Schichtbetrag.', 'Jede Zeile: Nutzer, Rolle, Gewicht und Anteil.', 'Senden speichert nach Prüfung.'], caption: 'Totale und Tabelle.' },
       },
     },
   },
@@ -512,15 +457,6 @@ const T = {
         holidays: { title: 'Festività', intro: 'Segnano giorni non lavorativi o premium.', steps: ['Apri Festività.', 'Aggiungi festività della sede.', 'Alimentano turni e regole paga.'], caption: 'Scheda Festività.' },
       },
     },
-    'tip-distribution': {
-      title: 'Distribuzione mance',
-      intro: 'Calcola come dividere le mance del turno e salva il record.',
-      sections: {
-        overview: { title: 'Schermata distribuzione', steps: ['Tocca Distribuzione mance.', 'Seleziona turno e data.', 'Carica mance calcola i totali.'], caption: 'Schermata distribuzione.' },
-        filters: { title: 'Turno e data', steps: ['Scegli il turno.', 'Scegli la data.', 'Tocca Carica mance.'], caption: 'Turno, data e carica.' },
-        table: { title: 'Tabella distribuzione', steps: ['Il totale mostra l\'importo del turno.', 'Ogni riga: utente, ruolo, peso e quota.', 'Invia salva dopo il controllo.'], caption: 'Totali e tabella.' },
-      },
-    },
   },
   ar: {
     'accounts-overview': {
@@ -583,15 +519,6 @@ const T = {
         holidays: { title: 'العطل', intro: 'تحدد أيام عدم العمل أو الأجر الإضافي.', steps: ['افتح العطل.', 'أضف عطل المكان.', 'تغذي الجداول وقواعد الأجر.'], caption: 'تبويب العطل.' },
       },
     },
-    'tip-distribution': {
-      title: 'توزيع الإكراميات',
-      intro: 'يحسب تقسيم إكراميات الوردية ويحفظ السجل الرسمي.',
-      sections: {
-        overview: { title: 'شاشة التوزيع', steps: ['اضغط توزيع الإكراميات.', 'اختر الوردية والتاريخ.', 'تحميل الإكراميات يحسب الإجماليات.'], caption: 'شاشة توزيع الإكراميات.' },
-        filters: { title: 'الوردية والتاريخ', steps: ['اختر الوردية.', 'اختر التاريخ.', 'اضغط تحميل الإكراميات.'], caption: 'الوردية والتاريخ والتحميل.' },
-        table: { title: 'جدول التوزيع', steps: ['الإجمالي يعرض مبلغ الوردية.', 'كل صف: مستخدم ودور ووزن وحصة.', 'إرسال يحفظ بعد المراجعة.'], caption: 'الإجماليات والجدول.' },
-      },
-    },
   },
   ru: {
     'accounts-overview': {
@@ -652,15 +579,6 @@ const T = {
       sections: {
         leave: { title: 'Запросы на отпуск', steps: ['Откройте Отпуска.', 'Просмотрите ожидающие и утверждённые.', 'Утвердите или отклоните по роли.'], caption: 'Вкладка Отпуска.' },
         holidays: { title: 'Праздники', intro: 'Отмечают нерабочие или премиальные дни.', steps: ['Откройте Праздники.', 'Добавьте праздники площадки.', 'Питают график и правила оплаты.'], caption: 'Вкладка Праздники.' },
-      },
-    },
-    'tip-distribution': {
-      title: 'Распределение чаевых',
-      intro: 'Считает, как делить чаевые смены, и сохраняет запись.',
-      sections: {
-        overview: { title: 'Экран распределения', steps: ['Нажмите Распределение чаевых.', 'Выберите смену и дату.', 'Загрузить чаевые считает итоги.'], caption: 'Экран распределения.' },
-        filters: { title: 'Смена и дата', steps: ['Выберите смену.', 'Выберите дату.', 'Нажмите Загрузить чаевые.'], caption: 'Смена, дата и загрузка.' },
-        table: { title: 'Таблица распределения', steps: ['Итого показывает сумму смены.', 'Каждая строка: пользователь, роль, вес и доля.', 'Отправить сохраняет после проверки.'], caption: 'Итоги и таблица.' },
       },
     },
   },

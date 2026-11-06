@@ -335,7 +335,7 @@ function normalizeSelectPage(result) {
 /**
  * Phase 5: intersect catalog_release.tables with the download allowlist.
  * Empty / missing / unknown tables → full allowlist (backward compatible).
- * When catching up, union tables from every tip release newer than localVersion.
+ * When catching up, union tables from every release row newer than localVersion.
  */
 function resolveCatalogSyncTables({
   allowlist,
@@ -347,14 +347,14 @@ function resolveCatalogSyncTables({
   if (!allowed.length) return [];
 
   const local = Number(localVersion) || 0;
-  const tips = [];
-  if (globalRelease && typeof globalRelease === 'object') tips.push(globalRelease);
-  if (branchRelease && typeof branchRelease === 'object') tips.push(branchRelease);
+  const releases = [];
+  if (globalRelease && typeof globalRelease === 'object') releases.push(globalRelease);
+  if (branchRelease && typeof branchRelease === 'object') releases.push(branchRelease);
 
-  const newer = tips.filter((row) => Number(row.version) > local);
+  const newer = releases.filter((row) => Number(row.version) > local);
   const consider = newer.length
     ? newer
-    : tips.length
+    : releases.length
       ? [pickWinningCatalogRelease(globalRelease, branchRelease)].filter(Boolean)
       : [];
 

@@ -48,8 +48,6 @@ export enum Tables {
   user_roles = 'user_role',
   shifts = 'shift',
   time_entries = 'time_entry',
-  tip_distributions = 'tip_distribution',
-  tip_distribution_user_shares = 'tip_distribution_user_share',
 
   documents = 'document',
 

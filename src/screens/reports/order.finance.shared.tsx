@@ -114,7 +114,7 @@ const FinanceSection = ({
           ) : orders.map((order) => {
             const gross = calculateGross(order);
             const metricAmount = getMetricAmount(order, metric);
-            const net = gross + getOrderTaxAmount(order) + safeNumber(order.service_charge_amount) + safeNumber(order.tip_amount)
+            const net = gross + getOrderTaxAmount(order) + safeNumber(order.service_charge_amount)
               - getOrderDiscountTotal(order) - safeNumber(order.coupon?.discount);
             const cashierName = `${(order.cashier as any)?.first_name || (order.user as any)?.first_name || ""} ${(order.cashier as any)?.last_name || (order.user as any)?.last_name || ""}`.trim();
 

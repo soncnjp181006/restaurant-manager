@@ -192,7 +192,7 @@ PostgreSQL (docker) → 127.0.0.1:5434  (healthy)
 |------|------------------------|---------|
 | 1 | Mở `http://localhost:5173` | App render màn hình **Login** (PIN pad) |
 | 2 | Nhập PIN **1234** → đăng nhập | **Đăng nhập thành công** — bcrypt compare chạy trong dbproxy trên PostgreSQL; header hiện **Synced** (kết nối DB OK) |
-| 3 | App yêu cầu **Clock In Required** → bấm CLOCK IN | Vào thẳng hệ thống: Menu, Orders, Summary, Kitchen, Order Display, Closing, Inventory, Manage, Reports, Tip Dist., Accounts, HR, Integrations, Settings |
+| 3 | App yêu cầu **Clock In Required** → bấm CLOCK IN | Vào thẳng hệ thống: Menu, Orders, Summary, Kitchen, Order Display, Closing, Inventory, Manage, Reports, Accounts, HR, Integrations, Settings |
 | 4 | Mở **Orders** | **Dữ liệu thật từ PostgreSQL**: Order# 2 — Bàn 11, IN PROGRESS, "Cà phê sữa đá" ×2, Items (2), **₫58.000** |
 | 5 | Kiểm tra WRITE trong PG | `time_entry` mới (Clock In), `audit_log` (DEFINE EVENT tự chạy khi login), `sync_terminal`/`sync_number_reservation`/`sync_number_counter` — `change_log` tăng 2.270 → 2.299 row, toàn bộ do UI ghi |
 

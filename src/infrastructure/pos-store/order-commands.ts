@@ -358,9 +358,6 @@ export interface SettleOrderInput {
   orderId: string;
   payments: SettlePaymentInput[];
   cashierId?: string | null;
-  tip?: number;
-  tipAmount?: number;
-  tipType?: string;
   serviceCharge?: number;
   serviceChargeAmount?: number;
   serviceChargeType?: string;
@@ -380,7 +377,7 @@ export interface SettleOrderInput {
   } | null;
   /** Skip tax recompute (caller already synced taxes). */
   keepTaxes?: boolean;
-  /** Skip draft save (payment screen already flushed tip/tax/extras). */
+  /** Skip draft save (payment screen already flushed tax/extras). */
   skipDraft?: boolean;
   /** Suppress intermediate notifyWrite when nested inside settle. */
   silent?: boolean;
@@ -394,16 +391,13 @@ export interface SettleOrderResult {
 }
 
 /**
- * Save non-financial payment-screen progress (tip, service charge, notes,
+ * Save non-financial payment-screen progress (service charge, notes,
  * discount, extras, coupon) without settling. `draft_payments` stays local.
  */
 export async function saveOrderDraft(
   orderId: string,
   draft: {
     draft_payments?: any[];
-    tip?: number;
-    tip_amount?: number;
-    tip_type?: string;
     service_charge?: number;
     service_charge_amount?: number;
     service_charge_type?: string;
@@ -524,9 +518,6 @@ export async function settleOrder(input: SettleOrderInput): Promise<SettleOrderR
   const hasRelationDraft =
     input.extras !== undefined || input.coupon !== undefined;
   const draftPatch = {
-    ...(input.tip !== undefined ? { tip: input.tip } : {}),
-    ...(input.tipAmount !== undefined ? { tip_amount: input.tipAmount } : {}),
-    ...(input.tipType !== undefined ? { tip_type: input.tipType } : {}),
     ...(input.serviceCharge !== undefined ? { service_charge: input.serviceCharge } : {}),
     ...(input.serviceChargeAmount !== undefined ? { service_charge_amount: input.serviceChargeAmount } : {}),
     ...(input.serviceChargeType !== undefined ? { service_charge_type: input.serviceChargeType } : {}),
@@ -575,9 +566,6 @@ export async function settleOrder(input: SettleOrderInput): Promise<SettleOrderR
   const inlineDraft =
     !input.skipDraft && !hasRelationDraft
       ? {
-          ...(input.tip !== undefined ? { tip: input.tip } : {}),
-          ...(input.tipAmount !== undefined ? { tip_amount: input.tipAmount } : {}),
-          ...(input.tipType !== undefined ? { tip_type: input.tipType } : {}),
           ...(input.serviceCharge !== undefined ? { service_charge: input.serviceCharge } : {}),
           ...(input.serviceChargeAmount !== undefined
             ? { service_charge_amount: input.serviceChargeAmount }

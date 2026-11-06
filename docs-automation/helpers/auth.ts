@@ -77,7 +77,7 @@ export async function applyDocsAppLanguage(page: Page): Promise<void> {
 async function waitForLoginOrApp(page: Page): Promise<void> {
   const loginPage = page.getByTestId('login-page');
   const pinPad = page.getByTestId('login-pin-pad');
-  const appRoute = /\/(menu|settings|orders|admin|inventory|accounts|hr|integrations|clock|summary|kitchen|closing|reports|tip-distribution|order-display)/;
+  const appRoute = /\/(menu|settings|orders|admin|inventory|accounts|hr|integrations|clock|summary|kitchen|closing|reports|order-display)/;
 
   for (let attempt = 0; attempt < 3; attempt++) {
     if (await loginPage.isVisible().catch(() => false)) return;
@@ -179,7 +179,7 @@ export async function loginWithPin(page: Page, pin = docsLoginPin()): Promise<vo
       (await page.getByTestId('login-page').isVisible().catch(() => false)) ||
       (await page.getByTestId('login-pin-pad').isVisible().catch(() => false));
     if (onLogin) break;
-    if (page.url().match(/\/(menu|settings|orders|admin|inventory|accounts|hr|integrations|clock|summary|kitchen|closing|reports|tip-distribution|order-display)/)) {
+    if (page.url().match(/\/(menu|settings|orders|admin|inventory|accounts|hr|integrations|clock|summary|kitchen|closing|reports|order-display)/)) {
       // Logged in already — keep language and continue
       await applyDocsAppLanguage(page);
       await dismissWhatsNewIfPresent(page);
@@ -211,7 +211,7 @@ export async function loginWithPin(page: Page, pin = docsLoginPin()): Promise<vo
   }
 
   await dismissClockInIfPresent(page);
-  await page.waitForURL(/\/(menu|settings|orders|admin|inventory|accounts|hr|integrations|clock|summary|kitchen|closing|reports|tip-distribution|order-display)/, { timeout: 60_000 });
+  await page.waitForURL(/\/(menu|settings|orders|admin|inventory|accounts|hr|integrations|clock|summary|kitchen|closing|reports|order-display)/, { timeout: 60_000 });
   await dismissWhatsNewIfPresent(page);
   await ensureFloorMenuMode(page);
   await applyDocsAppLanguage(page);
@@ -240,7 +240,7 @@ export async function loginWithForm(
   await page.getByTestId('login-password').fill(password);
   await page.getByTestId('login-submit').click();
   await dismissClockInIfPresent(page);
-  await page.waitForURL(/\/(menu|settings|orders|admin|inventory|accounts|hr|integrations|clock|summary|kitchen|closing|reports|tip-distribution|order-display)/, { timeout: 60_000 });
+  await page.waitForURL(/\/(menu|settings|orders|admin|inventory|accounts|hr|integrations|clock|summary|kitchen|closing|reports|order-display)/, { timeout: 60_000 });
   await dismissWhatsNewIfPresent(page);
   await ensureFloorMenuMode(page);
   await applyDocsAppLanguage(page);
@@ -402,11 +402,6 @@ export async function openClosingPage(page: Page): Promise<void> {
 export async function openReportsPage(page: Page): Promise<void> {
   await clickSidebarNav(page, 'nav-reports');
   await expect(page.getByTestId('reports-page')).toBeVisible({ timeout: 45_000 });
-}
-
-export async function openTipDistributionPage(page: Page): Promise<void> {
-  await clickSidebarNav(page, 'nav-tip-distribution');
-  await expect(page.getByTestId('tip-distribution-page')).toBeVisible({ timeout: 45_000 });
 }
 
 export async function openAdminPage(page: Page): Promise<void> {

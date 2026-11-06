@@ -108,7 +108,6 @@ const snapshotPayloadFromOverride = (
   bonuses: snapshot.bonuses ?? 0,
   deductions: snapshot.deductions ?? 0,
   adjustments: snapshot.adjustments ?? 0,
-  tips: snapshot.tips ?? 0,
   gross_pay: snapshot.gross_pay ?? 0,
   net_pay: snapshot.net_pay ?? 0,
   rule_applications: snapshot.rule_applications ?? [],

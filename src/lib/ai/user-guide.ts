@@ -6,7 +6,6 @@ import {
   INTEGRATIONS,
   INVENTORY,
   REPORTS,
-  TIP_DISTRIBUTION,
 } from "@/routes/restaurant-manager.ts";
 
 /** Chapter keys that have locale JSON (excludes meta files common/guides). */
@@ -25,7 +24,6 @@ export const USER_GUIDE_CHAPTER_KEYS = [
   "order-display",
   "closing",
   "reports-ops",
-  "tips-manager",
   "inventory-overview",
   "inventory-items",
   "inventory-purchases",
@@ -47,7 +45,6 @@ export const USER_GUIDE_CHAPTER_KEYS = [
   "hr-payroll",
   "hr-documents",
   "hr-performance",
-  "tip-distribution",
   "admin-overview",
   "admin-menus",
   "admin-floors",
@@ -81,7 +78,6 @@ export const USER_GUIDE_CHAPTER_TITLES: Record<UserGuideChapterKey, string> = {
   "order-display": "Order display",
   closing: "Closing",
   "reports-ops": "Reports (operations)",
-  "tips-manager": "Tip oversight",
   "inventory-overview": "Inventory overview",
   "inventory-items": "Items and stock master data",
   "inventory-purchases": "Purchases",
@@ -103,7 +99,6 @@ export const USER_GUIDE_CHAPTER_TITLES: Record<UserGuideChapterKey, string> = {
   "hr-payroll": "Payroll periods & runs",
   "hr-documents": "Employee documents",
   "hr-performance": "Performance notes",
-  "tip-distribution": "Tip distribution",
   "admin-overview": "Manage overview",
   "admin-menus": "Menus, categories, and dishes",
   "admin-floors": "Floors and tables",
@@ -253,7 +248,6 @@ export const suggestUserGuideChapterForPath = (pathname: string): UserGuideChapt
   if (pathname === CLOCK) return "session";
   if (pathname === ADMIN) return "admin-overview";
   if (pathname === HR) return "hr-overview";
-  if (pathname === TIP_DISTRIBUTION) return "tip-distribution";
   if (pathname === ACCOUNTS) return "accounts-overview";
   if (pathname === INTEGRATIONS) return "integrations";
 

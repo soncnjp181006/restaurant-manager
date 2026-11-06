@@ -232,7 +232,7 @@ export const aggregateOrderDiscountBreakdown = (
   return Array.from(map.values()).sort((a, b) => b.total - a.total);
 };
 
-/** Net sales after discounts (excludes tax, service, tips). */
+/** Net sales after discounts (excludes tax and service charge). */
 export const calculateOrderNetSales = (order: OrderModel): number => {
   const filteredItems = getOrderFilteredItems(order);
   const grossTotal = filteredItems.reduce(
@@ -339,8 +339,6 @@ export interface OrderSettlementFigures {
   netSales: number;
   serviceCharges: number;
   tax: number;
-  amountDueBeforeTips: number;
-  tips: number;
   grandTotalDue: number;
 }
 
@@ -358,9 +356,7 @@ export const getOrderSettlementFigures = (order: OrderModel): OrderSettlementFig
   const netSales = safeNumber(grossSales - discounts);
   const serviceCharges = safeNumber(order.service_charge_amount);
   const tax = getOrderTaxAmount(order);
-  const tips = safeNumber(order.tip_amount);
-  const amountDueBeforeTips = safeNumber(netSales + serviceCharges + tax);
-  const grandTotalDue = safeNumber(amountDueBeforeTips + tips);
+  const grandTotalDue = safeNumber(netSales + serviceCharges + tax);
 
   return {
     itemsTotal,
@@ -373,8 +369,6 @@ export const getOrderSettlementFigures = (order: OrderModel): OrderSettlementFig
     netSales,
     serviceCharges,
     tax,
-    amountDueBeforeTips,
-    tips,
     grandTotalDue,
   };
 };

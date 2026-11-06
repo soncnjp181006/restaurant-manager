@@ -10,7 +10,6 @@ const baseOrder = {
   items: [{ quantity: 1, price: 1000, item: { name: 'Burger' } }],
   tax_amount: 0,
   service_charge_amount: 0,
-  tip_amount: 0,
 };
 
 test('mapOrderToTemp includes discount line from order_discounts', () => {

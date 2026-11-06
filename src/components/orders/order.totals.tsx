@@ -75,7 +75,7 @@ export const OrderTotals = ({order, cart, className}: Props) => {
     const itemsTotal = calculateOrderTotal(order);
     const extrasTotal = calculateOrderExtrasTotal(order);
     const taxAmount = getOrderTaxAmount(order);
-    const total = itemsTotal + extrasTotal + taxAmount - Number(order?.discount_amount ?? 0) + Number(order.service_charge_amount ?? 0) + Number(order?.tip_amount ?? 0);
+    const total = itemsTotal + extrasTotal + taxAmount - Number(order?.discount_amount ?? 0) + Number(order.service_charge_amount ?? 0);
 
     return {
       itemsTotal,
@@ -83,7 +83,6 @@ export const OrderTotals = ({order, cart, className}: Props) => {
       taxAmount,
       serviceChargeAmount: Number(order?.service_charge_amount ?? 0),
       discountAmount: Number(order?.discount_amount ?? 0),
-      tipAmount: Number(order?.tip_amount ?? 0),
       total,
     };
   }, [order, cart]);
@@ -214,13 +213,6 @@ export const OrderTotals = ({order, cart, className}: Props) => {
           <div className="text-right">{withCurrency(item.value)}</div>
         </div>
       ))}
-      {order?.tip_amount > 0 && (
-        <div className="flex">
-          <div
-            className="flex-1">{order?.tip_type === DiscountType.Percent ? t('totals.tipPercent') : t('totals.tip')}</div>
-          <div className="text-right">{withCurrency(preview.tipAmount)}</div>
-        </div>
-      )}
       {order?.payments?.length > 0 && (
         <div className="separator h-[2px]" style={separatorStyle}></div>
       )}

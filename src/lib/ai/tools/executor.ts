@@ -1,6 +1,6 @@
 import {normalizeQueryDate, parseDateRangeWithPhrase, resolveNaturalDateRange} from "@/api/reports/shared/filters.ts";
 import type {DateRangeFilter, DbClient} from "@/api/reports/shared/types.ts";
-import {getDishRecipe, getProductMix, getSalesSummary, getTips, getTopSellingDishes, getUnsoldProducts, listMenuItems} from "@/api/reports/sales";
+import {getDishRecipe, getProductMix, getSalesSummary, getTopSellingDishes, getUnsoldProducts, listMenuItems} from "@/api/reports/sales";
 import {getDiscountSummary} from "@/api/reports/sales/discounts.ts";
 import {
   getHourlyProductSales,
@@ -209,13 +209,6 @@ export const executeAiReportTool = async (
       return getVoids(db, {
         ...parseOptionalDateRangeArgs(args),
         limit: args.limit ? Number(args.limit) : 50,
-      });
-
-    case "get_tips":
-      return getTips(db, {
-        ...parseDateRangeWithPhrase(args),
-        shiftId: args.shiftId ? String(args.shiftId) : undefined,
-        includeProjectedDistribution: args.includeProjectedDistribution !== false,
       });
 
     case "get_current_session_sales":

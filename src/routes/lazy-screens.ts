@@ -51,10 +51,6 @@ export const HrScreen = maybeLazy(
   __BUILD_MODULE_hr__,
   () => import('@/screens/hr/').then((m) => ({ default: m.HrScreen })),
 );
-export const TipDistributionScreen = maybeLazy(
-  __BUILD_MODULE_tips__,
-  () => import('@/screens/tip.distribution.tsx').then((m) => ({ default: m.TipDistributionScreen })),
-);
 export const AccountsScreen = maybeLazy(
   __BUILD_MODULE_accounts__,
   () => import('@/screens/accounts.tsx').then((m) => ({ default: m.AccountsScreen })),
@@ -179,10 +175,6 @@ export const ProductionReport = maybeLazy(
 export const BuffetReport = maybeLazy(
   __BUILD_MODULE_reports__,
   () => import('@/screens/reports/buffet.report.tsx').then((m) => ({ default: m.BuffetReport })),
-);
-export const TipsReport = maybeLazy(
-  __BUILD_MODULE_reports__,
-  () => import('@/screens/reports/tips.report.tsx').then((m) => ({ default: m.TipsReport })),
 );
 export const SalesDashboardReport = maybeLazy(
   __BUILD_MODULE_reports__,

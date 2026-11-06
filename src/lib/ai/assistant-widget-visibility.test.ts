@@ -7,7 +7,6 @@ describe("isAssistantWidgetPath", () => {
     expect(isAssistantWidgetPath("/inventory")).toBe(true);
     expect(isAssistantWidgetPath("/inventory/print/purchase/doc:1")).toBe(true);
     expect(isAssistantWidgetPath("/reports/sales-summary")).toBe(true);
-    expect(isAssistantWidgetPath("/tip-distribution")).toBe(true);
     expect(isAssistantWidgetPath("/accounts")).toBe(true);
     expect(isAssistantWidgetPath("/hr")).toBe(true);
     expect(isAssistantWidgetPath("/integrations")).toBe(true);

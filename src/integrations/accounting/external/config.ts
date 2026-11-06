@@ -5,7 +5,6 @@ const ACCOUNT_KEYS: LogicalAccountCode[] = [
   'SALES_REVENUE',
   'VAT_OUTPUT',
   'DISCOUNT',
-  'TIPS',
   'CASH_MAIN',
   'CARD_RECEIVABLE',
   'OTHER_RECEIVABLE',

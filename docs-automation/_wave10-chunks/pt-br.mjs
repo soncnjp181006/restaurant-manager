@@ -32,7 +32,7 @@
         },
         refund: {
           title: "Reembolsar itens pagos",
-          intro: "Reembolso disponível em pedidos Pagos pelo menu ⋯. Imposto, taxa de serviço, extras e gorjeta são proporcionais.",
+          intro: "Reembolso disponível em pedidos Pagos pelo menu ⋯. Imposto, taxa de serviço e extras são proporcionais.",
           steps: [
             "Abra ⋯ em pedido Pago → Reembolso.",
             "Marque itens no painel esquerdo.",
@@ -43,7 +43,7 @@
           fields: [
             {
               name: "Selecionar itens",
-              effect: "Lista de linhas ativas; total escala imposto, desconto, serviço, extras e gorjeta."
+              effect: "Lista de linhas ativas; total escala imposto, desconto, serviço e extras."
             },
             {
               name: "Motivo",
@@ -119,7 +119,7 @@
         },
         "split-amount": {
           title: "Dividir por valor",
-          intro: "Divide por valores; cada parte recebe share proporcional de impostos, taxas e gorjetas.",
+          intro: "Divide por valores; cada parte recebe share proporcional de impostos e taxas.",
           steps: [
             "⋯ → Dividir por valor.",
             "Informe valores por divisão.",
@@ -130,7 +130,7 @@
           fields: [
             {
               name: "Valor da divisão",
-              effect: "Entrada por divisão; soma = total com imposto, extras, serviço e gorjeta."
+              effect: "Entrada por divisão; soma = total com imposto, extras e serviço."
             },
             {
               name: "Restante",
@@ -776,7 +776,7 @@
             },
             {
               name: "Usuário",
-              effect: "Vínculo POS opcional para ponto e gorjetas."
+              effect: "Vínculo POS opcional para ponto."
             },
             {
               name: "Departamento / Cargo",
@@ -1508,31 +1508,6 @@
             }
           ]
         },
-        "tip-definition-form": {
-          title: "Definição de gorjetas",
-          intro: "Pesos do pool por papel e usuário.",
-          steps: [
-            "Definição de gorjetas.",
-            "Linhas de papel com peso.",
-            "Overrides por usuário.",
-            "Salve."
-          ],
-          caption: "Editor de pesos.",
-          fields: [
-            {
-              name: "Linhas por papel",
-              effect: "Peso no pool."
-            },
-            {
-              name: "Linhas por usuário",
-              effect: "Overrides."
-            },
-            {
-              name: "Salvar",
-              effect: "Persiste tip_distribution."
-            }
-          ]
-        }
       }
     }
   },

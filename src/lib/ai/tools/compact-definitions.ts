@@ -73,21 +73,6 @@ export const AI_REPORT_COMPACT_TOOLS: OpenAIToolDefinition[] = [
   {
     type: "function",
     function: {
-      name: "get_tips",
-      description: "Tips collected and distribution shares.",
-      parameters: {
-        type: "object",
-        properties: {
-          ...dateParams,
-          shiftId: {type: "string"},
-          includeProjectedDistribution: {type: "boolean"},
-        },
-      },
-    },
-  },
-  {
-    type: "function",
-    function: {
       name: "get_current_session_sales",
       description: "Per order taker sales during active clock-in session.",
       parameters: {type: "object", properties: {}},

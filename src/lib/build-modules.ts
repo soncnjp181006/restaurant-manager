@@ -19,7 +19,6 @@ import {
   REPORTS,
   SETTINGS,
   SUMMARY,
-  TIP_DISTRIBUTION,
 } from '@/routes/restaurant-manager.ts';
 
 const ALLOW = parseModuleList(import.meta.env.VITE_APP_MODULES);
@@ -116,11 +115,6 @@ export function isTopLevelBuildModuleEnabled(id: TopLevelBuildModule): boolean {
         typeof __BUILD_MODULE_reports__ !== 'undefined' ? __BUILD_MODULE_reports__ : undefined,
         'reports',
       );
-    case 'tips':
-      return topLevelFlag(
-        typeof __BUILD_MODULE_tips__ !== 'undefined' ? __BUILD_MODULE_tips__ : undefined,
-        'tips',
-      );
     case 'accounts':
       return topLevelFlag(
         typeof __BUILD_MODULE_accounts__ !== 'undefined' ? __BUILD_MODULE_accounts__ : undefined,
@@ -158,7 +152,6 @@ const HOME_CANDIDATES: { path: string; module: TopLevelBuildModule }[] = [
   { path: INVENTORY, module: 'inventory' },
   { path: ADMIN, module: 'admin' },
   { path: REPORTS, module: 'reports' },
-  { path: TIP_DISTRIBUTION, module: 'tips' },
   { path: ACCOUNTS, module: 'accounts' },
   { path: HR, module: 'hr' },
   { path: INTEGRATIONS, module: 'integrations' },

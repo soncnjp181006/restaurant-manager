@@ -14,7 +14,6 @@ import { Tab, TabPanel } from "@/components/common/react-aria/tabs";
 import { AdminUserRoles } from "@/components/settings/users/roles";
 import { AdminShifts } from "@/components/settings/users/shifts";
 import { shiftDisplayTime } from "@/lib/shift.utils.ts";
-import { AdminTipDistribution } from "@/components/settings/users/tip_distribution";
 import {useSecurity} from "@/hooks/useSecurity.ts";
 import {DeleteConfirm} from "@/components/common/table/delete.confirm.tsx";
 import {useDB} from "@/api/db/db.ts";
@@ -168,7 +167,6 @@ const USERS_TAB_MODULES = [
   'admin.users',
   'admin.roles',
   'admin.shifts',
-  'admin.tips_definition',
 ] as const;
 
 export const AdminUsers = () => {
@@ -180,7 +178,6 @@ export const AdminUsers = () => {
     'admin.users': t('tabs.users'),
     'admin.roles': t('tabs.roles'),
     'admin.shifts': t('tabs.shifts'),
-    'admin.tips_definition': t('tabs.tipsDefinition'),
   };
 
   return (
@@ -198,7 +195,6 @@ export const AdminUsers = () => {
         <Tab id="admin.users" data-testid="admin-users-tab-users">{t('tabs.users')}</Tab>
         <Tab id="admin.roles" data-testid="admin-users-tab-roles">{t('tabs.roles')}</Tab>
         <Tab id="admin.shifts" data-testid="admin-users-tab-shifts">{t('tabs.shifts')}</Tab>
-        <Tab id="admin.tips_definition" data-testid="admin-users-tab-tips_definition">{t('tabs.tipsDefinition')}</Tab>
       </TabList>
       <TabPanel id="admin.users" className="bg-surface-elevated">
         <AdminUsersList />
@@ -208,9 +204,6 @@ export const AdminUsers = () => {
       </TabPanel>
       <TabPanel id="admin.shifts" className="bg-surface-elevated">
         <AdminShifts />
-      </TabPanel>
-      <TabPanel id="admin.tips_definition" className="bg-surface-elevated">
-        <AdminTipDistribution />
       </TabPanel>
     </Tabs>
   );

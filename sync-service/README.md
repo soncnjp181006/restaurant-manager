@@ -126,7 +126,7 @@ fields via Admin forms (not a separate Catalog publish panel).
 `release.tables ∩ SYNC download allowlist`
 
 - Empty / missing `tables` → full allowlist (legacy behaviour).
-- Catch-up unions tip releases (global + branch) with `version > local`.
+- Catch-up unions the two release rows (global + branch) with `version > local`.
 - Unknown table names are ignored; if nothing remains, falls back to full.
 
 ## Branch-owned catalog + employees (Phases 6–7)

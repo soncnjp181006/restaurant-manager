@@ -47,7 +47,7 @@ export const WAVE10_EN = {
         image: 'orders-refund-modal.png',
         caption: 'Refund modal with item picker and reason.',
         fields: [
-          { name: 'Select items', effect: 'Checkbox list of lines; refund total scales tax, discount, service charge, extras, and tip proportionally.' },
+          { name: 'Select items', effect: 'Checkbox list of lines; refund total scales tax, discount, service charge, and extras proportionally.' },
           { name: 'Reason', effect: 'Optional textarea stored on the order_refunds record.' },
           { name: 'Refund', effect: 'Creates order_refunds, marks items is_refunded, tags order Refunded, publishes accounting event, and prints refund bill.' },
         ],
@@ -1280,23 +1280,6 @@ export const WAVE10_EN = {
           { name: 'Name', effect: 'Shift label (e.g. Morning, Close).' },
           { name: 'Start time', effect: 'Scheduled shift start.' },
           { name: 'End time', effect: 'Scheduled shift end; may roll to next calendar day.' },
-        ],
-      },
-      {
-        id: 'tips-definition',
-        title: 'Tips definition (tip distribution)',
-        intro: 'Configure how pooled tips are weighted across roles and individual users for settlement reports.',
-        steps: [
-          'Open Users → Tips definition.',
-          'Add role rows with weight percentages or points.',
-          'Optionally add user-specific overrides.',
-          'Save — tip distribution reports use these weights.',
-        ],
-        image: 'admin-users-tips-definition.png',
-        caption: 'Tip distribution admin panel.',
-        fields: [
-          { name: 'Role weight', effect: 'Share of pooled tips assigned to each role (e.g. server 70%, busser 30%).' },
-          { name: 'User weight', effect: 'Optional per-user override of the role default.' },
         ],
       },
     ],

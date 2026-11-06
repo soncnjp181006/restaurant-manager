@@ -28,7 +28,7 @@ function build(printer, data = {}, config = {}) {
   let billToPrint = bill;
 
   if ((order.tax === undefined || order.tax === null) && taxes.length > 0) {
-    const baseTotal = Number(bill.total || 0); // pre-tax total (from getOrderTotals: items + extras - discount + service + tip)
+    const baseTotal = Number(bill.total || 0); // pre-tax total (from getOrderTotals: items + extras - discount + service)
     const totalRows = [];
 
     taxes.forEach((t) => {

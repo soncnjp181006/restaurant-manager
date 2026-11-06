@@ -1810,27 +1810,6 @@ export const WAVE10_T = {
             }
           ]
         },
-        "tips-definition": {
-          title: "Definición de propinas (distribución)",
-          steps: [
-            "Usuarios → Definición de propinas.",
-            "Agregue filas de rol con porcentajes o puntos de peso.",
-            "Opcionalmente agregue anulaciones por usuario.",
-            "Guarde — informes de distribución usan estos pesos."
-          ],
-          caption: "Panel admin distribución de propinas.",
-          intro: "Configure cómo se ponderan las propinas agrupadas por roles y usuarios para informes de liquidación.",
-          fields: [
-            {
-              name: "Peso por rol",
-              effect: "Participación del fondo por rol (p. ej., mesero 70%, busser 30%)."
-            },
-            {
-              name: "Peso por usuario",
-              effect: "Anulación opcional del default del rol."
-            }
-          ]
-        }
       }
     }
   },
@@ -3637,27 +3616,6 @@ export const WAVE10_T = {
             }
           ]
         },
-        "tips-definition": {
-          title: "Bahşiş tanımı (dağıtım)",
-          steps: [
-            "Kullanıcılar → Bahşiş tanımı.",
-            "Rol satırları ve ağırlıklar.",
-            "Kullanıcı geçersiz kılmaları.",
-            "Kaydet."
-          ],
-          caption: "Bahşiş dağıtım paneli.",
-          intro: "Havuz bahşişlerinin rol/kullanıcı ağırlıklarını ayarlar.",
-          fields: [
-            {
-              name: "Rol ağırlığı",
-              effect: "Rol başına havuz payı."
-            },
-            {
-              name: "Kullanıcı ağırlığı",
-              effect: "İsteğe bağlı kullanıcı override."
-            }
-          ]
-        }
       }
     }
   },
@@ -5463,27 +5421,6 @@ export const WAVE10_T = {
             }
           ]
         },
-        "tips-definition": {
-          title: "Definição gorjetas (distribuição)",
-          steps: [
-            "Usuários → Definição gorjetas.",
-            "Linhas papel com pesos.",
-            "Overrides usuário opcional.",
-            "Salvar."
-          ],
-          caption: "Painel distribuição gorjetas.",
-          intro: "Pondera gorjetas por papéis e usuários.",
-          fields: [
-            {
-              name: "Peso papel",
-              effect: "Participação do pool por papel."
-            },
-            {
-              name: "Peso usuário",
-              effect: "Override opcional."
-            }
-          ]
-        }
       }
     }
   },
@@ -7288,27 +7225,6 @@ export const WAVE10_T = {
             }
           ]
         },
-        "tips-definition": {
-          title: "Définition pourboires (distribution)",
-          steps: [
-            "Utilisateurs → Définition pourboires.",
-            "Lignes rôle avec poids.",
-            "Overrides utilisateur.",
-            "Enregistrer."
-          ],
-          caption: "Panneau distribution pourboires.",
-          intro: "Pondère pourboires poolés par rôles et utilisateurs.",
-          fields: [
-            {
-              name: "Poids rôle",
-              effect: "Part du pool par rôle."
-            },
-            {
-              name: "Poids utilisateur",
-              effect: "Override optionnel."
-            }
-          ]
-        }
       }
     }
   },
@@ -9113,27 +9029,6 @@ export const WAVE10_T = {
             }
           ]
         },
-        "tips-definition": {
-          title: "Fooidefinitie (verdeling)",
-          steps: [
-            "Gebruikers → Fooidefinitie.",
-            "Rolregels met gewichten.",
-            "Gebruiker overrides.",
-            "Opslaan."
-          ],
-          caption: "Fooiverdeling admin.",
-          intro: "Weegt gepoolde fooien per rol en gebruiker.",
-          fields: [
-            {
-              name: "Rolgewicht",
-              effect: "Poolaandeel per rol."
-            },
-            {
-              name: "Gebruikersgewicht",
-              effect: "Optionele override."
-            }
-          ]
-        }
       }
     }
   },
@@ -10943,27 +10838,6 @@ export const WAVE10_T = {
             }
           ]
         },
-        "tips-definition": {
-          title: "Trinkgeld-Definition (Verteilung)",
-          steps: [
-            "Benutzer → Trinkgeld-Definition.",
-            "Rollenzeilen mit Gewichtsprozenten oder Punkten hinzufügen.",
-            "Optional Benutzer-Overrides.",
-            "Speichern — Verteilungsberichte nutzen diese Gewichte."
-          ],
-          caption: "Admin-Panel Trinkgeldverteilung.",
-          intro: "Konfiguriert Gewichtung gepoolter Trinkgelder nach Rollen und Benutzern für Abrechnungsberichte.",
-          fields: [
-            {
-              name: "Rollengewicht",
-              effect: "Anteil am Pool pro Rolle (z. B. Service 70%, Hilfe 30%)."
-            },
-            {
-              name: "Benutzergewicht",
-              effect: "Optionale Override pro Benutzer."
-            }
-          ]
-        }
       }
     }
   },
@@ -12768,27 +12642,6 @@ export const WAVE10_T = {
             }
           ]
         },
-        "tips-definition": {
-          title: "Definizione mance (distribuzione)",
-          steps: [
-            "Utenti → Definizione mance.",
-            "Righe ruolo con pesi.",
-            "Override utente.",
-            "Salva."
-          ],
-          caption: "Pannello distribuzione mance.",
-          intro: "Pondera mance pooled per ruoli e utenti.",
-          fields: [
-            {
-              name: "Peso ruolo",
-              effect: "Quota pool per ruolo."
-            },
-            {
-              name: "Peso utente",
-              effect: "Override opzionale."
-            }
-          ]
-        }
       }
     }
   },
@@ -14594,27 +14447,6 @@ export const WAVE10_T = {
             }
           ]
         },
-        "tips-definition": {
-          title: "تعريف الإكراميات (التوزيع)",
-          steps: [
-            "المستخدمون → تعريف الإكراميات.",
-            "صفوف الأدوار بالأوزان.",
-            "تجاوزات المستخدم.",
-            "احفظ."
-          ],
-          caption: "لوحة توزيع الإكراميات.",
-          intro: "يضبط أوزان الإكراميات المجمّعة حسب الأدوار والمستخدمين.",
-          fields: [
-            {
-              name: "وزن الدور",
-              effect: "حصة المجموعة لكل دور."
-            },
-            {
-              name: "وزن المستخدم",
-              effect: "تجاوز اختياري."
-            }
-          ]
-        }
       }
     }
   },
@@ -16419,27 +16251,6 @@ export const WAVE10_T = {
             }
           ]
         },
-        "tips-definition": {
-          title: "Tips definition (tip distribution)",
-          steps: [
-            "Users → Tips definition.",
-            "Role rows with weight %.",
-            "Optional user overrides.",
-            "Save."
-          ],
-          caption: "Tip distribution admin panel.",
-          intro: "Configure pooled tip weights by roles and users.",
-          fields: [
-            {
-              name: "Role weight",
-              effect: "Share of pool per role."
-            },
-            {
-              name: "User weight",
-              effect: "Optional per-user override."
-            }
-          ]
-        }
       }
     }
   }

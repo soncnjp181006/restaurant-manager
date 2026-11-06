@@ -9,11 +9,10 @@ export interface SaleCompletedTenderSplit {
 export interface SaleCompletedPayload {
   orderId: string;
   invoiceNumber?: number | string;
-  /** Net sales (before tax), typically grand total − tax − tip + discounts handling per template. */
+  /** Net sales (before tax), grand total with discounts handled per template. */
   subtotal: number;
   taxAmount: number;
   discountAmount: number;
-  tipAmount: number;
   /** Total collected from customers (sum of payments). */
   totalCollected: number;
   tenders: SaleCompletedTenderSplit;
@@ -29,7 +28,6 @@ export interface SaleRefundedPayload {
   subtotal: number;
   taxAmount: number;
   discountAmount: number;
-  tipAmount: number;
   totalCollected: number;
   tenders: SaleCompletedTenderSplit;
   storeId?: string;
@@ -44,7 +42,6 @@ export interface OrderCancelledPayload {
   subtotal: number;
   taxAmount: number;
   discountAmount: number;
-  tipAmount: number;
   totalCollected: number;
   tenders: SaleCompletedTenderSplit;
   storeId?: string;
@@ -237,12 +234,11 @@ export const allocateTendersByRatio = (
 export const buildSaleCompletedPayload = (order: Order): SaleCompletedPayload => {
   const taxAmount = Number(order.tax_amount ?? 0);
   const discountAmount = Number(order.discount_amount ?? 0);
-  const tipAmount = Number(order.tip_amount ?? order.tip ?? 0);
   const tenders = buildTenderSplitFromOrder(order);
   const totalCollected = Number(
     (tenders.cashAmount + tenders.cardAmount + tenders.otherAmount).toFixed(2)
   );
-  const subtotal = Number(Math.max(totalCollected - taxAmount - tipAmount, 0).toFixed(2));
+  const subtotal = Number(Math.max(totalCollected - taxAmount, 0).toFixed(2));
 
   return {
     orderId: String(order.id),
@@ -250,7 +246,6 @@ export const buildSaleCompletedPayload = (order: Order): SaleCompletedPayload =>
     subtotal,
     taxAmount: Number(taxAmount.toFixed(2)),
     discountAmount: Number(discountAmount.toFixed(2)),
-    tipAmount: Number(tipAmount.toFixed(2)),
     totalCollected,
     tenders,
     storeId: order.floor?.id ? String(order.floor.id) : undefined,
@@ -264,7 +259,6 @@ export const buildSaleRefundedPayload = (params: {
   subtotal: number;
   taxAmount: number;
   discountAmount: number;
-  tipAmount: number;
   total: number;
   itemIds?: string[];
 }): SaleRefundedPayload => {
@@ -276,7 +270,6 @@ export const buildSaleRefundedPayload = (params: {
     subtotal: Number(params.subtotal.toFixed(2)),
     taxAmount: Number(params.taxAmount.toFixed(2)),
     discountAmount: Number(params.discountAmount.toFixed(2)),
-    tipAmount: Number(params.tipAmount.toFixed(2)),
     totalCollected: Number(params.total.toFixed(2)),
     tenders,
     storeId: params.order.floor?.id ? String(params.order.floor.id) : undefined,
@@ -295,7 +288,6 @@ export const buildOrderCancelledPayload = (
     subtotal: sale.subtotal,
     taxAmount: sale.taxAmount,
     discountAmount: sale.discountAmount,
-    tipAmount: sale.tipAmount,
     totalCollected: sale.totalCollected,
     tenders: sale.tenders,
     storeId: sale.storeId,

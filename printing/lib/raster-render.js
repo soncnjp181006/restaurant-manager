@@ -494,7 +494,6 @@ async function renderRefundRaster(data, config) {
   const taxLabel = L.tax || 'Tax';
   const discountLabel = L.discount || 'Discount';
   const extraLabel = L.extra || 'Extra';
-  const tipLabel = L.tip || 'Tip';
   const refundTotalLabel = L.refundTotal || 'Refund Total';
 
   rc.centered(refundReceiptLabel, { size: 'normal', style: 'bold-underline' });
@@ -525,9 +524,6 @@ async function renderRefundRaster(data, config) {
   (bill.extras || []).forEach((e) => {
     rc.lineLeftRight(e.name || extraLabel, formatMoney(e.value, sym));
   });
-  if (bill.tipAmount != null && Number(bill.tipAmount) !== 0) {
-    rc.lineLeftRight(bill.tipLabel || tipLabel, formatMoney(bill.tipAmount, sym));
-  }
   rc.divider();
   rc.lineLeftRight(refundTotalLabel, formatMoney(bill.total, sym), { style: 'bold-underline' });
 
@@ -652,8 +648,6 @@ async function renderSummaryRaster(data, config) {
   rc.lineLeftRight(L.taxes || 'Taxes', formatMoney(s.taxCollected, sym));
   rc.lineLeftRight(L.totalRevenue || 'Total revenue', formatMoney(s.totalRevenue, sym), { style: 'bold-underline' });
   sect(L.settlementCashier || '3. Settlement and cashier');
-  rc.lineLeftRight(L.amountDueBeforeTips || 'Amount due (before tips)', formatMoney(s.amountDue, sym));
-  rc.lineLeftRight(L.tips || 'Tips', formatMoney(s.tips, sym));
   rc.lineLeftRight(L.grandTotalDue || 'Grand total (due)', formatMoney(s.grandTotalDue, sym), { style: 'bold-underline' });
   rc.lineLeftRight(L.amountCollected || 'Amount collected', formatMoney(s.amountCollected, sym));
   rc.lineLeftRight(L.rounding || 'Rounding', formatMoney(s.rounding, sym));

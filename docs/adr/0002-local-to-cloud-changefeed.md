@@ -42,7 +42,7 @@ menu, inventory, accounts, or other BOH tables in this phase.
    the cursor falls outside retention. Upsert-by-id makes overlap with the
    feed safe.
 4. **Allowlist only FOH / sales tables** (orders and children, payments,
-   fiscal junction, closings, shifts, tips, customers, …). Configurable via
+   fiscal junction, closings, shifts, customers, …). Configurable via
    `SYNC_INCLUDE_TABLES` / `SYNC_EXCLUDE_TABLES`. Catalog, inventory,
    accounts, staff setup, settings, `sync_*`, and credentials stay local.
 5. **`branch_id` is injected on the master payload only** from

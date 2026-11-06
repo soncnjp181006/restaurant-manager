@@ -33,7 +33,7 @@ reload the tab.
 | 5 | Void one line (qty 1 of 2) with a reason | qty decremented, `orderVoids` row, pending kitchen stage `cancelled`, `tax_amount` lowered |
 | 6 | Move the order to another table | floor shows new table; old table free |
 | 7 | Split by items into 2 checks | parent `Spilt`, two children with new int invoice numbers, items reassigned |
-| 8 | Pay child 1 (cash + card, with a tip and one extra) | status `Paid`, `orderPayments` rows, `completed_at`, table released; outbox `CREATE_PAYMENT`×2, `MERGE_RECORD order`, `REPLACE_ORDER_RELATION` |
+| 8 | Pay child 1 (cash + card, with one extra) | status `Paid`, `orderPayments` rows, `completed_at`, table released; outbox `CREATE_PAYMENT`×2, `MERGE_RECORD order`, `REPLACE_ORDER_RELATION` |
 | 9 | Refund one item of child 1 (manager PIN) | `orderRefunds` row, item `is_refunded`, tags include `Refunded` |
 | 10 | Merge child 2 into a brand new order from another table | sources `Merged`, target holds all items |
 | 11 | Hold one dish, then **Fire** it | `is_suspended` false, kitchen rows created |

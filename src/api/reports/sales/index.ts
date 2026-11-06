@@ -82,8 +82,6 @@ export const getProductMix = async (
   return {categories: categoryGroups, topItems};
 };
 
-export {getTips} from "@/api/reports/sales/tips.ts";
-export type {GetTipsOptions, TipStaffRow} from "@/api/reports/sales/tips.ts";
 export {
   getServerTicketTimes,
   getStaffAccountabilityMetrics,

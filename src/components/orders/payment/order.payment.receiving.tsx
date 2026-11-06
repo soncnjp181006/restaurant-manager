@@ -60,10 +60,6 @@ interface Props {
   /** Notify parent of selected tender so payment-gated discounts can evaluate */
   onPaymentTypeSelected?: (paymentTypeId: string) => void
 
-  tip: number
-  tipType?: DiscountType
-  tipAmount: number
-
   payments: OrderPayment[]
   setPayments: (paymentType: OrderPayment[] | ((prev: OrderPayment[]) => OrderPayment[])) => void;
 
@@ -116,9 +112,6 @@ const OrderPaymentReceivingContent = ({
   taxAmount,
   discountAmount,
   onPaymentTypeSelected,
-  tipType,
-  tip,
-  tipAmount,
   payments,
   setPayments,
   itemsTotal: _itemsTotal,
@@ -227,9 +220,6 @@ const OrderPaymentReceivingContent = ({
               tax: tax ?? fiscalOrderSnapshot.tax,
               tax_amount: taxAmount ?? fiscalOrderSnapshot.tax_amount,
               discount_amount: discountAmount ?? fiscalOrderSnapshot.discount_amount,
-              tip,
-              tip_amount: tipAmount,
-              tip_type: tipType,
               service_charge: serviceCharge,
               service_charge_amount: serviceChargeAmount,
               service_charge_type: serviceChargeType,
@@ -275,9 +265,6 @@ const OrderPaymentReceivingContent = ({
           })),
         cashierId: page?.user?.id ? String(page.user.id) : null,
         taxId: tax?.id ? String(tax.id) : null,
-        tip,
-        tipAmount,
-        tipType,
         serviceCharge,
         serviceChargeAmount,
         serviceChargeType,
@@ -374,7 +361,6 @@ const OrderPaymentReceivingContent = ({
                   ? String(payment.payment_type.id)
                   : undefined,
                 paymentTypeName: payment.payment_type?.name,
-                tipAmount: tipAmount,
               });
             }
           }

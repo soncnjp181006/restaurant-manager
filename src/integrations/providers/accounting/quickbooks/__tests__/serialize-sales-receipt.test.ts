@@ -52,21 +52,6 @@ describe('serializeSalesReceipt', () => {
     expect(discountLine?.Description).toBe('Discount');
   });
 
-  it('adds tip line when tip amount > 0', () => {
-    const input = { ...baseInput, tipAmount: 3 };
-    const result = serializeSalesReceipt(input);
-
-    const tipLine = result.Line?.find((l) => l.Description === 'Tip / Service Charge');
-    expect(tipLine?.Amount).toBe(3);
-  });
-
-  it('includes discount and tip lines when both present', () => {
-    const input = { ...baseInput, discountAmount: 2, tipAmount: 4 };
-    const result = serializeSalesReceipt(input);
-
-    expect(result.Line).toHaveLength(3);
-  });
-
   it('omits discount line when zero', () => {
     const input = { ...baseInput, discountAmount: 0 };
     const result = serializeSalesReceipt(input);

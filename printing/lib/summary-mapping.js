@@ -170,9 +170,7 @@ function computeSummary(props) {
   const amountDue = safeNumber(netSales + serviceCharges + taxCollected);
   const totalRevenue = safeNumber(netSales + serviceCharges + taxCollected);
 
-  const tips = list.reduce((sum, order) => sum + safeNumber(order.tip_amount), 0);
-
-  const grandTotalDue = safeNumber(totalRevenue + tips);
+  const grandTotalDue = totalRevenue;
 
   const amountCollected = paymentTotals.reduce(
     (sum, totals) => sum + safeNumber(totals.amountCollected),
@@ -357,7 +355,6 @@ function computeSummary(props) {
     taxCollected,
     amountDue,
     totalRevenue,
-    tips,
     grandTotalDue,
     amountCollected,
     amountCollectedRaw,

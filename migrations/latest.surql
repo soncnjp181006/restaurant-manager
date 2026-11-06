@@ -2121,9 +2121,6 @@ DEFINE FIELD tags ON order TYPE none | array<string> | null PERMISSIONS FULL;
 DEFINE FIELD tags.* ON order TYPE string PERMISSIONS FULL;
 DEFINE FIELD tax ON order TYPE none | record<tax> | null PERMISSIONS FULL;
 DEFINE FIELD tax_amount ON order TYPE none | float | null PERMISSIONS FULL;
-DEFINE FIELD tip ON order TYPE none | float | null PERMISSIONS FULL;
-DEFINE FIELD tip_amount ON order TYPE none | float | null PERMISSIONS FULL;
-DEFINE FIELD tip_type ON order TYPE none | string | null PERMISSIONS FULL;
 DEFINE FIELD updated_at ON order TYPE none | datetime | null DEFAULT time::now() PERMISSIONS FULL;
 DEFINE FIELD user ON order TYPE none | record<user> | null PERMISSIONS FULL;
 
@@ -2531,7 +2528,6 @@ DEFINE FIELD premium_pay ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FU
 DEFINE FIELD regular_hours ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FULL;
 DEFINE FIELD regular_pay ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FULL;
 DEFINE FIELD rule_applications ON payroll_snapshot TYPE any DEFAULT [] PERMISSIONS FULL;
-DEFINE FIELD tips ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FULL;
 DEFINE FIELD unpaid_leave_days ON payroll_snapshot TYPE none | float | null PERMISSIONS FULL;
 DEFINE FIELD weekend_premium_hours ON payroll_snapshot TYPE float DEFAULT 0 PERMISSIONS FULL;
 
@@ -3108,35 +3104,6 @@ DEFINE FIELD start_at ON time_entry_break TYPE datetime PERMISSIONS FULL;
 DEFINE FIELD time_entry ON time_entry_break TYPE record<time_entry> PERMISSIONS FULL;
 
 DEFINE INDEX teb_time_entry ON time_entry_break FIELDS time_entry;
-
-
--- ------------------------------
--- TABLE: tip_distribution
--- ------------------------------
-
-DEFINE TABLE tip_distribution TYPE NORMAL SCHEMAFULL CHANGEFEED 2w PERMISSIONS NONE;
-
-DEFINE FIELD created_at ON tip_distribution TYPE datetime DEFAULT time::now() PERMISSIONS FULL;
-DEFINE FIELD created_by ON tip_distribution TYPE none | record<user> | null PERMISSIONS FULL;
-DEFINE FIELD from_at ON tip_distribution TYPE datetime PERMISSIONS FULL;
-DEFINE FIELD shift ON tip_distribution TYPE record<shift> PERMISSIONS FULL;
-DEFINE FIELD to_at ON tip_distribution TYPE datetime PERMISSIONS FULL;
-DEFINE FIELD total_tips ON tip_distribution TYPE float PERMISSIONS FULL;
-DEFINE FIELD users ON tip_distribution TYPE array<record<tip_distribution_user_share>> PERMISSIONS FULL;
-DEFINE FIELD users.* ON tip_distribution TYPE record<tip_distribution_user_share> PERMISSIONS FULL;
-
-
-
--- ------------------------------
--- TABLE: tip_distribution_user_share
--- ------------------------------
-
-DEFINE TABLE tip_distribution_user_share TYPE NORMAL SCHEMAFULL CHANGEFEED 2w PERMISSIONS NONE;
-
-DEFINE FIELD amount ON tip_distribution_user_share TYPE float PERMISSIONS FULL;
-DEFINE FIELD user ON tip_distribution_user_share TYPE none | record<user> | string PERMISSIONS FULL;
-DEFINE FIELD weight ON tip_distribution_user_share TYPE float PERMISSIONS FULL;
-
 
 
 -- ------------------------------

@@ -116,7 +116,6 @@ interface SegmentMetrics {
   taxes: number;
   amountDue: number;
   serviceCharges: number;
-  tips: number;
   discounts: number;
   coupons: number;
   net: number;
@@ -135,7 +134,6 @@ const emptySegmentMetrics = (name: string): SegmentMetrics => ({
   taxes: 0,
   amountDue: 0,
   serviceCharges: 0,
-  tips: 0,
   discounts: 0,
   coupons: 0,
   net: 0,
@@ -218,7 +216,6 @@ const accumulateSegmentMetrics = (metrics: SegmentMetrics, order: Order, orderMe
   metrics.taxes = safeNumber(metrics.taxes + safeNumber(orderMetrics.taxes));
   metrics.amountDue = safeNumber(metrics.amountDue + safeNumber(orderMetrics.amountDue));
   metrics.serviceCharges = safeNumber(metrics.serviceCharges + safeNumber(orderMetrics.serviceCharges));
-  metrics.tips = safeNumber(metrics.tips + safeNumber(orderMetrics.tips));
   metrics.discounts = safeNumber(metrics.discounts + safeNumber(orderMetrics.discounts));
   metrics.coupons = safeNumber(metrics.coupons + safeNumber(orderMetrics.coupons));
   metrics.net = safeNumber(metrics.net + safeNumber(orderMetrics.net));
@@ -243,7 +240,6 @@ function calculateOrderMetrics(order: Order) {
     taxes: figures.tax,
     amountDue: getOrderAmountDueFromPayments(order),
     serviceCharges: figures.serviceCharges,
-    tips: figures.tips,
     discounts: safeNumber(figures.lineDiscounts + figures.cartDiscount),
     coupons: figures.couponDiscount,
     net,
@@ -441,7 +437,6 @@ const SalesSummary2Body = ({
     const salePriceWithoutTax = settlementFigures.reduce((sum, figures) => sum + figures.itemsTotal, 0);
     const taxCollected = settlementFigures.reduce((sum, figures) => sum + figures.tax, 0);
     const serviceCharges = settlementFigures.reduce((sum, figures) => sum + figures.serviceCharges, 0);
-    const tips = settlementFigures.reduce((sum, figures) => sum + figures.tips, 0);
     const itemDiscounts = settlementFigures.reduce((sum, figures) => sum + figures.lineDiscounts, 0);
     const subtotalDiscounts = settlementFigures.reduce((sum, figures) => sum + figures.cartDiscount, 0);
     const couponDiscounts = settlementFigures.reduce((sum, figures) => sum + figures.couponDiscount, 0);
@@ -481,7 +476,6 @@ const SalesSummary2Body = ({
       salePriceWithoutTax,
       taxCollected,
       serviceCharges,
-      tips,
       itemDiscounts,
       subtotalDiscounts,
       couponDiscounts,
@@ -677,33 +671,6 @@ const SalesSummary2Body = ({
       return acc;
     }, {} as Record<string, number>);
 
-    const tipsByType = new Map<string, {quantity: number; total: number; rates: Set<number>}>();
-    orders.forEach(order => {
-      const amount = safeNumber(order.tip_amount);
-      if (amount <= 0) {
-        return;
-      }
-      const key = order.tip_type ?? "Standard";
-      const existing = tipsByType.get(key) || {quantity: 0, total: 0, rates: new Set<number>()};
-      existing.quantity += 1;
-      existing.total += amount;
-      if (order.tip_type === DiscountType.Percent) {
-        const rate = safeNumber(order.tip);
-        if (rate > 0) {
-          existing.rates.add(rate);
-        }
-      }
-      tipsByType.set(key, existing);
-    });
-    const tipsBreakdown = Array.from(tipsByType.entries())
-      .map(([name, data]) => ({
-        name,
-        quantity: data.quantity,
-        total: data.total,
-        rates: Array.from(data.rates).sort((a, b) => a - b),
-      }))
-      .sort((a, b) => b.total - a.total);
-
     const extrasBreakdown = orders.reduce((acc, order) => {
       order.extras?.forEach(extra => {
         if (!extra) {
@@ -727,7 +694,6 @@ const SalesSummary2Body = ({
         .sort((a, b) => b.total - a.total),
       serviceChargesBreakdown,
       taxesBreakdown,
-      tipsBreakdown,
       extrasBreakdown,
     };
   }, [orders]);
@@ -872,12 +838,6 @@ const SalesSummary2Body = ({
                     <td className="py-1.5 text-foreground">+ Service charges</td>
                     <td className="py-1.5 text-right font-semibold text-foreground">
                       {withCurrency(financialMetrics.serviceCharges)}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-1.5 text-foreground">+ Tips</td>
-                    <td className="py-1.5 text-right font-semibold text-foreground">
-                      {withCurrency(financialMetrics.tips)}
                     </td>
                   </tr>
                   <tr>
@@ -1139,29 +1099,6 @@ const SalesSummary2Body = ({
                     </table>
                   </div>
                 )}
-                {discountTypesBreakdown.tipsBreakdown.length > 0 && (
-                  <div>
-                    <h5 className="mb-2  font-semibold text-muted">{t('reports.tips')}</h5>
-                    <table className="min-w-full ">
-                      <tbody className="divide-y divide-neutral-100">
-                        {discountTypesBreakdown.tipsBreakdown.map(tipRow => (
-                          <tr key={tipRow.name}>
-                            <td className="py-1 text-foreground">{tipRow.name}</td>
-                            <td className="py-1 text-right text-foreground">
-                              {tipRow.rates.length > 0
-                                ? tipRow.rates.map(rate => `${formatNumber(rate)}%`).join(", ")
-                                : "-"}
-                            </td>
-                            <td className="py-1 text-right text-foreground">{formatNumber(tipRow.quantity)}</td>
-                            <td className="py-1 text-right font-semibold text-foreground">
-                              {withCurrency(tipRow.total)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
                 {Object.keys(discountTypesBreakdown.extrasBreakdown).length > 0 && (
                   <div>
                     <h5 className="mb-2  font-semibold text-muted">{t('labels.orderExtras')}</h5>
@@ -1194,7 +1131,6 @@ const SalesSummary2Body = ({
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.taxes')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.amountDue')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.serviceCharges')}</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('reports.tips')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.discounts')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.coupons')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.net')}</th>
@@ -1218,7 +1154,6 @@ const SalesSummary2Body = ({
                     <td className="py-3 px-3 text-right text-foreground">
                       {withCurrency(metrics.serviceCharges)}
                     </td>
-                    <td className="py-3 px-3 text-right text-foreground">{withCurrency(metrics.tips)}</td>
                     <td className="py-3 px-3 text-right text-foreground">{withCurrency(metrics.discounts)}</td>
                     <td className="py-3 px-3 text-right text-foreground">{withCurrency(metrics.coupons)}</td>
                     <td className="py-3 px-3 text-right font-semibold text-foreground">
@@ -1238,7 +1173,7 @@ const SalesSummary2Body = ({
                 ))}
                 {orderTypeMetrics.length === 0 && (
                   <tr>
-                    <td colSpan={15} className="py-6 text-center text-muted">
+                    <td colSpan={14} className="py-6 text-center text-muted">
                       {t('labels.noOrderTypeData')}
                     </td>
                   </tr>
@@ -1260,7 +1195,6 @@ const SalesSummary2Body = ({
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.taxes')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.amountDue')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.serviceCharges')}</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('reports.tips')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.discounts')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.coupons')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.net')}</th>
@@ -1289,7 +1223,6 @@ const SalesSummary2Body = ({
                     <td className="py-3 px-3 text-right text-foreground">
                       {withCurrency(metrics.serviceCharges)}
                     </td>
-                    <td className="py-3 px-3 text-right text-foreground">{withCurrency(metrics.tips)}</td>
                     <td className="py-3 px-3 text-right text-foreground">{withCurrency(metrics.discounts)}</td>
                     <td className="py-3 px-3 text-right text-foreground">{withCurrency(metrics.coupons)}</td>
                     <td className="py-3 px-3 text-right font-semibold text-foreground">
@@ -1324,7 +1257,6 @@ const SalesSummary2Body = ({
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.taxes')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.amountDue')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('labels.serviceCharges')}</th>
-                  <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('reports.tips')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.discounts')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.coupons')}</th>
                   <th className="py-3 px-3 text-right  font-semibold text-foreground">{t('metrics.net')}</th>
@@ -1348,7 +1280,6 @@ const SalesSummary2Body = ({
                     <td className="py-3 px-3 text-right text-foreground">
                       {withCurrency(metrics.serviceCharges)}
                     </td>
-                    <td className="py-3 px-3 text-right text-foreground">{withCurrency(metrics.tips)}</td>
                     <td className="py-3 px-3 text-right text-foreground">{withCurrency(metrics.discounts)}</td>
                     <td className="py-3 px-3 text-right text-foreground">{withCurrency(metrics.coupons)}</td>
                     <td className="py-3 px-3 text-right font-semibold text-foreground">
@@ -1368,7 +1299,7 @@ const SalesSummary2Body = ({
                 ))}
                 {employeeMetrics.length === 0 && (
                   <tr>
-                    <td colSpan={15} className="py-6 text-center text-muted">
+                    <td colSpan={14} className="py-6 text-center text-muted">
                       {t('empty.noEmployeeSales')}
                     </td>
                   </tr>

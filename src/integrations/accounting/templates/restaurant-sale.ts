@@ -6,7 +6,7 @@ export const RESTAURANT_SALE_TEMPLATE_ID = 'restaurant_sale';
  * Restaurant sale journal:
  * Debit cash / card / other receivables from tenders
  * Credit sales revenue + VAT
- * Optional: discount (debit), tips (credit)
+ * Optional: discount (debit)
  */
 export const restaurantSaleTemplate: JournalTemplate = {
   id: RESTAURANT_SALE_TEMPLATE_ID,
@@ -53,13 +53,6 @@ export const restaurantSaleTemplate: JournalTemplate = {
       side: 'credit',
       amountKey: 'taxAmount',
       description: 'VAT / tax payable',
-      omitWhenZero: true,
-    },
-    {
-      logicalAccount: 'TIPS',
-      side: 'credit',
-      amountKey: 'tipAmount',
-      description: 'Tips',
       omitWhenZero: true,
     },
   ],

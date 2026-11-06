@@ -16,7 +16,6 @@ const CHAPTER_KEYS = [
   'order-display',
   'closing',
   'reports-ops',
-  'tips-manager',
 ];
 
 const LANGS = ['es', 'tr', 'pt-br', 'fr', 'nl', 'de', 'it', 'ar', 'ru'];
@@ -213,39 +212,6 @@ const T = {
             'Reportes operativos: dashboard de ventas, actividad, gastos, cierre de caja.',
           ],
           caption: 'Sub-reportes y filtros.',
-        },
-      },
-    },
-    'tips-manager': {
-      title: 'Supervisión de propinas',
-      intro: 'Distribución de propinas calcula cómo dividir propinas del turno según pesos configurados.',
-      sections: {
-        overview: {
-          title: 'Pantalla de distribución',
-          steps: [
-            'Pulse Distribución de propinas en la barra lateral.',
-            'Seleccione turno y fecha.',
-            'Cargar propinas calcula desde órdenes pagadas.',
-          ],
-          caption: 'Pantalla de distribución de propinas.',
-        },
-        filters: {
-          title: 'Turno y fecha',
-          steps: [
-            'Elija el turno en el desplegable.',
-            'Elija la fecha (no futura).',
-            'Pulse Cargar propinas para llenar la tabla.',
-          ],
-          caption: 'Turno, fecha y cargar.',
-        },
-        table: {
-          title: 'Tabla de distribución',
-          steps: [
-            'Total de propinas muestra el monto del turno.',
-            'Cada fila: usuario, rol, peso y parte calculada.',
-            'Enviar guarda la distribución tras revisar.',
-          ],
-          caption: 'Totales y tabla por usuario.',
         },
       },
     },

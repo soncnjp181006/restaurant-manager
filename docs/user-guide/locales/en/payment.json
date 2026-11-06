@@ -1,13 +1,13 @@
 {
   "title": "Payment screen",
-  "intro": "Pay now opens a full-screen payment layout: order summary and adjustable totals on the left, an editor in the middle for tax/discount/coupon/service charge/tip/notes, and tender tools on the right.",
+  "intro": "Pay now opens a full-screen payment layout: order summary and adjustable totals on the left, an editor in the middle for tax/discount/coupon/service charge/notes, and tender tools on the right.",
   "sections": [
     {
       "id": "overview",
       "title": "Payment layout",
       "intro": "The screen is arranged in three zones so you can review the check, adjust charges, and collect money without leaving the dialog.",
       "steps": [
-        "Left column: invoice header, line items, tax, discount, coupon, service charge, tip, extras, notes, and grand total.",
+        "Left column: invoice header, line items, tax, discount, coupon, service charge, extras, notes, and grand total.",
         "Middle column: editor for the totals row you selected. Changes stay draft until you confirm with OK or Apply (except notes and extras).",
         "Right two columns: tendered amount, remaining/change, quick amounts, payment types, keypad, temp bill, Complete, and listed payments."
       ],
@@ -31,8 +31,8 @@
       "title": "Totals breakdown",
       "intro": "Each line under the items feeds the grand total used for tendering.",
       "steps": [
-        "Items subtotal is shown first, then tax, discount, coupon, service charges, tip, extras (when configured), and notes.",
-        "Tap Tax, Discount, Coupon, Service charges, Tip, or Notes to open the middle editor.",
+        "Items subtotal is shown first, then tax, discount, coupon, service charges, extras (when configured), and notes.",
+        "Tap Tax, Discount, Coupon, Service charges, or Notes to open the middle editor.",
         "Selecting a draft value alone does not change the bill — you must confirm with OK or Apply where shown.",
         "Some rows may ask for a manager PIN if your security settings require it."
       ],
@@ -96,23 +96,9 @@
       "caption": "Service charge panel; confirm with OK."
     },
     {
-      "id": "adjust-tip",
-      "title": "Tips",
-      "intro": "Tips use the same draft-then-OK pattern as tax and service charges.",
-      "steps": [
-        "Tap the Tip row (manager PIN may be required).",
-        "Choose No tip, or Percent vs Fixed amount.",
-        "Pick a quick tip (for example 10%, 15%) or type a value on the keypad.",
-        "Tap OK to apply. Leaving the panel without OK keeps the previous tip.",
-        "Tip increases the payable total used for tendering."
-      ],
-      "image": "payment-adjust-tip.png",
-      "caption": "Tip panel; confirm with OK."
-    },
-    {
       "id": "extras",
       "title": "Extras",
-      "intro": "Configured extras (for example service charges tied to tables or payment types) show as rows under tip. There is no middle editor.",
+      "intro": "Configured extras (for example service charges tied to tables or payment types) show as rows under the service charge line. There is no middle editor.",
       "steps": [
         "If extras apply to this order, each extra name and amount appears in the totals list.",
         "Tap an extra row to toggle it off (struck through / zero) or back on.",
@@ -137,7 +123,7 @@
     {
       "id": "receiving",
       "title": "Receive payment",
-      "intro": "After totals are correct (including any applied tax, discount, coupon, service charge, tip, and extras), use the tender panel on the right.",
+      "intro": "After totals are correct (including any applied tax, discount, coupon, service charge, and extras), use the tender panel on the right.",
       "steps": [
         "Large figure at the top is total tendered so far.",
         "Below it, remaining (red) or change (green) updates as you add payments.",
@@ -152,7 +138,7 @@
       "steps": [
         "Tendered starts at zero until you add a payment line.",
         "Remaining must reach zero (or change due ≥ 0) before Complete is enabled.",
-        "If you change tax, tip, or discounts after tendering, remaining updates — adjust payments as needed.",
+        "If you change tax or discounts after tendering, remaining updates — adjust payments as needed.",
         "Split payments by adding more than one line with different types or amounts."
       ],
       "image": "payment-tender-display.png",

@@ -54,8 +54,6 @@
     "tax": "Tax",
     "discount": "Discount",
     "serviceCharges": "Service charges ({{value}}{{unit}})",
-    "tip": "Tip",
-    "tipPercent": "Tip %",
     "total": "Total",
     "totalWithTax": "Total with {{name}} {{rate}}%",
     "change": "Change",
@@ -102,7 +100,6 @@
     "tax": "Tax ({{name}} {{rate}}%):",
     "discount": "Discount:",
     "serviceCharges": "Service Charges ({{value}}{{unit}}):",
-    "tip": "Tip:",
     "refundTotal": "Refund Total:",
     "itemsSelected": "{{count}} item(s) selected",
     "reason": "Reason",
@@ -199,4 +196,4 @@
   },
   "telebirrScanToPay": "Scan with Telebirr app to pay",
   "telebirrAmount": "Amount: {{amount}} ETB"
-}
+}

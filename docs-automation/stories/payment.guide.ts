@@ -91,7 +91,7 @@ test('capture payment screen layout and tendering', async ({ page }) => {
   await captureLocator(page.getByTestId('payment-totals'), 'payment-totals');
   await clearHighlights(page);
 
-  // Adjust panels (tax/service/tip/discount require OK or Apply — do not rely on auto-apply)
+  // Adjust panels (tax/service/discount require OK or Apply — do not rely on auto-apply)
   await captureAdjustPanel(page, 'payment-row-tax', 'payment-panel-tax', 'payment-adjust-tax');
   await captureAdjustPanel(page, 'payment-row-discount', 'payment-panel-discount', 'payment-adjust-discount');
   await captureAdjustPanel(page, 'payment-row-coupon', 'payment-panel-coupon', 'payment-adjust-coupon');
@@ -101,7 +101,6 @@ test('capture payment screen layout and tendering', async ({ page }) => {
     'payment-panel-service-charges',
     'payment-adjust-service'
   );
-  await captureAdjustPanel(page, 'payment-row-tip', 'payment-panel-tip', 'payment-adjust-tip');
   await captureAdjustPanel(page, 'payment-row-notes', 'payment-panel-notes', 'payment-adjust-notes');
 
   // Extras: no middle editor — toggle rows on the totals list when configured

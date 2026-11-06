@@ -43,7 +43,6 @@ export const publishSaleRefunded = async (
     subtotal: number;
     taxAmount: number;
     discountAmount: number;
-    tipAmount: number;
     total: number;
     itemIds?: string[];
   }

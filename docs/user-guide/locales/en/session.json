@@ -53,7 +53,7 @@
       "id": "clock-sales",
       "title": "Session sale summary",
       "steps": [
-        "Metrics cover sales, refunds, service charges, discounts, taxes, extras, voids, and tips for the current clock-in session.",
+        "Metrics cover sales, refunds, service charges, discounts, taxes, extras, and voids for the current clock-in session.",
         "Use this before clock-out for a quick performance check."
       ],
       "image": "session-clock-sales.png",

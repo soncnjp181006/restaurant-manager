@@ -22,7 +22,6 @@ import {posStore} from "@/infrastructure/pos-store/pos-store.ts";
 import {orderDiscountToAppliedLine} from "@/lib/discount-engine/context.ts";
 import {toTargetId} from "@/lib/discount-engine/target-ids.ts";
 import {OrderPaymentServiceCharges} from "@/components/orders/payment/order.payment.service_charges.tsx";
-import {OrderPaymentTip} from "@/components/orders/payment/order.payment.tip.tsx";
 import {faPencil} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {OrderPayment as OrderPaymentModal} from "@/api/model/order_payment.ts";
@@ -57,7 +56,6 @@ enum PaymentOptions {
   Coupon = 'Coupon',
   Tax = 'Tax',
   'Service Charges' = 'Service Charges',
-  Tip = 'Tip',
   Notes = 'Notes'
 }
 
@@ -131,10 +129,6 @@ export const OrderPayment = ({
   const [serviceChargeAmount, setServiceChargeAmount] = useState<number>(0);
   const [serviceChargeType, setServiceChargeType] = useState<DiscountType>(DiscountType.Percent);
 
-  const [tip, setTip] = useState<number>(0);
-  const [tipType, setTipType] = useState<DiscountType>(DiscountType.Percent);
-  const [tipAmount, setTipAmount] = useState<number>(0);
-
   const [notes, setNotes] = useState<string>('');
   const [extraToggles, setExtraToggles] = useState<Record<string, boolean>>({});
   const [isInitialized, setInitialized] = useState(false);
@@ -205,11 +199,9 @@ export const OrderPayment = ({
     serviceCharge,
     serviceChargeType,
     couponAmount,
-    tip,
-    tipType,
     itemsTotal,
     paymentTypeId: selectedPaymentTypeId,
-  }), [tax, order.tax, discountLines, extras, serviceCharge, serviceChargeType, couponAmount, tip, tipType, itemsTotal, selectedPaymentTypeId]);
+  }), [tax, order.tax, discountLines, extras, serviceCharge, serviceChargeType, couponAmount, itemsTotal, selectedPaymentTypeId]);
 
   const paymentTotals = useMemo(
     () => computeOrderPaymentTotals(order, paymentTotalsParams),
@@ -234,14 +226,6 @@ export const OrderPayment = ({
     }
     setTaxAmount(cartTotals.taxAmount);
   }, [cartTotals, discountLines, discountAmount, tax, order.tax]);
-
-  useEffect(() => {
-    if (tipType === DiscountType.Fixed) {
-      setTipAmount(tip);
-    } else {
-      setTipAmount(itemsTotal * tip / 100);
-    }
-  }, [tip, itemsTotal, tipType]);
 
   useEffect(() => {
     if (serviceCharge) {
@@ -310,9 +294,6 @@ export const OrderPayment = ({
     setServiceChargeAmount(order?.service_charge_amount ?? 0);
     setServiceChargeType(order?.service_charge_type === DiscountType.Fixed ? DiscountType.Fixed : DiscountType.Percent);
 
-    setTip(order?.tip ?? 0);
-    setTipAmount(order?.tip_amount ?? 0);
-    setTipType(order?.tip_type === DiscountType.Fixed ? DiscountType.Fixed : DiscountType.Percent);
     setNotes(order?.notes);
 
     if (order?.coupon) {
@@ -564,9 +545,6 @@ export const OrderPayment = ({
     await posStore.saveOrderDraft(orderId, {
       draft_payments: paymentTypes,
       tax: tax?.id ? String(tax.id) : null,
-      tip: tip,
-      tip_amount: tipAmount,
-      tip_type: tipType,
       service_charge: serviceCharge,
       service_charge_amount: serviceChargeAmount,
       service_charge_type: serviceChargeType,
@@ -610,9 +588,6 @@ export const OrderPayment = ({
     taxAmount,
     cartTotals,
     discountLines,
-    tip,
-    tipAmount,
-    tipType,
     serviceCharge,
     serviceChargeAmount,
     serviceChargeType,
@@ -830,27 +805,6 @@ export const OrderPayment = ({
               <div className="text-right">{withCurrency(serviceChargeAmount)}</div>
             </div>
 
-            <div
-              data-testid="payment-row-tip"
-              className={
-              cn(
-                "flex justify-between p-3 cursor-pointer",
-                mode === PaymentOptions.Tip && 'bg-neutral-900 text-warning'
-              )
-            } onClick={() => {
-              protectAction(() => setMode(PaymentOptions.Tip), {
-                module: 'orders.apply_tips',
-                description: 'Apply tips',
-                payload: {
-                  order: order.id.toString()
-                }
-              });
-            }}>
-              <div>{t('tabs.tip', {value: tip, unit: tipType === DiscountType.Percent ? '%' : ''})} <FontAwesomeIcon
-                icon={faPencil}/></div>
-              <div className="text-right">{withCurrency(tipAmount)}</div>
-            </div>
-
             {Object.keys(extras).map(extra => (
               <div
                 className={
@@ -929,9 +883,6 @@ export const OrderPayment = ({
               order={order}
             />
           )}
-          {mode === PaymentOptions.Tip && (
-            <OrderPaymentTip tip={tip} setTip={setTip} tipType={tipType} setTipType={setTipType}/>
-          )}
           {mode === PaymentOptions.Notes && (
             <OrderPaymentNotes setNotes={setNotes} notes={notes}/>
           )}
@@ -950,9 +901,6 @@ export const OrderPayment = ({
             }}
             tax={tax}
             taxAmount={taxAmount}
-            tip={tip}
-            tipAmount={tipAmount}
-            tipType={tipType}
             payments={paymentTypes}
             setPayments={setPaymentTypes}
             itemsTotal={itemsTotal}

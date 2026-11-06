@@ -26,7 +26,6 @@
     "users": "Người dùng",
     "roles": "Vai trò",
     "shifts": "Ca làm",
-    "tipsDefinition": "Quy định tiền tip",
     "accessTab": "Quyền {{title}}",
     "ariaLabel": "Tab quản trị",
     "securityAlerts": "Cảnh báo bảo mật",
@@ -410,7 +409,6 @@
     "weight": "Khối lượng",
     "orderTypesLabel": "Loại đơn",
     "categoriesLabel": "Nhóm món",
-    "tipDistribution": "Phân chia tiền tip",
     "byRoles": "Theo vai trò",
     "byUsers": "Theo người dùng",
     "roleWeight": "Trọng số vai trò",
@@ -725,9 +723,6 @@
       "admin": {
         "label": "Quản trị"
       },
-      "tips": {
-        "label": "Phân chia tiền tip"
-      },
       "inventory": {
         "label": "Tồn kho"
       },
@@ -763,7 +758,6 @@
       "orders.apply_discount": "Áp dụng giảm giá",
       "orders.apply_coupon": "Áp dụng mã giảm giá",
       "orders.apply_service_charges": "Áp dụng phụ phí dịch vụ",
-      "orders.apply_tips": "Áp dụng tiền tip",
       "orders.change_extras": "Thay đổi phụ thu",
       "orders.complete": "Hoàn tất đơn",
       "orders.complete_payment": "Hoàn tất thanh toán đơn",
@@ -785,7 +779,6 @@
       "reports.sales_summary": "Tổng hợp bán hàng",
       "reports.sales_summary_2": "Tổng hợp bán hàng 2",
       "reports.sales_weekly": "Bán hàng theo tuần",
-      "reports.tips": "Tiền tip",
       "reports.advanced_sales": "Bán hàng nâng cao",
       "reports.discount": "Giảm giá",
       "reports.tax": "Thuế",
@@ -930,15 +923,8 @@
       "admin.shifts.create": "Tạo ca làm",
       "admin.shifts.update": "Cập nhật ca làm",
       "admin.shifts.delete": "Xoá ca làm",
-      "admin.tips_definition": "Quy định tiền tip",
-      "admin.tips_definition.create": "Tạo quy định tiền tip",
-      "admin.tips_definition.update": "Cập nhật quy định tiền tip",
-      "admin.tips_definition.delete": "Xoá quy định tiền tip",
       "admin.security_alerts": "Cảnh báo bảo mật",
       "admin.catalog_publish": "Xuất bản danh mục",
-      "tips": "Tiền tip",
-      "tips.calculation": "Tính tiền tip",
-      "tips.payout": "Quản lý chi trả",
       "inventory": "Tồn kho",
       "inventory.current_inventory": "Tồn kho hiện tại",
       "inventory.items": "Nguyên liệu",

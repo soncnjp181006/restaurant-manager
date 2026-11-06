@@ -35,9 +35,8 @@ export const getOrderFigures = (order: Order): OrderFigures => {
 
   const serviceCharge = safeNumber(order.service_charge_amount);
   const tax = getOrderTaxAmount(order);
-  const tips = safeNumber(order.tip_amount);
   const totalRevenue = safeNumber(netSales + serviceCharge + tax);
-  const grandTotal = safeNumber(totalRevenue + tips);
+  const grandTotal = totalRevenue;
 
   const allItems = order.items ?? [];
   const voidedItems = allItems.filter(item => !filteredItems.some(filtered => filtered.id === item.id));
@@ -55,7 +54,6 @@ export const getOrderFigures = (order: Order): OrderFigures => {
     netSales,
     serviceCharge,
     tax,
-    tips,
     totalRevenue,
     grandTotal,
     couponDiscount,

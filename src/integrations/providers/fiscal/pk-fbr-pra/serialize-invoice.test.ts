@@ -20,7 +20,6 @@ const baseOrder = {
   tax_amount: 16,
   discount_amount: 5,
   service_charge_amount: 10,
-  tip_amount: 2,
   items: [
     {
       id: 'order_item:1',

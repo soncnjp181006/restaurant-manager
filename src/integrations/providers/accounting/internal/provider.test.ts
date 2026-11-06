@@ -145,7 +145,6 @@ describe('InternalAccountingProvider', () => {
       subtotal: 100,
       taxAmount: 16,
       discountAmount: 0,
-      tipAmount: 0,
       totalCollected: 116,
       tenders: { cashAmount: 116, cardAmount: 0, otherAmount: 0 },
     };

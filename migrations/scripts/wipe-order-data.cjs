@@ -13,7 +13,7 @@
  *   CONFIRM=1     required to write
  *   DRY_RUN=1     count only
  *   SKIP_SYNC=1   leave gateway sync tables alone
- *   SKIP_CLOSING=1 leave day_closing and tip distribution
+ *   SKIP_CLOSING=1 leave day_closing rows alone
  *
  * After a live wipe, clear each terminal's local WASM store (IndexedDB
  * `restaurant-terminal`) so stale outbox rows / sequence counters / conflicts cannot
@@ -75,8 +75,6 @@ const ORDER_GRAPH_TABLES = [
 ];
 
 const CLOSING_TABLES = [
-  'tip_distribution_user_share',
-  'tip_distribution',
   'day_closing',
 ];
 

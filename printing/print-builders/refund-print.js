@@ -14,7 +14,7 @@ const { mapOrderToRefund } = require('../lib/order-mapping');
 /**
  * Refund print – REFUND RECEIPT. Matches refund.bill.tsx.
  * Expects data: { order: refundOrder, originalOrder }.
- * refundOrder: items (selected to refund), tax_amount, discount_amount, service_charge_amount, tip_amount, extras.
+ * refundOrder: items (selected to refund), tax_amount, discount_amount, service_charge_amount, extras.
  */
 function build(printer, data = {}, config = {}) {
   const refundOrder = data && data.order;
@@ -41,7 +41,6 @@ function build(printer, data = {}, config = {}) {
   const taxLabel = L.tax || 'Tax';
   const discountLabel = L.discount || 'Discount';
   const extraLabel = L.extra || 'Extra';
-  const tipLabel = L.tip || 'Tip';
   const refundTotalLabel = L.refundTotal || 'Refund Total';
 
   return printReceiptHeader(printer, cfg).then(() => {
@@ -73,9 +72,6 @@ function build(printer, data = {}, config = {}) {
     (bill.extras || []).forEach((e) => {
       printLineLeftRight(printer, e.name || extraLabel, formatMoney(e.value, cfg.currencySymbol ?? '$'));
     });
-    if (bill.tipAmount != null && Number(bill.tipAmount) !== 0) {
-      printLineLeftRight(printer, bill.tipLabel || tipLabel, formatMoney(bill.tipAmount, cfg.currencySymbol ?? '$'));
-    }
     printer.drawLine();
 
     printer.style('bu');

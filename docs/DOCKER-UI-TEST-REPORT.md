@@ -79,7 +79,7 @@ Vào `http://localhost:5173` → render "Login", tab PIN/FORM, bàn phím số 1
 
 ### T2 — Đăng nhập PIN `1234` ✅
 
-Nhập PIN bằng click bàn phím → vào thẳng màn hình chính: sidebar đầy đủ (Menu, Orders, Summary, Kitchen, Order Display, Closing, Inventory, Manage, Reports, Tip Dist., Accounts, HR, Integrations, Settings), trạng thái sync, user "(Manager)". App mở dialog "AI dish recipe lookup" (what's-new) — bấm **GOT IT** để đóng, hiển thị đúng.
+Nhập PIN bằng click bàn phím → vào thẳng màn hình chính: sidebar đầy đủ (Menu, Orders, Summary, Kitchen, Order Display, Closing, Inventory, Manage, Reports, Accounts, HR, Integrations, Settings), trạng thái sync, user "(Manager)". App mở dialog "AI dish recipe lookup" (what's-new) — bấm **GOT IT** để đóng, hiển thị đúng.
 
 ![T2 dialog what's-new](../scratch/gui-test-screenshots/t2_whatsnew_dialog.png)
 
@@ -232,7 +232,7 @@ Mọi lỗi ở §5 đã được sửa, kiểm thử bằng unit/integration te
 | PIN | User | Role | Module chính |
 |---|---|---|---|
 | `1234` | Kashif | **order taker** | menu, orders (đầy đủ action), reports (nhiều loại), closing, settings (một phần) |
-| `5555` | Manager | **Master** | gần như toàn bộ (summary, kitchen, order_display, inventory, admin, tips, accounts, hr, integrations, settings.*) |
+| `5555` | Manager | **Master** | gần như toàn bộ (summary, kitchen, order_display, inventory, admin, accounts, hr, integrations, settings.*) |
 | `0000` | Ahmed | order taker | như Kashif |
 | `8888` | cashier | Cashier | menu, orders |
 | `9999` | Inventory / Cashier | Inventory / Cashier | inventory + reports kho / menu + orders |
@@ -251,7 +251,6 @@ Mọi lỗi ở §5 đã được sửa, kiểm thử bằng unit/integration te
 | Order Display | 🔒 khóa | ✅ mở (`/order-display`) |
 | Inventory | 🔒 khóa | ✅ mở (`/inventory`) |
 | Manage (Admin) | 🔒 khóa | ✅ mở (`/admin`) |
-| Tip Dist. | 🔒 khóa | ✅ mở (`/tip-distribution`) |
 | Accounts | 🔒 khóa | ✅ mở (`/accounts`) |
 | HR | 🔒 khóa | ✅ mở (`/hr`) |
 | Integrations | 🔒 khóa | ✅ mở (`/integrations`) |
@@ -284,7 +283,7 @@ Mỗi PIN đều được **đăng nhập thật qua màn hình Login** (PIN pad
 
 | PIN | User (xác minh trên UI) | Role | Đăng nhập | Trang mở tự do | Trang khóa (mở được bằng PIN manager `5555`) |
 |---|---|---|---|---|---|
-| `1234` | **Kashif ali** | order taker | ✅ thẳng (đang có time_entry mở) | menu, orders, closing, reports, settings (một phần) | summary, kitchen, order-display, inventory, admin, tip-dist., accounts, hr, integrations |
+| `1234` | **Kashif ali** | order taker | ✅ thẳng (đang có time_entry mở) | menu, orders, closing, reports, settings (một phần) | summary, kitchen, order-display, inventory, admin, accounts, hr, integrations |
 | `5555` | **Manager 1** | **Master** | ✅ thẳng, không gate | **tất cả 11 mục — không có 🔒** | — |
 | `0000` | **Ahmed Ali** | order taker | ✅ qua gate "Clock In Required" | như Kashif (cùng role) | như Kashif |
 | `8888` | **cashier 2** | Cashier | ✅ qua gate | menu, orders | cả 10 mục quản lý kể cả reports |

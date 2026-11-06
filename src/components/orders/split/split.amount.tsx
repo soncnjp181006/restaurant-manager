@@ -42,7 +42,7 @@ export const SplitAmount = ({
   const itemsTotal = useMemo(() => calculateOrderTotal(order), [order]);
   const orderTotal = useMemo(() => {
     const extrasTotal = order?.extras ? order?.extras?.reduce((prev, item) => prev + Number(item?.value || 0), 0) : 0;
-    return itemsTotal + extrasTotal + Number(order?.tax_amount ?? 0) - Number(order?.discount_amount ?? 0) + Number(order.service_charge_amount ?? 0) + Number(order?.tip_amount ?? 0);
+    return itemsTotal + extrasTotal + Number(order?.tax_amount ?? 0) - Number(order?.discount_amount ?? 0) + Number(order.service_charge_amount ?? 0);
   }, [itemsTotal, order]);
 
   const allItems = useMemo(() => getOrderFilteredItems(order), [order]);
@@ -197,7 +197,6 @@ export const SplitAmount = ({
         const splitTaxAmount = order.tax_amount ? Number(order.tax_amount) * splitRatio : 0;
         const splitDiscountAmount = order.discount_amount ? Number(order.discount_amount) * splitRatio : 0;
         const splitServiceChargeAmount = order.service_charge_amount ? Number(order.service_charge_amount) * splitRatio : 0;
-        const splitTipAmount = order.tip_amount ? Number(order.tip_amount) * splitRatio : 0;
 
         // Clone every line with a pro-rata price into the child order.
         const newItems = allItems.map((originalItem) => {
@@ -233,7 +232,6 @@ export const SplitAmount = ({
             tax_amount: splitTaxAmount,
             discount_amount: splitDiscountAmount,
             service_charge_amount: splitServiceChargeAmount,
-            tip_amount: splitTipAmount,
           },
         });
         extrasByGroup.push(
