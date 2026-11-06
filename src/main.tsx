@@ -1,5 +1,7 @@
 import { i18nReady } from '@/lib/i18n.ts'
 import { migrateLegacyStorage } from '@/lib/legacy-storage.ts'
+import '@/lib/toast-safety.ts'
+import ErrorBoundary from '@/components/common/error-boundary.tsx'
 import { registerSW } from 'virtual:pwa-register'
 
 registerSW({ immediate: true })
@@ -16,4 +18,8 @@ import ReactDOM from 'react-dom/client'
 
 // StrictMode double-mounts effects and can tear down the Surreal WS while React
 // state still reports connected (especially with the auth gateway relay).
-ReactDOM.createRoot(document.getElementById('root')!).render(<App />)
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+)

@@ -15,8 +15,11 @@ import {safeNumber} from "@/lib/utils.ts";
 export const QR_ORDER_TAG = "QR Order";
 export const TEST_PAYMENT_TAG = "Test Payment";
 
-/** SQL filter fragments for `order` rows. */
-export const EXCLUDE_QR_ORDERS_SQL = `AND '${QR_ORDER_TAG}' NOTINSIDE (tags ?? [])`;
+/** SQL filter fragments for `order` rows.
+ * `NOTINSIDE` is SurrealQL-only and the MySQL data service cannot parse it, so
+ * the exclusion is written with `CONTAINS` — same result, and `(tags ?? [])`
+ * keeps it true for orders that carry no tags at all. */
+export const EXCLUDE_QR_ORDERS_SQL = `AND NOT ((tags ?? []) CONTAINS '${QR_ORDER_TAG}')`;
 export const ONLY_QR_ORDERS_SQL = `AND (tags ?? []) CONTAINS '${QR_ORDER_TAG}'`;
 
 export const isQrOrder = (tags: unknown): boolean =>

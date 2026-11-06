@@ -214,9 +214,13 @@ export const DishForm = ({
   }, [open]);
 
   const getModifierGroups = async (id) => {
+    // The id must be a quoted literal: the data service rejects a bare
+    // `menu_item:xxx` as `Unsupported expression node 'rid'`, which used to
+    // leave this form empty on edit — and the save then deleted every edge it
+    // could not show (modifier groups silently lost).
     const [record]: any = await db.query(`SELECT *
                                           from ${Tables.dish_modifier_groups}
-                                          where in = ${id} fetch out, out.modifiers, out.modifiers.modifier`);
+                                          where in = '${id}' fetch out, out.modifiers, out.modifiers.modifier`);
 
 
     replace(record.map(item => ({
@@ -414,9 +418,12 @@ export const DishForm = ({
             });
           }
 
-          if (formData.modifier_groups) {
-            // delete graph edges and create again
-            await db.query(`DELETE ${menuId}->${Tables.dish_modifier_groups} where in = ${menuId}`);
+          if (Array.isArray(formData.modifier_groups)) {
+            // delete graph edges and create again. The edge table is addressed
+            // directly (`WHERE in = $dish`): the data service cannot parse the
+            // `record->edge` form as a DELETE target, and an empty array still
+            // has to clear the edges a user just removed.
+            await db.query(`DELETE ${Tables.dish_modifier_groups} WHERE in = $dish`, {dish: menuId});
 
             for (const modifierGroup of formData.modifier_groups) {
               await db.query(`RELATE ${menuId}->${Tables.dish_modifier_groups}->${modifierGroup.modifier_group.value} set has_required_modifiers = $has_required_modifiers, should_auto_open = $should_auto_open, required_modifiers = $required_modifiers, should_auto_select = $should_auto_select, priority = $priority`, {

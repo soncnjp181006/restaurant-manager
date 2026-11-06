@@ -288,7 +288,7 @@ export const DishBulkForm = ({ open, onClose, data }: Props) => {
         }
 
         if (values.replace_modifier_groups) {
-          await db.query(`DELETE ${dish.id}->${Tables.dish_modifier_groups} where in = ${dish.id}`);
+          await db.query(`DELETE ${Tables.dish_modifier_groups} WHERE in = $dish`, {dish: dish.id});
 
           for (const modifierGroup of values.modifier_groups) {
             await db.query(
