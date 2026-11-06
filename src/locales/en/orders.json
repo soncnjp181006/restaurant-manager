@@ -36,7 +36,8 @@
     "cancelMerging": "Cancel merging"
   },
   "header": {
-    "orderNumber": "Order# {{invoice}} / {{orderType}}"
+    "orderNumber": "Order# {{invoice}} / {{orderType}}",
+    "orderNumberNoType": "Order# {{invoice}}"
   },
   "status": {
     "inProgress": "In Progress",

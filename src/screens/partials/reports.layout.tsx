@@ -1,7 +1,9 @@
 import { ReactNode, useRef, useState } from "react";
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from "react-router";
 import { Button } from "@/components/common/input/button.tsx";
 import {
+  faArrowLeft,
   faPrint,
   faFile,
   faRefresh,
@@ -9,6 +11,7 @@ import {
   faChevronRight, faImage,
 } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils.ts";
+import { REPORTS } from "@/routes/restaurant-manager.ts";
 import {
   exportElementAsImage,
   exportElementAsPdf,
@@ -69,8 +72,20 @@ export const ReportsLayout = ({
 }: ReportsLayoutProps) => {
   const { t } = useTranslation('reports');
   const { t: tNav } = useTranslation('navigation');
+  const { t: tCommon } = useTranslation('common');
+  const navigate = useNavigate();
+  const location = useLocation();
   const reportRef = useRef<HTMLDivElement>(null);
   const [generatedAt] = useState(DateTime.now().toFormat(DATE_TIME_FORMAT));
+
+  // Opened from the app → go back in history; opened cold (direct link) → reports index.
+  const handleBack = () => {
+    if (location.key !== 'default') {
+      navigate(-1);
+      return;
+    }
+    navigate(REPORTS);
+  };
 
   const handlePrint = () => {
     if (onPrint) {
@@ -144,6 +159,14 @@ export const ReportsLayout = ({
       {/* Action Buttons */}
       <div className="flex items-center justify-between gap-3 p-4 bg-surface-elevated shadow-sm border-b print:hidden">
         <div className="flex items-center gap-2">
+          <Button
+            variant="primary"
+            onClick={handleBack}
+            icon={faArrowLeft}
+            size="sm"
+          >
+            {tCommon('actions.back')}
+          </Button>
           <Button
             variant="primary"
             onClick={handlePrint}

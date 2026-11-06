@@ -117,10 +117,6 @@ export interface AppPageInterface {
   customPaletteBase?: { canvas: string; surface: string; foreground: string; primary: string }
   /** @deprecated Prefer customPrimary; kept for older device storage. */
   customPalette?: BrandPalette
-  /** Last What's New release date dismissed on this device (YYYY-MM-DD). */
-  whatsNewDismissedDate?: string
-  /** @deprecated Prefer whatsNewDismissedDate */
-  whatsNewDismissedVersion?: string
 
   menuConfig?: MenuConfigInterface
 }
@@ -149,9 +145,6 @@ export const appPage = atomWithStorage<AppPageInterface>(
   createJSONStorage<AppPageInterface>(),
   {getOnInit: true}
 );
-
-/** Increment / set true from Settings to force-open the What's New dialog. */
-export const whatsNewOpenRequest = atom(false);
 
 /** Terminal-scoped printer routing (this browser). Delivery stays user/global DB. */
 export interface SystemPrinterSettings {

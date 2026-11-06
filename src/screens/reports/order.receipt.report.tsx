@@ -1,6 +1,7 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {faFile, faImage, faPrint} from "@fortawesome/free-solid-svg-icons";
+import {useLocation, useNavigate} from "react-router";
+import {faArrowLeft, faFile, faImage, faPrint} from "@fortawesome/free-solid-svg-icons";
 import {useDB} from "@/api/db/db.ts";
 import type {Order} from "@/api/model/order.ts";
 import type {GetOrderDetailOptions} from "@/api/reports/operations/order-detail.ts";
@@ -19,6 +20,7 @@ import {
 
 import {useReportBranchScope} from "@/hooks/useReportBranchScope.ts";
 import {buildBranchInsideCondition} from "@/api/reports/shared/query.ts";
+import {REPORTS} from "@/routes/restaurant-manager.ts";
 
 const parseFilters = () => {
   const params = new URLSearchParams(window.location.search);
@@ -70,6 +72,9 @@ const hasLookup = (options: GetOrderDetailOptions) =>
 export const OrderReceiptReport = () => {
   const {t} = useTranslation("reports");
   const {t: tNav} = useTranslation("navigation");
+  const {t: tCommon} = useTranslation("common");
+  const navigate = useNavigate();
+  const location = useLocation();
   const db = useDB();
   const branchScope = useReportBranchScope();
   const queryRef = useRef(db.query);
@@ -158,6 +163,15 @@ export const OrderReceiptReport = () => {
 
   const baseName = `order-receipt-${invoiceLabel || "order"}`;
 
+  // Opened from the app → go back in history; opened cold (direct link) → reports index.
+  const handleBack = () => {
+    if (location.key !== "default") {
+      navigate(-1);
+      return;
+    }
+    navigate(REPORTS);
+  };
+
   const handleExportPdf = async () => {
     setExporting(true);
     try {
@@ -204,6 +218,14 @@ export const OrderReceiptReport = () => {
 
       <div className="mx-auto max-w-xl flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2 print:hidden sticky top-0 z-10 bg-surface py-2">
+          <Button
+            variant="primary"
+            size="sm"
+            icon={faArrowLeft}
+            onClick={handleBack}
+          >
+            {tCommon("actions.back")}
+          </Button>
           <Button
             variant="primary"
             size="sm"

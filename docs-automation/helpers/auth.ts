@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 import { docsGuideLangCode } from './paths.ts';
 
 export function docsBaseURL(): string {
-  return process.env.DOCS_BASE_URL || 'http://localhost:5173';
+  return process.env.DOCS_BASE_URL || 'http://localhost:5174';
 }
 
 export function docsLoginPin(): string {

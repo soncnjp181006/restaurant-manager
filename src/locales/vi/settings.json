@@ -235,16 +235,7 @@
     "updated": "Đã cập nhật cài đặt tồn kho",
     "save": "Lưu",
     "saveDescription": "Lưu cài đặt tồn kho"
-  },
-  "whatsNew": {
-    "title": "Có gì mới",
-    "description": "Xem ghi chú phát hành và các bản cập nhật gần đây của ứng dụng này.",
-    "open": "Mở mục Có gì mới",
-    "dismiss": "Đã hiểu",
-    "dialogTitle": "Có gì mới",
-    "previousReleases": "Các bản cập nhật trước",
-    "dateLabel": "Cập nhật {{date}}"
-  },
+  },
   "sessionSecurity": {
     "title": "Bảo mật phiên",
     "description": "Tự động khóa hoặc đăng xuất người dùng này sau một khoảng thời gian không hoạt động. Hãy chọn một hành động.",

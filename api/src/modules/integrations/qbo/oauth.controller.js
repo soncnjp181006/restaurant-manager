@@ -73,7 +73,7 @@ async function handleCallback(req, res) {
 
     // Redirect back to the frontend app with realmId so the UI can pick it up
     const redirectUrl = result.redirectPath || '/integrations';
-    const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
+    const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5174';
     const baseUrl = redirectUrl.startsWith('http') ? redirectUrl : `${frontendOrigin}${redirectUrl}`;
     const params = new URLSearchParams();
     params.set('tenantId', realmId);
@@ -86,7 +86,7 @@ async function handleCallback(req, res) {
       statusCode: err.statusCode,
       category: err.category,
     });
-    const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
+    const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5174';
     res.redirect(`${frontendOrigin}/integrations?error=oauth_failed&detail=${encodeURIComponent(err.message?.slice(0, 100) ?? 'unknown')}`);
   }
 }

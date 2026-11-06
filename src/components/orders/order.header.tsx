@@ -36,7 +36,11 @@ export const OrderHeader = ({
         )}
 
         <div className="flex flex-col items-start gap-1">
-          <span className="font-bold">{t('header.orderNumber', {invoice: getInvoiceNumber(order), orderType: order?.order_type?.name})}</span>
+          <span className="font-bold">
+            {order?.order_type?.name
+              ? t('header.orderNumber', {invoice: getInvoiceNumber(order), orderType: order.order_type.name})
+              : t('header.orderNumberNoType', {invoice: getInvoiceNumber(order)})}
+          </span>
           <span className={
             cn(
               "uppercase p-1 px-3 rounded-lg text-sm font-bold flex-grow-0 flex-shrink",

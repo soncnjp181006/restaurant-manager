@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const baseURL = process.env.DOCS_BASE_URL || 'http://localhost:5173';
+const baseURL = process.env.DOCS_BASE_URL || 'http://localhost:5174';
 
 export default defineConfig({
   testDir: path.join(__dirname, 'stories'),

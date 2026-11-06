@@ -61,7 +61,7 @@ win. All secrets remain server-side; do not add them to the frontend `.env`.
 |----------|---------|
 | `API_HOST` / `API_PORT` | Bind address (default `0.0.0.0:3140`) |
 | `API_LOG_LEVEL` | `debug`, `info`, `warn`, `error` |
-| `API_ALLOWED_ORIGINS` | Comma-separated CORS allow-list (e.g. `http://localhost:5173`) |
+| `API_ALLOWED_ORIGINS` | Comma-separated CORS allow-list (e.g. `http://localhost:5174`) |
 | `AI_PROFILES` | Comma-separated profile names you choose (e.g. `cheap,strong,vision`) |
 | `AI_DEFAULT_PROFILE` | Fallback profile when a task is unmapped |
 | `AI_TASK_<TASK>` | Map a task to a profile (`REPORTING`, `ANALYSIS`, `FORECAST`, `OCR`, …) |

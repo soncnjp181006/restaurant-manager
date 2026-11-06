@@ -14,7 +14,7 @@ services:
     # docker `environment:` overrides `env_file`, so gateway JWT vars are env_file-only.
     # Dev mode with Bun + Vite, binding to all interfaces.
     # Assumes you've already run `bun install` on the host.
-    command: sh -c "bun run dev -- --host 0.0.0.0 --port 5173"
+    command: sh -c "bun run dev -- --host 0.0.0.0 --port 5174"
     environment:
       # Server-side Vite proxy target for the customer QR page. The browser
       # still uses VITE_GATEWAY_URL (http://localhost:3142) from .env.local;
@@ -22,7 +22,7 @@ services:
       # "localhost" is the app itself — the gateway is reachable as "gateway".
       - SELF_ORDER_GATEWAY_URL=http://gateway:3142
     ports:
-      - "5173:5173"
+      - "5174:5174"
     depends_on:
       - dbproxy
       - printer
@@ -109,7 +109,7 @@ services:
       - PRINT_PORT=3132
       - PRINT_HOST=0.0.0.0
       - TZ=${VITE_APP_TIMEZONE:-UTC}
-      - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5174,http://127.0.0.1:5174}
     command: sh -c "npm install && node server.js"
     ports:
       - "3132:3132"
@@ -142,7 +142,7 @@ services:
       - SURREAL_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
       - SURREAL_PASS=${SURREAL_PASS:?Set SURREAL_PASS in .env}
       - PAYMENT_LOG_LEVEL=debug
-      - PAYMENT_ALLOWED_ORIGINS=${PAYMENT_ALLOWED_ORIGINS:-http://localhost:5173}
+      - PAYMENT_ALLOWED_ORIGINS=${PAYMENT_ALLOWED_ORIGINS:-http://localhost:5174}
     command: sh -c "npm install && node server.js"
     ports:
       - "3134:3134"
@@ -206,7 +206,7 @@ services:
       # behaves exactly as before (the store alone). Set them, or start the
       # `analytics` profile below, to also copy every event into MySQL.
       - TRACKING_MYSQL_URL=${TRACKING_MYSQL_URL:-}
-      - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5174,http://127.0.0.1:5174}
     command: sh -c "npm install && npm start"
     ports:
       - "3138:3138"
@@ -235,7 +235,7 @@ services:
       - API_PORT=3140
       - API_HOST=0.0.0.0
       - API_LOG_LEVEL=info
-      - API_ALLOWED_ORIGINS=${API_ALLOWED_ORIGINS:-http://localhost:5173}
+      - API_ALLOWED_ORIGINS=${API_ALLOWED_ORIGINS:-http://localhost:5174}
       - AI_ENABLED=${AI_ENABLED:-false}
       - AI_DAILY_LIMIT=${AI_DAILY_LIMIT:-}
       - AI_MONTHLY_LIMIT=${AI_MONTHLY_LIMIT:-}
@@ -264,7 +264,7 @@ services:
       - GATEWAY_HOST=0.0.0.0
       - GATEWAY_PORT=3142
       - GATEWAY_JWT_TTL=${GATEWAY_JWT_TTL:-12h}
-      - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5174,http://127.0.0.1:5174}
       - SURREAL_URL=ws://dbproxy:8000/rpc
       - SURREAL_NS=restaurant_manager
       - SURREAL_DB=restaurant_manager

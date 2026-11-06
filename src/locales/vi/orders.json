@@ -36,7 +36,8 @@
     "cancelMerging": "Huỷ việc gộp"
   },
   "header": {
-    "orderNumber": "Đơn hàng #{{invoice}} / {{orderType}}"
+    "orderNumber": "Đơn hàng #{{invoice}} / {{orderType}}",
+    "orderNumberNoType": "Đơn hàng #{{invoice}}"
   },
   "status": {
     "inProgress": "Đang thực hiện",

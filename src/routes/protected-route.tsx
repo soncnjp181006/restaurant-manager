@@ -3,7 +3,6 @@ import {Navigate, Outlet, useLocation} from "react-router";
 import {useEffect, useState} from "react";
 import {appPage} from "@/store/jotai.ts";
 import {LOGIN} from "@/routes/restaurant-manager.ts";
-import {WhatsNewDialog} from "@/components/whats-new/whats-new.dialog.tsx";
 import {clearSessionTokens, fetchAuthStatus, getSessionToken, isGatewayAuthEnabled} from "@/lib/session.ts";
 import {useHydrateCurrencySymbol} from "@/hooks/useCurrencySymbol.ts";
 
@@ -67,9 +66,6 @@ export const ProtectedRoute = () => {
   }
 
   return (
-    <>
-      <Outlet/>
-      <WhatsNewDialog/>
-    </>
+    <Outlet/>
   );
 };

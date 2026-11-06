@@ -153,7 +153,7 @@ Guide titles/intros: `locales/{lang}/guides.json`. Chapter body: `locales/{lang}
 ## Prerequisites
 
 1. App stack running (SurrealDB + frontend).
-2. Frontend: `npm run dev` (default `http://localhost:5173`).
+2. Frontend: `npm run dev` (default `http://localhost:5174`).
 3. One-time Chromium: `npx playwright install chromium`
 4. Super-admin PIN (`DOCS_LOGIN_PIN`, often `5555`).
 5. **Demo data required for Menu/Cart/Payment screenshots** (otherwise capture fails on purpose):
@@ -170,7 +170,7 @@ Guide titles/intros: `locales/{lang}/guides.json`. Chapter body: `locales/{lang}
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `DOCS_BASE_URL` | `http://localhost:5173` | App origin |
+| `DOCS_BASE_URL` | `http://localhost:5174` | App origin |
 | `DOCS_LOGIN_PIN` | `5555` | PIN for authenticated shots |
 | `DOCS_USERNAME` / `DOCS_PASSWORD` | _(empty)_ | Optional form login credentials |
 | `DOCS_GUIDE_LANG` | _(all langs)_ | Single language for capture (e.g. `es`, `pt-BR`) |

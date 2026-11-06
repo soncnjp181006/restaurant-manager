@@ -16,5 +16,5 @@ services:
       - TZ=${PRINT_TIMEZONE:-${TZ:-UTC}}
       - PRINT_TIMEZONE=${PRINT_TIMEZONE:-${TZ:-UTC}}
       - GATEWAY_JWT_SECRET=${GATEWAY_JWT_SECRET:?Set a long random value in .env}
-      - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5173}
+      - GATEWAY_ALLOWED_ORIGINS=${GATEWAY_ALLOWED_ORIGINS:-http://localhost:5174}
     restart: unless-stopped

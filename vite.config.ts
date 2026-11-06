@@ -21,6 +21,9 @@ export default defineConfig(({ mode }) => {
       ...buildModuleDefines,
     },
     server: {
+      // 5173 is often taken by other dev servers on this machine; keep a stable port.
+      port: 5174,
+      strictPort: true,
       proxy: {
         '/self-order': { target: gatewayTarget, changeOrigin: true },
       },
@@ -29,6 +32,7 @@ export default defineConfig(({ mode }) => {
       allowedHosts: []
     },
     preview: {
+      port: 5174,
       proxy: {
         '/self-order': { target: gatewayTarget, changeOrigin: true },
       },

@@ -11,7 +11,7 @@ services:
     volumes:
       - .:/app
       - app-node_modules:/app/node_modules
-    command: sh -c "bun install && bun run dev -- --host 0.0.0.0 --port 5173"
+    command: sh -c "bun install && bun run dev -- --host 0.0.0.0 --port 5174"
 
 volumes:
   app-node_modules:

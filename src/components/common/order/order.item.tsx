@@ -21,13 +21,17 @@ export const OrderItemName = ({
   const { enabled: showInclusive } = useShowInclusivePrices();
   const unitPrice = getOrderItemDisplayUnitPrice(item, showInclusive);
   const lineTotal = unitPrice * (item.quantity || 1);
+  // Order lines can reference a catalog item the server does not have (stale
+  // terminal catalog / deleted dish). Render a placeholder instead of crashing
+  // the whole receipt/report on a missing FETCH joined record.
+  const itemName = item.item?.name || "Unknown item";
 
   return (
     <div className="hover:bg-surface dark:bg-neutral-700 flex-1">
       <div className="pl-x flex text-lg gap-1" style={{
-        '--padding': (item.level * 0.875) + 'rem'
+        '--padding': ((item.level ?? 0) * 0.875) + 'rem'
       } as any}>
-        <span className="flex-1">{item.item.name}</span>
+        <span className="flex-1">{itemName}</span>
         <div className="flex gap-1 text-right">
           {showQuantity && <span className="flex-0 w-[50px]">{formatNumber(item.quantity)}</span>}
           {showPrice && <span className="flex-0 w-[70px]">{formatNumber(unitPrice)}</span>}
@@ -68,7 +72,7 @@ export const OrderItemModifiers = ({
 }) => {
   return (
     <div key={modifier.id} className="flex flex-col kitchen-order-modifier-group">
-      {showGroups && <strong>{modifier.out.name}</strong>}
+      {showGroups && <strong>{modifier.out?.name || "Modifiers"}</strong>}
       {modifier.selectedModifiers.map(selectedModifier => {
         const price = parentItem
           ? getOrderItemModifierDisplayPrice(selectedModifier.price, parentItem, showInclusive)
@@ -77,7 +81,7 @@ export const OrderItemModifiers = ({
         return (
           <div key={selectedModifier.id} className="pl-3 text-sm">
             <div className="flex">
-              <span className="flex-1">{selectedModifier.dish.name}</span>
+              <span className="flex-1">{selectedModifier.dish?.name || "Unknown item"}</span>
               {showPrice && <span className="flex-0 w-[70px] text-right">{formatNumber(price)}</span>}
             </div>
 
