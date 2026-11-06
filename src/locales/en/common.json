@@ -139,7 +139,9 @@
   },
   "toast": {
     "printFailed": "Print failed",
-    "printError": "Error in printing"
+    "printError": "Error in printing",
+    "printSent": "Print job sent to the printer",
+    "noPrinterConfigured": "No printer configured for this print type"
   },
   "notFound": {
     "title": "Page not found",

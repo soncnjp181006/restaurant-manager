@@ -312,18 +312,22 @@ export const calculateCartTotalsWithTaxes = (
   cart: MenuItem[],
   taxes: Tax[],
 ): CartTaxPreviewTotal[] => {
-  const active = (taxes ?? []).filter((tax): tax is Tax => Boolean(tax));
   const base = calculateCartItemsBaseTotal(cart);
 
-  return active.map(tax => {
-    const rate = safeNumber(tax.rate);
-    const taxAmount = roundTax((base * rate) / 100);
-    return {
-      tax,
-      taxAmount,
-      total: roundTax(base + taxAmount),
-    };
-  });
+  return (taxes ?? [])
+    .filter((tax): tax is Tax => Boolean(tax))
+    // A 0%-rate tax row only adds noise ("Tổng cộng gồm VAT 0%"); the cart
+    // total already equals the base when nothing is taxed.
+    .filter(tax => safeNumber(tax.rate) > 0)
+    .map(tax => {
+      const rate = safeNumber(tax.rate);
+      const taxAmount = roundTax((base * rate) / 100);
+      return {
+        tax,
+        taxAmount,
+        total: roundTax(base + taxAmount),
+      };
+    });
 };
 
 /**

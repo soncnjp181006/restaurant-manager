@@ -673,15 +673,20 @@ export const Closing = () => {
         } : {}),
       };
 
+      let closingId = existingClosing?.id ? String(existingClosing.id) : undefined;
       if (existingClosing?.id) {
         await db.update(existingClosing.id, closingData);
       } else {
-        await db.create(Tables.closings, closingData);
+        // Capture the generated record id — the insert result used to be
+        // discarded, so entityAfterWrite received the bare table name.
+        const created = await db.create(Tables.closings, closingData);
+        const createdId = Array.isArray(created) ? created[0]?.id : (created as {id?: unknown} | null)?.id;
+        if (createdId) closingId = String(createdId);
       }
 
-      const closingId = existingClosing?.id
-        ? String(existingClosing.id)
-        : Tables.closings;
+      if (!closingId) {
+        throw new Error("day_closing: no record id after create");
+      }
 
       await entityAfterWrite({
         domain: 'ops',

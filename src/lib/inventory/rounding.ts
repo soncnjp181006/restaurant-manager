@@ -47,6 +47,14 @@ export const withInventoryCurrency = (
   return withCurrency(amount, INVENTORY_DECIMAL_PLACES);
 };
 
+/**
+ * Format inventory currency for on-screen display at the POS/UI precision —
+ * "₫20,000.0000" read as a bug on a VND terminal. Inventory math keeps its
+ * own precision; only the rendering trims.
+ */
+export const withInventoryCurrencyUi = (amount: string | number | undefined): string =>
+  withCurrency(amount);
+
 /** Format a plain inventory quantity/cost number. */
 export const formatInventoryNumber = (amount: string | number): string =>
   formatNumber(amount, INVENTORY_DECIMAL_PLACES);

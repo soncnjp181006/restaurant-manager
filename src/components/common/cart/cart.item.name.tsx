@@ -1,5 +1,5 @@
 import {MenuItem} from "@/api/model/cart_item.ts";
-import {cn, formatNumber} from "@/lib/utils.ts";
+import {cn, withCurrency} from "@/lib/utils.ts";
 import React from "react";
 import {useAtom} from "jotai";
 import {appPage} from "@/store/jotai.ts";
@@ -24,12 +24,13 @@ export const CartItemName = ({ item, mainItem }: Omit<Props, "index">) => {
         <span className="text-ellipsis line-clamp-1">{item.dish.name}</span>
         <div className={
           cn(
-            showTotalInCart ? "grid grid-cols-2 gap-2 w-[70px] text-right" : "grid grid-cols-1 w-[40px] text-right"
+            // Sized for grouped currency ("₫45,000") — the old 40px clipped it.
+            showTotalInCart ? "grid grid-cols-2 gap-2 w-[110px] text-right" : "grid grid-cols-1 w-[64px] text-right"
           )
         }>
-          <span>{formatNumber(item.price)}</span>
+          <span>{withCurrency(item.price)}</span>
           {showTotalInCart && (
-            <span>{formatNumber(item.price * mainItem.quantity)}</span>
+            <span>{withCurrency(item.price * mainItem.quantity)}</span>
           )}
         </div>
       </div>

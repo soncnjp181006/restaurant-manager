@@ -393,32 +393,37 @@ export const getOrderRounding = (order: OrderModel): number => {
   return safeNumber(getOrderPaymentTotals(order).amountCollected - amountDue);
 };
 
+/**
+ * Keys are fully namespaced ('orders:…') so the helper translates correctly
+ * no matter which namespace the caller's `t` defaults to — the order-display
+ * screen used to render the raw key "status.inProgress" for this reason.
+ */
 export const ORDER_STATUS_I18N_KEY: Partial<Record<OrderStatus, string>> = {
-  [OrderStatus['In Progress']]: 'status.inProgress',
-  [OrderStatus.Paid]: 'status.paid',
-  [OrderStatus.Cancelled]: 'status.cancelled',
-  [OrderStatus.Spilt]: 'status.spilt',
-  [OrderStatus.Merged]: 'status.merged',
-  [OrderStatus.Refunded]: 'status.refunded',
-  [OrderStatus.Pending]: 'status.pending',
+  [OrderStatus['In Progress']]: 'orders:status.inProgress',
+  [OrderStatus.Paid]: 'orders:status.paid',
+  [OrderStatus.Cancelled]: 'orders:status.cancelled',
+  [OrderStatus.Spilt]: 'orders:status.spilt',
+  [OrderStatus.Merged]: 'orders:status.merged',
+  [OrderStatus.Refunded]: 'orders:status.refunded',
+  [OrderStatus.Pending]: 'orders:status.pending',
 };
 
-export const translateOrderStatus = (t: TFunction<'orders'>, status: string) => {
+export const translateOrderStatus = (t: (key: string) => string, status: string) => {
   const key = ORDER_STATUS_I18N_KEY[status as OrderStatus];
   return key ? t(key) : status;
 };
 
 export const VOID_REASON_I18N_KEY: Record<OrderVoidReason, string> = {
-  [OrderVoidReason.FOHNotMade]: 'voidReasons.fohNotMade',
-  [OrderVoidReason.BOHNotMade]: 'voidReasons.bohNotMade',
-  [OrderVoidReason.GuestNotMade]: 'voidReasons.guestNotMade',
-  [OrderVoidReason.FOHMade]: 'voidReasons.fohMade',
-  [OrderVoidReason.BOHMade]: 'voidReasons.bohMade',
-  [OrderVoidReason.GuestMade]: 'voidReasons.guestMade',
-  [OrderVoidReason.PunchByMistake]: 'voidReasons.punchByMistake',
-  [OrderVoidReason.Testing]: 'voidReasons.testing',
+  [OrderVoidReason.FOHNotMade]: 'orders:voidReasons.fohNotMade',
+  [OrderVoidReason.BOHNotMade]: 'orders:voidReasons.bohNotMade',
+  [OrderVoidReason.GuestNotMade]: 'orders:voidReasons.guestNotMade',
+  [OrderVoidReason.FOHMade]: 'orders:voidReasons.fohMade',
+  [OrderVoidReason.BOHMade]: 'orders:voidReasons.bohMade',
+  [OrderVoidReason.GuestMade]: 'orders:voidReasons.guestMade',
+  [OrderVoidReason.PunchByMistake]: 'orders:voidReasons.punchByMistake',
+  [OrderVoidReason.Testing]: 'orders:voidReasons.testing',
 };
 
-export const translateVoidReason = (t: TFunction<'orders'>, reason: OrderVoidReason) => {
+export const translateVoidReason = (t: (key: string) => string, reason: OrderVoidReason) => {
   return t(VOID_REASON_I18N_KEY[reason]);
 };

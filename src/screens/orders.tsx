@@ -11,7 +11,7 @@ import {User} from "@/api/model/user.ts";
 import {useAtom} from "jotai";
 import {appAlert, appPage, appSettings, appState, AppStateInterface} from "@/store/jotai.ts";
 import {DatePicker} from "@/components/common/antd/datepicker.tsx";
-import {getLocalTimeZone, today} from '@internationalized/date';
+import {getToday} from "@/utils/date.ts";
 import {DateValue} from "react-aria-components";
 import {Button} from "@/components/common/input/button.tsx";
 import {faBars, faChair, faMoneyBillWave, faTableColumns} from "@fortawesome/free-solid-svg-icons";
@@ -100,7 +100,7 @@ export const Orders = () => {
 
   const [state, setState] = useAtom(appState);
   const [settings] = useAtom(appSettings);
-  const [date, setDate] = useState<DateValue>(today(getLocalTimeZone()));
+  const [date, setDate] = useState<DateValue>(getToday());
   const [view, setView] = useState<'row' | 'column'>('column');
   const selectedOrderFilters = useMemo(() => ({
     users: state?.ordersFilters?.users ?? [],
@@ -473,7 +473,7 @@ export const Orders = () => {
             />
           </div>
           <div>
-            <DatePicker value={date} onChange={setDate} maxValue={today(getLocalTimeZone())} isClearable/>
+            <DatePicker value={date} onChange={setDate} maxValue={getToday()} isClearable/>
           </div>
           <div className="input-group flex-1 justify-end" data-testid="orders-toolbar">
             <Button

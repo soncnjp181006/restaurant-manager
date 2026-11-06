@@ -1,7 +1,7 @@
 import {REPORTS_CASH_CLOSING} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {DatePicker} from "@/components/common/antd/datepicker.tsx";
-import {getLocalTimeZone, today} from "@internationalized/date";
+import {getToday} from "@/utils/date.ts";
 import {DateValue} from "react-aria-components";
 import {useState} from "react";
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ type ShiftOption = { label: string; value: string };
 
 export const CashClosingFilter = () => {
   const { t } = useTranslation('reports');
-  const [selectedDate, setSelectedDate] = useState<DateValue | null>(today(getLocalTimeZone()));
+  const [selectedDate, setSelectedDate] = useState<DateValue | null>(getToday());
   const [selectedShift, setSelectedShift] = useState<ShiftOption | null>(null);
   const { data: shiftsData, isLoading } = useApi<SettingsData<Shift>>(Tables.shifts, ["deleted_at = none"], ["name asc"], 0, 9999);
 
@@ -32,7 +32,7 @@ export const CashClosingFilter = () => {
           name="date"
           value={selectedDate}
           onChange={setSelectedDate}
-          maxValue={today(getLocalTimeZone())}
+          maxValue={getToday()}
           isClearable
         />
       </div>

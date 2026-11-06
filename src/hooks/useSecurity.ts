@@ -7,6 +7,7 @@ import {appPage} from "@/store/jotai.ts";
 import {useDB} from "@/api/db/db.ts";
 import {getTrackingUserFields, postTracking, withOrderTrackingPayload} from "@/lib/tracking.service.ts";
 import {moduleMatchCandidates, normalizeModules, getUserModules, getProtectModulesSource} from "@/lib/access.rules.ts";
+import {grantModuleElevation} from "@/lib/module-elevation.ts";
 
 export interface ProtectedActionOptions {
   description: string;
@@ -95,6 +96,9 @@ export const useSecurity = () => {
       alternateModule,
       excludeUserId,
       onConfirm: (manager?: SecurityManager, usedAuthType?: AuthType) => {
+        // A manager-approved unlock grants the module for this session so a
+        // route-level permission guard doesn't bounce the user straight off it.
+        grantModuleElevation(module);
         action();
         onSuccess?.(manager);
         void trackProtectActionSuccess(options, usedAuthType ?? authType, manager);

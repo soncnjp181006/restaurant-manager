@@ -18,6 +18,7 @@ import { useDatabase } from "@/hooks/useDatabase.ts";
 import {buildOrderItemPayload} from "@/lib/order-item-pricing.ts";
 import {dispatchPrint} from "@/lib/print.service.ts";
 import {DiscountType} from "@/api/model/discount.ts";
+import {OrderVoidReason} from "@/api/model/order_void.ts";
 import {MenuItemType} from "@/api/model/cart_item.ts";
 import {OrderPayment} from "@/components/orders/order.payment.tsx";
 import {OrderTotals, CartTotals} from "@/components/orders/order.totals.tsx";
@@ -31,6 +32,26 @@ import {appPage, appSettings, appState, closingEnforcementAtom} from "@/store/jo
 import {Button} from "@/components/common/input/button.tsx";
 import {faCancel, faCheck, faCreditCard, faTimes} from "@fortawesome/free-solid-svg-icons";
 import React, {useEffect, useMemo, useRef, useState} from "react";
+import {nanoid} from "nanoid";
+
+/**
+ * Module-level create guard: two <Payment> instances are mounted at once
+ * (cart panel + header confirm modal) and a per-instance ref let the modal's
+ * button fire while the panel's create was still in flight — one "Gửi bếp"
+ * click produced two live orders. One guard protects every instance.
+ */
+let orderCreateInFlight = false;
+
+/** Rejects when the awaited promise stalls longer than `ms` (stalled Surreal
+ *  socket / Dexie queue once froze the UI while the order already committed). */
+const withTimeout = <T,>(promise: Promise<T>, ms: number, label: string): Promise<T> =>
+  new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    promise.then(
+      (value) => { clearTimeout(timer); resolve(value); },
+      (error) => { clearTimeout(timer); reject(error); },
+    );
+  });
 
 export const Payment = () => {
   const {t} = useTranslation(["payment", "toast"]);
@@ -43,8 +64,6 @@ export const Payment = () => {
   const orderTakingBlocked = enforcement.orderTakingBlocked;
 
   const [isLoading, setLoading] = useState(false);
-  /** Sync re-entry guard: React isLoading alone cannot stop double-click before re-render. */
-  const createInFlightRef = useRef(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [order, setOrder] = useState<Order>();
   const [paymentOrder, setPaymentOrder] = useState<Order>();
@@ -148,18 +167,19 @@ export const Payment = () => {
 
     // Hard re-entry guard (sync) before any await / setState.
     // Callers must not treat this as success (e.g. do not reset cart).
-    if (createInFlightRef.current) {
+    if (orderCreateInFlight) {
       return 'busy' as const;
     }
-    createInFlightRef.current = true;
+    orderCreateInFlight = true;
     setLoading(true);
 
     let orderObj: any;
 
     try {
       // Closing gate comes from local enforcement atom; optional remote assert when online.
+      // Timeout keeps a stalled socket from freezing the submit with no feedback.
       if (isEffectivelyConnected) {
-        await assertOrderTakingAllowed(db).catch(() => undefined);
+        await withTimeout(assertOrderTakingAllowed(db).catch(() => undefined), 8000, 'closing-gate');
       }
 
       const date = DateTime.now().toJSDate();
@@ -255,9 +275,16 @@ export const Payment = () => {
       }
 
       if (isNewOrder) {
+        // Reuse the draft's intent id (or mint one now) so a retried submit
+        // replays the same order instead of creating a duplicate check.
+        const intentId = state?.orderIntentId || nanoid();
+        if (intentId !== state?.orderIntentId) {
+          setState(prev => ({ ...prev, orderIntentId: intentId }));
+        }
         // Allocate invoice/auto_id inside createOrderWithItems so a failed create
         // cannot burn reserved numbers.
         const created = await posStore.createOrderWithItems({
+          orderId: intentId,
           covers: parseInt(state?.persons) || 1,
           floorId: state?.floor?.id ? String(state.floor.id) : null,
           tableId: state?.table?.id ? String(state.table.id) : null,
@@ -307,8 +334,13 @@ export const Payment = () => {
       const itemsCount = (state.cart?.length ?? 0);
 
       // Local-first tax rows (order_taxes + tax_amount) — works offline, drains via outbox.
+      // Timeout: a stalled Dexie queue must not hold the cashier on a dead screen.
       if (normalizedOrder?.id) {
-        await posStore.recomputeOrderTaxes(String(normalizedOrder.id)).catch(() => undefined);
+        await withTimeout(
+          posStore.recomputeOrderTaxes(String(normalizedOrder.id)).catch(() => undefined),
+          8000,
+          'recompute-taxes',
+        ).catch(() => undefined);
       }
 
       // Drain outbox in the background — never hold the cashier on gateway RTT.
@@ -399,7 +431,7 @@ export const Payment = () => {
       }
       throw e;
     } finally {
-      createInFlightRef.current = false;
+      orderCreateInFlight = false;
       setLoading(false);
     }
   }
@@ -409,6 +441,9 @@ export const Payment = () => {
       if (hasNewCartItems() || hasOrderTypeChange()) {
         const result = await createOrder();
         if (result === 'busy') {
+          // A silent return here read as a dead button — users clicked again
+          // and minted duplicate orders. Always surface the state.
+          toast.info(t('payment:errors.orderSending', { defaultValue: 'Order is already being sent…' }));
           return;
         }
       }
@@ -437,6 +472,7 @@ export const Payment = () => {
       table: undefined,
       persons: '1',
       orderType: undefined,
+      orderIntentId: undefined,
       order: {
         id: 'new',
         order: undefined
@@ -503,6 +539,34 @@ export const Payment = () => {
   }
 
   const cancel = async () => {
+    // An existing check with persisted lines must actually be voided —
+    // "Huỷ" used to only clear the UI and leave the order occupying the table.
+    const orderId =
+      state?.order?.id && state.order.id !== 'new' ? String(state.order.id) : undefined;
+    const persistedLines = ((state?.order?.order?.items ?? []) as any[])
+      .filter((item) => !item.deleted_at && item.id != null)
+      .map((item) => ({ itemId: String(item.id), quantity: Number(item.quantity) || 1 }));
+
+    if (orderId && persistedLines.length > 0) {
+      if (!page?.user?.id) {
+        toast.error(t('payment:errors.cancelNeedsUser', { defaultValue: 'Cannot cancel: no user session' }));
+        return;
+      }
+      try {
+        await posStore.voidOrderItems({
+          orderId,
+          lines: persistedLines,
+          reason: OrderVoidReason.PunchByMistake,
+          userId: String(page.user.id),
+        });
+        toast.success(t('payment:actions.orderCancelled', { defaultValue: 'Order cancelled' }));
+      } catch (error) {
+        console.error('Cancel: voiding order failed', error);
+        toast.error(t('payment:errors.cancelFailed', { defaultValue: 'Could not cancel the order' }));
+        return;
+      }
+    }
+
     setState(prev => ({
       ...prev,
       seats: [],

@@ -189,8 +189,11 @@ export const fetchPayProfiles = async (
 
   const profileStart = toReportBoundaryUtcIso(startDate);
   if (profileStart) {
-    // open-ended profiles store effective_to as null; coalesce so the comparison never sees null
-    conditions.push(`(effective_to ?? d'9999-12-31T23:59:59Z') >= <datetime>$startDate`);
+    // open-ended profiles store effective_to as null; coalesce so the comparison never sees null.
+    // Bind the sentinel as a parameter — an inline d'...' literal relies on dbproxy
+    // datetime-literal support and is harder to audit than a plain binding.
+    conditions.push(`(effective_to ?? <datetime>$profileOpenEnd) >= <datetime>$startDate`);
+    params.profileOpenEnd = '9999-12-31T23:59:59Z';
     params.startDate = profileStart;
   }
 

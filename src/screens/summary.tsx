@@ -3,7 +3,7 @@ import {Order as OrderModel, ORDER_FETCHES, OrderStatus} from "@/api/model/order
 import {Tables} from "@/api/db/tables.ts";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {DateValue} from "react-aria-components";
-import {getLocalTimeZone, today} from "@internationalized/date";
+import {getToday} from "@/utils/date.ts";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowLeft, faArrowRight, faPrint, faSpinner} from "@fortawesome/free-solid-svg-icons";
 import {Calendar} from "@/components/common/antd/calendar.tsx";
@@ -77,7 +77,7 @@ export const Summary = () => {
   const [page] = useAtom(appPage);
   const {protectAction} = useSecurity();
 
-  const [date, setDate] = useState<DateValue>(today(getLocalTimeZone()));
+  const [date, setDate] = useState<DateValue>(getToday());
   const [orders, setOrders] = useState<OrderModel[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [isPrintingMix, setIsPrintingMix] = useState(false);
@@ -319,7 +319,7 @@ export const Summary = () => {
               <Calendar
                 onChange={setDate}
                 value={date}
-                maxValue={today(getLocalTimeZone())}
+                maxValue={getToday()}
               />
             </div>
             <div className="flex gap-3 mt-3">

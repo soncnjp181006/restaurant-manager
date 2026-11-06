@@ -180,6 +180,7 @@
     "pageOf": "Trang {{current}} / {{total}}"
   },
   "filters": {
+    "openingNewTab": "Đang mở báo cáo trong tab mới…",
     "paymentTypes": "Loại thanh toán",
     "statusFilters": "Lọc theo trạng thái",
     "statusRefund": "Hoàn tiền",

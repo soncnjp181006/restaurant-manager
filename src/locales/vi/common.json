@@ -139,7 +139,9 @@
   },
   "toast": {
     "printFailed": "In thất bại",
-    "printError": "Lỗi trong quá trình in"
+    "printError": "Lỗi trong quá trình in",
+    "printSent": "Đã gửi lệnh in tới máy in",
+    "noPrinterConfigured": "Chưa cấu hình máy in cho loại in này"
   },
   "notFound": {
     "title": "Không tìm thấy trang",

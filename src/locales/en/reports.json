@@ -180,6 +180,7 @@
     "pageOf": "Page {{current}} of {{total}}"
   },
   "filters": {
+    "openingNewTab": "Opening the report in a new tab…",
     "paymentTypes": "Payment Types",
     "statusFilters": "Status Filters",
     "statusRefund": "Refund",

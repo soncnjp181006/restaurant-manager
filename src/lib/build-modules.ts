@@ -142,7 +142,7 @@ export function isTopLevelBuildModuleEnabled(id: TopLevelBuildModule): boolean {
   }
 }
 
-const HOME_CANDIDATES: { path: string; module: TopLevelBuildModule }[] = [
+export const HOME_CANDIDATES: { path: string; module: TopLevelBuildModule }[] = [
   { path: MENU, module: 'menu' },
   { path: ORDERS, module: 'orders' },
   { path: SUMMARY, module: 'summary' },

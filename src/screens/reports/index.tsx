@@ -1,6 +1,7 @@
 import {Layout} from "@/screens/partials/layout.tsx";
-import {ReactNode, useMemo, useState} from "react";
+import {ReactNode, useEffect, useMemo, useState} from "react";
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import {SalesWeeklyFilter} from "@/components/reports/filters/sales.weekly.filter.tsx";
 import {ProductMixWeeklyReportFilter} from "@/components/reports/filters/product.mix.weekly.filter.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -131,6 +132,23 @@ const buildReportEntries = (
 export const Reports = () => {
   const { t } = useTranslation('reports');
   const { t: tNav } = useTranslation('navigation');
+
+  // Every filter form submits into a new tab (target="_blank") with no handler
+  // in this window — clicking "Tạo" looked completely dead. One capture-phase
+  // listener gives each generate click immediate feedback.
+  useEffect(() => {
+    const onSubmit = (event: SubmitEvent) => {
+      const form = event.target as HTMLFormElement | null;
+      if (form?.target === '_blank' && form.action) {
+        toast.info(t('filters.openingNewTab', {
+          defaultValue: 'Opening the report in a new tab…',
+        }));
+      }
+    };
+    document.addEventListener('submit', onSubmit, true);
+    return () => document.removeEventListener('submit', onSubmit, true);
+  }, [t]);
+
   const reportCategories = useMemo((): ReportCategory[] => {
     const categories: ReportCategory[] = [
       {
@@ -152,8 +170,6 @@ export const Reports = () => {
         id: 'sales',
         title: t('categories.sales'),
         reports: buildReportEntries(t, [
-          { reportKey: 'salesHourlyLabour', filter: <SalesHourlyLabourFilter /> },
-          { reportKey: 'salesHourlyLabourWeekly', filter: <SalesHourlyLabourWeeklyFilter /> },
           { reportKey: 'serverSales', filter: <SalesServerFilter /> },
           { reportKey: 'salesSummary', filter: <SalesSummaryFilter /> },
           { reportKey: 'salesSummary2', filter: <SalesSummary2Filter /> },
@@ -225,6 +241,10 @@ export const Reports = () => {
         reports: buildReportEntries(t, [
           { reportKey: 'laborDashboard', filter: <LaborDashboardFilter /> },
           { reportKey: 'dailyLaborCost', filter: <LaborDailyCostFilter /> },
+          // Hourly-labour reports are labor cost views — they lived under
+          // "Doanh thu" (sales) despite their labor labels.
+          { reportKey: 'salesHourlyLabour', filter: <SalesHourlyLabourFilter /> },
+          { reportKey: 'salesHourlyLabourWeekly', filter: <SalesHourlyLabourWeeklyFilter /> },
           { reportKey: 'overtimeReport', filter: <LaborOvertimeFilter /> },
           { reportKey: 'attendanceReport', filter: <LaborAttendanceFilter /> },
           { reportKey: 'payrollSummary', filter: <LaborPayrollSummaryFilter /> },

@@ -1,10 +1,11 @@
 import {useAtomValue, useSetAtom} from "jotai";
 import {Navigate, Outlet, useLocation} from "react-router";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {appPage} from "@/store/jotai.ts";
 import {LOGIN} from "@/routes/restaurant-manager.ts";
 import {clearSessionTokens, fetchAuthStatus, getSessionToken, isGatewayAuthEnabled} from "@/lib/session.ts";
 import {useHydrateCurrencySymbol} from "@/hooks/useCurrencySymbol.ts";
+import {canAccessModule, getAllowedAppPath, routeRequiredModule} from "@/lib/route-access.ts";
 
 export const ProtectedRoute = () => {
   const {user} = useAtomValue(appPage);
@@ -63,6 +64,19 @@ export const ProtectedRoute = () => {
   void sessionTick;
   if (isGatewayAuthEnabled() && !getSessionToken()) {
     return <Navigate to={LOGIN} replace state={{from: location}}/>;
+  }
+
+  // Route-level permission guard: the sidebar's PIN prompt is click-time only —
+  // without this check any authenticated user could land on a protected URL
+  // (e.g. a Staff user restoring /settings from the previous session) and use it.
+  const requiredModule = routeRequiredModule(location.pathname);
+  const moduleAllowed = useMemo(
+    () => canAccessModule(user, requiredModule),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user?.id, user?.user_role?.id, requiredModule, sessionTick],
+  );
+  if (!moduleAllowed) {
+    return <Navigate to={getAllowedAppPath(user)} replace/>;
   }
 
   return (

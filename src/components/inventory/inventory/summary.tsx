@@ -8,7 +8,7 @@ import {TableComponent} from "@/components/common/table/table.tsx";
 import {InventoryLocation} from "@/api/model/inventory_location.ts";
 import {StoreInventoryCell} from "@/components/inventory/inventory/store.inventory.cell.tsx";
 import {resolveCatalogUnitCost} from "@/lib/inventory/line.cost.ts";
-import {withInventoryCurrency} from "@/lib/inventory/rounding.ts";
+import {withInventoryCurrencyUi} from "@/lib/inventory/rounding.ts";
 
 
 export const InventorySummary = () => {
@@ -51,7 +51,7 @@ export const InventorySummary = () => {
       columnHelper.accessor(row => resolveCatalogUnitCost(row), {
         id: "unit_cost",
         header: t('columns.averageCost', {defaultValue: t('columns.avgPrice')}),
-        cell: info => withInventoryCurrency(info.getValue()),
+        cell: info => withInventoryCurrencyUi(info.getValue()),
       }),
     ];
 

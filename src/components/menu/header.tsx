@@ -37,8 +37,9 @@ export const MenuHeader = () => {
   }, [setting?.order_types, state.orderType]);
 
   useEffect(() => {
-    // load old items into cart
-    if (state?.order?.id !== 'new' && state.orders.length > 0) {
+    // load old items into cart — only when the cart is empty, so a refresh of
+    // `state.orders` can never wipe lines the cashier just tapped in.
+    if (state?.order?.id !== 'new' && state.orders.length > 0 && state.cart.length === 0) {
       onOrderClick(state?.order?.id);
     }
   }, [state.orders, state?.order?.id]);

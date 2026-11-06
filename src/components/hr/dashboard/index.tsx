@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
+import {toast} from "sonner";
 import {useDB} from "@/api/db/db.ts";
 import {getLaborDashboardSnapshot} from "@/api/reports/labor/dashboard.ts";
 import type {LaborDashboardSnapshot} from "@/api/reports/labor/shared/types.ts";
@@ -24,12 +25,24 @@ export const HrDashboard = () => {
     try {
       const data = await getLaborDashboardSnapshot(db);
       setSnapshot(data);
-    } catch {
+      // Sub-fetch failures degrade individual KPIs instead of zeroing everything —
+      // surface which parts are missing instead of swallowing the error.
+      if (data.degraded && data.degraded.length > 0) {
+        toast.warning(t("dashboard.degradedData", {
+          defaultValue: 'Some HR data could not be loaded: {{items}}',
+          items: data.degraded.join(', '),
+        }));
+      }
+    } catch (error) {
       setSnapshot(null);
+      toast.error(t("dashboard.loadFailed", {
+        defaultValue: 'Could not load the HR dashboard: {{message}}',
+        message: error instanceof Error ? error.message : String(error),
+      }));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [db, t]);
 
   useEffect(() => {
     void loadSnapshot();

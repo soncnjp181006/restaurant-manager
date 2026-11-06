@@ -46,7 +46,9 @@ const validationSchema = yup.object({
     value: yup.string().required(),
   }).required(() => i18n.t('validation:required')),
   first_name: yup.string().required(() => i18n.t('validation:required')),
-  last_name: yup.string().required(() => i18n.t('validation:required')),
+  // Optional — the bootstrap-created admin has no last name, so requiring one
+  // here was inconsistent (and the error only surfaced after submit).
+  last_name: yup.string().nullable(),
   login: yup
     .string()
     .required(() => i18n.t('validation:required'))
@@ -278,7 +280,7 @@ export const UserForm = ({
       }
     }
 
-    const displayName = `${values.first_name} ${values.last_name}`;
+    const displayName = [values.first_name, values.last_name].filter(Boolean).join(' ');
 
     try {
       if( data?.id ) {

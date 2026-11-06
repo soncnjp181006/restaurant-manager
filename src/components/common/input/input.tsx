@@ -70,7 +70,18 @@ export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
 
   // Keyboard functionality
   const [showKeyboard, setShowKeyboard] = useState(false);
-  const [keyboardValue, setKeyboardValue] = useState(resolvedValue?.toString() || '');
+  const [keyboardValue, setKeyboardValue] = useState(() => {
+    if (resolvedValue === null || resolvedValue === undefined || resolvedValue === '') return '';
+    // Numeric keyboards start blank so a zero never becomes a "0123..." prefix
+    if (type === 'number' && Number(resolvedValue) === 0) return '';
+    return String(resolvedValue);
+  });
+
+  const keyboardSeedValue = useCallback((): string => {
+    if (resolvedValue === null || resolvedValue === undefined || resolvedValue === '') return '';
+    if (type === 'number' && Number(resolvedValue) === 0) return '';
+    return String(resolvedValue);
+  }, [resolvedValue, type]);
 
   const inputElRef = useRef<HTMLInputElement | null>(null);
   const suppressFocusRef = useRef<boolean>(false);
@@ -91,9 +102,9 @@ export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
       suppressFocusRef.current = false;
       return;
     }
-    setKeyboardValue(resolvedValue?.toString() || '');
+    setKeyboardValue(keyboardSeedValue());
     setShowKeyboard(true);
-  }, [enableKeyboard, resolvedValue]);
+  }, [enableKeyboard, keyboardSeedValue]);
 
   const handleKeyboardClose = useCallback(() => {
     suppressFocusRef.current = true;
@@ -111,20 +122,20 @@ export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
     // prevent the input from gaining focus; we'll manage keyboard explicitly
     e.preventDefault();
     e.stopPropagation();
-    setKeyboardValue(resolvedValue?.toString() || '');
+    setKeyboardValue(keyboardSeedValue());
     setShowKeyboard(true);
-  }, [enableKeyboard, resolvedValue]);
+  }, [enableKeyboard, keyboardSeedValue]);
 
   // Keep internal keyboardValue in sync with external value when keyboard is not open
   useEffect(() => {
     if (!enableKeyboard) return;
     if (!showKeyboard) {
-      const next = resolvedValue?.toString() || '';
+      const next = keyboardSeedValue();
       if (next !== keyboardValue) {
         setKeyboardValue(next);
       }
     }
-  }, [resolvedValue, enableKeyboard, showKeyboard, keyboardValue]);
+  }, [keyboardSeedValue, enableKeyboard, showKeyboard, keyboardValue]);
 
   const id = useMemo(() => providedId ?? nanoid(), [providedId]);
 

@@ -3,7 +3,6 @@ import { DateValue } from 'react-aria-components';
 import dayjs, { Dayjs } from "dayjs";
 import {
   calendarDateToAppDateTime,
-  getAppTimezone,
   nowInAppTimezone,
   toLuxonDateTime,
 } from "@/lib/datetime.ts";
@@ -41,22 +40,24 @@ export const getToday = (): CalendarDate => {
   return new CalendarDate(now.year, now.month, now.day);
 };
 
+/**
+ * Maps a CalendarDate to a dayjs at LOCAL midnight so antd renders exactly the
+ * same Y/M/D regardless of the browser timezone. Never convert through a
+ * timezone-qualified instant here: an app-tz midnight instant rendered in a
+ * UTC browser shows the previous day (the original off-by-one bug).
+ */
 export const dateValueToDayjs = (dateValue: DateValue | null | undefined): Dayjs | null => {
   if (!dateValue) return null;
 
-  return dayjs(
-    calendarDateToAppDateTime({
-      year: dateValue.year,
-      month: dateValue.month,
-      day: dateValue.day,
-    }).toJSDate()
-  );
+  return dayjs(new Date(dateValue.year, dateValue.month - 1, dateValue.day));
 };
 
+/**
+ * Reads Y/M/D straight off the dayjs calendar — the exact inverse of
+ * dateValueToDayjs, with no timezone math in either direction.
+ */
 export const dayjsToCalendarDate = (value: Dayjs | null | undefined): CalendarDate | null => {
   if (!value) return null;
 
-  // Prefer app-zone Y/M/D from the underlying instant when possible.
-  const luxon = toLuxonDateTime(value.toDate()).setZone(getAppTimezone());
-  return new CalendarDate(luxon.year, luxon.month, luxon.day);
+  return new CalendarDate(value.year(), value.month() + 1, value.date());
 };

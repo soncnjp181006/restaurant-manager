@@ -68,7 +68,7 @@ function isIdentPart(ch) {
 
 class Token {
   constructor(type, value, pos) {
-    this.type = type; // 'ident' | 'keyword' | 'number' | 'duration' | 'string' | 'param' | 'op' | 'qident' | 'uuid' | 'eof'
+    this.type = type; // 'ident' | 'keyword' | 'number' | 'duration' | 'string' | 'param' | 'op' | 'qident' | 'uuid' | 'datetime' | 'eof'
     this.value = value;
     this.pos = pos;
   }
@@ -140,6 +140,14 @@ export function tokenize(input) {
       const end = input.indexOf(input[i + 1], i + 2);
       if (end === -1) throw new Error(`Unterminated literal at ${i}`);
       tokens.push(new Token('uuid', input.slice(i + 2, end), i));
+      i = end + 1;
+      continue;
+    }
+    // SurrealQL datetime literal: d"2024-01-01T00:00:00Z" / d'...'
+    if (ch === 'd' && (input[i + 1] === '"' || input[i + 1] === "'")) {
+      const end = input.indexOf(input[i + 1], i + 2);
+      if (end === -1) throw new Error(`Unterminated literal at ${i}`);
+      tokens.push(new Token('datetime', input.slice(i + 2, end), i));
       i = end + 1;
       continue;
     }
@@ -1313,6 +1321,9 @@ class Parser {
       case 'uuid':
         this.next();
         return { t: 'uuid', v: t.value };
+      case 'datetime':
+        this.next();
+        return { t: 'dtlit', v: t.value };
       case 'duration':
         this.next();
         return parseDurationLiteral(t.value);

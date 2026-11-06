@@ -56,14 +56,14 @@ export const MenuCart = () => {
           </div>
         )}
         <ScrollContainer className="h-full gap-[4px] flex flex-col select-none">
-          {newItems.map((item, index) => (
-            <CartItem item={item} key={index} index={index}/>
+          {newItems.map((item) => (
+            <CartItem item={item} key={item.id}/>
           ))}
           {newItems.length > 0 && oldItems.length > 0 && (
             <div className="h-[3px] bg-neutral-900 my-2 rounded-full"></div>
           )}
-          {oldItems.map((item, index) => (
-            <CartItem item={item} key={index} index={index}/>
+          {oldItems.map((item) => (
+            <CartItem item={item} key={item.id}/>
           ))}
         </ScrollContainer>
       </div>

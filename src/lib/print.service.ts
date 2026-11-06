@@ -326,6 +326,8 @@ export async function dispatchPrint<Payload = any>(
   const driverPrinters = printers?.map(printerToDriverConfig);
   if (!driverPrinters || driverPrinters.length === 0) {
     console.error('No printers configured for this print type.');
+    // A silent false read as a dead button (open-drawer / summary print).
+    toast.warning(i18n.t('common:toast.noPrinterConfigured'));
     return false;
   }
 
@@ -379,6 +381,7 @@ export async function dispatchPrint<Payload = any>(
       toast.error(msg || i18n.t('common:toast.printFailed'));
       return false;
     }
+    toast.success(i18n.t('common:toast.printSent'));
     return true;
   } catch (e) {
     const msg = e && typeof e === 'object' && 'message' in e ? String((e as Error).message) : 'Print request failed';

@@ -587,6 +587,17 @@ export async function createOrderWithItems(input: CreateOrderInput): Promise<{
   const createdAt = nowIso(input.createdAt);
   const orderId = recordId('order', input.orderId);
 
+  // Idempotent replay: a retried submit carrying the same explicit intent id
+  // must never mint a second order (one "Gửi bếp" click once produced two
+  // live checks). Replay the stored order instead of creating a duplicate.
+  if (input.orderId) {
+    const existingOrder = await db.orders.get(orderId);
+    if (existingOrder) {
+      const existingItems = await db.orderItems.where('order').equals(orderId).toArray();
+      return { order: existingOrder, items: existingItems, kitchens: [] };
+    }
+  }
+
   const items: OrderItemRecord[] = [];
   const kitchens: OrderItemKitchenRecord[] = [];
   const itemIds: string[] = [];

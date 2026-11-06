@@ -126,14 +126,9 @@ export const MenuDishes = () => {
     }
   }, [enableDishSearch, searchOpen]);
 
-  useEffect(() => {
-    return () => {
-      setState(prev => ({
-        ...prev,
-        category: undefined
-      }));
-    };
-  }, []);
+  // NOTE: no unmount write-back here. Writing to the shared appState atom from
+  // an unmounting screen races with in-flight cart updates (stale-snapshot
+  // clobber) — the selected category resets itself through the normal flows.
 
   const dishGrid = (
     <div className="relative min-h-0 h-full">

@@ -15,10 +15,9 @@ import { IconTooltipButton } from "@/components/common/input/icon.tooltip.button
 
 interface Props {
   item: MenuItem
-  index: number
 }
 
-export const CartItem = ({ item, index }: Props) => {
+export const CartItem = ({ item }: Props) => {
   const { t } = useTranslation(['cart', 'common']);
   const [state, setState] = useAtom(appState);
   const [isModifiersOpen, setModifiersOpen] = useState(false);
@@ -69,7 +68,7 @@ export const CartItem = ({ item, index }: Props) => {
                       ...prev,
                       cart: prev.cart.map((_item) => {
                         if( item.id === _item.id ) {
-                          _item.quantity++;
+                          return { ..._item, quantity: _item.quantity + 1 };
                         }
                         return _item;
                       })
@@ -86,7 +85,7 @@ export const CartItem = ({ item, index }: Props) => {
                       ...prev,
                       cart: prev.cart.map((_item) => {
                         if( item.id === _item.id ) {
-                          _item.quantity = Number(e.target.value);
+                          return { ..._item, quantity: Number(e.target.value) };
                         }
                         return _item;
                       })
@@ -205,14 +204,15 @@ export const CartItem = ({ item, index }: Props) => {
           editing={true}
           onClose={(groups) => {
             setModifiersOpen(false);
-            // update item
+            // update item — match by stable id, never by list index: the index
+            // prop is positional within a seat-filtered list and shifts on
+            // removal/reorder, so index writes landed on the wrong line.
             setState(prev => ({
               ...prev,
-              cart: prev.cart.map((cItem, cIndex) => {
-                if(cIndex === index){
-                  cItem.selectedGroups = groups;
+              cart: prev.cart.map((cItem) => {
+                if(cItem.id === item.id){
+                  return { ...cItem, selectedGroups: groups };
                 }
-
                 return cItem;
               })
             }))

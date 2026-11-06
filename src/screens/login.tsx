@@ -9,6 +9,7 @@ import { useDatabase } from "@/hooks/useDatabase.ts";
 import { User } from "@/api/model/user.ts";
 import {useNavigate, useLocation} from "react-router";
 import {getDefaultAppPath} from "@/lib/build-modules.ts";
+import {canAccessModule, getAllowedAppPath, routeRequiredModule} from "@/lib/route-access.ts";
 import { Modal } from "@/components/common/react-aria/modal.tsx";
 import { Button } from "@/components/common/input/button.tsx";
 import { Tables } from "@/api/db/tables.ts";
@@ -77,6 +78,8 @@ export const Login = () => {
   const [brandLogo, setBrandLogo] = useState<string | null>(null);
   const [needsBootstrap, setNeedsBootstrap] = useState(false);
   const [bootstrapMode, setBootstrapMode] = useState(false);
+  /** Bootstrap admin just created and waiting on the clock-in gate. */
+  const [pendingFromBootstrap, setPendingFromBootstrap] = useState(false);
 
   const navigation = useNavigate();
   const location = useLocation();
@@ -351,6 +354,10 @@ export const Login = () => {
     setPassword('');
     setShowClockInModal(false);
     setPendingUser(null);
+    // Bootstrap flow keeps the admin wizard mounted behind the clock-in gate —
+    // unmount it only now that the gate has been passed.
+    setBootstrapMode(false);
+    setPendingFromBootstrap(false);
 
     navigation(getDefaultAppPath());
   }
@@ -405,12 +412,51 @@ export const Login = () => {
     }
     if (page.user && !page.locked) {
       const from = (location.state as { from?: { pathname: string; search?: string } })?.from;
-      const returnPath = from
+      // Only restore the pre-login route when the user is actually allowed
+      // there — a Staff user must not be dropped into the last Admin page.
+      const fromAccessible = from ? canAccessModule(page.user, routeRequiredModule(from.pathname)) : false;
+      const returnPath = from && fromAccessible
         ? `${from.pathname}${from.search ?? ''}`
-        : getDefaultAppPath();
+        : getAllowedAppPath(page.user);
       navigation(returnPath, { replace: true });
     }
   }, [gatewayAuth, page.user, page.locked, location.state, navigation]);
+
+  const clockInModal = showClockInModal ? (
+    <Modal
+      open={showClockInModal}
+      onClose={() => {
+        setShowClockInModal(false);
+        setPendingUser(null);
+        setCode('');
+        // Bootstrap gate dismissed: fall back to the normal login pad.
+        if (pendingFromBootstrap) {
+          setBootstrapMode(false);
+          setPendingFromBootstrap(false);
+        }
+      }}
+      title={t('clockIn.title')}
+      shouldCloseOnOverlayClick={false}
+      shouldCloseOnEsc={false}
+    >
+      <div className="flex flex-col gap-4 items-center">
+        <div className="text-lg alert alert-danger">
+          {t('clockIn.message')}
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="primary"
+            onClick={handleClockIn}
+            icon={faClock}
+            size="xl"
+            data-testid="login-clock-in"
+          >
+            {t('clockIn.action')}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  ) : null;
 
   if (isAuthenticating) {
     return (
@@ -423,7 +469,8 @@ export const Login = () => {
 
   if (bootstrapMode) {
     return (
-      <AdminSetupWizard
+      <>
+        <AdminSetupWizard
         onCompleted={async (result) => {
           // Real admin session — proceed exactly like a normal login.
           setSessionTokens(result.token!, result.surrealToken!);
@@ -445,9 +492,13 @@ export const Login = () => {
           await afterUserAuthenticated(normalizedUser);
           window.dispatchEvent(new Event('restaurant-manager-session'));
           setNeedsBootstrap(false);
-          setBootstrapMode(false);
+          // Keep the wizard mounted while the clock-in gate is up: flipping to
+          // the login pad here used to stack the gate on top of the login screen.
+          setPendingFromBootstrap(true);
         }}
-      />
+        />
+        {clockInModal}
+      </>
     );
   }
 
@@ -603,36 +654,7 @@ export const Login = () => {
         </div>
       </div>
 
-      {showClockInModal && (
-        <Modal
-          open={showClockInModal}
-          onClose={() => {
-            setShowClockInModal(false);
-            setPendingUser(null);
-            setCode('');
-          }}
-          title={t('clockIn.title')}
-          shouldCloseOnOverlayClick={false}
-          shouldCloseOnEsc={false}
-        >
-          <div className="flex flex-col gap-4 items-center">
-            <div className="text-lg alert alert-danger">
-              {t('clockIn.message')}
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="primary"
-                onClick={handleClockIn}
-                icon={faClock}
-                size="xl"
-                data-testid="login-clock-in"
-              >
-                {t('clockIn.action')}
-              </Button>
-            </div>
-          </div>
-        </Modal>
-      )}
+      {clockInModal}
     </div>
   );
 }

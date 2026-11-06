@@ -39,6 +39,9 @@ export interface AppStateInterface {
     id?: string | 'new'
     order?: Order
   }
+  /** Stable intent id for the draft being built — makes a retried "Gửi bếp"
+   *  submit replay the same order instead of minting a duplicate. */
+  orderIntentId?: string
   orders: Order[]
   showFloor?: boolean
   showPersons?: boolean

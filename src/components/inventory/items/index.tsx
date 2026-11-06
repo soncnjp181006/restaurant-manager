@@ -7,6 +7,7 @@ import {Button} from "@/components/common/input/button.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPencil, faPlus} from "@fortawesome/free-solid-svg-icons";
 import {InventoryItem} from "@/api/model/inventory_item.ts";
+import {withCurrency} from "@/lib/utils.ts";
 import {TableComponent} from "@/components/common/table/table.tsx";
 import {InventoryItemForm} from "@/components/inventory/items/form.tsx";
 import {DataImportModal} from "@/components/common/data-import/data-import-modal.tsx";
@@ -47,10 +48,12 @@ export const InventoryItems = () => {
       header: t('columns.uom')
     }),
     columnHelper.accessor("price", {
-      header: t('columns.price')
+      header: t('columns.price'),
+      cell: info => <span>{withCurrency(info.getValue())}</span>,
     }),
     columnHelper.accessor("average_price", {
-      header: t('columns.averagePrice')
+      header: t('columns.averagePrice'),
+      cell: info => <span>{withCurrency(info.getValue())}</span>,
     }),
     columnHelper.accessor("reorder_levels", {
       header: t('columns.reorderLevels'),

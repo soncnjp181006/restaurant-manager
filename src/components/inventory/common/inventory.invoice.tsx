@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next';
 import {InventoryInvoiceDoc} from "@/lib/inventory/invoice.mapper.ts";
 import {
   formatInventoryNumber,
-  withInventoryCurrency,
+  withInventoryCurrencyUi,
 } from "@/lib/inventory/rounding.ts";
 import { formatWithFallback } from '@/lib/date-format';
 
@@ -121,11 +121,11 @@ export const InventoryInvoice = ({doc}: Props) => {
                       <>
                         <td className="py-2.5 pr-2 text-right tabular-nums">
                           {line.unitCost != null
-                            ? `${withInventoryCurrency(line.unitCost)}${line.unitCostSuffix ?? ""}`
+                            ? `${withInventoryCurrencyUi(line.unitCost)}${line.unitCostSuffix ?? ""}`
                             : "—"}
                         </td>
                         <td className="py-2.5 text-right tabular-nums font-medium">
-                          {line.total != null ? withInventoryCurrency(line.total) : "—"}
+                          {line.total != null ? withInventoryCurrencyUi(line.total) : "—"}
                         </td>
                       </>
                     ) : (

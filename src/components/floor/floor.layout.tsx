@@ -457,7 +457,12 @@ export const FloorLayout = () => {
         cart = [];
       }
 
-      if (order) {
+      // The cart only survives table selection when resuming the SAME table's
+      // draft. Carrying it to a different table mixed lines across checks (one
+      // click on Bàn 2 produced an order containing Bàn 1's items).
+      const resumingSameTable =
+        state.table?.id != null && String(state.table.id) === String(item.id);
+      if (order || !resumingSameTable) {
         cart = [];
       }
 

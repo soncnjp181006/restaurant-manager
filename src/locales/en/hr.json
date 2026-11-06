@@ -582,6 +582,8 @@
   },
   "dashboard": {
     "title": "Labor dashboard",
+    "degradedData": "Some HR data could not be loaded: {{items}}",
+    "loadFailed": "Could not load the HR dashboard: {{message}}",
     "clockedIn": "Clocked in now",
     "onBreak": "On break",
     "scheduledToday": "Scheduled today",

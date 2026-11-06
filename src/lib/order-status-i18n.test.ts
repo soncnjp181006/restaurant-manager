@@ -27,7 +27,8 @@ describe('order statuses are localized', () => {
   it('every status key exists in en and vi', () => {
     const missing = Object.entries(ORDER_STATUS_I18N_KEY).flatMap(([status, key]) =>
       locales
-        .map((dict, index) => (dict.status[key!.replace('status.', '')] ? null : `${['en', 'vi'][index]}: ${String(status)} -> ${key}`))
+        // Keys are namespaced ("orders:status.paid") — strip the namespace too.
+        .map((dict, index) => (dict.status[key!.replace('orders:status.', '')] ? null : `${['en', 'vi'][index]}: ${String(status)} -> ${key}`))
         .filter((entry): entry is string => entry !== null)
     );
     expect(missing).toEqual([]);
@@ -35,7 +36,7 @@ describe('order statuses are localized', () => {
 
   it('every void reason has a locale string in both languages', () => {
     const missing = Object.values(OrderVoidReason).flatMap((reason) => {
-      const key = VOID_REASON_I18N_KEY[reason]?.replace('voidReasons.', '');
+      const key = VOID_REASON_I18N_KEY[reason]?.replace('orders:voidReasons.', '');
       return locales
         .map((dict, index) => (key && dict.voidReasons[key] ? null : `${['en', 'vi'][index]}: voidReasons.${String(reason)}`))
         .filter((entry): entry is string => entry !== null);

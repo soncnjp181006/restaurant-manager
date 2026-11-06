@@ -582,6 +582,8 @@
   },
   "dashboard": {
     "title": "Bảng điều khiển nhân sự",
+    "degradedData": "Một số dữ liệu nhân sự không tải được: {{items}}",
+    "loadFailed": "Không tải được bảng điều khiển nhân sự: {{message}}",
     "clockedIn": "Đã có mặt",
     "onBreak": "Đang giải lao",
     "scheduledToday": "Ca hôm nay",

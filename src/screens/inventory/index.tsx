@@ -93,11 +93,18 @@ export const Inventory = () => {
 
   const selectedKey = firstPageKey(pages, selected);
 
+  // The default tab's title equals the sidebar label ("Tồn kho") — repeating
+  // both produced "Tồn kho | Tồn kho | POS Nhà hàng".
+  const tabTitle = pages[selectedKey]?.title;
+  const titleParts = tabTitle === tNav('sidebar.inventory')
+    ? [tabTitle]
+    : [tabTitle, tNav('sidebar.inventory')];
+
   return (
     <Layout
       containerClassName=""
     >
-      <DocumentTitle parts={[pages[selectedKey]?.title, tNav('sidebar.inventory')]} />
+      <DocumentTitle parts={titleParts} />
       <div data-testid="inventory-page">
         <Tabs
           className="w-full flex flex-col rounded-xl"

@@ -7,6 +7,7 @@ import {
   invalidateGatewaySession,
   isGatewayAuthEnabled,
 } from '@/lib/session.ts';
+import { clearModuleElevations } from '@/lib/module-elevation.ts';
 
 type SetAppPage = (
   updater: AppPageInterface | ((prev: AppPageInterface) => AppPageInterface)
@@ -24,6 +25,8 @@ async function clearGatewaySession(): Promise<void> {
 }
 
 const clearLocalAuthState = (setPage: SetAppPage) => {
+  // Manager-approved module grants must not survive a logout.
+  clearModuleElevations();
   setPage((prev) => ({
     ...prev,
     page: 'Login',

@@ -84,6 +84,12 @@ export function VirtualKeyboard(props: VirtualKeyboardProps) {
       return;
     }
     const char = (letters as any)[key] ? (letters as any)[key][isCaps ? 'shift' : 'normal'] : key;
+    // Numeric keyboards: a lone leading zero is a placeholder, not part of the
+    // number — a digit press replaces it instead of concatenating ("0" + "1" → "1").
+    if (type === 'number' && char !== '.' && value === '0') {
+      onChange(String(char));
+      return;
+    }
     onChange(value + String(char));
   }, [isCaps, letters, onChange, type, value]);
 

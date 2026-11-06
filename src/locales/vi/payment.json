@@ -6,17 +6,21 @@
   "actions": {
     "toKitchen": "Gửi bếp",
     "payNow": "Thanh toán ngay",
-    "cancel": "Huỷ"
+    "cancel": "Huỷ",
+    "orderCancelled": "Đã huỷ đơn hàng"
   },
   "errors": {
     "createOrder": "Không tạo được đơn hàng.",
+    "orderSending": "Đơn đang được gửi, vui lòng đợi một lúc…",
     "openPayment": "Không mở được màn hình thanh toán.",
     "notOwner": "Đơn hàng này đang mở trên một thiết bị đầu cuối khác",
     "numbersExhausted": "Hết mã đơn hàng đã đặt chỗ ngoại tuyến — hãy kết nối lại để tiếp tục",
     "invoicePendingSync": "Số hoá đơn đang chờ đồng bộ — hãy đợi đơn hàng trực tuyến trước khi gửi dữ liệu tài chính",
     "fiscalFailed": "Gửi dữ liệu tài chính thất bại",
     "fireFailed": "Không thể gửi đi các món đang tạm giữ",
-    "noKitchenRouting": "Không có phiếu bếp nào được tạo cho {{count}} món: món chưa gán quy trình và chưa có trạm bếp nào chứa món này. Hãy gán quy trình trong Quản lý → Quy trình, hoặc thêm món vào trạm ở Quản lý → Bếp."
+    "noKitchenRouting": "Không có phiếu bếp nào được tạo cho {{count}} món: món chưa gán quy trình và chưa có trạm bếp nào chứa món này. Hãy gán quy trình trong Quản lý → Quy trình, hoặc thêm món vào trạm ở Quản lý → Bếp.",
+    "cancelNeedsUser": "Không thể huỷ: chưa có phiên người dùng",
+    "cancelFailed": "Không huỷ được đơn hàng"
   },
   "tracking": {
     "createOrder": "Tạo đơn hàng",

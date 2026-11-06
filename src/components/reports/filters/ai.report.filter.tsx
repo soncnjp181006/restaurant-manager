@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
+import {toast} from "sonner";
 import {REPORTS_AI} from "@/routes/restaurant-manager.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {Textarea} from "@/components/common/input/textarea.tsx";
@@ -74,6 +75,7 @@ export const AiReportFilter = () => {
 
     saveAiReportPrompt(prompt);
     saveAiReportFormat(format);
+    toast.info(t("filters.openingNewTab", { defaultValue: "Opening the report in a new tab…" }));
     window.open(REPORTS_AI, "_blank");
   };
 

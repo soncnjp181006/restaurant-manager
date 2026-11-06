@@ -198,6 +198,8 @@ export interface AverageHourlyCostResult {
 
 export interface LaborDashboardSnapshot {
   asOf: string;
+  /** Labels of sub-fetches that failed; the snapshot still holds partial data. */
+  degraded?: string[];
   clockedInCount: number;
   onBreakCount: number;
   scheduledTodayCount: number;

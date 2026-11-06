@@ -135,15 +135,22 @@ function toArray(v) {
   return Array.isArray(v) ? v : [v];
 }
 
+function valuesEqual(a, b) {
+  if (a instanceof DTMarker || b instanceof DTMarker) {
+    return compareValues(a, b) === 0;
+  }
+  return deepEqual(a, b);
+}
+
 function containsOp(container, needle) {
   if (Array.isArray(container)) {
-    return container.some((item) => deepEqual(item, needle));
+    return container.some((item) => valuesEqual(item, needle));
   }
   if (typeof container === 'string' && typeof needle === 'string') {
     return container.includes(needle);
   }
   if (container !== null && typeof container === 'object') {
-    return Object.values(container).some((item) => deepEqual(item, needle));
+    return Object.values(container).some((item) => valuesEqual(item, needle));
   }
   return false;
 }
@@ -511,6 +518,8 @@ export function evaluate(node, row, params = {}, ctx = {}) {
       return node.v === NONE_LITERAL ? NONE : node.v;
     case 'uuid':
       return node.v;
+    case 'dtlit':
+      return new DTMarker(node.v);
     case 'dur':
       return { __duration: node.ms, str: node.str };
     case 'param': {
@@ -619,8 +628,16 @@ function evaluateBinary(node, row, params, ctx) {
   const r = evaluate(node.r, row, params, ctx);
   switch (op) {
     case '=':
+      // Datetime params arrive as DTMarker while stored rows keep ISO strings —
+      // compare chronologically instead of failing deepEqual on representation.
+      if (l instanceof DTMarker || r instanceof DTMarker) {
+        return compareValues(l, r) === 0;
+      }
       return deepEqual(l, r);
     case '!=':
+      if (l instanceof DTMarker || r instanceof DTMarker) {
+        return compareValues(l, r) !== 0;
+      }
       return !deepEqual(l, r);
     case '<':
       return compareValues(l, r) < 0;

@@ -11,7 +11,7 @@ import {shouldShowBusinessDate} from "@/lib/inventory/quantity.display.ts";
 import {
   formatInventoryNumber,
   roundInventory,
-  withInventoryCurrency,
+  withInventoryCurrencyUi,
 } from "@/lib/inventory/rounding.ts";
 import {
   InventoryDocumentViewHost,
@@ -264,7 +264,7 @@ export const StoreInventoryCell = ({locationId, item}: {locationId: string; item
         </span>
         {netQuantity > 0 && (
           <span className="text-xs text-muted font-normal no-underline">
-            {withInventoryCurrency(stockValue)}
+            {withInventoryCurrencyUi(stockValue)}
           </span>
         )}
       </span>
@@ -297,15 +297,15 @@ export const StoreInventoryCell = ({locationId, item}: {locationId: string; item
             Current Quantity: {formatInventoryNumber(netQuantity)}
             {item?.uom}
             <div className="text-base text-muted mt-1">
-              {t("columns.stockValue")}: {withInventoryCurrency(stockValue)}
+              {t("columns.stockValue")}: {withInventoryCurrencyUi(stockValue)}
               <span className="text-muted">
                 {" "}
-                ({withInventoryCurrency(unitCost)} / {item?.uom || "unit"})
+                ({withInventoryCurrencyUi(unitCost)} / {item?.uom || "unit"})
               </span>
             </div>
             <div className="text-sm text-muted mt-1">
               {t("columns.averageCost", {defaultValue: t("columns.avgPrice")})}:{" "}
-              {withInventoryCurrency(unitCost)}
+              {withInventoryCurrencyUi(unitCost)}
             </div>
           </div>
 

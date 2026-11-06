@@ -6,17 +6,21 @@
   "actions": {
     "toKitchen": "To kitchen",
     "payNow": "Pay Now",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "orderCancelled": "Order cancelled"
   },
   "errors": {
     "createOrder": "Unable to create order.",
+    "orderSending": "The order is already being sent, please wait…",
     "openPayment": "Unable to open payment.",
     "notOwner": "This order is open on another terminal",
     "numbersExhausted": "No reserved order IDs left offline — reconnect to continue",
     "invoicePendingSync": "Invoice number is pending sync — wait until the order is online before fiscal submit",
     "fiscalFailed": "Fiscal submission failed",
     "fireFailed": "Could not fire the held items",
-    "noKitchenRouting": "No kitchen ticket was created for {{count}} item(s): the dish has no workflow and no kitchen station includes it. Set a workflow in Admin → Workflow, or add the dish to a station in Admin → Kitchen."
+    "noKitchenRouting": "No kitchen ticket was created for {{count}} item(s): the dish has no workflow and no kitchen station includes it. Set a workflow in Admin → Workflow, or add the dish to a station in Admin → Kitchen.",
+    "cancelNeedsUser": "Cannot cancel: no user session",
+    "cancelFailed": "Could not cancel the order"
   },
   "tracking": {
     "createOrder": "Create order",
