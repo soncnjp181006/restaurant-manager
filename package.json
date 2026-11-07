@@ -26,6 +26,7 @@
     "db:relational:generate": "node migrations/relational/generate.mjs",
     "db:relational:import": "node migrations/relational/import.mjs --reset",
     "db:relational:verify": "node migrations/relational/import.mjs --verify-only",
+    "db:relational:erd": "node migrations/relational/erd.mjs",
     "migrate:discounts": "node scripts/migrate-discounts.mjs",
     "seed:discounts": "node scripts/seed-discounts.mjs",
     "backfill:order-discounts": "node scripts/backfill-order-discounts.mjs",

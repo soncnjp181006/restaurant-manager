@@ -60,6 +60,23 @@ Hoặc qua npm: `npm run db:relational:generate`, `npm run db:relational:import`
 
 Database đích mặc định: `restaurant_manager_relational` (đổi bằng `DB_NAME_REL`). Dữ liệu nguồn **không bị sửa**; script chỉ đọc.
 
+### 2b. Xem quan hệ giữa các bảng
+
+Nếu client DB (Database Client, DBeaver, Workbench…) mở diagram mà chỉ thấy các bảng rời nhau: quan hệ **có tồn tại**, chỉ là client đó chỉ vẽ đường nối khi bảng đang được bung cột ra (bảng thu gọn thì không có “neo” cột để nối), hoặc đang giữ cache schema cũ từ lúc chưa nạp `002_foreign_keys.sql`. Kiểm tra nhanh:
+
+```sql
+SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS
+ WHERE CONSTRAINT_SCHEMA = 'restaurant_manager_relational';   -- 625
+```
+
+Để có sơ đồ đọc được ngay, sinh lại từ `information_schema` (không phải suy diễn từ schema text):
+
+```bash
+npm run db:relational:erd      # DB_PASS=... (và DB_NAME_REL nếu khác mặc định)
+```
+
+Script ghi ra `docs/erd/relational-live.mmd` (Mermaid, 239 bảng · 458 cạnh FK, bỏ qua bảng `*__attrs` và bảng metadata), `docs/erd/relational-live.dbml` (dán vào dbdiagram.io/dbdocs) và `docs/erd/relational-live.html` — trang mở trực tiếp trong Preview: chọn một bảng + bán kính 1–3 bước, nó vẽ đúng vùng lân cận với đường nối và tên cột tham chiếu.
+
 ---
 
 ## 3. Quy tắc ánh xạ

@@ -1,0 +1,2792 @@
+Table _schema_migration {
+  id varchar(512) [pk]
+  applied_at datetime(3)
+  name varchar(255)
+  note text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table account {
+  id varchar(512) [pk]
+  account_type text
+  code varchar(255)
+  created_at datetime(3)
+  group varchar(512) [ref: > account_group.id]
+  is_active tinyint(1)
+  name text
+  normal_balance text
+  notes text
+  parent varchar(512) [ref: > account.id]
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table account_group {
+  id varchar(512) [pk]
+  code varchar(255)
+  created_at datetime(3)
+  head_type text
+  is_active tinyint(1)
+  name text
+  normal_balance text
+  notes text
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table account_journal_entry {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  date datetime(3)
+  entry_number bigint
+  generated_at datetime(3)
+  generated_by text
+  idempotency_key varchar(255)
+  integration_provider_id text
+  journal_template_id text
+  memo text
+  origin_event text
+  origin_module text
+  origin_record_id text
+  posting_rule_id text
+  source_id text
+  source_module text
+  status varchar(255)
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table account_journal_entry__documents {
+  parent_id varchar(512) [pk, ref: > account_journal_entry.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > document.id]
+}
+
+Table account_journal_entry__lines {
+  parent_id varchar(512) [pk, ref: > account_journal_entry.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > account_journal_line.id]
+}
+
+Table account_journal_line {
+  id varchar(512) [pk]
+  account varchar(512) [ref: > account.id]
+  created_at datetime(3)
+  credit double
+  debit double
+  description text
+  entry varchar(512) [ref: > account_journal_entry.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table audit_log {
+  id varchar(512) [pk]
+  action varchar(64)
+  actor_id varchar(64)
+  actor_login text
+  occurred_at datetime(3)
+  record_id varchar(255)
+  source text
+  table_name varchar(255)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table audit_log__actor_roles {
+  parent_id varchar(512) [pk, ref: > audit_log.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table audit_log__changed_fields {
+  parent_id varchar(512) [pk, ref: > audit_log.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table auth_permission {
+  id varchar(512) [pk]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table buffet_consumption_log {
+  id varchar(512) [pk]
+  guest_consumption double
+  item varchar(512) [ref: > inventory_item.id]
+  leftover_qty double
+  posted_to_ledger tinyint(1)
+  produced_qty double
+  session varchar(512) [ref: > buffet_session.id]
+  staff_meal_qty double
+  theoretical_guest_qty double
+  total_consumed double
+  total_food_cost double
+  unit_food_cost double
+  variance_qty double
+  waste_qty double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table buffet_guest_count {
+  id varchar(512) [pk]
+  count_type text
+  guest_count bigint
+  recorded_at datetime(3)
+  recorded_by varchar(512) [ref: > user.id]
+  session varchar(512) [ref: > buffet_session.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table buffet_menu {
+  id varchar(512) [pk]
+  code text
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  is_active tinyint(1)
+  name text
+  notes text
+  session_type text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table buffet_menu_item {
+  id varchar(512) [pk]
+  menu varchar(512) [ref: > buffet_menu.id]
+  per_guest_qty double
+  recipe varchar(512) [ref: > recipe.id]
+  sort_order bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table buffet_production_batch {
+  id varchar(512) [pk]
+  menu_item varchar(512) [ref: > buffet_menu_item.id]
+  planned_qty double
+  production_batch varchar(512) [ref: > production_batch.id]
+  session varchar(512) [ref: > buffet_session.id]
+  status text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table buffet_session {
+  id varchar(512) [pk]
+  actual_guests bigint
+  buffet_price double
+  business_date varchar(255)
+  closed_at datetime(3)
+  closed_by varchar(512) [ref: > user.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  expected_guests bigint
+  location varchar(512) [ref: > inventory_location.id]
+  menu varchar(512) [ref: > buffet_menu.id]
+  notes text
+  posted_to_ledger tinyint(1)
+  scheduled_end datetime(3)
+  scheduled_start datetime(3)
+  session_number text
+  session_type varchar(255)
+  started_at datetime(3)
+  status text
+  store varchar(512) [ref: > inventory_store.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table buffet_stock_snapshot {
+  id varchar(512) [pk]
+  captured_at datetime(3)
+  captured_by varchar(512) [ref: > user.id]
+  item varchar(512) [ref: > inventory_item.id]
+  notes text
+  production_batch varchar(512) [ref: > production_batch.id]
+  quantity double
+  session varchar(512) [ref: > buffet_session.id]
+  snapshot_type varchar(255)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table buffet_waste_log {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  item varchar(512) [ref: > inventory_item.id]
+  ledger_waste_item varchar(512) [ref: > inventory_item_waste_item.id]
+  quantity double
+  reason text
+  session varchar(512) [ref: > buffet_session.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table catalog_branch_override {
+  id varchar(512) [pk]
+  base_id varchar(255)
+  branch_id varchar(255)
+  table varchar(255)
+  updated_at datetime(3)
+  updated_by text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table catalog_release {
+  id varchar(512) [pk]
+  audience text
+  note text
+  published_at datetime(3)
+  published_by text
+  version bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table catalog_release__branch_ids {
+  parent_id varchar(512) [pk, ref: > catalog_release.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table catalog_release__tables {
+  parent_id varchar(512) [pk, ref: > catalog_release.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table category {
+  id varchar(512) [pk]
+  background text
+  branch_id text
+  color text
+  deleted_at datetime(3)
+  name text
+  parent varchar(512) [ref: > category.id]
+  priority bigint
+  show_in_menu tinyint(1)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table cost_center {
+  id varchar(512) [pk]
+  code varchar(255)
+  deleted_at datetime(3)
+  description text
+  is_active tinyint(1)
+  name text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table coupon {
+  id varchar(512) [pk]
+  branch_id text
+  code text
+  coupon_type text
+  created_at datetime(3)
+  deleted_at datetime(3)
+  description text
+  discount_type text
+  discount_value double
+  end_date datetime(3)
+  end_time datetime(3)
+  first_order_only tinyint(1)
+  is_active tinyint(1)
+  max_discount_amount double
+  min_order_amount double
+  priority bigint
+  stackable tinyint(1)
+  start_date datetime(3)
+  start_time datetime(3)
+  updated_at datetime(3)
+  usage_limit bigint
+  usage_limit_per_user bigint
+  used_count bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table coupon__valid_days {
+  parent_id varchar(512) [pk, ref: > coupon.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table coupon_redemption {
+  id varchar(512) [pk]
+  coupon varchar(512) [ref: > coupon.id]
+  customer varchar(512) [ref: > customer.id]
+  discount_amount double
+  order varchar(512) [ref: > order.id]
+  redeemed_at datetime(3)
+  user varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table customer {
+  id varchar(512) [pk]
+  address text
+  email text
+  lat double
+  lng double
+  name text
+  number bigint
+  phone text
+  points double
+  postal_code bigint
+  secondary_address text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table customer__addresses {
+  parent_id varchar(512) [pk, ref: > customer.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > customer_address.id]
+}
+
+Table customer__tags {
+  parent_id varchar(512) [pk, ref: > customer.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table customer_address {
+  id varchar(512) [pk]
+  country text
+  is_primary tinyint(1)
+  lat double
+  lng double
+  postal_code bigint
+  primary_address text
+  region text
+  secondary_address text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table day_closing {
+  id varchar(512) [pk]
+  cash_added double
+  cash_withdrawn double
+  closed_at datetime(3)
+  closed_by varchar(512) [ref: > user.id]
+  closing_balance double
+  created_at datetime(3)
+  date_from datetime(3)
+  date_to datetime(3)
+  drawer_float double
+  expenses double
+  net_amount double
+  notes text
+  opened_by varchar(512) [ref: > user.id]
+  opening_balance double
+  previous_day_balance double
+  status text
+  total_cash double
+  total_other_payments double
+  variance_reason text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table day_closing__batch_totals {
+  parent_id varchar(512) [pk, ref: > day_closing.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table day_closing__expenses_data {
+  parent_id varchar(512) [pk, ref: > day_closing.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table department {
+  id varchar(512) [pk]
+  code varchar(255)
+  deleted_at datetime(3)
+  description text
+  is_active tinyint(1)
+  name text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table discount {
+  id varchar(512) [pk]
+  application_mode text
+  branch_id text
+  category text
+  code text
+  conditions text
+  deleted_at datetime(3)
+  exclusive tinyint(1)
+  is_active tinyint(1)
+  max_cap double
+  max_rate double
+  max_value double
+  min_order_amount double
+  min_rate double
+  min_value double
+  name text
+  priority bigint
+  requires_approval tinyint(1)
+  requires_reason tinyint(1)
+  scope text
+  stack_group text
+  stackable tinyint(1)
+  stackable_with_coupon tinyint(1)
+  stacking_mode text
+  targets text
+  tax_treatment text
+  type text
+  value double
+  value_type text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table discount__applicable_floors {
+  parent_id varchar(512) [pk, ref: > discount.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > floor.id]
+}
+
+Table discount__schedules {
+  parent_id varchar(512) [pk, ref: > discount.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table discount_reason {
+  id varchar(512) [pk]
+  code varchar(255)
+  deleted_at datetime(3)
+  is_active tinyint(1)
+  name text
+  requires_approval tinyint(1)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table document {
+  id varchar(512) [pk]
+  content longblob
+  name text
+  path text
+  size bigint
+  type text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table employee {
+  id varchar(512) [pk]
+  cost_center varchar(512) [ref: > cost_center.id]
+  deleted_at datetime(3)
+  department varchar(512) [ref: > department.id]
+  employee_number varchar(64)
+  employment_status varchar(64)
+  employment_type text
+  first_name text
+  hire_date datetime(3)
+  is_rehire tinyint(1)
+  last_name text
+  manager varchar(512) [ref: > employee.id]
+  notes text
+  position varchar(512) [ref: > position.id]
+  rehire_date datetime(3)
+  termination_date datetime(3)
+  user varchar(512)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table employee_assignment_history {
+  id varchar(512) [pk]
+  changed_by varchar(512) [ref: > user.id]
+  cost_center varchar(512) [ref: > cost_center.id]
+  created_at datetime(3)
+  department varchar(512) [ref: > department.id]
+  effective_from datetime(3)
+  effective_to datetime(3)
+  employee varchar(512) [ref: > employee.id]
+  manager varchar(512) [ref: > employee.id]
+  position varchar(512) [ref: > position.id]
+  reason text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table employee_document {
+  id varchar(512) [pk]
+  category text
+  document varchar(512) [ref: > document.id]
+  employee varchar(512) [ref: > employee.id]
+  expires_at datetime(3)
+  title text
+  uploaded_at datetime(3)
+  uploaded_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table employee_pay_profile {
+  id varchar(512) [pk]
+  base_rate double
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  currency text
+  effective_from datetime(3)
+  effective_to datetime(3)
+  employee varchar(512) [ref: > employee.id]
+  expected_work_days double
+  holiday_policy varchar(512) [ref: > labor_policy.id]
+  maximum_hours_per_day double
+  maximum_hours_per_week double
+  night_policy varchar(512) [ref: > labor_policy.id]
+  notes text
+  overtime_policy varchar(512) [ref: > labor_policy.id]
+  pay_type text
+  weekend_policy varchar(512) [ref: > labor_policy.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table employee_performance_note {
+  id varchar(512) [pk]
+  content text
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  employee varchar(512) [ref: > employee.id]
+  severity text
+  title text
+  type text
+  visible_to_employee tinyint(1)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table extra {
+  id varchar(512) [pk]
+  branch_id text
+  name text
+  value bigint
+  apply_to_all tinyint(1)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table extra__order_types {
+  parent_id varchar(512) [pk, ref: > extra.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table extra__payment_types {
+  parent_id varchar(512) [pk, ref: > extra.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table extra__tables {
+  parent_id varchar(512) [pk, ref: > extra.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table extras {
+  id varchar(512) [pk]
+  apply_to_all tinyint(1)
+  name text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table extras__order_types {
+  parent_id varchar(512) [pk, ref: > extras.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_type.id]
+}
+
+Table extras__payment_types {
+  parent_id varchar(512) [pk, ref: > extras.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > payment_type.id]
+}
+
+Table extras__tables {
+  parent_id varchar(512) [pk, ref: > extras.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > floor_table.id]
+}
+
+Table floor {
+  id varchar(512) [pk]
+  background text
+  color text
+  deleted_at datetime(3)
+  name text
+  priority bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table floor_table {
+  id varchar(512) [pk]
+  allow_multiple_orders tinyint(1)
+  ask_for_covers tinyint(1)
+  background text
+  block_source text
+  capacity bigint
+  color text
+  deleted_at datetime(3)
+  floor varchar(512) [ref: > floor.id]
+  height double
+  is_block tinyint(1)
+  is_locked tinyint(1)
+  locked_at datetime(3)
+  locked_by text
+  name text
+  number text
+  priority bigint
+  rounded text
+  width double
+  x double
+  y double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table floor_table__categories {
+  parent_id varchar(512) [pk, ref: > floor_table.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > category.id]
+}
+
+Table floor_table__order_types {
+  parent_id varchar(512) [pk, ref: > floor_table.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_type.id]
+}
+
+Table floor_table__payment_types {
+  parent_id varchar(512) [pk, ref: > floor_table.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > payment_type.id]
+}
+
+Table integration_entity_mapping {
+  id varchar(512) [pk]
+  entity_type varchar(255)
+  external_id varchar(255)
+  local_id varchar(255)
+  provider_id varchar(255)
+  tenant_id varchar(255)
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_execution_history {
+  id varchar(512) [pk]
+  action text
+  created_at datetime(3)
+  error text
+  provider_id text
+  status text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_installed_provider {
+  id varchar(512) [pk]
+  enabled tinyint(1)
+  provider_id text
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_oauth_credential {
+  id varchar(512) [pk]
+  access_token_enc text
+  company_name text
+  expires_at datetime(3)
+  provider_id varchar(255)
+  refresh_token_enc text
+  scopes text
+  status text
+  tenant_id varchar(255)
+  token_type text
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_oauth_state {
+  id varchar(512) [pk]
+  expires_at datetime(3)
+  provider_id text
+  redirect_path text
+  state varchar(255)
+  used_at datetime(3)
+  user_id text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_order_fiscal {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  error text
+  invoice_number text
+  order varchar(512) [ref: > order.id]
+  provider_id varchar(255)
+  qr_priority double
+  qrcode text
+  selected_for_print tinyint(1)
+  status text
+  submitted_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_provider {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  enabled tinyint(1)
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_provider_certificate {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  expires_at datetime(3)
+  name text
+  provider_id text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_provider_config {
+  id varchar(512) [pk]
+  provider_id text
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_provider_health {
+  id varchar(512) [pk]
+  authentication_status text
+  average_response_time_ms double
+  certificate_expiry datetime(3)
+  failed_jobs bigint
+  last_synchronization datetime(3)
+  pending_jobs bigint
+  provider_id text
+  status text
+  updated_at datetime(3)
+  version text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_provider_secret {
+  id varchar(512) [pk]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_provider_webhook {
+  id varchar(512) [pk]
+  event_name text
+  provider_id text
+  received_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_queue {
+  id varchar(512) [pk]
+  action text
+  attempts bigint
+  created_at datetime(3)
+  dedupe_key text
+  max_retries bigint
+  next_run_at datetime(3)
+  partition_key text
+  provider_id text
+  status text
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_queue_attempt {
+  id varchar(512) [pk]
+  attempts bigint
+  created_at datetime(3)
+  error text
+  job_id text
+  provider_id text
+  status text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_schedule {
+  id varchar(512) [pk]
+  enabled tinyint(1)
+  interval_ms bigint
+  name text
+  next_run_at datetime(3)
+  provider_id text
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_sync_failure {
+  id varchar(512) [pk]
+  action text
+  created_at datetime(3)
+  entity_type text
+  error text
+  error_category text
+  local_id text
+  provider_id text
+  retriable tinyint(1)
+  retry_count bigint
+  tenant_id text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table integration_sync_run {
+  id varchar(512) [pk]
+  cursor text
+  error text
+  finished_at datetime(3)
+  mode text
+  progress text
+  provider_id text
+  started_at datetime(3)
+  status text
+  tenant_id text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_adjustment {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  cancelled_at datetime(3)
+  cancelled_by varchar(512) [ref: > user.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  invoice_number bigint
+  location varchar(512) [ref: > inventory_location.id]
+  notes text
+  posted_at datetime(3)
+  posted_by varchar(512) [ref: > user.id]
+  reason text
+  status varchar(255)
+  store varchar(512) [ref: > inventory_store.id]
+  voided_at datetime(3)
+  voided_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_adjustment__items {
+  parent_id varchar(512) [pk, ref: > inventory_adjustment.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_adjustment_item.id]
+}
+
+Table inventory_adjustment_item {
+  id varchar(512) [pk]
+  adjustment varchar(512) [ref: > inventory_adjustment.id]
+  comments text
+  item varchar(512) [ref: > inventory_item.id]
+  location varchar(512) [ref: > inventory_location.id]
+  quantity_change double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  store varchar(512) [ref: > inventory_store.id]
+  unit_cost double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_category {
+  id varchar(512) [pk]
+  name text
+  priority bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_issue {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  cancelled_at datetime(3)
+  cancelled_by varchar(512) [ref: > user.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  invoice_number bigint
+  issued_to varchar(512) [ref: > user.id]
+  kitchen varchar(512) [ref: > kitchen.id]
+  location varchar(512) [ref: > inventory_location.id]
+  parent varchar(512) [ref: > inventory_issue.id]
+  posted_at datetime(3)
+  posted_by varchar(512) [ref: > user.id]
+  revision bigint
+  status varchar(255)
+  store varchar(512) [ref: > inventory_store.id]
+  superseded_by varchar(512) [ref: > inventory_issue.id]
+  voided_at datetime(3)
+  voided_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_issue__documents {
+  parent_id varchar(512) [pk, ref: > inventory_issue.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > document.id]
+}
+
+Table inventory_issue__items {
+  parent_id varchar(512) [pk, ref: > inventory_issue.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_issue_item.id]
+}
+
+Table inventory_issue_item {
+  id varchar(512) [pk]
+  code text
+  comments text
+  issue varchar(512) [ref: > inventory_issue.id]
+  item varchar(512) [ref: > inventory_item.id]
+  location varchar(512) [ref: > inventory_location.id]
+  price double
+  quantity double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  requested double
+  store varchar(512) [ref: > inventory_store.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_issue_return {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  cancelled_at datetime(3)
+  cancelled_by varchar(512) [ref: > user.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  invoice_number bigint
+  issuance varchar(512) [ref: > inventory_issue.id]
+  issued_to varchar(512) [ref: > user.id]
+  kitchen varchar(512) [ref: > kitchen.id]
+  location varchar(512) [ref: > inventory_location.id]
+  posted_at datetime(3)
+  posted_by varchar(512) [ref: > user.id]
+  status varchar(255)
+  store varchar(512) [ref: > inventory_store.id]
+  voided_at datetime(3)
+  voided_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_issue_return__documents {
+  parent_id varchar(512) [pk, ref: > inventory_issue_return.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > document.id]
+}
+
+Table inventory_issue_return__items {
+  parent_id varchar(512) [pk, ref: > inventory_issue_return.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_issue_return_item.id]
+}
+
+Table inventory_issue_return_item {
+  id varchar(512) [pk]
+  comments text
+  inventory_issue_return varchar(512) [ref: > inventory_issue_return.id]
+  issue_return varchar(512) [ref: > inventory_issue_return.id]
+  issued double
+  issued_item varchar(512) [ref: > inventory_issue_item.id]
+  item varchar(512) [ref: > inventory_item.id]
+  location varchar(512) [ref: > inventory_location.id]
+  price double
+  quantity double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  store varchar(512) [ref: > inventory_store.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_item {
+  id varchar(512) [pk]
+  average_price double
+  base_quantity double
+  category varchar(512) [ref: > inventory_category.id]
+  code text
+  name text
+  price double
+  taxable tinyint(1)
+  uom text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_item__item_types {
+  parent_id varchar(512) [pk, ref: > inventory_item.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table inventory_item__locations {
+  parent_id varchar(512) [pk, ref: > inventory_item.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_location.id]
+}
+
+Table inventory_item__stores {
+  parent_id varchar(512) [pk, ref: > inventory_item.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_store.id]
+}
+
+Table inventory_item__suppliers {
+  parent_id varchar(512) [pk, ref: > inventory_item.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_supplier.id]
+}
+
+Table inventory_item_group {
+  id varchar(512) [pk]
+  base_quantity double
+  main_item varchar(512) [ref: > inventory_item.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_item_group__sub_items {
+  parent_id varchar(512) [pk, ref: > inventory_item_group.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_item_group_item.id]
+}
+
+Table inventory_item_group_item {
+  id varchar(512) [pk]
+  item varchar(512) [ref: > inventory_item.id]
+  quantity double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_item_waste {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  cancelled_at datetime(3)
+  cancelled_by varchar(512) [ref: > user.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  invoice_number bigint
+  issue varchar(512) [ref: > inventory_issue.id]
+  posted_at datetime(3)
+  posted_by varchar(512) [ref: > user.id]
+  purchase varchar(512) [ref: > inventory_purchase.id]
+  status varchar(255)
+  voided_at datetime(3)
+  voided_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_item_waste__documents {
+  parent_id varchar(512) [pk, ref: > inventory_item_waste.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > document.id]
+}
+
+Table inventory_item_waste__items {
+  parent_id varchar(512) [pk, ref: > inventory_item_waste.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_item_waste_item.id]
+}
+
+Table inventory_item_waste_item {
+  id varchar(512) [pk]
+  comments text
+  issue_item varchar(512) [ref: > inventory_issue_item.id]
+  item varchar(512) [ref: > inventory_item.id]
+  location varchar(512) [ref: > inventory_location.id]
+  price double
+  purchase_item varchar(512) [ref: > inventory_purchase_item.id]
+  quantity double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  source text
+  store varchar(512) [ref: > inventory_store.id]
+  waste varchar(512) [ref: > inventory_item_waste.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_item_waste_item__documents {
+  parent_id varchar(512) [pk, ref: > inventory_item_waste_item.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table inventory_ledger {
+  id varchar(512) [pk]
+  batch_code text
+  business_date varchar(255)
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  expiry_date text
+  inventory_item varchar(512) [ref: > inventory_item.id]
+  inventory_location varchar(512) [ref: > inventory_location.id]
+  ledger_key varchar(255)
+  manufacturing_date text
+  notes text
+  quantity_change double
+  reference_id varchar(255)
+  reference_item text
+  reference_type varchar(255)
+  reversal_of varchar(512) [ref: > inventory_ledger.id]
+  total_cost double
+  unit_cost double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_location {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  is_active tinyint(1)
+  linked_kitchen varchar(512) [ref: > kitchen.id]
+  linked_store varchar(512) [ref: > inventory_store.id]
+  name text
+  type text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_purchase {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  cancelled_at datetime(3)
+  cancelled_by varchar(512) [ref: > user.id]
+  comments text
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  invoice_number bigint
+  location varchar(512) [ref: > inventory_location.id]
+  method text
+  parent varchar(512) [ref: > inventory_purchase.id]
+  payment_method varchar(512) [ref: > payment_type.id]
+  posted_at datetime(3)
+  posted_by varchar(512) [ref: > user.id]
+  purchase_order varchar(512) [ref: > inventory_purchase_order.id]
+  revision bigint
+  status varchar(255)
+  store varchar(512) [ref: > inventory_store.id]
+  superseded_by varchar(512) [ref: > inventory_purchase.id]
+  supplier varchar(512) [ref: > inventory_supplier.id]
+  tax_amount double
+  tax_rate double
+  voided_at datetime(3)
+  voided_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_purchase__documents {
+  parent_id varchar(512) [pk, ref: > inventory_purchase.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > document.id]
+}
+
+Table inventory_purchase__items {
+  parent_id varchar(512) [pk, ref: > inventory_purchase.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_purchase_item.id]
+}
+
+Table inventory_purchase_item {
+  id varchar(512) [pk]
+  allocated_discount double
+  allocated_extra_cost double
+  allocated_tax double
+  base_quantity double
+  code text
+  comments text
+  expiry_date datetime(3)
+  final_unit_cost double
+  is_done tinyint(1)
+  item varchar(512) [ref: > inventory_item.id]
+  location varchar(512) [ref: > inventory_location.id]
+  manufacturing_date datetime(3)
+  price double
+  purchase varchar(512) [ref: > inventory_purchase.id]
+  purchase_price double
+  quantity double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  requested double
+  store varchar(512) [ref: > inventory_store.id]
+  supplier varchar(512) [ref: > inventory_supplier.id]
+  taxable tinyint(1)
+  total_inventory_cost double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_purchase_order {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  location varchar(512) [ref: > inventory_location.id]
+  po_number bigint
+  rejected_at datetime(3)
+  rejected_by varchar(512) [ref: > user.id]
+  status varchar(255)
+  store varchar(512) [ref: > inventory_store.id]
+  submitted_at datetime(3)
+  submitted_by varchar(512) [ref: > user.id]
+  supplier varchar(512) [ref: > inventory_supplier.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_purchase_order__documents {
+  parent_id varchar(512) [pk, ref: > inventory_purchase_order.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > document.id]
+}
+
+Table inventory_purchase_order__items {
+  parent_id varchar(512) [pk, ref: > inventory_purchase_order.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_purchase_order_item.id]
+}
+
+Table inventory_purchase_order_item {
+  id varchar(512) [pk]
+  item varchar(512) [ref: > inventory_item.id]
+  price double
+  purchase_order varchar(512) [ref: > inventory_purchase_order.id]
+  quantity double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  supplier varchar(512) [ref: > inventory_supplier.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_purchase_payment {
+  id varchar(512) [pk]
+  amount double
+  created_at datetime(3)
+  payment_type varchar(512) [ref: > payment_type.id]
+  purchase varchar(512) [ref: > inventory_purchase.id]
+  supplier varchar(512) [ref: > inventory_supplier.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_purchase_return {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  cancelled_at datetime(3)
+  cancelled_by varchar(512) [ref: > user.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  invoice_number bigint
+  location varchar(512) [ref: > inventory_location.id]
+  posted_at datetime(3)
+  posted_by varchar(512) [ref: > user.id]
+  purchase varchar(512) [ref: > inventory_purchase.id]
+  status varchar(255)
+  store varchar(512) [ref: > inventory_store.id]
+  voided_at datetime(3)
+  voided_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_purchase_return__documents {
+  parent_id varchar(512) [pk, ref: > inventory_purchase_return.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > document.id]
+}
+
+Table inventory_purchase_return__items {
+  parent_id varchar(512) [pk, ref: > inventory_purchase_return.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_purchase_return_item.id]
+}
+
+Table inventory_purchase_return_item {
+  id varchar(512) [pk]
+  comments text
+  item varchar(512) [ref: > inventory_item.id]
+  location varchar(512) [ref: > inventory_location.id]
+  price double
+  purchase_item varchar(512) [ref: > inventory_purchase_item.id]
+  purchase_return varchar(512) [ref: > inventory_purchase_return.id]
+  purchased double
+  quantity double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  store varchar(512) [ref: > inventory_store.id]
+  supplier varchar(512) [ref: > inventory_supplier.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_store {
+  id varchar(512) [pk]
+  name text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_supplier {
+  id varchar(512) [pk]
+  address text
+  email text
+  name text
+  phone text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table inventory_supplier__payments {
+  parent_id varchar(512) [pk, ref: > inventory_supplier.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_purchase_payment.id]
+}
+
+Table inventory_supplier__purchases {
+  parent_id varchar(512) [pk, ref: > inventory_supplier.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > inventory_purchase.id]
+}
+
+Table inventory_uom {
+  id varchar(512) [pk]
+  code varchar(64)
+  name text
+  family varchar(64)
+  base_factor double
+  is_system tinyint(1)
+  is_active tinyint(1)
+  sort bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table kitchen {
+  id varchar(512) [pk]
+  deleted_at datetime(3)
+  name text
+  priority bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table kitchen__items {
+  parent_id varchar(512) [pk, ref: > kitchen.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > menu_item.id]
+}
+
+Table kitchen__printers {
+  parent_id varchar(512) [pk, ref: > kitchen.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > printer.id]
+}
+
+Table kitchen_complimentary_item {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  item varchar(512) [ref: > inventory_item.id]
+  ledger_waste_item varchar(512) [ref: > inventory_item_waste_item.id]
+  order_item varchar(512) [ref: > order_item.id]
+  quantity double
+  reconciliation varchar(512) [ref: > kitchen_reconciliation.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table kitchen_reconciliation {
+  id varchar(512) [pk]
+  business_date varchar(255)
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  date_from datetime(3)
+  date_to datetime(3)
+  kitchen varchar(512) [ref: > kitchen.id]
+  location varchar(512) [ref: > inventory_location.id]
+  notes text
+  parent varchar(512) [ref: > kitchen_reconciliation.id]
+  revision bigint
+  status text
+  superseded_by varchar(512) [ref: > kitchen_reconciliation.id]
+  verified_at datetime(3)
+  verified_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table kitchen_reconciliation_item {
+  id varchar(512) [pk]
+  actual_consumption double
+  complimentary_qty double
+  expected_stock double
+  issued_qty double
+  item varchar(512) [ref: > inventory_item.id]
+  opening_stock double
+  physical_count double
+  entered_uom text
+  entered_physical_count double
+  entered_waste_qty double
+  entered_staff_meal_qty double
+  entered_complimentary_qty double
+  posted_to_ledger tinyint(1)
+  reconciliation varchar(512) [ref: > kitchen_reconciliation.id]
+  staff_meal_qty double
+  theoretical_consumption double
+  transfers_in double
+  transfers_out double
+  variance double
+  waste_qty double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table kitchen_reconciliation_revision {
+  id varchar(512) [pk]
+  change_type text
+  changed_at datetime(3)
+  changed_by varchar(512) [ref: > user.id]
+  reconciliation varchar(512) [ref: > kitchen_reconciliation.id]
+  revision_number bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table kitchen_staff_meal {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  dish varchar(512) [ref: > menu_item.id]
+  item varchar(512) [ref: > inventory_item.id]
+  ledger_waste_item varchar(512) [ref: > inventory_item_waste_item.id]
+  notes text
+  quantity double
+  reconciliation varchar(512) [ref: > kitchen_reconciliation.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table kitchen_stock_count {
+  id varchar(512) [pk]
+  counted_at datetime(3)
+  counted_by varchar(512) [ref: > user.id]
+  item varchar(512) [ref: > inventory_item.id]
+  quantity double
+  reconciliation varchar(512) [ref: > kitchen_reconciliation.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table kitchen_waste {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  item varchar(512) [ref: > inventory_item.id]
+  ledger_waste_item varchar(512) [ref: > inventory_item_waste_item.id]
+  quantity double
+  reason text
+  reconciliation varchar(512) [ref: > kitchen_reconciliation.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table labor_adjustment {
+  id varchar(512) [pk]
+  amount double
+  approved_by varchar(512) [ref: > user.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  currency text
+  description text
+  effective_date datetime(3)
+  employee varchar(512) [ref: > employee.id]
+  payroll_period varchar(512) [ref: > payroll_period.id]
+  status text
+  type text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table labor_audit_log {
+  id varchar(512) [pk]
+  action text
+  changed_at datetime(3)
+  changed_by varchar(512) [ref: > user.id]
+  entity_id varchar(255)
+  entity_type varchar(255)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table labor_cost_event {
+  id varchar(512) [pk]
+  consumed_at datetime(3)
+  emitted_at datetime(3)
+  event_type varchar(255)
+  payroll_run varchar(512) [ref: > payroll_run.id]
+  period_end datetime(3)
+  period_start datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table labor_pay_rule {
+  id varchar(512) [pk]
+  code varchar(255)
+  deleted_at datetime(3)
+  exclusive tinyint(1)
+  is_active tinyint(1)
+  name text
+  priority bigint
+  stacking_mode text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table labor_policy {
+  id varchar(512) [pk]
+  code varchar(255)
+  deleted_at datetime(3)
+  is_active tinyint(1)
+  name text
+  policy_type text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table leave_balance {
+  id varchar(512) [pk]
+  accrued double
+  carried_over double
+  employee varchar(512) [ref: > employee.id]
+  leave_type varchar(512) [ref: > leave_type.id]
+  pending double
+  used double
+  year bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table leave_request {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  auth_permission varchar(512) [ref: > auth_permission.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  days double
+  employee varchar(512) [ref: > employee.id]
+  end_date datetime(3)
+  leave_type varchar(512) [ref: > leave_type.id]
+  reason text
+  start_date datetime(3)
+  status text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table leave_type {
+  id varchar(512) [pk]
+  accrual_rate double
+  code varchar(255)
+  deleted_at datetime(3)
+  is_active tinyint(1)
+  max_days_per_year double
+  name text
+  paid tinyint(1)
+  requires_approval tinyint(1)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table menu {
+  id varchar(512) [pk]
+  active tinyint(1)
+  branch_id text
+  deleted_at datetime(3)
+  end_time datetime(3)
+  ends_on_next_day tinyint(1)
+  name text
+  start_from datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table menu__items {
+  parent_id varchar(512) [pk, ref: > menu.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > menu_menu_item.id]
+}
+
+Table menu_item {
+  id varchar(512) [pk]
+  allow_half tinyint(1)
+  allow_service_charges double
+  branch_id text
+  cost double
+  created_at datetime(3)
+  deleted_at datetime(3)
+  discount double
+  discount_type text
+  dish_photo varchar(512) [ref: > document.id]
+  name text
+  number varchar(64)
+  photo longblob
+  position bigint
+  price double
+  priority bigint
+  tax varchar(512) [ref: > tax.id]
+  workflow varchar(512) [ref: > workflow.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table menu_item__categories {
+  parent_id varchar(512) [pk, ref: > menu_item.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > category.id]
+}
+
+Table menu_item__items {
+  parent_id varchar(512) [pk, ref: > menu_item.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > menu_item_recipe.id]
+}
+
+Table menu_item_modifier_group {
+  id varchar(512) [pk]
+  has_required_modifiers tinyint(1)
+  in varchar(512) [ref: > menu_item.id]
+  out varchar(512) [ref: > modifier_group.id]
+  priority bigint
+  required_modifiers bigint
+  should_auto_open tinyint(1)
+  should_auto_select tinyint(1)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table menu_item_recipe {
+  id varchar(512) [pk]
+  cost double
+  is_price_locked tinyint(1)
+  item varchar(512) [ref: > inventory_item.id]
+  menu_item varchar(512) [ref: > menu_item.id]
+  quantity double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table menu_menu_item {
+  id varchar(512) [pk]
+  active tinyint(1)
+  base_price double
+  menu_item varchar(512) [ref: > menu_item.id]
+  price double
+  tax varchar(512) [ref: > tax.id]
+  tax_mode text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table menu_menu_item__taxes {
+  parent_id varchar(512) [pk, ref: > menu_menu_item.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > tax.id]
+}
+
+Table menu_menu_item_tax {
+  id varchar(512) [pk]
+  menu_menu_item varchar(512) [ref: > menu_menu_item.id]
+  priority bigint
+  tax varchar(512) [ref: > tax.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table modifier {
+  id varchar(512) [pk]
+  modifier varchar(512) [ref: > menu_item.id]
+  price double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table modifier__allowed_next_groups {
+  parent_id varchar(512) [pk, ref: > modifier.id]
+  ord int [pk]
+  value_text longtext
+}
+
+Table modifier__next_group_overrides {
+  parent_id varchar(512) [pk, ref: > modifier.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table modifier_group {
+  id varchar(512) [pk]
+  background text
+  branch_id text
+  color text
+  deleted_at datetime(3)
+  name text
+  priority bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table modifier_group__modifiers {
+  parent_id varchar(512) [pk, ref: > modifier_group.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > modifier.id]
+}
+
+Table notes {
+  id varchar(512) [pk]
+  payments_data text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order {
+  id varchar(512) [pk]
+  auto_id bigint
+  cashier varchar(512) [ref: > user.id]
+  completed_at datetime(3)
+  coupon varchar(512) [ref: > order_coupon.id]
+  covers bigint
+  created_at datetime(3)
+  customer varchar(512) [ref: > customer.id]
+  deleted_at datetime(3)
+  discount varchar(512) [ref: > discount.id]
+  discount_amount double
+  discount_manager varchar(512) [ref: > user.id]
+  discount_rate double
+  floor varchar(512) [ref: > floor.id]
+  invoice_display text
+  invoice_number bigint
+  invoice_prefix text
+  notes text
+  order_type varchar(512) [ref: > order_type.id]
+  owner_heartbeat_at datetime(3)
+  owner_terminal_id text
+  server_version bigint
+  service_charge double
+  service_charge_amount double
+  service_charge_type text
+  split bigint
+  status varchar(64)
+  table varchar(512) [ref: > floor_table.id]
+  tax varchar(512) [ref: > tax.id]
+  tax_amount double
+  updated_at datetime(3)
+  user varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order__extras {
+  parent_id varchar(512) [pk, ref: > order.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_extras.id]
+}
+
+Table order__items {
+  parent_id varchar(512) [pk, ref: > order.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_item.id]
+}
+
+Table order__order_discounts {
+  parent_id varchar(512) [pk, ref: > order.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_discount.id]
+}
+
+Table order__order_taxes {
+  parent_id varchar(512) [pk, ref: > order.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_tax.id]
+}
+
+Table order__payments {
+  parent_id varchar(512) [pk, ref: > order.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_payment.id]
+}
+
+Table order__tags {
+  parent_id varchar(512) [pk, ref: > order.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table order_coupon {
+  id varchar(512) [pk]
+  coupon varchar(512) [ref: > coupon.id]
+  created_at datetime(3)
+  discount double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_discount {
+  id varchar(512) [pk]
+  application_type text
+  applied_amount double
+  applied_by varchar(512) [ref: > user.id]
+  applied_rate double
+  approved_by varchar(512) [ref: > user.id]
+  auth_method text
+  base_amount double
+  created_at datetime(3)
+  discount varchar(512) [ref: > discount.id]
+  name text
+  order varchar(512) [ref: > order.id]
+  reason varchar(512) [ref: > discount_reason.id]
+  reason_text text
+  removed_at datetime(3)
+  removed_by varchar(512) [ref: > user.id]
+  scope text
+  tax_treatment text
+  value_type text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_discount__order_items {
+  parent_id varchar(512) [pk, ref: > order_discount.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_item.id]
+}
+
+Table order_extras {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  name text
+  value double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_item {
+  id varchar(512) [pk]
+  category text
+  category_id varchar(512) [ref: > category.id]
+  comments text
+  cost double
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  current_sequence bigint
+  deleted_at datetime(3)
+  discount double
+  is_addition tinyint(1)
+  is_refunded tinyint(1)
+  is_suspended tinyint(1)
+  item varchar(512) [ref: > menu_item.id]
+  level bigint
+  menu text
+  order varchar(512) [ref: > order.id]
+  original_price double
+  position bigint
+  price double
+  quantity double
+  seat text
+  service_charges double
+  tax double
+  tax_mode text
+  updated_at datetime(3)
+  workflow varchar(512) [ref: > workflow.id]
+  workflow_status text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_item__modifiers {
+  parent_id varchar(512) [pk, ref: > order_item.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table order_item__taxes {
+  parent_id varchar(512) [pk, ref: > order_item.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > tax.id]
+}
+
+Table order_item_kitchen {
+  id varchar(512) [pk]
+  activated_at datetime(3)
+  completed_at datetime(3)
+  created_at datetime(3)
+  is_terminal tinyint(1)
+  kitchen varchar(512) [ref: > kitchen.id]
+  order_item varchar(512) [ref: > order_item.id]
+  sequence bigint
+  stage varchar(512) [ref: > workflow_stage.id]
+  stage_name text
+  started_at datetime(3)
+  status varchar(64)
+  user varchar(512) [ref: > user.id]
+  workflow varchar(512) [ref: > workflow.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_item_kitchen__completed_by {
+  parent_id varchar(512) [pk, ref: > order_item_kitchen.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > user.id]
+}
+
+Table order_merge {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  new_order varchar(512) [ref: > order.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_merge__old_orders {
+  parent_id varchar(512) [pk, ref: > order_merge.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order.id]
+}
+
+Table order_meta {
+  id varchar(512) [pk]
+  name text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_number_seq {
+  id varchar(512) [pk]
+  value bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_payment {
+  id varchar(512) [pk]
+  amount double
+  comments text
+  payable double
+  payment_type varchar(512) [ref: > payment_type.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_print {
+  id varchar(512) [pk]
+  is_duplicate tinyint(1)
+  is_override tinyint(1)
+  order varchar(512) [ref: > order.id]
+  print_type varchar(255)
+  printed_at datetime(3)
+  printed_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_refund {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  logged_in_user varchar(512) [ref: > user.id]
+  manager varchar(512) [ref: > user.id]
+  order varchar(512) [ref: > order.id]
+  reason text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_refund__items {
+  parent_id varchar(512) [pk, ref: > order_refund.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_item.id]
+}
+
+Table order_split {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  old_order varchar(512) [ref: > order.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_split__new_orders {
+  parent_id varchar(512) [pk, ref: > order_split.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order.id]
+}
+
+Table order_tax {
+  id varchar(512) [pk]
+  amount double
+  order varchar(512) [ref: > order.id]
+  tax varchar(512) [ref: > tax.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_type {
+  id varchar(512) [pk]
+  allow_service_charges tinyint(1)
+  branch_id text
+  deleted_at datetime(3)
+  name text
+  priority bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_void {
+  id varchar(512) [pk]
+  comments text
+  created_at datetime(3)
+  deleted_by varchar(512) [ref: > user.id]
+  logged_in_user varchar(512) [ref: > user.id]
+  order varchar(512) [ref: > order.id]
+  quantity double
+  reason text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table order_void__items {
+  parent_id varchar(512) [pk, ref: > order_void.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > order_item.id]
+}
+
+Table payment_type {
+  id varchar(512) [pk]
+  branch_id text
+  credentials_updated_at datetime(3)
+  deleted_at datetime(3)
+  gateway text
+  gateway_config varchar(512) [ref: > payment_type_gateway_config.id]
+  gateway_config_encrypted text
+  gateway_mode text
+  has_discount tinyint(1)
+  name text
+  priority bigint
+  tax varchar(512) [ref: > tax.id]
+  type text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table payment_type__discounts {
+  parent_id varchar(512) [pk, ref: > payment_type.id]
+  ord int [pk]
+  ref_id varchar(512) [ref: > discount.id]
+}
+
+Table payment_type_gateway_config {
+  id varchar(512) [pk]
+  client_id text
+  client_secret text
+  integrity_salt text
+  merchant_id text
+  public_key text
+  secret_key text
+  webhook_secret text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table payment_webhook {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  gateway varchar(255)
+  key varchar(255)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table payroll_period {
+  id varchar(512) [pk]
+  closed_at datetime(3)
+  end_date datetime(3)
+  locked_at datetime(3)
+  locked_by varchar(512) [ref: > user.id]
+  name text
+  paid_at datetime(3)
+  period_type text
+  start_date datetime(3)
+  status text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table payroll_run {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  generated_at datetime(3)
+  generated_by varchar(512) [ref: > user.id]
+  notes text
+  payroll_period varchar(512) [ref: > payroll_period.id]
+  run_number bigint
+  status text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table payroll_snapshot {
+  id varchar(512) [pk]
+  adjustments double
+  bonuses double
+  calculated_at datetime(3)
+  calculation_version text
+  deductions double
+  double_time_hours double
+  employee varchar(512) [ref: > employee.id]
+  expected_work_days double
+  gross_pay double
+  holiday_premium_hours double
+  is_overridden tinyint(1)
+  net_pay double
+  night_premium_hours double
+  overridden_at datetime(3)
+  overridden_by varchar(512) [ref: > user.id]
+  override_note text
+  overtime_hours double
+  overtime_pay double
+  paid_days double
+  pay_profile_id varchar(512) [ref: > employee_pay_profile.id]
+  pay_type text
+  payroll_run varchar(512) [ref: > payroll_run.id]
+  premium_pay double
+  regular_hours double
+  regular_pay double
+  unpaid_leave_days double
+  weekend_premium_hours double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table position {
+  id varchar(512) [pk]
+  code varchar(255)
+  default_cost_center varchar(512) [ref: > cost_center.id]
+  deleted_at datetime(3)
+  department varchar(512) [ref: > department.id]
+  is_active tinyint(1)
+  name text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table printer {
+  id varchar(512) [pk]
+  command_set text
+  deleted_at datetime(3)
+  ip_address text
+  name text
+  paper_width_mm bigint
+  pid text
+  port bigint
+  print_mode text
+  prints bigint
+  priority bigint
+  type text
+  vid text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table production_batch {
+  id varchar(512) [pk]
+  batch_number text
+  completed_at datetime(3)
+  cost_allocation text
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  location varchar(512) [ref: > inventory_location.id]
+  notes text
+  produced_qty double
+  recipe varchar(512) [ref: > recipe.id]
+  scale_factor double
+  status text
+  store varchar(512) [ref: > inventory_store.id]
+  total_input_cost double
+  total_output_cost double
+  yield_loss_percent double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table production_batch_input {
+  id varchar(512) [pk]
+  batch varchar(512) [ref: > production_batch.id]
+  item varchar(512) [ref: > inventory_item.id]
+  location varchar(512) [ref: > inventory_location.id]
+  quantity double
+  store varchar(512) [ref: > inventory_store.id]
+  total_cost double
+  unit_cost double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table production_batch_output {
+  id varchar(512) [pk]
+  allocated_cost double
+  batch varchar(512) [ref: > production_batch.id]
+  disposition text
+  item varchar(512) [ref: > inventory_item.id]
+  ledger_waste_item varchar(512) [ref: > inventory_item_waste_item.id]
+  location varchar(512) [ref: > inventory_location.id]
+  quantity double
+  store varchar(512) [ref: > inventory_store.id]
+  unit_cost double
+  yield_percent double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table public_holiday {
+  id varchar(512) [pk]
+  country_code text
+  date datetime(3)
+  deleted_at datetime(3)
+  is_active tinyint(1)
+  is_recurring tinyint(1)
+  labor_policy varchar(512) [ref: > labor_policy.id]
+  name text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table recipe {
+  id varchar(512) [pk]
+  base_batch_qty double
+  code text
+  cost_allocation text
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  is_active tinyint(1)
+  name text
+  notes text
+  primary_output varchar(512) [ref: > recipe_output.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table recipe_item {
+  id varchar(512) [pk]
+  item varchar(512) [ref: > inventory_item.id]
+  quantity double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  recipe varchar(512) [ref: > recipe.id]
+  sort_order bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table recipe_output {
+  id varchar(512) [pk]
+  disposition text
+  is_primary tinyint(1)
+  item varchar(512) [ref: > inventory_item.id]
+  recipe varchar(512) [ref: > recipe.id]
+  sort_order bigint
+  value_weight double
+  yield_percent double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table revoked_session {
+  id varchar(512) [pk]
+  expires_at datetime(3)
+  jti varchar(255)
+  revoked_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table role_discount_policy {
+  id varchar(512) [pk]
+  can_apply_manual tinyint(1)
+  can_override_approval tinyint(1)
+  max_fixed_amount double
+  max_percent double
+  user_role varchar(512) [ref: > user_role.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table role_discount_policy__allowed_categories {
+  parent_id varchar(512) [pk, ref: > role_discount_policy.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table schedule_template {
+  id varchar(512) [pk]
+  break_minutes double
+  cost_center varchar(512) [ref: > cost_center.id]
+  deleted_at datetime(3)
+  department varchar(512) [ref: > department.id]
+  end_time text
+  is_active tinyint(1)
+  name text
+  position varchar(512) [ref: > position.id]
+  shift_template varchar(512) [ref: > shift.id]
+  start_time text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table schedule_template__days_of_week {
+  parent_id varchar(512) [pk, ref: > schedule_template.id]
+  ord int [pk]
+  value_number double
+}
+
+Table scheduled_shift {
+  id varchar(512) [pk]
+  cost_center varchar(512) [ref: > cost_center.id]
+  department varchar(512) [ref: > department.id]
+  employee varchar(512) [ref: > employee.id]
+  end_at datetime(3)
+  notes text
+  position varchar(512) [ref: > position.id]
+  shift_template varchar(512) [ref: > shift.id]
+  start_at datetime(3)
+  status text
+  work_schedule varchar(512) [ref: > work_schedule.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table security_alert_rules {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  description text
+  enabled tinyint(1)
+  name text
+  rule_type varchar(255)
+  severity text
+  threshold bigint
+  window_minutes bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table security_alerts {
+  id varchar(512) [pk]
+  acknowledged_at datetime(3)
+  acknowledged_by text
+  actor_id varchar(255)
+  actor_login text
+  count bigint
+  emitted_at datetime(3)
+  resolution_notes text
+  rule_id varchar(255)
+  rule_name text
+  rule_type text
+  severity varchar(255)
+  source_ip text
+  status varchar(255)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table security_alerts__actor_roles {
+  parent_id varchar(512) [pk, ref: > security_alerts.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table self_order_checkout {
+  id varchar(512) [pk]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table self_order_table {
+  id varchar(512) [pk]
+  table text
+  token varchar(64)
+  created_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table setting {
+  id varchar(512) [pk]
+  is_global tinyint(1)
+  key varchar(64)
+  user varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table shift {
+  id varchar(512) [pk]
+  deleted_at datetime(3)
+  end_time text
+  ends_next_day tinyint(1)
+  name text
+  start_time text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table shift_swap_request {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  auth_permission varchar(512) [ref: > auth_permission.id]
+  proposed_shift varchar(512) [ref: > scheduled_shift.id]
+  requesting_employee varchar(512) [ref: > employee.id]
+  scheduled_shift varchar(512) [ref: > scheduled_shift.id]
+  status text
+  target_employee varchar(512) [ref: > employee.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table stock_transfer {
+  id varchar(512) [pk]
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  cancelled_at datetime(3)
+  cancelled_by varchar(512) [ref: > user.id]
+  created_at datetime(3)
+  created_by varchar(512) [ref: > user.id]
+  from_kitchen varchar(512) [ref: > kitchen.id]
+  from_location varchar(512) [ref: > inventory_location.id]
+  from_store varchar(512) [ref: > inventory_store.id]
+  notes text
+  posted_at datetime(3)
+  posted_by varchar(512) [ref: > user.id]
+  status varchar(255)
+  to_kitchen varchar(512) [ref: > kitchen.id]
+  to_location varchar(512) [ref: > inventory_location.id]
+  to_store varchar(512) [ref: > inventory_store.id]
+  voided_at datetime(3)
+  voided_by varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table stock_transfer_item {
+  id varchar(512) [pk]
+  item varchar(512) [ref: > inventory_item.id]
+  quantity double
+  entered_price double
+  entered_quantity double
+  entered_uom text
+  transfer varchar(512) [ref: > stock_transfer.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_accepted_operation {
+  id varchar(512) [pk]
+  event_id bigint
+  created_at datetime(3)
+  terminal_id text
+  operation_id varchar(64)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_branch {
+  id varchar(512) [pk]
+  active tinyint(1)
+  client_id varchar(255)
+  created_at datetime(3)
+  name text
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_catalog_down_cursor {
+  id varchar(512) [pk]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_cloud_cursor {
+  id varchar(512) [pk]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_conflict {
+  id varchar(512) [pk]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_cursor {
+  id varchar(512) [pk]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_event {
+  id varchar(512) [pk]
+  version bigint
+  event_id bigint
+  scope_id text
+  created_at datetime(3)
+  terminal_id text
+  aggregate_id text
+  operation_id text
+  aggregate_type text
+  operation_type text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_event_seq {
+  id varchar(512) [pk]
+  counter bigint
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_number_counter {
+  id varchar(512) [pk]
+  value bigint
+  series text
+  scope_id text
+  updated_at datetime(3)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_number_reservation {
+  id varchar(512) [pk]
+  end bigint
+  count bigint
+  start bigint
+  series text
+  scope_id text
+  created_at datetime(3)
+  last_number bigint
+  terminal_id text
+  first_number bigint
+  reservation_id varchar(128)
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table sync_terminal {
+  id varchar(512) [pk]
+  actor_id text
+  scope_id text
+  created_at datetime(3)
+  terminal_id varchar(64)
+  last_seen_at datetime(3)
+  last_sequence bigint
+  registered_at datetime(3)
+  schema_version bigint
+  protocol_version text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table tax {
+  id varchar(512) [pk]
+  branch_id text
+  deleted_at datetime(3)
+  name text
+  priority bigint
+  rate double
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table time_entry {
+  id varchar(512) [pk]
+  approval_status text
+  approved_at datetime(3)
+  approved_by varchar(512) [ref: > user.id]
+  attendance_status text
+  clock_in datetime(3)
+  clock_out datetime(3)
+  early_leave_minutes double
+  employee varchar(512) [ref: > employee.id]
+  late_minutes double
+  notes text
+  original_time_entry varchar(512) [ref: > time_entry.id]
+  platform text
+  scheduled_shift varchar(512) [ref: > scheduled_shift.id]
+  shift_template varchar(512) [ref: > shift.id]
+  source text
+  user varchar(512) [ref: > user.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table time_entry_break {
+  id varchar(512) [pk]
+  approved_by varchar(512) [ref: > user.id]
+  break_type text
+  end_at datetime(3)
+  missed tinyint(1)
+  start_at datetime(3)
+  time_entry varchar(512) [ref: > time_entry.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table user {
+  id varchar(512) [pk]
+  deleted_at datetime(3)
+  first_name text
+  last_name text
+  login text
+  login_method text
+  password text
+  user_role varchar(512) [ref: > user_role.id]
+  user_shift varchar(512) [ref: > shift.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table user__branch_ids {
+  parent_id varchar(512) [pk, ref: > user.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table user__roles {
+  parent_id varchar(512) [pk, ref: > user.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table user_role {
+  id varchar(512) [pk]
+  deleted_at datetime(3)
+  name text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table user_role__roles {
+  parent_id varchar(512) [pk, ref: > user_role.id]
+  ord int [pk]
+  value_text varchar(512)
+}
+
+Table work_schedule {
+  id varchar(512) [pk]
+  name text
+  period_end datetime(3)
+  period_start datetime(3)
+  published_at datetime(3)
+  published_by varchar(512) [ref: > user.id]
+  status text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table workflow {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  deleted_at datetime(3)
+  name text
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
+
+Table workflow_stage {
+  id varchar(512) [pk]
+  created_at datetime(3)
+  is_terminal tinyint(1)
+  kitchen varchar(512) [ref: > kitchen.id]
+  name text
+  sequence bigint
+  workflow varchar(512) [ref: > workflow.id]
+  row_created_at timestamp(3) [not null]
+  row_updated_at timestamp(3) [not null]
+}
