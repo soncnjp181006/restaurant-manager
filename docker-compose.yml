@@ -298,7 +298,9 @@ services:
       - TZ=UTC
       - BACKUP_HOST=mysql
       - BACKUP_PORT=3306
-      - BACKUP_DB=${MYSQL_DB:-restaurant_manager}
+      # The live data now lives in the relational database; the legacy JSON
+      # store stays as an untouched rollback copy.
+      - BACKUP_DB=${MYSQL_DB_REL:-${MYSQL_DB:-restaurant_manager}}
       - BACKUP_USER=${MYSQL_USER:?Set MYSQL_USER in .env}
       - MYSQL_PWD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
       - BACKUP_RETENTION_COUNT=7

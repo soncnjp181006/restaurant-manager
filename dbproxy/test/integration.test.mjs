@@ -14,7 +14,9 @@ import { Surreal, RecordId, StringRecordId, Uuid } from 'surrealdb';
 const DB = {
   host: process.env.DB_TEST_HOST ?? '127.0.0.1',
   port: Number(process.env.DB_TEST_PORT ?? 3307),
-  database: process.env.DB_TEST_DB ?? 'restaurant_manager',
+  // Default to the throwaway test database: this suite truncates `records`,
+  // so pointing it at the live store by accident destroys real data.
+  database: process.env.DB_TEST_DB ?? 'restaurant_manager_test',
   user: process.env.DB_TEST_USER ?? 'restaurant',
   password: process.env.DB_TEST_PASS ?? 'fc3ec04f8907d7032df738bae6951b928d83',
 };

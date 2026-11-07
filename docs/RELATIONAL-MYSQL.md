@@ -12,14 +12,14 @@ Trước đây MySQL chỉ có **6 bảng vật lý** (`records` chứa toàn b�
 | Hạng mục | Trước | Sau |
 |---|---:|---:|
 | Bảng nghiệp vụ vật lý | 1 (`records`) | **167** |
-| Bảng con cho mảng (1-n) | 0 | **71** |
-| Bảng thuộc tính lồng nhau | 0 | **40** |
-| Tổng bảng vật lý trong schema | 6 | **278** |
-| Cột nghiệp vụ có kiểu | 2 (`table_name`, `id`) | **1.403** |
-| Khóa ngoại vật lý | **0** | **495** |
-| Ràng buộc UNIQUE vật lý | 0 (chỉ enforce trong dbproxy) | **47** |
-| Cột kiểu `JSON` | 4 | **0** |
-| Dòng dữ liệu | 293 (49 bảng) | **293** — xác minh từng ô |
+| Bảng con cho mảng (1-n) | 0 | **73** |
+| Bảng thuộc tính lồng nhau | 0 | **37** (thêm 130 bảng tạo lúc runtime cho các bảng chưa có) |
+| Tổng bảng vật lý trong schema | 6 | **277** (**412** sau khi dbproxy tạo `__attrs` cho mọi bảng) |
+| Cột nghiệp vụ có kiểu | 2 (`table_name`, `id`) | **1.370** |
+| Khóa ngoại vật lý | **0** | **625** |
+| Ràng buộc UNIQUE vật lý | 0 (chỉ enforce trong dbproxy) | **68** |
+| Cột kiểu `JSON` | 4 | **0** (1 số cột metadata của dbproxy vẫn giữ JSON — xem §6) |
+| Dòng dữ liệu | 6.694 (46 bảng) | **6.694** — xác minh từng ô |
 
 Bảng đích của quan hệ nhiều nhất: `user` (100 cột trỏ tới), `inventory_item` (24), `inventory_location` (22), `inventory_store` (21), `document` (16), `order` (14), `employee` (14), `order_item` (10), `tax` (10).
 
@@ -53,10 +53,10 @@ Hoặc qua npm: `npm run db:relational:generate`, `npm run db:relational:import`
 
 `generate.mjs` ghi ra:
 
-- `migrations/relational/001_tables.sql` — 278 `CREATE TABLE` (bảng cha, bảng mảng, bảng thuộc tính), PK/UNIQUE/KEY.
-- `migrations/relational/002_foreign_keys.sql` — 495 `ALTER TABLE … ADD CONSTRAINT`. Tách riêng vì phải nạp dữ liệu trước (quan hệ vòng giữa các bảng).
+- `migrations/relational/001_tables.sql` — 277 `CREATE TABLE` (bảng cha, bảng mảng, bảng thuộc tính), PK/UNIQUE/KEY.
+- `migrations/relational/002_foreign_keys.sql` — 385 `ALTER TABLE … ADD CONSTRAINT` cho cột tham chiếu (tổng 625 FK kể cả FK `parent_id`/`ref_id` của bảng con). Tách riêng vì phải nạp dữ liệu trước (quan hệ vòng giữa các bảng).
 - `migrations/relational/report.json` — số dòng/cột/FK từng bảng + danh sách ràng buộc bị bỏ qua.
-- `docs/erd/relational.mmd` — ERD Mermaid của 384 khóa ngoại giữa các bảng nghiệp vụ (111 cạnh cha–con của bảng mảng/thuộc tính nằm trong `001_tables.sql`).
+- `docs/erd/relational.mmd` — ERD Mermaid của 385 khóa ngoại giữa các bảng nghiệp vụ.
 
 Database đích mặc định: `restaurant_manager_relational` (đổi bằng `DB_NAME_REL`). Dữ liệu nguồn **không bị sửa**; script chỉ đọc.
 
@@ -110,7 +110,7 @@ Khóa ngoại chỉ được tạo khi **mọi giá trị hiện có đều phâ
 
 ```
 target restaurant_manager_relational: 167 tables, 495 foreign keys
-verified 293 records (values, arrays, nested attributes)
+verified 6694 records (values, arrays, nested attributes)
 OK — relational copy matches the JSON store value for value
 ```
 
@@ -126,7 +126,7 @@ Sau đó nạp lại bằng `--reset` → về `OK`. Ngoài ra script kiểm tra
 Kiểm tra trực tiếp trên MySQL:
 
 ```sql
--- 278 bảng, 495 FK, 0 cột JSON
+-- 412 bảng (277 trong DDL + __attrs tạo lúc runtime), 625 FK, 0 cột JSON nghiệp vụ
 SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='restaurant_manager_relational';
 SELECT COUNT(*) FROM information_schema.table_constraints
  WHERE table_schema='restaurant_manager_relational' AND constraint_type='FOREIGN KEY';
@@ -171,8 +171,8 @@ Sinh schema ghi các mục này vào `report.json` và in ra khi chạy:
    - POS đọc `order`/`order_item`/`menu_item`/`setting`/`inventory_item`/`account_journal_entry`, `count() GROUP ALL`, `FETCH` đều đúng;
    - thanh toán một đơn trong UI → `order.status='Paid'`, `order_payment` có dòng mới, `order__payments` có link, `change_log` tăng;
    - sync-service đẩy outbox → `sync_accepted_operation`/`sync_event` ghi vào bảng riêng, không còn `APPLY_ERROR`;
-   - tracking: 94 → 178 dòng sau khi đổi `tracking.user_agent` sang `TEXT`.
-4. Bộ test: dbproxy **71/71**, `npm run test:sync` **27/27**; DDL mới nạp sạch vào database trắng (278 bảng, 495 FK).
+   - tracking: ghi mới vào bảng `tracking` sau khi đổi `tracking.user_agent` sang `TEXT`.
+4. Bộ test: dbproxy **71/71**, `npm run test:sync` **27/27**; `import.mjs --reset` nạp lại 6.694 record vào database trắng và xác minh từng giá trị.
 
 ### Còn lại
 
