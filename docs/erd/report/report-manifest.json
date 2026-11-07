@@ -1,0 +1,554 @@
+{
+  "database": "restaurant_manager_relational",
+  "pages": [
+    {
+      "page": "overview",
+      "domain": "overview",
+      "title": "Sơ đồ tổng quan",
+      "tables": 238,
+      "stubs": 0,
+      "size": [
+        1280,
+        1080
+      ]
+    },
+    {
+      "page": "inventory-1",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu — nhóm inventory_purchase",
+      "tables": 22,
+      "stubs": 8,
+      "size": [
+        2364,
+        1690
+      ]
+    },
+    {
+      "page": "inventory-2",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu — nhóm inventory_item",
+      "tables": 20,
+      "stubs": 8,
+      "size": [
+        2364,
+        1221
+      ]
+    },
+    {
+      "page": "inventory-3",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu — nhóm inventory_issue",
+      "tables": 8,
+      "stubs": 6,
+      "size": [
+        1700,
+        1046
+      ]
+    },
+    {
+      "page": "order-payment-1",
+      "domain": "order-payment",
+      "title": "Đơn hàng & Thanh toán — nhóm order_",
+      "tables": 21,
+      "stubs": 10,
+      "size": [
+        2364,
+        1228
+      ]
+    },
+    {
+      "page": "order-payment-2",
+      "domain": "order-payment",
+      "title": "Đơn hàng & Thanh toán — nhóm order_item",
+      "tables": 12,
+      "stubs": 10,
+      "size": [
+        2032,
+        1494
+      ]
+    },
+    {
+      "page": "order-payment-3",
+      "domain": "order-payment",
+      "title": "Đơn hàng & Thanh toán — nhóm payment_type",
+      "tables": 4,
+      "stubs": 2,
+      "size": [
+        1036,
+        556
+      ]
+    },
+    {
+      "page": "hr-1",
+      "domain": "hr",
+      "title": "Nhân sự & Lương — nhóm schedule_template",
+      "tables": 16,
+      "stubs": 6,
+      "size": [
+        2032,
+        1578
+      ]
+    },
+    {
+      "page": "hr-2",
+      "domain": "hr",
+      "title": "Nhân sự & Lương — nhóm employee",
+      "tables": 5,
+      "stubs": 6,
+      "size": [
+        1368,
+        850
+      ]
+    },
+    {
+      "page": "hr-3",
+      "domain": "hr",
+      "title": "Nhân sự & Lương — nhóm labor_adjustment",
+      "tables": 5,
+      "stubs": 4,
+      "size": [
+        1368,
+        857
+      ]
+    },
+    {
+      "page": "core-1",
+      "domain": "core",
+      "title": "Dữ liệu lõi dùng chung — nhóm audit_log",
+      "tables": 16,
+      "stubs": 5,
+      "size": [
+        2032,
+        1011
+      ]
+    },
+    {
+      "page": "core-2",
+      "domain": "core",
+      "title": "Dữ liệu lõi dùng chung — nhóm extra_",
+      "tables": 4,
+      "stubs": 0,
+      "size": [
+        1036,
+        430
+      ]
+    },
+    {
+      "page": "core-3",
+      "domain": "core",
+      "title": "Dữ liệu lõi dùng chung — nhóm extras_",
+      "tables": 4,
+      "stubs": 3,
+      "size": [
+        1368,
+        346
+      ]
+    },
+    {
+      "page": "menu-recipe-1",
+      "domain": "menu-recipe",
+      "title": "Thực đơn & Công thức — nhóm menu_item",
+      "tables": 15,
+      "stubs": 5,
+      "size": [
+        2032,
+        1158
+      ]
+    },
+    {
+      "page": "menu-recipe-2",
+      "domain": "menu-recipe",
+      "title": "Thực đơn & Công thức — nhóm modifier_",
+      "tables": 5,
+      "stubs": 1,
+      "size": [
+        1036,
+        472
+      ]
+    },
+    {
+      "page": "menu-recipe-3",
+      "domain": "menu-recipe",
+      "title": "Thực đơn & Công thức — nhóm catalog_release",
+      "tables": 4,
+      "stubs": 0,
+      "size": [
+        1036,
+        556
+      ]
+    },
+    {
+      "page": "integration",
+      "domain": "integration",
+      "title": "Tích hợp ngoài",
+      "tables": 17,
+      "stubs": 1,
+      "size": [
+        1700,
+        1221
+      ]
+    },
+    {
+      "page": "kitchen",
+      "domain": "kitchen",
+      "title": "Bếp & In món",
+      "tables": 11,
+      "stubs": 6,
+      "size": [
+        1700,
+        1410
+      ]
+    },
+    {
+      "page": "sync",
+      "domain": "sync",
+      "title": "Đồng bộ nhiều máy POS",
+      "tables": 11,
+      "stubs": 0,
+      "size": [
+        1368,
+        773
+      ]
+    },
+    {
+      "page": "auth",
+      "domain": "auth",
+      "title": "Đăng nhập & Phân quyền",
+      "tables": 9,
+      "stubs": 1,
+      "size": [
+        1368,
+        794
+      ]
+    },
+    {
+      "page": "buffet",
+      "domain": "buffet",
+      "title": "Buffet",
+      "tables": 8,
+      "stubs": 7,
+      "size": [
+        1700,
+        899
+      ]
+    },
+    {
+      "page": "discount",
+      "domain": "discount",
+      "title": "Khuyến mãi & Giảm giá",
+      "tables": 7,
+      "stubs": 4,
+      "size": [
+        1368,
+        1487
+      ]
+    },
+    {
+      "page": "accounting",
+      "domain": "accounting",
+      "title": "Sổ kế toán",
+      "tables": 5,
+      "stubs": 3,
+      "size": [
+        1368,
+        934
+      ]
+    },
+    {
+      "page": "floor",
+      "domain": "floor",
+      "title": "Sơ đồ bàn",
+      "tables": 5,
+      "stubs": 3,
+      "size": [
+        1368,
+        724
+      ]
+    },
+    {
+      "page": "customer",
+      "domain": "customer",
+      "title": "Khách hàng",
+      "tables": 4,
+      "stubs": 0,
+      "size": [
+        1036,
+        724
+      ]
+    }
+  ],
+  "domains": {
+    "inventory": {
+      "title": "Kho & Nguyên liệu",
+      "tables": 50,
+      "color": "#0b7285"
+    },
+    "order-payment": {
+      "title": "Đơn hàng & Thanh toán",
+      "tables": 37,
+      "color": "#3b5bdb"
+    },
+    "hr": {
+      "title": "Nhân sự & Lương",
+      "tables": 26,
+      "color": "#5f3dc4"
+    },
+    "core": {
+      "title": "Dữ liệu lõi dùng chung",
+      "tables": 24,
+      "color": "#495057"
+    },
+    "menu-recipe": {
+      "title": "Thực đơn & Công thức",
+      "tables": 24,
+      "color": "#e8590c"
+    },
+    "integration": {
+      "title": "Tích hợp ngoài",
+      "tables": 17,
+      "color": "#862e9c"
+    },
+    "kitchen": {
+      "title": "Bếp & In món",
+      "tables": 11,
+      "color": "#c92a2a"
+    },
+    "sync": {
+      "title": "Đồng bộ nhiều máy POS",
+      "tables": 11,
+      "color": "#1864ab"
+    },
+    "auth": {
+      "title": "Đăng nhập & Phân quyền",
+      "tables": 9,
+      "color": "#2b8a3e"
+    },
+    "buffet": {
+      "title": "Buffet",
+      "tables": 8,
+      "color": "#a61e4d"
+    },
+    "discount": {
+      "title": "Khuyến mãi & Giảm giá",
+      "tables": 7,
+      "color": "#7048e8"
+    },
+    "accounting": {
+      "title": "Sổ kế toán",
+      "tables": 5,
+      "color": "#087f5b"
+    },
+    "floor": {
+      "title": "Sơ đồ bàn",
+      "tables": 5,
+      "color": "#1971c2"
+    },
+    "customer": {
+      "title": "Khách hàng",
+      "tables": 4,
+      "color": "#d9480f"
+    }
+  },
+  "flows": [
+    {
+      "from": "inventory",
+      "to": "auth",
+      "count": 43
+    },
+    {
+      "from": "order-payment",
+      "to": "auth",
+      "count": 18
+    },
+    {
+      "from": "hr",
+      "to": "auth",
+      "count": 17
+    },
+    {
+      "from": "kitchen",
+      "to": "inventory",
+      "count": 9
+    },
+    {
+      "from": "buffet",
+      "to": "inventory",
+      "count": 8
+    },
+    {
+      "from": "kitchen",
+      "to": "auth",
+      "count": 7
+    },
+    {
+      "from": "buffet",
+      "to": "auth",
+      "count": 6
+    },
+    {
+      "from": "hr",
+      "to": "core",
+      "count": 6
+    },
+    {
+      "from": "inventory",
+      "to": "core",
+      "count": 6
+    },
+    {
+      "from": "order-payment",
+      "to": "menu-recipe",
+      "count": 6
+    },
+    {
+      "from": "inventory",
+      "to": "kitchen",
+      "count": 5
+    },
+    {
+      "from": "order-payment",
+      "to": "discount",
+      "count": 5
+    },
+    {
+      "from": "core",
+      "to": "hr",
+      "count": 4
+    },
+    {
+      "from": "core",
+      "to": "auth",
+      "count": 4
+    },
+    {
+      "from": "menu-recipe",
+      "to": "inventory",
+      "count": 3
+    },
+    {
+      "from": "order-payment",
+      "to": "hr",
+      "count": 3
+    },
+    {
+      "from": "accounting",
+      "to": "auth",
+      "count": 2
+    },
+    {
+      "from": "core",
+      "to": "order-payment",
+      "count": 2
+    },
+    {
+      "from": "floor",
+      "to": "order-payment",
+      "count": 2
+    },
+    {
+      "from": "inventory",
+      "to": "order-payment",
+      "count": 2
+    },
+    {
+      "from": "kitchen",
+      "to": "menu-recipe",
+      "count": 2
+    },
+    {
+      "from": "order-payment",
+      "to": "floor",
+      "count": 2
+    },
+    {
+      "from": "accounting",
+      "to": "core",
+      "count": 1
+    },
+    {
+      "from": "buffet",
+      "to": "menu-recipe",
+      "count": 1
+    },
+    {
+      "from": "discount",
+      "to": "customer",
+      "count": 1
+    },
+    {
+      "from": "discount",
+      "to": "order-payment",
+      "count": 1
+    },
+    {
+      "from": "discount",
+      "to": "auth",
+      "count": 1
+    },
+    {
+      "from": "discount",
+      "to": "floor",
+      "count": 1
+    },
+    {
+      "from": "core",
+      "to": "floor",
+      "count": 1
+    },
+    {
+      "from": "floor",
+      "to": "menu-recipe",
+      "count": 1
+    },
+    {
+      "from": "integration",
+      "to": "order-payment",
+      "count": 1
+    },
+    {
+      "from": "kitchen",
+      "to": "order-payment",
+      "count": 1
+    },
+    {
+      "from": "menu-recipe",
+      "to": "core",
+      "count": 1
+    },
+    {
+      "from": "menu-recipe",
+      "to": "hr",
+      "count": 1
+    },
+    {
+      "from": "order-payment",
+      "to": "customer",
+      "count": 1
+    },
+    {
+      "from": "order-payment",
+      "to": "kitchen",
+      "count": 1
+    },
+    {
+      "from": "inventory",
+      "to": "menu-recipe",
+      "count": 1
+    },
+    {
+      "from": "menu-recipe",
+      "to": "auth",
+      "count": 1
+    },
+    {
+      "from": "auth",
+      "to": "hr",
+      "count": 1
+    },
+    {
+      "from": "hr",
+      "to": "kitchen",
+      "count": 1
+    }
+  ]
+}

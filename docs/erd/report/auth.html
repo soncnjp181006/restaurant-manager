@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>Đăng nhập &amp; Phân quyền</title>
+<style>
+  body { background:#fff; color:#111827; font-family:'Segoe UI',system-ui,sans-serif; margin:0; padding:28px 36px; }
+  h1 { font-size:25px; margin:0 0 4px; }
+  h1 .chip { display:inline-block; width:16px; height:16px; border-radius:4px; background:#2b8a3e; vertical-align:-2px; margin-right:10px; }
+  .sub { color:#4b5563; font-size:14px; margin-bottom:14px; }
+  .legend { font-size:12.5px; color:#4b5563; margin-bottom:12px; }
+  .b { font-size:9.5px; font-weight:700; border-radius:3px; padding:0 4px; margin-left:4px; vertical-align:1px; }
+  .pk { background:#1d4ed8; color:#fff; }
+  .fk { background:#c2410c; color:#fff; }
+  .wrap { position:relative; }
+  .ent { position:absolute; background:#fff; border-radius:6px; box-shadow:0 1px 4px rgba(15,23,42,.14); overflow:hidden; }
+  .eh { color:#fff; font-weight:700; font-size:13.5px; padding:5px 9px; letter-spacing:.2px; }
+  .stub { font-size:10px; color:#64748b; padding:2px 9px; background:#f1f5f9; }
+  .r { display:flex; align-items:center; font-size:12px; padding:2.5px 9px; }
+  .r:nth-child(even) { background:#f7f9fc; }
+  .cn { flex:1; font-family:Consolas,ui-monospace,monospace; font-size:11.5px; white-space:nowrap; }
+  .ct { color:#6b7280; font-size:10.5px; margin-left:8px; white-space:nowrap; }
+</style></head>
+<body>
+  <h1><span class="chip"></span>Đăng nhập &amp; Phân quyền
+      <span style="font-size:14px;color:#6b7280;font-weight:normal"> — 9 bảng + 1 bảng tham chiếu · domain <code>auth</code></span></h1>
+  <div class="sub">Tài khoản đăng nhập, vai trò, quyền và phiên làm việc.</div>
+  <div class="legend"><b>PK</b> khóa chính (kiểu gạch chân) · <b>FK</b> khóa ngoại · nhãn nghiêng trên đường nối = cột FK · đường đứt nét = tham chiếu sang nhóm khác · mũi tên chỉ về bảng được tham chiếu</div>
+  <div class="wrap" id="wrap" style="width:1368px;height:794px">
+    <svg id="edges" width="1368" height="794" style="position:absolute;left:0;top:0">
+      <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8494ab"/></marker></defs>
+      <path d="M 174 516 L 174 189" fill="none" stroke="#8494ab" stroke-width="1.4" opacity="0.75" marker-end="url(#arrow)"/>
+      <path d="M 704 93.5 C 506 93.5, 506 622, 308 622" fill="none" stroke="#8494ab" stroke-width="1.4" opacity="0.75" marker-end="url(#arrow)"/><text x="506" y="352.75" font-size="11" fill="#4a5a72" text-anchor="middle" stroke="#ffffff" stroke-width="3" paint-order="stroke" font-style="italic">parent_id</text>
+      <path d="M 174 215 L 174 189" fill="none" stroke="#8494ab" stroke-width="1.4" opacity="0.75" marker-end="url(#arrow)"/>
+      <path d="M 308 352.5 C 348 352.5, 332 72.5, 372 72.5" fill="none" stroke="#8494ab" stroke-width="1.4" opacity="0.75" stroke-dasharray="5 4" marker-end="url(#arrow)"/><text x="340" y="207.5" font-size="11" fill="#4a5a72" text-anchor="middle" stroke="#ffffff" stroke-width="3" paint-order="stroke" font-style="italic">user_shift</text>
+      <path d="M 704 226.5 C 506 226.5, 506 352.5, 308 352.5" fill="none" stroke="#8494ab" stroke-width="1.4" opacity="0.75" marker-end="url(#arrow)"/><text x="506" y="284.5" font-size="11" fill="#4a5a72" text-anchor="middle" stroke="#ffffff" stroke-width="3" paint-order="stroke" font-style="italic">parent_id</text>
+      <path d="M 704 359.5 C 506 359.5, 506 352.5, 308 352.5" fill="none" stroke="#8494ab" stroke-width="1.4" opacity="0.75" marker-end="url(#arrow)"/><text x="506" y="351" font-size="11" fill="#4a5a72" text-anchor="middle" stroke="#ffffff" stroke-width="3" paint-order="stroke" font-style="italic">parent_id</text>
+      <path d="M 1036 93.5 C 672 93.5, 672 114.5, 308 114.5" fill="none" stroke="#8494ab" stroke-width="1.4" opacity="0.75" marker-end="url(#arrow)"/><text x="672" y="99" font-size="11" fill="#4a5a72" text-anchor="middle" stroke="#ffffff" stroke-width="3" paint-order="stroke" font-style="italic">parent_id</text>
+    </svg>
+    <div class="ent" style="left:40px;top:40px;width:268px;border:1.6px solid #2b8a3e;">
+        <div class="eh" style="background:#2b8a3e">user_role</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">deleted_at</span><span class="ct">datetime</span></div><div class="r"><span class="cn">name</span><span class="ct">text</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:40px;top:215px;width:268px;border:1.6px solid #2b8a3e;">
+        <div class="eh" style="background:#2b8a3e">user</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">deleted_at</span><span class="ct">datetime</span></div><div class="r"><span class="cn">first_name</span><span class="ct">text</span></div><div class="r"><span class="cn">last_name</span><span class="ct">text</span></div><div class="r"><span class="cn">login</span><span class="ct">text</span></div><div class="r"><span class="cn">login_method</span><span class="ct">text</span></div><div class="r"><span class="cn">password</span><span class="ct">text</span></div><div class="r"><span class="cn">user_role</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">user_shift</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:40px;top:516px;width:268px;border:1.6px solid #2b8a3e;">
+        <div class="eh" style="background:#2b8a3e">role_discount_policy</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">can_apply_manual</span><span class="ct">bool</span></div><div class="r"><span class="cn">can_override_approval</span><span class="ct">bool</span></div><div class="r"><span class="cn">max_fixed_amount</span><span class="ct">double</span></div><div class="r"><span class="cn">max_percent</span><span class="ct">double</span></div><div class="r"><span class="cn">user_role</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:372px;top:40px;width:268px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">shift</div><div class="stub">ngoài nhóm này</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:372px;top:131px;width:268px;border:1.6px solid #2b8a3e;">
+        <div class="eh" style="background:#2b8a3e">account_group</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">code</span><span class="ct">varchar</span></div><div class="r"><span class="cn">created_at</span><span class="ct">datetime</span></div><div class="r"><span class="cn">head_type</span><span class="ct">text</span></div><div class="r"><span class="cn">is_active</span><span class="ct">bool</span></div><div class="r"><span class="cn">name</span><span class="ct">text</span></div><div class="r"><span class="cn">normal_balance</span><span class="ct">text</span></div><div class="r"><span class="cn">notes</span><span class="ct">text</span></div><div class="r"><span class="cn">updated_at</span><span class="ct">datetime</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:372px;top:432px;width:268px;border:1.6px solid #2b8a3e;">
+        <div class="eh" style="background:#2b8a3e">auth_permission</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:704px;top:40px;width:268px;border:1.6px solid #2b8a3e;">
+        <div class="eh" style="background:#2b8a3e">role_discount_policy__allowed_categories</div><div class="r"><span class="cn">parent_id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span><span class="b fk">FK</span></div><div class="r"><span class="cn">ord</span><span class="ct"><u>int</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">value_text</span><span class="ct">varchar</span></div></div>
+    <div class="ent" style="left:704px;top:173px;width:268px;border:1.6px solid #2b8a3e;">
+        <div class="eh" style="background:#2b8a3e">user__branch_ids</div><div class="r"><span class="cn">parent_id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span><span class="b fk">FK</span></div><div class="r"><span class="cn">ord</span><span class="ct"><u>int</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">value_text</span><span class="ct">varchar</span></div></div>
+    <div class="ent" style="left:704px;top:306px;width:268px;border:1.6px solid #2b8a3e;">
+        <div class="eh" style="background:#2b8a3e">user__roles</div><div class="r"><span class="cn">parent_id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span><span class="b fk">FK</span></div><div class="r"><span class="cn">ord</span><span class="ct"><u>int</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">value_text</span><span class="ct">varchar</span></div></div>
+    <div class="ent" style="left:1036px;top:40px;width:268px;border:1.6px solid #2b8a3e;">
+        <div class="eh" style="background:#2b8a3e">user_role__roles</div><div class="r"><span class="cn">parent_id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span><span class="b fk">FK</span></div><div class="r"><span class="cn">ord</span><span class="ct"><u>int</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">value_text</span><span class="ct">varchar</span></div></div>
+  </div>
+  <script>
+    window.addEventListener('load', () => {
+      const w = document.getElementById('wrap');
+      window.__READY = { w: Math.ceil(w.offsetWidth) + 72, h: Math.ceil(w.offsetHeight) + 120 };
+      document.title = 'OK ' + document.title;
+    });
+  </script>
+</body></html>

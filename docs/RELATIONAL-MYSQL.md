@@ -1,7 +1,7 @@
 # MySQL quan hệ hoá — 167 bảng nghiệp vụ thành bảng thật
 
 > **Ngày:** 2026-11-08 · **Nguồn cấu trúc:** `migrations/latest.surql` · **Nguồn dữ liệu:** bảng `records` trong MySQL `restaurant_manager`.
-> Bộ sinh/di trú: [`migrations/relational/`](../migrations/relational/). Sơ đồ quan hệ: [`docs/erd/relational.mmd`](erd/relational.mmd).
+> Bộ sinh/di trú: [`migrations/relational/`](../migrations/relational/). Sơ đồ quan hệ: [`docs/erd/relational.mmd`](erd/relational.mmd). Chuẩn hóa lược đồ (1NF→BCNF/4NF): [`docs/NORMALIZATION.md`](NORMALIZATION.md).
 
 ---
 
@@ -75,7 +75,17 @@ SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS
 npm run db:relational:erd      # DB_PASS=... (và DB_NAME_REL nếu khác mặc định)
 ```
 
-Script ghi ra `docs/erd/relational-live.mmd` (Mermaid, 239 bảng · 458 cạnh FK, bỏ qua bảng `*__attrs` và bảng metadata), `docs/erd/relational-live.dbml` (dán vào dbdiagram.io/dbdocs) và `docs/erd/relational-live.html` — trang mở trực tiếp trong Preview: chọn một bảng + bán kính 1–3 bước, nó vẽ đúng vùng lân cận với đường nối và tên cột tham chiếu.
+Script ghi ra 4 file trong `docs/erd/`:
+
+| File | Nội dung |
+|---|---|
+| `relational-full.html` | **Toàn bộ lược đồ**: 238 bảng nghiệp vụ · 458 khóa ngoại (bật ô “hiện cả bảng `__attrs` & metadata” là 412 · 625). Gom theo 16 domain, kéo/zoom, tìm bảng, bấm 1 bảng để làm nổi các bảng liên quan, panel bên phải liệt kê toàn bộ cột + PK. |
+| `report/bao-cao-erd-chuan-hoa.pdf` | **Bản báo cáo in/nộp**: bìa + mục lục + sơ đồ tổng quan 14 phân hệ + 24 trang ERD chi tiết (đầy đủ cột, PK/FK) + quy tắc ánh xạ + chuẩn hóa 1NF–BCNF. Nguồn PNG in được: `report/png/`, trang HTML chỉnh sửa được: `report/*.html` (sinh lại bằng `node migrations/relational/erd-report.mjs`). |
+| `relational-live.html` | Một bảng + bán kính 1–3 bước, vẽ bằng Mermaid (đọc từng cụm chi tiết). |
+| `relational-live.mmd` | Mermaid ER, một cạnh cho mỗi FK thật (dán vào Markdown/dbdocs). |
+| `relational-live.dbml` | DBML đầy đủ cột + ref (dbdiagram.io). |
+
+Ở mức zoom toàn sơ đồ, nhãn tên bảng tự ẩn để khỏi thành vệt đen; tên domain vẫn hiện, phóng to là tên bảng trở lại.
 
 ---
 
