@@ -174,6 +174,25 @@ Sinh schema ghi các mục này vào `report.json` và in ra khi chạy:
    - tracking: ghi mới vào bảng `tracking` sau khi đổi `tracking.user_agent` sang `TEXT`.
 4. Bộ test: dbproxy **71/71**, `npm run test:sync` **27/27**; `import.mjs --reset` nạp lại 6.694 record vào database trắng và xác minh từng giá trị.
 
+## 7b. Chuyển hết dịch vụ sang MySQL (live test)
+
+Mọi đường đọc/ghi của app đều đi qua `dbproxy`, nên chỉ cần đổi layout ở một chỗ:
+
+| Dịch vụ | Trước | Sau |
+|---|---|---|
+| dbproxy | `DB_NAME=restaurant_manager`, `DB_LAYOUT=json` | `DB_NAME=restaurant_manager_relational`, `DB_LAYOUT=relational` |
+| gateway · sync-service · API · tracking | SurrealQL → dbproxy | không đổi giao thức, dữ liệu ghi vào bảng thật |
+| backup | dump `restaurant_manager` | dump `restaurant_manager_relational` (`MYSQL_DB_REL` nếu có) |
+| `records` (JSON) | kho dữ liệu chính | bản sao lưu/rollback chỉ đọc — không dịch vụ nào ghi vào |
+
+Bằng chứng live ngày 2026-11-08 (app đang chạy, không script giả lập):
+
+- `/closing` tính bằng SQL trên bảng thật (số tại thời điểm test): 3 đơn đã thanh toán, tiền mặt `167.000`, chuyển khoản `64.000`, thuế `12.000`.
+- Sau khi reload, sync đẩy tiếp một đơn đã thanh toán từ terminal → `order` thành 4 `Paid`, `order_payment` có dòng tương ứng: ghi live qua bảng thật.
+- `/orders` liệt kê “Bàn 1 · Đơn hàng #3 · Đang thực hiện · Cà phê đen ₫29.000”.
+- Mỗi ~90 giây terminal cập nhật `sync_terminal` (có dòng mới trong `change_log`), sync ghi `sync_accepted_operation`/`sync_event`, tracking ghi `tracking` — tất cả vào bảng riêng.
+- Trong suốt phiên live, `SELECT COUNT(*) FROM restaurant_manager.records` không đổi ⇒ không còn ghi JSON.
+
 ### Còn lại
 
 - `change_log`, `field_kinds`, `unique_indexes`, `field_defaults`, `event_defs`, `_schema_migration` là metadata của dbproxy nên vẫn giữ nguyên dạng (before/after JSON cần cho `SHOW CHANGES`/LIVE); chúng không phải bảng nghiệp vụ.
