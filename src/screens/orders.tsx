@@ -148,10 +148,15 @@ export const Orders = () => {
   const displayOrders = useMemo(() => {
     // Local rows are authoritative; Surreal only adds orders Dexie does not hold
     // and fills relation stubs on the ones it does.
+    // Ids arrive in two shapes — Dexie keys as "order:<id>", Surreal rows as
+    // "order:⟨<id>⟩" (record-id escaping) — so the merge key normalizes both
+    // or one order renders twice.
+    const orderKey = (id: unknown) =>
+      String(id).replace(/^order:/, '').replace(/[⟨⟩]/g, '');
     const byId = new Map<string, OrderModel>();
-    for (const order of orders) byId.set(String(order.id), order);
+    for (const order of orders) byId.set(orderKey(order.id), order);
     for (const local of localOrders) {
-      const key = String(local.id);
+      const key = orderKey(local.id);
       const remote = byId.get(key);
       byId.set(key, remote ? (mergeRemoteRelations(local, remote) as OrderModel) : local);
     }

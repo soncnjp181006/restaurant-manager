@@ -30,17 +30,20 @@ const classicLight: BrandPalette = {
 };
 
 const classicDark: BrandPalette = {
-  canvas: '7 11 18',
+  // "Quầy đêm 2.0": deeper canvas, glass-friendly elevated layer, brighter
+  // cyan — must keep clearing the WCAG + cold-hue gates in
+  // brand-palettes.contrast.test.ts.
+  canvas: '6 10 17',
   surface: '13 20 31',
-  surfaceElevated: '22 31 45',
-  foreground: '232 238 246',
-  muted: '147 167 186',
-  border: '38 52 70',
-  primary: '34 211 238',
-  primaryFg: '6 20 28',
-  warning: '251 191 36',
+  surfaceElevated: '20 30 46',
+  foreground: '237 243 250',
+  muted: '139 161 183',
+  border: '42 58 78',
+  primary: '45 212 238',
+  primaryFg: '4 30 38',
+  warning: '252 194 60',
   danger: '251 113 133',
-  success: '52 211 153',
+  success: '63 219 160',
   info: '56 189 248',
 };
 

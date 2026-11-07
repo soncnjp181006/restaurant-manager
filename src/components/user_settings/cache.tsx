@@ -89,7 +89,7 @@ export const CacheSettings = () => {
   };
 
   return (
-    <div className="shadow p-5 rounded-xl bg-surface-elevated" data-testid="settings-card-cache">
+    <div className="rounded-2xl border border-border/70 bg-surface-elevated/80 backdrop-blur p-5 shadow-[var(--elev-2)]" data-testid="settings-card-cache">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold mb-1">{t('cache.title')}</h2>

@@ -203,38 +203,39 @@ export const MenuDish = ({
         }}
       >
         <div
-          className="flex-1 w-full min-h-[128px] bg-surface-elevated rounded-xl shadow-lg cursor-pointer menu-item active:shadow-none flex text-foreground active:text-warning"
+          className="dish-tile flex-1 w-full min-h-[128px] rounded-xl cursor-pointer menu-item active:shadow-none flex text-foreground active:text-warning"
           style={{
             '--padding': '0'
           } as any}
         >
-          <div className="flex-shrink-0 self-center px-2">
+          <div className="flex-shrink-0 self-center px-3">
             <img
               loading="lazy"
               src={imageSrc}
               alt={item.name}
-              className="rounded-lg pointer-events-none w-12 h-12 object-cover"/>
+              className="rounded-xl pointer-events-none w-12 h-12 object-cover shadow-[var(--elev-1)]"/>
           </div>
-          <div className="flex flex-1 min-w-0 flex-col justify-between px-3 py-2">
-            <span className="flex flex-row gap-2 mb-1 flex-wrap">
+          <div className="flex flex-1 min-w-0 flex-col justify-between px-3 py-3 gap-1">
+            <span className="flex flex-row gap-2 items-center flex-wrap">
               {showDishNumber && item.number != null && String(item.number).trim() !== '' && (
                 <span
-                  className="bg-primary-100 text-primary-700 rounded-full border-2 border-primary-300 py-1 px-3 text-sm font-bold"
+                  className="bg-primary/10 text-primary rounded-full py-0.5 px-2.5 text-xs font-bold"
                   title={String(item.number)}
                 >
                   #{String(item.number).trim()}
                 </span>
               )}
-              <span
-                className="bg-neutral-900 text-warning rounded-full border-2 border-warning py-1 px-3 text-sm font-bold">{withCurrency(price)}</span>
+              <span className="text-warning font-extrabold text-[15px] tracking-tight">{withCurrency(price)}</span>
             </span>
-            <h6 className="flex-1 min-h-0 text-ellipsis line-clamp-2 text-pretty text-foreground"
+            <h6 className="flex-1 min-h-0 text-ellipsis line-clamp-2 text-pretty text-foreground font-semibold"
                 title={item.name}>
               {item.name}
             </h6>
           </div>
         </div>
-        <span className="absolute bottom-2 right-2 text-primary text-xs font-bold">{dishCount(item)}</span>
+        {dishCount(item) ? (
+          <span className="dish-qty-badge pr-num">{dishCount(item)}</span>
+        ) : null}
       </div>
 
       {modifierGroups.length > 0 && modifiersModal && (

@@ -623,7 +623,7 @@ export const KitchenScreen = () => {
           </div>
           <div className="input-group flex-1 justify-end flex gap-3 items-center h-full">
             <span
-              className="rounded-xl bg-neutral-900 text-warning text-2xl h-full flex items-center px-3">{t("kitchen:labels.avgTime", {time: avgTime})}</span>
+              className="rounded-xl bg-warning/10 border border-warning/25 text-warning text-lg font-bold h-full flex items-center px-4">{t("kitchen:labels.avgTime", {time: avgTime})}</span>
           </div>
         </div>
         <div className="grid grid-cols-5 gap-5 h-[calc(100vh_-_100px_-_var(--app-toolbar-h))]">
@@ -677,7 +677,7 @@ export const KitchenScreen = () => {
             <div className="flex flex-col col-span-1 bg-surface-elevated rounded-xl">
               <button
                 onClick={() => setDishesModal(false)}
-                className="bg-black text-white self-end mb-5 inline-flex h-12 w-12 justify-center items-center">
+                className="bg-surface-elevated border border-border text-foreground self-end mb-5 inline-flex h-12 w-12 justify-center items-center rounded-xl">
                 <FontAwesomeIcon icon={faClose}/>
               </button>
               <ScrollContainer className={cn(
@@ -689,7 +689,7 @@ export const KitchenScreen = () => {
                     key={index}
                   >
                     <strong>{item[0]}</strong>
-                    <span className="bg-neutral-900 text-warning w-12 text-center rounded">{item[1]}</span>
+                    <span className="bg-warning/10 text-warning w-12 text-center rounded-lg font-bold">{item[1]}</span>
                   </div>
                 ))}
               </ScrollContainer>

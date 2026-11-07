@@ -117,47 +117,55 @@ export const KitchenOrder = ({
     });
   };
 
+  // Status edge: amber while waiting, escalates with age (matches the header
+  // tint thresholds) — the "Quầy đêm 2.0" ticket language.
+  const edgeColor =
+    diff >= 60 ? 'rgb(var(--danger))'
+      : 'rgb(var(--warning))';
+
   return (
     <div
       className={cn(
-        "bg-surface-elevated rounded-xl shadow flex flex-col w-full border-[3px]",
+        "bg-surface-elevated rounded-xl shadow flex flex-col w-full border border-border overflow-hidden",
         isNew && "ring-2 ring-primary kitchen-new-order",
-        !groupColor && "border-transparent",
       )}
-      style={groupColor ? { borderColor: groupColor } : undefined}
+      style={{
+        borderLeft: `3px solid ${groupColor ?? edgeColor}`,
+        ...(groupColor ? { borderColor: groupColor } : {}),
+      }}
     >
       <div className={
         cn(
-          "flex justify-between p-2 rounded-t-xl",
-          diff >= 30 && diff <= 59 && 'bg-warning-200 text-warning-700 kitchen-late-order',
-          diff >= 60 && 'bg-danger-200 text-danger-700 kitchen-delayed-order',
-          !(diff >= 30) && isNew && 'bg-primary-100 text-primary-800',
+          "flex justify-between p-2.5",
+          diff >= 30 && diff <= 59 && 'bg-warning/10 text-warning kitchen-late-order',
+          diff >= 60 && 'bg-danger/10 text-danger kitchen-delayed-order',
+          !(diff >= 30) && isNew && 'bg-primary/10 text-primary',
         )
       }>
         <div className="flex gap-2 min-w-0">
           {order?.table && (
-            <span className="p-2 text-base rounded-lg min-w-[48px] flex justify-center items-center shrink-0" style={{
+            <span className="p-2 text-sm font-bold rounded-lg min-w-[48px] flex justify-center items-center shrink-0" style={{
               color: order?.table?.color,
               background: order?.table?.background
             }}>{getTableLabel(order?.table)}</span>
           )}
 
           <div className="flex flex-col items-start gap-0.5 min-w-0">
-            <span className="font-bold text-lg truncate max-w-full">
+            <span className="font-bold text-base truncate max-w-full">
               {[order?.order_type?.name, getInvoiceNumber(order)].filter(Boolean).join(' / ')}
             </span>
             {stageStart && (
-              <span className="text-lg font-bold">
+              <span className="text-base font-bold">
                 <Countdown time={stageStart} />
               </span>
             )}
           </div>
         </div>
         <div className="flex flex-col shrink-0 items-end">
-          <span className="text-base font-bold px-1 rounded text-right">{order?.user?.first_name}</span>
+          <span className="text-sm font-bold px-1 rounded text-right">{order?.user?.first_name}</span>
           {(showKindLabel || isContinued) && (
             <span className={cn(
-              "text-sm font-bold uppercase text-right",
+              "text-xs font-bold uppercase text-right",
               isAddon || isContinued ? "text-primary" : "text-muted"
             )}>
               {isContinued
@@ -171,7 +179,7 @@ export const KitchenOrder = ({
       </div>
 
       <div className={cn(
-        "p-2",
+        "p-2.5 flex flex-col gap-1.5",
         isNew && "bg-primary/10 kitchen-new-order-batch",
       )}>
         {batch.items.map(item => (
@@ -179,7 +187,7 @@ export const KitchenOrder = ({
             onClick={() => singleReady(item.id.toString())}
             className={
               cn(
-                "flex flex-col cursor-pointer",
+                "flex flex-col cursor-pointer px-2.5 py-1.5 rounded-lg bg-surface border border-border/60",
                 item.order_item?.deleted_at ? 'text-danger-700 line-through' : ''
               )
             }

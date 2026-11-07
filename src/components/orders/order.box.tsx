@@ -1,5 +1,5 @@
 import {Order as OrderModel, OrderStatus} from "@/api/model/order.ts";
-import React, {CSSProperties, useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {useAtom} from "jotai";
 import {useDB} from "@/api/db/db.ts";
 import {appPage, closingEnforcementAtom} from "@/store/jotai.ts";
@@ -216,12 +216,12 @@ export const OrderBox = ({
 
   return (
     <>
-      <div ref={rootRef} className="rounded-xl p-3 bg-surface-elevated gap-5 flex flex-col shadow select-none" data-testid="order-card">
+      <div ref={rootRef} className="rounded-2xl border border-border/70 bg-surface-elevated/80 backdrop-blur p-4 gap-4 flex flex-col shadow-[var(--elev-2)] select-none" data-testid="order-card">
         <OrderHeader order={order} tempPrinted={tempPrinted}/>
         <OrderTimes order={order}/>
-        <div className="separator h-[2px]" style={{'--size': '10px', '--space': '5px'} as CSSProperties}></div>
+        <div className="h-px bg-border"></div>
         <ScrollContainer>
-          <div className="overflow-auto max-h-[400px] min-h-[80px]">
+          <div className="overflow-auto max-h-[400px] min-h-[80px] border border-border/60 rounded-xl bg-surface px-3 py-2">
             {!cardReady && (
               <div className="py-6 text-center text-sm text-muted">
                 {hydrateError ? (
@@ -247,7 +247,7 @@ export const OrderBox = ({
             ))}
           </div>
         </ScrollContainer>
-        <div className="separator h-[2px]" style={{'--size': '10px', '--space': '5px'} as CSSProperties}></div>
+        <div className="h-px bg-border"></div>
         {cardReady ? (
           <OrderTotals order={order} />
         ) : (

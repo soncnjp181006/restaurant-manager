@@ -505,9 +505,9 @@ export const Login = () => {
   return (
     <div className="relative" data-testid="login-page">
       <DocumentTitle parts={[t('login.title')]} />
-      <div className="bg-neutral-900 flex flex-col lg:flex-row min-h-screen">
+      <div className="bg-canvas flex flex-col lg:flex-row min-h-screen">
         <aside
-          className="relative z-10 flex flex-col items-center justify-center gap-6 px-8 py-10 lg:w-2/5 lg:min-h-screen border-b lg:border-b-0 lg:border-r border-neutral-700"
+          className="relative z-10 flex flex-col items-center justify-center gap-6 px-8 py-10 lg:w-2/5 lg:min-h-screen border-b lg:border-b-0 lg:border-r border-border bg-[linear-gradient(200deg,var(--accent-soft),transparent_55%)]"
           data-testid="login-branding-panel"
         >
           {brandLogo && (
@@ -522,7 +522,7 @@ export const Login = () => {
                 className="max-h-28 sm:max-h-36 max-w-[220px] sm:max-w-[280px] object-contain"
                 data-testid="login-brand-logo"
               />
-              <div className="w-24 sm:w-32 border-t border-neutral-600" aria-hidden="true" />
+              <div className="w-24 sm:w-32 border-t border-border" aria-hidden="true" />
             </>
           )}
           <img
@@ -534,12 +534,12 @@ export const Login = () => {
         </aside>
         <div className="relative isolate flex-1 flex justify-center items-center flex-col gap-8 px-4 py-10 overflow-hidden">
           <LoginAurora />
-          <h4 className="text-4xl font-semibold tracking-tight text-neutral-50">
+          <h4 className="text-4xl font-semibold tracking-tight text-foreground">
             {t('login.title')}
           </h4>
           <div className="flex flex-col items-center gap-3">
             <div
-              className="flex rounded-full border border-neutral-700/80 bg-neutral-900/60 p-1 backdrop-blur"
+              className="flex rounded-full border border-border/80 bg-surface/60 p-1 backdrop-blur"
               data-testid="login-method-switcher"
             >
               {(['pin', 'form'] as const).map((m) => (

@@ -25,7 +25,7 @@ import {DocumentTitle} from "@/components/common/document-title.tsx";
 import {PropsWithChildren} from "react";
 
 function MasonryItem({ children }: PropsWithChildren) {
-  return <div className="break-inside-avoid mb-5 [overflow-anchor:none]">{children}</div>;
+  return <div className="min-w-0 [overflow-anchor:none] [&>*]:h-full">{children}</div>;
 }
 
 export const Settings = () => {
@@ -35,11 +35,12 @@ export const Settings = () => {
     <Layout containerClassName="p-5 [overflow-anchor:none]">
       <DocumentTitle parts={[tNav('sidebar.settings')]} />
       {/*
-        CSS columns packs uneven card heights (masonry). Grid left large gaps in each row.
-        overflow-anchor + break-inside-avoid keep focus/clicks from reshuffling scroll.
+        "Quầy đêm 2.0": equal-height grid replaces the masonry — every card in
+        a row shares its row height, so the page reads as an even instrument
+        panel instead of a collage. Cards stretch to their row.
       */}
       <div
-        className="columns-1 md:columns-2 lg:columns-3 gap-5"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch [&>*]:min-w-0"
         data-testid="settings-page"
       >
         <MasonryItem><CacheSettings /></MasonryItem>

@@ -221,7 +221,7 @@ export const NumberPolicySettingsCard = () => {
   }, []);
 
   return (
-    <div className="shadow p-5 rounded-xl bg-surface-elevated" data-testid="settings-card-number-policy">
+    <div className="rounded-2xl border border-border/70 bg-surface-elevated/80 backdrop-blur p-5 shadow-[var(--elev-2)]" data-testid="settings-card-number-policy">
       <h2 className="text-xl font-semibold mb-1">{t('settings:numberPolicy.title')}</h2>
       <p className="settings-card-desc mb-3">
         {t('settings:numberPolicy.description')}

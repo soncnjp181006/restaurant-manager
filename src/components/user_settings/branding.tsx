@@ -146,7 +146,7 @@ export const BrandingSettingsCard = () => {
   };
 
   return (
-    <div className="shadow p-5 rounded-xl bg-surface-elevated" data-testid="settings-card-branding">
+    <div className="rounded-2xl border border-border/70 bg-surface-elevated/80 backdrop-blur p-5 shadow-[var(--elev-2)]" data-testid="settings-card-branding">
       <h2 className="text-xl font-semibold mb-1">{t("settings:branding.title")}</h2>
       <p className="text-sm text-muted mb-5">
         {t("settings:branding.description")}

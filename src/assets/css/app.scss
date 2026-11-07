@@ -46,28 +46,39 @@ body {
   --accent-line: linear-gradient(90deg, rgb(var(--primary) / 0), rgb(var(--primary)) 18%, rgb(var(--info)) 82%, rgb(var(--info) / 0));
   --hairline: rgb(var(--border));
   --grid-line: rgb(15 34 56 / 0.07);
+
+  /*
+   * "Quầy đêm 2.0" redesign tokens (see gui-test preview pos-ui-redesign.html):
+   * radius hierarchy by surface level + one primary glow for the boldest
+   * action on screen. Light theme keeps quiet shadows; dark gets the glow.
+   */
+  --radius-card: 18px;
+  --radius-tile: 13px;
+  --radius-pill: 999px;
+  --glow: 0 6px 22px rgb(var(--primary) / 0.22);
 }
 
 .dark {
-  --canvas: 7 11 18; /* deep blue-black */
+  --canvas: 6 10 17; /* deep blue-black */
   --surface: 13 20 31;
-  --surface-elevated: 22 31 45;
-  --foreground: 232 238 246;
-  --muted: 147 167 186;
-  --border: 38 52 70;
-  --primary: 34 211 238;
-  --primary-fg: 6 20 28;
-  --warning: 251 191 36;
+  --surface-elevated: 20 30 46;
+  --foreground: 237 243 250;
+  --muted: 139 161 183;
+  --border: 42 58 78;
+  --primary: 45 212 238;
+  --primary-fg: 4 30 38;
+  --warning: 252 194 60;
   --danger: 251 113 133;
-  --success: 52 211 153;
+  --success: 63 219 160;
   --info: 56 189 248;
 
   --elev-1: 0 1px 2px rgb(0 0 0 / 0.45), 0 1px 3px rgb(2 12 24 / 0.4);
   --elev-2: 0 2px 6px rgb(0 0 0 / 0.5), 0 10px 24px -10px rgb(0 4 12 / 0.7);
   --elev-3: 0 4px 12px rgb(0 0 0 / 0.55), 0 22px 44px -14px rgb(0 4 12 / 0.8);
   --ring: rgb(var(--primary) / 0.35);
-  --accent-soft: rgb(var(--primary) / 0.12);
+  --accent-soft: rgb(var(--primary) / 0.13);
   --grid-line: rgb(120 180 220 / 0.09);
+  --glow: 0 4px 26px rgb(var(--primary) / 0.33);
 }
 
 html[data-app-toolbar='1'] {
@@ -236,19 +247,23 @@ th {
     vertical-align: middle;
   }
   th{
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    font-weight: 700;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
     color: rgb(var(--muted));
   }
   th, td{
     border-collapse: collapse;
-    padding: 12px;
+    padding: 13px 16px;
     //text-align: left;
     vertical-align: middle;
     border-bottom: 1px solid rgb(var(--border));
   }
+  tbody tr {
+    transition: background var(--dur-quick) var(--ease-out-soft);
+  }
   tbody tr:hover td {
-    background: var(--accent-soft);
+    background: rgb(var(--primary) / 0.07);
   }
   &.table-sm{
     th, td{
@@ -302,7 +317,10 @@ th {
   --background: rgb(var(--surface-elevated));
   --color: rgb(var(--foreground));
   --border: rgb(var(--border));
-  --radius: theme('borderRadius.lg');
+  /* 13px tile radius from the "Quầy đêm 2.0" token set — rounder than the
+     old 8px but short of the pill, one step in the card(18) > tile(13) > pill
+     hierarchy. */
+  --radius: var(--radius-tile, theme('borderRadius.lg'));
   --scale: 0.985;
   --font-size: 14px;
   --padding: 0.5rem 0.75rem;
@@ -402,11 +420,13 @@ th {
       @apply bg-surface text-muted dark:bg-neutral-700 dark:text-muted;
     }
     &.active, &:active {
-      @apply bg-primary text-primary-fg shadow-none
+      @apply bg-primary text-primary-fg
       dark:bg-primary dark:text-primary-fg;
+      box-shadow: var(--glow);
     }
     &.btn-filled{
       @apply bg-primary text-primary-fg dark:bg-primary dark:text-primary-fg;
+      box-shadow: var(--glow);
     }
   }
   &.btn-secondary {
@@ -465,10 +485,11 @@ th {
 }
 .form-control,
 .input {
-  @apply block leading-5 py-2 px-3 rounded-lg text-muted border
+  @apply block leading-5 py-2 px-3 text-muted border
   border-border disabled:bg-surface read-only:bg-surface focus:outline-none focus:border-primary
   h-[40px] w-full bg-surface-elevated
   dark:disabled:bg-neutral-800 dark:read-only:bg-neutral-800;
+  border-radius: var(--radius-tile, theme('borderRadius.lg'));
   transition: border-color var(--dur-quick) var(--ease-out-soft),
     box-shadow var(--dur-move) var(--ease-out-soft),
     background-color var(--dur-quick) var(--ease-out-soft);
@@ -1348,13 +1369,20 @@ table th {
 /* Cold refresh: depth, focus, and typography shared by every surface.  */
 /* ------------------------------------------------------------------ */
 
-/* Page depth without adding a layer: one faint accent wash in the top corner,
- * so a full-screen panel never reads as flat gray-on-gray. */
+/* Page depth without adding a layer: accent washes in opposite corners
+ * (cyan top-right, indigo bottom-left in dark) so a full-screen panel never
+ * reads as flat gray-on-gray. Strengths follow the "Quầy đêm 2.0" preview. */
 body {
   background-image:
-    radial-gradient(120% 80% at 100% 0%, rgb(var(--primary) / 0.07) 0%, transparent 55%),
-    radial-gradient(90% 70% at 0% 100%, rgb(var(--info) / 0.05) 0%, transparent 60%);
+    radial-gradient(900px 420px at 78% -8%, rgb(var(--primary) / 0.10) 0%, transparent 62%),
+    radial-gradient(760px 420px at 4% 108%, rgb(var(--info) / 0.10) 0%, transparent 60%);
   background-attachment: fixed;
+}
+.dark body {
+  background-image:
+    radial-gradient(900px 420px at 78% -8%, rgb(var(--primary) / 0.10) 0%, transparent 62%),
+    radial-gradient(760px 420px at 4% 108%, rgba(99, 102, 241, 0.10) 0%, transparent 60%),
+    radial-gradient(1200px 700px at 50% 50%, rgb(var(--surface) / 0.5), transparent 70%);
 }
 
 /* One focus language everywhere, including the controls that never set one. */
@@ -1362,6 +1390,47 @@ body {
   outline: none;
   box-shadow: 0 0 0 3px var(--ring);
   border-radius: inherit;
+}
+
+/* ------------------------------------------------------------------ */
+/* "Quầy đêm 2.0" — POS dish tile (replaces the black/amber price pill) */
+/* ------------------------------------------------------------------ */
+.dish-tile {
+  background:
+    linear-gradient(165deg, rgb(var(--primary) / 0.07) 0%, transparent 46%),
+    rgb(var(--surface-elevated));
+  border: 1px solid rgb(var(--border));
+  transition: transform var(--dur-quick) var(--ease-out-soft),
+    border-color var(--dur-quick) var(--ease-out-soft),
+    box-shadow var(--dur-move) var(--ease-out-soft);
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgb(var(--primary) / 0.5);
+    box-shadow: var(--glow);
+  }
+}
+.dish-qty-badge {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: var(--radius-pill, 999px);
+  display: grid;
+  place-items: center;
+  background: rgb(var(--primary));
+  color: rgb(var(--primary-fg));
+  font-size: 12.5px;
+  font-weight: 800;
+  box-shadow: var(--glow);
+  z-index: 1;
+}
+
+/* Settings grid: some cards render null behind feature flags — their grid
+ * wrapper stays behind as an empty cell. Hide it so rows stay packed. */
+[data-testid='settings-page'] > div:empty {
+  display: none;
 }
 
 h1, h2, h3, h4, h5, h6, .title, .card-title {

@@ -772,8 +772,38 @@ export const Closing = () => {
       <DocumentTitle parts={[tNav('sidebar.closing')]} />
       <ScrollContainer className="overflow-y-auto h-[calc(100vh_-_30px_-_var(--app-toolbar-h))] select-none">
         <div className="p-6" data-testid="closing-page">
-          <h1 className="text-3xl font-bold mb-3 text-center">{t("closing:title", {date: today})}</h1>
-          <div className="text-center mb-6 text-sm text-muted">{closingWindowLabel}</div>
+          <div className="flex items-end justify-between gap-4 flex-wrap mb-2">
+            <h1 className="text-3xl font-bold">{t("closing:title", {date: today})}</h1>
+          </div>
+          <div className="mb-5 text-sm text-muted">{closingWindowLabel}</div>
+
+          {/* Hero: the number the whole page converges on — expected drawer cash
+              and whether the count matches the system. */}
+          <div
+            className="mb-6 rounded-2xl border border-border p-5 flex items-center gap-6 flex-wrap bg-[linear-gradient(150deg,var(--accent-soft),transparent_55%)] bg-surface-elevated"
+            data-testid="closing-hero"
+          >
+            <div>
+              <div className="text-xs font-bold tracking-wide text-muted">{t("closing:totals.expectedInDrawer")}</div>
+              <div className="text-4xl font-extrabold tracking-tight mt-1">{withCurrency(drawerFloat)}</div>
+            </div>
+            <div className="ml-auto flex flex-col items-end gap-1">
+              <span
+                className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold ${
+                  overShort === 0
+                    ? "bg-success/15 text-success"
+                    : overShort > 0
+                      ? "bg-success/15 text-success"
+                      : "bg-danger/15 text-danger"
+                }`}
+              >
+                {t("closing:totals.overShort")}: {withCurrency(overShort)}
+              </span>
+              {Math.abs(overShort) <= 0.009 && (
+                <span className="text-xs text-muted">{t("closing:hero.matchesSystem")}</span>
+              )}
+            </div>
+          </div>
 
           {!cycleEnabled && (
             <div className="alert alert-warning mb-6 bg-surface-elevated">

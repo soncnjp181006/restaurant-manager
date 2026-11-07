@@ -597,10 +597,10 @@ export const Payment = () => {
 
         <div className="p-3" data-testid="cart-payment-actions">
           <div className="flex gap-3 mt-3">
-            <Button variant="success" className="flex-1" size="lg" icon={faCheck} onClick={createOrderAndBack}
+            <Button variant="primary" filled className="flex-1" size="lg" icon={faCheck} onClick={createOrderAndBack}
                     disabled={isLoading || state.cart.length === 0 || orderTakingBlocked} isLoading={isLoading}
                     data-testid="cart-to-kitchen">{t("payment:actions.toKitchen")}</Button>
-            <Button variant="warning" filled className="flex-1" size="lg" icon={faCreditCard} onClick={openPayment}
+            <Button variant="warning" className="flex-1" size="lg" icon={faCreditCard} onClick={openPayment}
                     disabled={isLoading || state.cart.length === 0 || orderTakingBlocked} isLoading={isLoading}
                     data-testid="cart-pay-now">{t("payment:actions.payNow")}</Button>
             <Button variant="danger" className="flex-1" size="lg" icon={faCancel} onClick={cancel}

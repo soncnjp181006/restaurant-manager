@@ -60,7 +60,7 @@ export const MenuCart = () => {
             <CartItem item={item} key={item.id}/>
           ))}
           {newItems.length > 0 && oldItems.length > 0 && (
-            <div className="h-[3px] bg-neutral-900 my-2 rounded-full"></div>
+            <div className="h-px bg-border my-2"></div>
           )}
           {oldItems.map((item) => (
             <CartItem item={item} key={item.id}/>

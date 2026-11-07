@@ -136,5 +136,8 @@
     "orders": "Đơn hàng QR",
     "total": "Đã thanh toán trực tuyến",
     "testWarning": "{{count}} đơn hàng thử nghiệm ({{amount}}) — không thu được tiền cho các đơn này."
+  },
+  "hero": {
+    "matchesSystem": "khớp với hệ thống"
   }
 }

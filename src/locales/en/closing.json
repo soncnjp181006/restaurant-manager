@@ -136,5 +136,8 @@
     "orders": "QR orders",
     "total": "Paid online",
     "testWarning": "{{count}} test order(s) ({{amount}}) — no money was collected for these."
+  },
+  "hero": {
+    "matchesSystem": "matches the system"
   }
-}
+}
