@@ -200,7 +200,7 @@ const AGGREGATE_FUNCS = new Set([
 export function isAggregateCall(node) {
   if (!node) return false;
   if (node.t === 'count') return true;
-  if (node.t === 'func' && AGGREGATE_FUNCS.has(node.name)) return true;
+  if (node.t === 'func' && AGGREGATE_FUNCS.has(String(node.name || '').toLowerCase())) return true;
   return false;
 }
 
@@ -236,7 +236,8 @@ function formatDateTime(date, fmt) {
   return fmt.replace(/%Y|%m|%d|%H|%M|%S|%3f/g, (tok) => map[tok] ?? tok);
 }
 
-function callFunction(name, args, ctx) {
+function callFunction(rawName, args, ctx) {
+  const name = String(rawName || '').toLowerCase();
   switch (name) {
     case 'time::now':
       return new DTMarker(new Date().toISOString());

@@ -124,7 +124,7 @@ export const computeStockFromLedger = async (
 ): Promise<number> => {
   const params = normalizeLocationParams(itemId, locationId);
   const [rows] = await db.query(
-    `SELECT Math::sum(quantity_change) AS total FROM ${Tables.inventory_ledger}
+    `SELECT math::sum(quantity_change) AS total FROM ${Tables.inventory_ledger}
      WHERE inventory_item = $item AND inventory_location = $location GROUP ALL`,
     params
   );
@@ -143,7 +143,7 @@ export const computeBreakdownFromLedger = async (
   const params = normalizeLocationParams(itemId, locationId);
   const [[absRows], [adjRows]] = await Promise.all([
     db.query(
-      `SELECT reference_type, Math::sum(Math::abs(quantity_change)) AS total
+      `SELECT reference_type, math::sum(math::abs(quantity_change)) AS total
        FROM ${Tables.inventory_ledger}
        WHERE inventory_item = $item AND inventory_location = $location
          AND reference_type != 'adjustment'
@@ -152,7 +152,7 @@ export const computeBreakdownFromLedger = async (
       params
     ),
     db.query(
-      `SELECT Math::sum(quantity_change) AS total FROM ${Tables.inventory_ledger}
+      `SELECT math::sum(quantity_change) AS total FROM ${Tables.inventory_ledger}
        WHERE inventory_item = $item AND inventory_location = $location
          AND reference_type = 'adjustment'
          AND reversal_of = NONE
@@ -193,7 +193,7 @@ export const fetchLedgerNetsByStore = async (
   db: DatabaseClient
 ): Promise<LedgerNetRow[]> => {
   const [rows] = await db.query(
-    `SELECT inventory_item, inventory_location, Math::sum(quantity_change) AS net
+    `SELECT inventory_item, inventory_location, math::sum(quantity_change) AS net
      FROM ${Tables.inventory_ledger}
      GROUP BY inventory_item, inventory_location`
   );
