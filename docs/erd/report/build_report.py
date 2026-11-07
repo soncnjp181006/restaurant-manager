@@ -318,11 +318,12 @@ if flows:
 # ═══ 3. ERD chi tiết ═══
 major_section(story, '3. Sơ đồ ERD chi tiết từng phân hệ')
 story.append(Paragraph(
-    'Mỗi trang dưới đây là một nhóm bảng trong cùng phân hệ, sinh trực tiếp từ '
-    '<font name="Consolas" size="9">information_schema</font> của database live. Ký hiệu: <b>PK</b> = khóa chính '
-    '(kiểu dữ liệu gạch chân), <b>FK</b> = khóa ngoại, nhãn nghiêng trên đường nối là tên cột FK. '
-    'Khung nét đứt màu xám chỉ có cột <font name="Consolas" size="9">id</font> là bảng thuộc nhóm khác (vẫn được vẽ để '
-    'quan hệ đọc được); mũi tên hướng về bảng được tham chiếu. Bảng cha đặt về phía trái, bảng con về phía phải.', S['body']))
+    'Mỗi trang dưới đây gồm tối đa ~6 bảng của cùng phân hệ, sinh trực tiếp từ '
+    '<font name="Consolas" size="9">information_schema</font> của database live, bố trí 2 cột thoáng để chữ đủ lớn '
+    'khi in. Ký hiệu: <b>PK</b> = khóa chính (kiểu gạch chân), <b>FK</b> = khóa ngoại; nhãn nghiêng bên cạnh kênh dọc '
+    'giữa hai cột là tên cột FK, mỗi khóa ngoại đi trong kênh vuông góc riêng nên các đường không chồng nhau và không '
+    'xuyên qua bảng. Khung nét đứt màu xám chỉ có cột <font name="Consolas" size="9">id</font> là bảng thuộc trang '
+    'khác (vẫn được vẽ để quan hệ đọc trọn); mũi tên vuông góc hướng về bảng được tham chiếu.', S['body']))
 fig_no = 0
 current_domain = None
 for page in MANIFEST['pages']:
@@ -337,7 +338,7 @@ for page in MANIFEST['pages']:
         if desc:
             story.append(Paragraph(desc + '.', S['body']))
     fig_no += 1
-    img = fit_image(os.path.join(PNG_DIR, page['page'] + '.png'), AVAIL_W, 560)
+    img = fit_image(os.path.join(PNG_DIR, page['page'] + '.png'), AVAIL_W, 585)
     cap = Paragraph('Hình 3.%d — %s' % (fig_no, page['title']), S['caption'])
     story.append(KeepTogether([img, cap]))
     story.append(Spacer(1, 6))

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>Đơn hàng &amp; Thanh toán (t.8)</title>
+<style>
+  body { background:#fff; color:#111827; font-family:'Segoe UI',system-ui,sans-serif; margin:0; padding:26px 34px; }
+  h1 { font-size:23px; margin:0 0 4px; }
+  h1 .chip { display:inline-block; width:15px; height:15px; border-radius:4px; background:#3b5bdb; vertical-align:-2px; margin-right:10px; }
+  .sub { color:#4b5563; font-size:13.5px; margin-bottom:12px; }
+  .legend { font-size:12px; color:#4b5563; margin-bottom:14px; }
+  .b { font-size:10px; font-weight:700; border-radius:3px; padding:0 4px; margin-left:4px; vertical-align:1px; }
+  .pk { background:#1d4ed8; color:#fff; }
+  .fk { background:#c2410c; color:#fff; }
+  .wrap { position:relative; }
+  .ent { position:absolute; background:#fff; border-radius:6px; box-shadow:0 1px 4px rgba(15,23,42,.14); overflow:hidden; }
+  .eh { color:#fff; font-weight:700; font-size:15px; padding:4.5px 9px; letter-spacing:.2px; }
+  .stub { font-size:10.5px; color:#64748b; padding:2px 9px; background:#f1f5f9; }
+  .r { display:flex; align-items:center; font-size:13px; padding:2.5px 9px; line-height:18px; }
+  .r:nth-child(even) { background:#f7f9fc; }
+  .cn { flex:1; font-family:Consolas,ui-monospace,monospace; font-size:13px; white-space:nowrap; }
+  .ct { color:#6b7280; font-size:11px; margin-left:8px; white-space:nowrap; }
+</style></head>
+<body>
+  <h1><span class="chip"></span>Đơn hàng &amp; Thanh toán
+      <span style="font-size:14px;color:#6b7280;font-weight:normal"> — trang 8/9 · 6 bảng + 6 bảng tham chiếu · domain <code>order-payment</code></span></h1>
+  <div class="sub">Trung tâm nghiệp vụ: đơn hàng, dòng món, thanh toán, hoàn tiền, khoá ca.</div>
+  <div class="legend"><b>PK</b> khóa chính (kiểu gạch chân) · <b>FK</b> khóa ngoại · nhãn nghiêng bên cạnh kênh dọc = cột FK · mũi tên vuông góc hướng về bảng được tham chiếu · khung đứt nét = bảng ở trang khác</div>
+  <div class="wrap" id="wrap" style="width:940px;height:1252px">
+    <svg width="940" height="1252" style="position:absolute;left:0;top:0">
+      <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8494ab"/></marker></defs>
+      <path d="M 380 564 L 406 564 L 406 644.6666666666666 L 560 644.6666666666666" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 646 L 429 646 L 429 839 L 380 839" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 96 L 452 96 L 452 786.6666666666666 L 560 786.6666666666666" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 132 L 475 132 L 475 939 L 560 939" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 284 L 498 284 L 498 665.3333333333334 L 560 665.3333333333334" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 320 L 521 320 L 521 981 L 380 981" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 472 L 416 472 L 416 807.3333333333334 L 560 807.3333333333334" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 508 L 439 508 L 439 1081 L 560 1081" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+    </svg>
+    <div class="ent" style="left:60px;top:60px;width:320px;border:1.6px solid #3b5bdb;">
+        <div class="eh" style="background:#3b5bdb">order_meta</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">name</span><span class="ct">text</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:60px;top:271px;width:320px;border:1.6px solid #3b5bdb;">
+        <div class="eh" style="background:#3b5bdb">order_number_seq</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">value</span><span class="ct">bigint</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:60px;top:482px;width:320px;border:1.6px solid #3b5bdb;">
+        <div class="eh" style="background:#3b5bdb">order_print</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">is_duplicate</span><span class="ct">bool</span></div><div class="r"><span class="cn">is_override</span><span class="ct">bool</span></div><div class="r"><span class="cn">order</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">print_type</span><span class="ct">varchar</span></div><div class="r"><span class="cn">printed_at</span><span class="ct">datetime</span></div><div class="r"><span class="cn">printed_by</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:560px;top:60px;width:320px;border:1.6px solid #3b5bdb;">
+        <div class="eh" style="background:#3b5bdb">order_refund__items</div><div class="r"><span class="cn">parent_id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span><span class="b fk">FK</span></div><div class="r"><span class="cn">ord</span><span class="ct"><u>int</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">ref_id</span><span class="ct">varchar</span><span class="b fk">FK</span></div></div>
+    <div class="ent" style="left:560px;top:248px;width:320px;border:1.6px solid #3b5bdb;">
+        <div class="eh" style="background:#3b5bdb">order_split__new_orders</div><div class="r"><span class="cn">parent_id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span><span class="b fk">FK</span></div><div class="r"><span class="cn">ord</span><span class="ct"><u>int</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">ref_id</span><span class="ct">varchar</span><span class="b fk">FK</span></div></div>
+    <div class="ent" style="left:560px;top:436px;width:320px;border:1.6px solid #3b5bdb;">
+        <div class="eh" style="background:#3b5bdb">order_void__items</div><div class="r"><span class="cn">parent_id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span><span class="b fk">FK</span></div><div class="r"><span class="cn">ord</span><span class="ct"><u>int</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">ref_id</span><span class="ct">varchar</span><span class="b fk">FK</span></div></div>
+    <div class="ent" style="left:560px;top:624px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">order</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:560px;top:766px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">order_item</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:60px;top:808px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">user</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:560px;top:908px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">order_refund</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:60px;top:950px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">order_split</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:560px;top:1050px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">order_void</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <svg width="940" height="1252" style="position:absolute;left:0;top:0;pointer-events:none">
+      <text x="411" y="608.3333333333333" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">order</text>
+      <text x="434" y="746.5" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">printed_by</text>
+      <text x="457" y="445.3333333333333" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">ref_id</text>
+      <text x="480" y="539.5" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">parent_id</text>
+      <text x="503" y="478.6666666666667" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">ref_id</text>
+      <text x="526" y="654.5" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">parent_id</text>
+      <text x="421" y="643.6666666666667" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">ref_id</text>
+      <text x="444" y="798.5" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">parent_id</text>
+    </svg>
+  </div>
+  <script>
+    window.addEventListener('load', () => {
+      const w = document.getElementById('wrap');
+      window.__READY = { w: Math.ceil(w.offsetWidth) + 68, h: Math.ceil(w.offsetHeight) + 110 };
+      document.title = 'OK ' + document.title;
+    });
+  </script>
+</body></html>

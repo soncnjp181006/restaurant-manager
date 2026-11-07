@@ -1,17 +1,18 @@
 /**
- * Report-grade ER diagrams — custom grid renderer (readable at print size).
+ * Report-grade ER diagrams — sparse 2-column grid, orthogonal (right-angle) edges.
  *
  *   DB_PASS=... [DB_NAME_REL=...] node migrations/relational/erd-report.mjs
  *
  * Reads information_schema from the live relational database and writes to
  * docs/erd/report/:
- *   erd-<domain>[-<n>].html  one page per (sub)diagram: entity boxes with all
- *                            columns (PK/FK marks), SVG FK arrows, white bg
+ *   erd-<domain>-<k>.html    one page per diagram chunk: ~4-6 entity boxes in
+ *                            2 columns, full columns, PK/FK marks, squared FK
+ *                            edges routed through the central channel
  *   overview.html            domain map with cross-domain FK counts
- *   report-manifest.json     machine-readable list of pages for the PDF step
+ *   report-manifest.json     page list for the PDF builder
  *
- * Pages signal render readiness to the screenshot driver via
- * window.__READY = {w, h} (content size) after fonts settle.
+ * Page size is deliberately small (canvas ~930px wide) so text stays large
+ * when the figure is scaled into an A4 report page.
  */
 
 import fs from 'node:fs';
@@ -68,7 +69,7 @@ const DOMAIN_TITLES = {
 };
 
 const DOMAIN_DESC = {
-  'order-payment': 'Trung tâm nghiệp vụ: đơn hàng, dòng món, thanh toán, hoàn tiền, khoá ca. Bảng `order` được tham chiếu nhiều nhất trong toàn bộ lược đồ.',
+  'order-payment': 'Trung tâm nghiệp vụ: đơn hàng, dòng món, thanh toán, hoàn tiền, khoá ca.',
   'menu-recipe': 'Thực đơn, món ăn, nhóm modifier, công thức nấu và giá theo menu.',
   inventory: 'Nguyên liệu, định mức, nhà cung cấp, phiếu nhập/xuất/điều chỉnh và sổ kho.',
   hr: 'Nhân viên, ca làm việc, chấm công, nghỉ phép, bảng lương.',
@@ -91,6 +92,15 @@ const DOMAIN_COLORS = {
   customer: '#d9480f', core: '#495057',
 };
 
+// ── Layout constants (CSS px). Small canvas → large text inside the report. ──
+const BOX_W = 320;      // entity box width
+const COL_GAP = 180;    // central channel between the 2 columns (edge routing)
+const ROW_GAP = 80;     // vertical gap between boxes in a column
+const PAD = 60;         // canvas padding
+const COL_BUDGET = 820; // max stacked box height per column (leaves room for stubs)
+const MAX_PER_COL = 3;
+const ROW_H = 23, HEAD_H = 30, BOX_PAD_V = 9;
+
 const isAttrs = (n) => n.endsWith('__attrs');
 const domainOf = (name) => {
   for (const [pattern, domain] of DOMAIN_RULES) if (pattern.test(name)) return domain;
@@ -102,12 +112,7 @@ const shortType = (t) => {
   if (s.startsWith('tinyint(1)')) return 'bool';
   return s.replace(/\(.*\)/, '').replace(/\s.*$/, '') || 'text';
 };
-
-/** Prefix group inside a domain: first two tokens when possible. */
-const prefixOf = (name) => {
-  const parts = name.split('_');
-  return parts.slice(0, Math.min(2, parts.length)).join('_');
-};
+const boxHeight = (defs) => HEAD_H + defs.length * ROW_H + BOX_PAD_V;
 
 async function main() {
   const conn = await mysql.createConnection(CONN);
@@ -143,200 +148,201 @@ async function main() {
   }
   const domains = [...byDomain.keys()].sort((a, b) => byDomain.get(b).length - byDomain.get(a).length);
 
+  // global reference counts (hubs first)
+  const referenced = new Map();
+  for (const f of fkList) referenced.set(f.rt, (referenced.get(f.rt) ?? 0) + 1);
+
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const manifest = { database: DB, pages: [], domains: {} };
 
-  /** Split a domain into diagram groups when it is too wide for one page. */
-  function groupsOf(domain, tables) {
-    if (tables.length <= 22) return [{ name: domain, title: DOMAIN_TITLES[domain] ?? domain, tables }];
-    const byPrefix = new Map();
-    for (const t of tables) {
-      const p = prefixOf(t);
-      if (!byPrefix.has(p)) byPrefix.set(p, []);
-      byPrefix.get(p).push(t);
-    }
-    let groups = [...byPrefix.entries()].sort((a, b) => b[1].length - a[1].length);
-    // merge groups smaller than 4 into a compatible group, keeping <= 22 each
-    for (let i = groups.length - 1; i >= 0; i--) {
-      if (groups[i][1].length >= 4 || groups.length === 1) continue;
-      let best = -1, bestScore = -1;
-      for (let j = 0; j < groups.length; j++) {
-        if (j === i || groups[j][1].length + groups[i][1].length > 22) continue;
-        const shared = groups[j][0].split('_')[0] === groups[i][0].split('_')[0] ? 1 : 0;
-        if (shared > bestScore) { bestScore = shared; best = j; }
-      }
-      if (best >= 0) { groups[best][1].push(...groups[i][1]); groups.splice(i, 1); continue; }
-      // nothing shares a token: merge into the biggest group that still fits
-      for (let j = 0; j < groups.length; j++) {
-        if (j !== i && groups[j][1].length + groups[i][1].length <= 22) { groups[j][1].push(...groups[i][1]); groups.splice(i, 1); break; }
-      }
-    }
-    groups = groups.filter(([, ts]) => ts.length > 0).sort((a, b) => b[1].length - a[1].length);
-    return groups.map(([p, ts], i) => ({
-      name: `${domain}-${i + 1}`,
-      title: `${DOMAIN_TITLES[domain] ?? domain} — nhóm ${p}`,
-      tables: ts.sort(),
-    }));
-  }
-
-  /** Grid layout: entity boxes in columns; hubs (most referenced) go left. */
-  function layoutBoxes(entities, edgeList) {
-    const W = 268, H_GAP = 26, PAD = 40;
-    const referenced = new Map();
-    for (const e of edgeList) {
-      if (!entities.has(e.to)) continue;
-      referenced.set(e.to, (referenced.get(e.to) ?? 0) + 1);
-    }
-    const order = [...entities.keys()].sort((a, b) =>
+  /** Pack a domain's tables into pages of 2 columns under the height budget. */
+  function packPages(tables) {
+    const order = tables.slice().sort((a, b) =>
       (referenced.get(b) ?? 0) - (referenced.get(a) ?? 0) || a.localeCompare(b));
-    const heights = new Map();
-    for (const t of entities.keys()) {
-      heights.set(t, 34 + entities.get(t).length * 21 + 10);
+    const pages = [];
+    let colA = [], colB = [], hA = 0, hB = 0;
+    const flush = () => { if (colA.length || colB.length) { pages.push([colA, colB]); colA = []; colB = []; hA = 0; hB = 0; } };
+    for (const t of order) {
+      const h = boxHeight(columns.get(t));
+      if ((colA.length >= MAX_PER_COL || hA + h + ROW_GAP > COL_BUDGET) && (colB.length >= MAX_PER_COL || hB + h + ROW_GAP > COL_BUDGET)) flush();
+      if (colA.length < MAX_PER_COL && hA + h + ROW_GAP <= COL_BUDGET) { colA.push(t); hA += h + ROW_GAP; }
+      else if (colB.length < MAX_PER_COL && hB + h + ROW_GAP <= COL_BUDGET) { colB.push(t); hB += h + ROW_GAP; }
+      else { flush(); colA.push(t); hA += h + ROW_GAP; }
     }
-    const n = order.length;
-    const nCols = Math.max(3, Math.min(9, Math.ceil(Math.sqrt(n * 1.35))));
-    const perCol = Math.ceil(n / nCols);
-    const pos = new Map();
-    let x = PAD, maxColBottom = 0;
-    for (let c = 0; c < nCols; c++) {
-      const colTables = order.slice(c * perCol, (c + 1) * perCol);
-      let y = PAD;
-      for (const t of colTables) {
-        pos.set(t, { x, y, w: W, h: heights.get(t) });
-        y += heights.get(t) + H_GAP;
-      }
-      maxColBottom = Math.max(maxColBottom, y);
-      x += W + 64;
-    }
-    return { pos, width: x, height: maxColBottom + PAD };
+    flush();
+    return pages;
   }
 
-  function diagramPage(group, domain) {
+  function diagramPage(domain, k, nPages, colA, colB) {
     const color = DOMAIN_COLORS[domain] ?? '#495057';
-    const inSet = new Set(group.tables);
-    const set = new Map();
-    for (const t of group.tables) set.set(t, columns.get(t));
+    const onPage = new Set([...colA, ...colB]);
+    const defs = new Map();
+    for (const t of onPage) defs.set(t, columns.get(t));
 
-    // FK edges among the set; stubs for outside references.
-    const edges = [];
+    // stubs for FK targets not on this page (cross-domain or other page)
     const stubs = new Map();
-    for (const t of group.tables) {
+    for (const t of onPage) {
       for (const f of fkByTable.get(t) ?? []) {
-        if (inSet.has(f.rt)) edges.push({ from: t, to: f.rt, col: f.c });
-        else if (columns.has(f.rt)) {
-          if (!stubs.has(f.rt)) stubs.set(f.rt, new Set());
-          stubs.get(f.rt).add(t);
-          edges.push({ from: t, to: f.rt, col: f.c, stub: true });
+        if (!onPage.has(f.rt) && columns.has(f.rt)) {
+          if (!stubs.has(f.rt)) stubs.set(f.rt, []);
+          stubs.get(f.rt).push(t);
         }
       }
     }
+    for (const s of stubs.keys()) defs.set(s, [{ name: 'id', type: 'varchar', pk: true }]);
+
+    // ── positions: 2 fixed columns; stubs fill the leftover of the lighter column ──
+    const COL_X = [PAD, PAD + BOX_W + COL_GAP];
+    const pos = new Map();
+    let canvasH = 0;
+    [[colA, COL_X[0]], [colB, COL_X[1]]].forEach(([list, x]) => {
+      let y = PAD;
+      for (const t of list) {
+        const h = boxHeight(defs.get(t));
+        pos.set(t, { x, y, w: BOX_W, h, col: x === COL_X[0] ? 0 : 1 });
+        y += h + ROW_GAP;
+      }
+      canvasH = Math.max(canvasH, y);
+    });
+    // stubs (small boxes) appended to whichever column currently ends higher
+    const stubList = [...stubs.keys()].sort((a, b) => stubs.get(b).length - stubs.get(a).length);
+    for (const s of stubList) {
+      const bottom0 = PAD + colA.reduce((acc, t) => acc + boxHeight(defs.get(t)) + ROW_GAP, 0);
+      const bottom1 = PAD + colB.reduce((acc, t) => acc + boxHeight(defs.get(t)) + ROW_GAP, 0);
+      const col = bottom0 <= bottom1 ? 0 : 1;
+      const y = Math.min(bottom0, bottom1);
+      pos.set(s, { x: COL_X[col], y, w: BOX_W, h: boxHeight(defs.get(s)), col });
+      if (col === 0) colA.push(s); else colB.push(s);
+      canvasH = Math.max(canvasH, y + boxHeight(defs.get(s)) + ROW_GAP);
+    }
+
+    // ── edges (child → parent), orthogonal through the central channel ──
+    const edges = [];
+    for (const t of onPage) {
+      for (const f of fkByTable.get(t) ?? []) {
+        if (pos.has(f.rt)) edges.push({ from: t, to: f.rt, col: f.c });
+      }
+    }
+    // merge parallel FKs between same pair
     const merged = new Map();
     for (const e of edges) {
-      const k = `${e.from}=>${e.to}`;
-      if (!merged.has(k)) merged.set(k, { from: e.from, to: e.to, cols: [], stub: e.stub });
-      merged.get(k).cols.push(e.col);
+      const kk = `${e.from}=>${e.to}`;
+      if (!merged.has(kk)) merged.set(kk, { from: e.from, to: e.to, cols: [] });
+      merged.get(kk).cols.push(e.col);
     }
     const edgeList = [...merged.values()];
 
-    for (const s of stubs.keys()) {
-      if (!set.has(s)) set.set(s, [{ name: 'id', type: 'varchar', pk: true }]);
-    }
-
-    const { pos, width, height } = layoutBoxes(set, edgeList);
-
-    const edgeParts = [];
+    // distribute exit/entry points on the channel-facing side of each box
+    const outs = new Map(), ins = new Map();
     for (const e of edgeList) {
-      const a = pos.get(e.from), b = pos.get(e.to);
-      if (!a || !b) continue;
-      const label = e.cols.length <= 2 ? e.cols.join(', ') : `${e.cols.length} FK`;
-      const dash = e.stub ? ' stroke-dasharray="5 4"' : '';
-      let d, lp = null;
-      if (b.x > a.x + a.w) {
-        const x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x, y2 = b.y + b.h / 2;
-        const dx = Math.max(40, Math.abs(x2 - x1) / 2);
-        d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
-        lp = { x: (x1 + x2) / 2, y: (y1 + y2) / 2 };
-      } else if (b.x + b.w < a.x) {
-        const x1 = a.x, y1 = a.y + a.h / 2, x2 = b.x + b.w, y2 = b.y + b.h / 2;
-        const dx = Math.max(40, Math.abs(x2 - x1) / 2);
-        d = `M ${x1} ${y1} C ${x1 - dx} ${y1}, ${x2 + dx} ${y2}, ${x2} ${y2}`;
-        lp = { x: (x1 + x2) / 2, y: (y1 + y2) / 2 };
-      } else {
-        const midX = Math.max(a.x, b.x) + 134;
-        if (a.y > b.y) d = `M ${midX} ${a.y} L ${midX} ${b.y + b.h}`;
-        else d = `M ${midX} ${a.y + a.h} L ${midX} ${b.y}`;
-        lp = null; // vertical edges: no label to avoid overlap
-      }
-      edgeParts.push(`<path d="${d}" fill="none" stroke="#8494ab" stroke-width="1.4" opacity="0.75"${dash} marker-end="url(#arrow)"/>` +
-        (label && lp ? `<text x="${lp.x}" y="${lp.y - 5}" font-size="11" fill="#4a5a72" text-anchor="middle" stroke="#ffffff" stroke-width="3" paint-order="stroke" font-style="italic">${esc(label)}</text>` : ''));
+      if (!outs.has(e.from)) outs.set(e.from, []);
+      outs.get(e.from).push(e);
+      if (!ins.has(e.to)) ins.set(e.to, []);
+      ins.get(e.to).push(e);
     }
+    const sideY = (box, list, i) => box.y + ((i + 1) * box.h) / (list.length + 1);
+    const CH_MIN = PAD + BOX_W + 26, CH_MAX = PAD + BOX_W + COL_GAP - 26;
+    edgeList.forEach((e, i) => {
+      const a = pos.get(e.from), b = pos.get(e.to);
+      const oi = outs.get(e.from).indexOf(e), ii = ins.get(e.to).indexOf(e);
+      const y1 = sideY(a, outs.get(e.from), oi);
+      const y2 = sideY(b, ins.get(e.to), ii);
+      const cx = CH_MIN + ((i * 23) % (CH_MAX - CH_MIN));
+      const label = e.cols.length <= 2 ? e.cols.join(', ') : `${e.cols.length} FK`;
+      // both endpoints sit on the channel-facing edge of their column → the
+      // orthogonal path never crosses any box
+      const x1 = a.col === 0 ? a.x + BOX_W : a.x;
+      const x2 = b.col === 0 ? b.x + BOX_W : b.x;
+      const d = `M ${x1} ${y1} L ${cx} ${y1} L ${cx} ${y2} L ${x2} ${y2}`;
+      const ly = (Math.min(y1, y2) + Math.max(y1, y2)) / 2;
+      e.path = d;
+      e.labelSvg = label
+        ? `<text x="${cx + 5}" y="${ly + 4}" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">${esc(label)}</text>`
+        : '';
+    });
 
+    const edgeParts = edgeList.map((e) =>
+      `<path d="${e.path}" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>`).join('\n      ');
+    const labelParts = edgeList.map((e) => e.labelSvg).filter(Boolean).join('\n      ');
+
+    // ── entity boxes ──
     const boxes = [];
     for (const [t, p] of pos) {
-      const isStub = !inSet.has(t);
+      const isStub = !onPage.has(t);
       const head = isStub ? '#94a3b8' : color;
-      const colDefs = set.get(t);
-      const rows = colDefs.map((c) => {
+      const rows = defs.get(t).map((c) => {
         const fk = !isStub && fkList.some((f) => f.t === t && f.c === c.name);
         const badges = (c.pk ? '<span class="b pk">PK</span>' : '') + (fk ? '<span class="b fk">FK</span>' : '');
         return `<div class="r"><span class="cn">${esc(c.name)}</span><span class="ct">${c.pk ? '<u>' + esc(shortType(c.type)) + '</u>' : esc(shortType(c.type))}</span>${badges}</div>`;
       }).join('');
       const border = isStub ? 'border:1.6px dashed #94a3b8;' : `border:1.6px solid ${color};`;
-      const note = isStub ? `<div class="stub">ngoài nhóm này</div>` : '';
+      const note = isStub ? `<div class="stub">bảng khác — xem trang tương ứng</div>` : '';
       boxes.push(`<div class="ent" style="left:${p.x}px;top:${p.y}px;width:${p.w}px;${border}">
         <div class="eh" style="background:${head}">${esc(t)}</div>${note}${rows}</div>`);
     }
 
+    const width = PAD * 2 + BOX_W * 2 + COL_GAP;
+    const height = canvasH + PAD;
     const html = `<!doctype html>
-<html lang="vi"><head><meta charset="utf-8"><title>${esc(group.title)}</title>
+<html lang="vi"><head><meta charset="utf-8"><title>${esc(DOMAIN_TITLES[domain] ?? domain)} (t.${k})</title>
 <style>
-  body { background:#fff; color:#111827; font-family:'Segoe UI',system-ui,sans-serif; margin:0; padding:28px 36px; }
-  h1 { font-size:25px; margin:0 0 4px; }
-  h1 .chip { display:inline-block; width:16px; height:16px; border-radius:4px; background:${color}; vertical-align:-2px; margin-right:10px; }
-  .sub { color:#4b5563; font-size:14px; margin-bottom:14px; }
-  .legend { font-size:12.5px; color:#4b5563; margin-bottom:12px; }
-  .b { font-size:9.5px; font-weight:700; border-radius:3px; padding:0 4px; margin-left:4px; vertical-align:1px; }
+  body { background:#fff; color:#111827; font-family:'Segoe UI',system-ui,sans-serif; margin:0; padding:26px 34px; }
+  h1 { font-size:23px; margin:0 0 4px; }
+  h1 .chip { display:inline-block; width:15px; height:15px; border-radius:4px; background:${color}; vertical-align:-2px; margin-right:10px; }
+  .sub { color:#4b5563; font-size:13.5px; margin-bottom:12px; }
+  .legend { font-size:12px; color:#4b5563; margin-bottom:14px; }
+  .b { font-size:10px; font-weight:700; border-radius:3px; padding:0 4px; margin-left:4px; vertical-align:1px; }
   .pk { background:#1d4ed8; color:#fff; }
   .fk { background:#c2410c; color:#fff; }
   .wrap { position:relative; }
   .ent { position:absolute; background:#fff; border-radius:6px; box-shadow:0 1px 4px rgba(15,23,42,.14); overflow:hidden; }
-  .eh { color:#fff; font-weight:700; font-size:13.5px; padding:5px 9px; letter-spacing:.2px; }
-  .stub { font-size:10px; color:#64748b; padding:2px 9px; background:#f1f5f9; }
-  .r { display:flex; align-items:center; font-size:12px; padding:2.5px 9px; }
+  .eh { color:#fff; font-weight:700; font-size:15px; padding:4.5px 9px; letter-spacing:.2px; }
+  .stub { font-size:10.5px; color:#64748b; padding:2px 9px; background:#f1f5f9; }
+  .r { display:flex; align-items:center; font-size:13px; padding:2.5px 9px; line-height:18px; }
   .r:nth-child(even) { background:#f7f9fc; }
-  .cn { flex:1; font-family:Consolas,ui-monospace,monospace; font-size:11.5px; white-space:nowrap; }
-  .ct { color:#6b7280; font-size:10.5px; margin-left:8px; white-space:nowrap; }
+  .cn { flex:1; font-family:Consolas,ui-monospace,monospace; font-size:13px; white-space:nowrap; }
+  .ct { color:#6b7280; font-size:11px; margin-left:8px; white-space:nowrap; }
 </style></head>
 <body>
-  <h1><span class="chip"></span>${esc(group.title)}
-      <span style="font-size:14px;color:#6b7280;font-weight:normal"> — ${inSet.size} bảng${stubs.size ? ` + ${stubs.size} bảng tham chiếu` : ''} · domain <code>${esc(domain)}</code></span></h1>
+  <h1><span class="chip"></span>${esc(DOMAIN_TITLES[domain] ?? domain)}
+      <span style="font-size:14px;color:#6b7280;font-weight:normal"> — trang ${k}/${nPages} · ${onPage.size} bảng${stubs.size ? ` + ${stubs.size} bảng tham chiếu` : ''} · domain <code>${esc(domain)}</code></span></h1>
   <div class="sub">${esc(DOMAIN_DESC[domain] ?? '')}</div>
-  <div class="legend"><b>PK</b> khóa chính (kiểu gạch chân) · <b>FK</b> khóa ngoại · nhãn nghiêng trên đường nối = cột FK · đường đứt nét = tham chiếu sang nhóm khác · mũi tên chỉ về bảng được tham chiếu</div>
+  <div class="legend"><b>PK</b> khóa chính (kiểu gạch chân) · <b>FK</b> khóa ngoại · nhãn nghiêng bên cạnh kênh dọc = cột FK · mũi tên vuông góc hướng về bảng được tham chiếu · khung đứt nét = bảng ở trang khác</div>
   <div class="wrap" id="wrap" style="width:${width}px;height:${height}px">
-    <svg id="edges" width="${width}" height="${height}" style="position:absolute;left:0;top:0">
+    <svg width="${width}" height="${height}" style="position:absolute;left:0;top:0">
       <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8494ab"/></marker></defs>
-      ${edgeParts.join('\n      ')}
+      ${edgeParts}
     </svg>
     ${boxes.join('\n    ')}
+    <svg width="${width}" height="${height}" style="position:absolute;left:0;top:0;pointer-events:none">
+      ${labelParts}
+    </svg>
   </div>
   <script>
     window.addEventListener('load', () => {
       const w = document.getElementById('wrap');
-      window.__READY = { w: Math.ceil(w.offsetWidth) + 72, h: Math.ceil(w.offsetHeight) + 120 };
+      window.__READY = { w: Math.ceil(w.offsetWidth) + 68, h: Math.ceil(w.offsetHeight) + 110 };
       document.title = 'OK ' + document.title;
     });
   </script>
 </body></html>`;
-    fs.writeFileSync(path.join(OUT_DIR, `${group.name}.html`), html);
-    manifest.pages.push({ page: group.name, domain, title: group.title, tables: inSet.size, stubs: stubs.size, size: [Math.ceil(width), Math.ceil(height)] });
+    const name = `${domain}-${k}`;
+    fs.writeFileSync(path.join(OUT_DIR, `${name}.html`), html);
+    manifest.pages.push({
+      page: name, domain,
+      title: `${DOMAIN_TITLES[domain] ?? domain} (t.${k})`,
+      tables: onPage.size, stubs: stubs.size,
+      size: [Math.ceil(width), Math.ceil(height)],
+    });
   }
 
   for (const domain of domains) {
-    for (const g of groupsOf(domain, byDomain.get(domain))) diagramPage(g, domain);
-    manifest.domains[domain] = { title: DOMAIN_TITLES[domain] ?? domain, tables: byDomain.get(domain).length, color: DOMAIN_COLORS[domain] ?? '#495057' };
+    const pages = packPages(byDomain.get(domain));
+    pages.forEach(([colA, colB], i) => diagramPage(domain, i + 1, pages.length, colA, colB));
+    manifest.domains[domain] = { title: DOMAIN_TITLES[domain] ?? domain, tables: byDomain.get(domain).length, color: DOMAIN_COLORS[domain] ?? '#495057', diagrams: pages.length };
   }
 
-  // Overview page — circular domain map with cross-domain FK flows.
+  // ── Overview page — elliptical domain map with cross-domain FK flows ──
   const crossFlow = new Map();
   for (const t of business) {
     for (const f of fkByTable.get(t) ?? []) {
@@ -345,7 +351,7 @@ async function main() {
       crossFlow.set(`${d1}=>${d2}`, (crossFlow.get(`${d1}=>${d2}`) ?? 0) + 1);
     }
   }
-  const flows = [...crossFlow.entries()].map(([k, v]) => { const [a, b] = k.split('=>'); return { a, b, v }; }).sort((x, y) => y.v - x.v);
+  const flows = [...crossFlow.entries()].map(([kk, v]) => { const [a, b] = kk.split('=>'); return { a, b, v }; }).sort((x, y) => y.v - x.v);
   manifest.flows = flows.map((f) => ({ from: f.a, to: f.b, count: f.v }));
 
   const cx = 670, cy = 530, RX = 560, RY = 330;
@@ -381,11 +387,11 @@ async function main() {
 <script>window.addEventListener('load',()=>{window.__READY={w:1420,h:1140};document.title='OK '+document.title;});</script>
 </body></html>`;
   fs.writeFileSync(path.join(OUT_DIR, 'overview.html'), ovHtml);
-  manifest.pages.unshift({ page: 'overview', domain: 'overview', title: 'Sơ đồ tổng quan', tables: business.length, stubs: 0, size: [1280, 1080] });
+  manifest.pages.unshift({ page: 'overview', domain: 'overview', title: 'Sơ đồ tổng quan', tables: business.length, stubs: 0, size: [1340, 1060] });
 
   fs.writeFileSync(path.join(OUT_DIR, 'report-manifest.json'), JSON.stringify(manifest, null, 2));
   console.log(`pages: ${manifest.pages.length}; business tables: ${business.length}`);
-  for (const p of manifest.pages) console.log(`  ${p.page}: ${p.tables} bảng (${p.size[0]}x${p.size[1]})`);
+  for (const p of manifest.pages) console.log(`  ${p.page}: ${p.tables}+${p.stubs} (${p.size[0]}x${p.size[1]})`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

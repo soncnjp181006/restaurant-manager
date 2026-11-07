@@ -80,7 +80,7 @@ Script ghi ra 4 file trong `docs/erd/`:
 | File | Nội dung |
 |---|---|
 | `relational-full.html` | **Toàn bộ lược đồ**: 238 bảng nghiệp vụ · 458 khóa ngoại (bật ô “hiện cả bảng `__attrs` & metadata” là 412 · 625). Gom theo 16 domain, kéo/zoom, tìm bảng, bấm 1 bảng để làm nổi các bảng liên quan, panel bên phải liệt kê toàn bộ cột + PK. |
-| `report/bao-cao-erd-chuan-hoa.pdf` | **Bản báo cáo in/nộp**: bìa + mục lục + sơ đồ tổng quan 14 phân hệ + 24 trang ERD chi tiết (đầy đủ cột, PK/FK) + quy tắc ánh xạ + chuẩn hóa 1NF–BCNF. Nguồn PNG in được: `report/png/`, trang HTML chỉnh sửa được: `report/*.html` (sinh lại bằng `node migrations/relational/erd-report.mjs`). |
+| `report/bao-cao-erd-chuan-hoa.pdf` | **Bản báo cáo in/nộp**: bìa + mục lục + sơ đồ tổng quan 14 phân hệ + 66 trang ERD chi tiết (2 cột thưa, đầy đủ cột PK/FK, cạnh vuông góc) + quy tắc ánh xạ + chuẩn hóa 1NF–BCNF. Nguồn PNG in được: `report/png/`, trang HTML chỉnh sửa được: `report/*.html` (sinh lại bằng `node migrations/relational/erd-report.mjs`). |
 | `relational-live.html` | Một bảng + bán kính 1–3 bước, vẽ bằng Mermaid (đọc từng cụm chi tiết). |
 | `relational-live.mmd` | Mermaid ER, một cạnh cho mỗi FK thật (dán vào Markdown/dbdocs). |
 | `relational-live.dbml` | DBML đầy đủ cột + ref (dbdiagram.io). |

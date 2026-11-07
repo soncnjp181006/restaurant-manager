@@ -8,272 +8,734 @@
       "tables": 238,
       "stubs": 0,
       "size": [
-        1280,
-        1080
+        1340,
+        1060
       ]
     },
     {
       "page": "inventory-1",
       "domain": "inventory",
-      "title": "Kho & Nguyên liệu — nhóm inventory_purchase",
-      "tables": 22,
-      "stubs": 8,
+      "title": "Kho & Nguyên liệu (t.1)",
+      "tables": 3,
+      "stubs": 2,
       "size": [
-        2364,
-        1690
+        940,
+        818
       ]
     },
     {
       "page": "inventory-2",
       "domain": "inventory",
-      "title": "Kho & Nguyên liệu — nhóm inventory_item",
-      "tables": 20,
-      "stubs": 8,
+      "title": "Kho & Nguyên liệu (t.2)",
+      "tables": 2,
+      "stubs": 5,
       "size": [
-        2364,
-        1221
+        940,
+        1002
       ]
     },
     {
       "page": "inventory-3",
       "domain": "inventory",
-      "title": "Kho & Nguyên liệu — nhóm inventory_issue",
-      "tables": 8,
+      "title": "Kho & Nguyên liệu (t.3)",
+      "tables": 2,
+      "stubs": 8,
+      "size": [
+        940,
+        1313
+      ]
+    },
+    {
+      "page": "inventory-4",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.4)",
+      "tables": 2,
       "stubs": 6,
       "size": [
-        1700,
-        1046
+        940,
+        1125
+      ]
+    },
+    {
+      "page": "inventory-5",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.5)",
+      "tables": 2,
+      "stubs": 6,
+      "size": [
+        940,
+        1079
+      ]
+    },
+    {
+      "page": "inventory-6",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.6)",
+      "tables": 2,
+      "stubs": 7,
+      "size": [
+        940,
+        1286
+      ]
+    },
+    {
+      "page": "inventory-7",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.7)",
+      "tables": 2,
+      "stubs": 4,
+      "size": [
+        940,
+        960
+      ]
+    },
+    {
+      "page": "inventory-8",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.8)",
+      "tables": 4,
+      "stubs": 6,
+      "size": [
+        940,
+        1267
+      ]
+    },
+    {
+      "page": "inventory-9",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.9)",
+      "tables": 4,
+      "stubs": 7,
+      "size": [
+        940,
+        1363
+      ]
+    },
+    {
+      "page": "inventory-10",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.10)",
+      "tables": 4,
+      "stubs": 12,
+      "size": [
+        940,
+        1762
+      ]
+    },
+    {
+      "page": "inventory-11",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.11)",
+      "tables": 6,
+      "stubs": 8,
+      "size": [
+        940,
+        1252
+      ]
+    },
+    {
+      "page": "inventory-12",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.12)",
+      "tables": 6,
+      "stubs": 8,
+      "size": [
+        940,
+        1252
+      ]
+    },
+    {
+      "page": "inventory-13",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.13)",
+      "tables": 6,
+      "stubs": 9,
+      "size": [
+        940,
+        1394
+      ]
+    },
+    {
+      "page": "inventory-14",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.14)",
+      "tables": 4,
+      "stubs": 7,
+      "size": [
+        940,
+        1313
+      ]
+    },
+    {
+      "page": "inventory-15",
+      "domain": "inventory",
+      "title": "Kho & Nguyên liệu (t.15)",
+      "tables": 1,
+      "stubs": 2,
+      "size": [
+        940,
+        446
       ]
     },
     {
       "page": "order-payment-1",
       "domain": "order-payment",
-      "title": "Đơn hàng & Thanh toán — nhóm order_",
-      "tables": 21,
-      "stubs": 10,
+      "title": "Đơn hàng & Thanh toán (t.1)",
+      "tables": 2,
+      "stubs": 11,
       "size": [
-        2364,
-        1228
+        940,
+        1781
       ]
     },
     {
       "page": "order-payment-2",
       "domain": "order-payment",
-      "title": "Đơn hàng & Thanh toán — nhóm order_item",
-      "tables": 12,
-      "stubs": 10,
+      "title": "Đơn hàng & Thanh toán (t.2)",
+      "tables": 3,
+      "stubs": 3,
       "size": [
-        2032,
-        1494
+        940,
+        1029
       ]
     },
     {
       "page": "order-payment-3",
       "domain": "order-payment",
-      "title": "Đơn hàng & Thanh toán — nhóm payment_type",
+      "title": "Đơn hàng & Thanh toán (t.3)",
+      "tables": 3,
+      "stubs": 5,
+      "size": [
+        940,
+        1060
+      ]
+    },
+    {
+      "page": "order-payment-4",
+      "domain": "order-payment",
+      "title": "Đơn hàng & Thanh toán (t.4)",
       "tables": 4,
+      "stubs": 7,
+      "size": [
+        940,
+        1290
+      ]
+    },
+    {
+      "page": "order-payment-5",
+      "domain": "order-payment",
+      "title": "Đơn hàng & Thanh toán (t.5)",
+      "tables": 5,
+      "stubs": 4,
+      "size": [
+        940,
+        1106
+      ]
+    },
+    {
+      "page": "order-payment-6",
+      "domain": "order-payment",
+      "title": "Đơn hàng & Thanh toán (t.6)",
+      "tables": 6,
+      "stubs": 7,
+      "size": [
+        940,
+        1252
+      ]
+    },
+    {
+      "page": "order-payment-7",
+      "domain": "order-payment",
+      "title": "Đơn hàng & Thanh toán (t.7)",
+      "tables": 6,
+      "stubs": 7,
+      "size": [
+        940,
+        1252
+      ]
+    },
+    {
+      "page": "order-payment-8",
+      "domain": "order-payment",
+      "title": "Đơn hàng & Thanh toán (t.8)",
+      "tables": 6,
+      "stubs": 6,
+      "size": [
+        940,
+        1252
+      ]
+    },
+    {
+      "page": "order-payment-9",
+      "domain": "order-payment",
+      "title": "Đơn hàng & Thanh toán (t.9)",
+      "tables": 2,
       "stubs": 2,
       "size": [
-        1036,
-        556
+        940,
+        565
       ]
     },
     {
       "page": "hr-1",
       "domain": "hr",
-      "title": "Nhân sự & Lương — nhóm schedule_template",
-      "tables": 16,
-      "stubs": 6,
+      "title": "Nhân sự & Lương (t.1)",
+      "tables": 3,
+      "stubs": 2,
       "size": [
-        2032,
-        1578
+        940,
+        868
       ]
     },
     {
       "page": "hr-2",
       "domain": "hr",
-      "title": "Nhân sự & Lương — nhóm employee",
-      "tables": 5,
-      "stubs": 6,
+      "title": "Nhân sự & Lương (t.2)",
+      "tables": 4,
+      "stubs": 4,
       "size": [
-        1368,
-        850
+        940,
+        1079
       ]
     },
     {
       "page": "hr-3",
       "domain": "hr",
-      "title": "Nhân sự & Lương — nhóm labor_adjustment",
-      "tables": 5,
+      "title": "Nhân sự & Lương (t.3)",
+      "tables": 3,
+      "stubs": 1,
+      "size": [
+        940,
+        887
+      ]
+    },
+    {
+      "page": "hr-4",
+      "domain": "hr",
+      "title": "Nhân sự & Lương (t.4)",
+      "tables": 3,
+      "stubs": 7,
+      "size": [
+        940,
+        1290
+      ]
+    },
+    {
+      "page": "hr-5",
+      "domain": "hr",
+      "title": "Nhân sự & Lương (t.5)",
+      "tables": 4,
+      "stubs": 8,
+      "size": [
+        940,
+        1432
+      ]
+    },
+    {
+      "page": "hr-6",
+      "domain": "hr",
+      "title": "Nhân sự & Lương (t.6)",
+      "tables": 4,
       "stubs": 4,
       "size": [
-        1368,
-        857
+        940,
+        1148
+      ]
+    },
+    {
+      "page": "hr-7",
+      "domain": "hr",
+      "title": "Nhân sự & Lương (t.7)",
+      "tables": 3,
+      "stubs": 6,
+      "size": [
+        940,
+        1359
+      ]
+    },
+    {
+      "page": "hr-8",
+      "domain": "hr",
+      "title": "Nhân sự & Lương (t.8)",
+      "tables": 2,
+      "stubs": 5,
+      "size": [
+        940,
+        822
       ]
     },
     {
       "page": "core-1",
       "domain": "core",
-      "title": "Dữ liệu lõi dùng chung — nhóm audit_log",
-      "tables": 16,
-      "stubs": 5,
+      "title": "Dữ liệu lõi dùng chung (t.1)",
+      "tables": 4,
+      "stubs": 0,
       "size": [
-        2032,
-        1011
+        940,
+        726
       ]
     },
     {
       "page": "core-2",
       "domain": "core",
-      "title": "Dữ liệu lõi dùng chung — nhóm extra_",
-      "tables": 4,
-      "stubs": 0,
+      "title": "Dữ liệu lõi dùng chung (t.2)",
+      "tables": 2,
+      "stubs": 4,
       "size": [
-        1036,
-        430
+        940,
+        895
       ]
     },
     {
       "page": "core-3",
       "domain": "core",
-      "title": "Dữ liệu lõi dùng chung — nhóm extras_",
-      "tables": 4,
-      "stubs": 3,
+      "title": "Dữ liệu lõi dùng chung (t.3)",
+      "tables": 5,
+      "stubs": 2,
       "size": [
-        1368,
-        346
+        940,
+        937
+      ]
+    },
+    {
+      "page": "core-4",
+      "domain": "core",
+      "title": "Dữ liệu lõi dùng chung (t.4)",
+      "tables": 6,
+      "stubs": 6,
+      "size": [
+        940,
+        1252
+      ]
+    },
+    {
+      "page": "core-5",
+      "domain": "core",
+      "title": "Dữ liệu lõi dùng chung (t.5)",
+      "tables": 6,
+      "stubs": 2,
+      "size": [
+        940,
+        1079
+      ]
+    },
+    {
+      "page": "core-6",
+      "domain": "core",
+      "title": "Dữ liệu lõi dùng chung (t.6)",
+      "tables": 1,
+      "stubs": 2,
+      "size": [
+        940,
+        446
       ]
     },
     {
       "page": "menu-recipe-1",
       "domain": "menu-recipe",
-      "title": "Thực đơn & Công thức — nhóm menu_item",
-      "tables": 15,
-      "stubs": 5,
+      "title": "Thực đơn & Công thức (t.1)",
+      "tables": 3,
+      "stubs": 2,
       "size": [
-        2032,
-        1158
+        940,
+        937
       ]
     },
     {
       "page": "menu-recipe-2",
       "domain": "menu-recipe",
-      "title": "Thực đơn & Công thức — nhóm modifier_",
-      "tables": 5,
-      "stubs": 1,
+      "title": "Thực đơn & Công thức (t.2)",
+      "tables": 4,
+      "stubs": 4,
       "size": [
-        1036,
-        472
+        940,
+        1083
       ]
     },
     {
       "page": "menu-recipe-3",
       "domain": "menu-recipe",
-      "title": "Thực đơn & Công thức — nhóm catalog_release",
+      "title": "Thực đơn & Công thức (t.3)",
       "tables": 4,
-      "stubs": 0,
+      "stubs": 3,
       "size": [
-        1036,
-        556
+        940,
+        1079
       ]
     },
     {
-      "page": "integration",
+      "page": "menu-recipe-4",
+      "domain": "menu-recipe",
+      "title": "Thực đơn & Công thức (t.4)",
+      "tables": 6,
+      "stubs": 6,
+      "size": [
+        940,
+        1225
+      ]
+    },
+    {
+      "page": "menu-recipe-5",
+      "domain": "menu-recipe",
+      "title": "Thực đơn & Công thức (t.5)",
+      "tables": 6,
+      "stubs": 5,
+      "size": [
+        940,
+        1198
+      ]
+    },
+    {
+      "page": "menu-recipe-6",
+      "domain": "menu-recipe",
+      "title": "Thực đơn & Công thức (t.6)",
+      "tables": 1,
+      "stubs": 2,
+      "size": [
+        940,
+        469
+      ]
+    },
+    {
+      "page": "integration-1",
       "domain": "integration",
-      "title": "Tích hợp ngoài",
-      "tables": 17,
+      "title": "Tích hợp ngoài (t.1)",
+      "tables": 4,
+      "stubs": 0,
+      "size": [
+        940,
+        795
+      ]
+    },
+    {
+      "page": "integration-2",
+      "domain": "integration",
+      "title": "Tích hợp ngoài (t.2)",
+      "tables": 5,
       "stubs": 1,
       "size": [
-        1700,
+        940,
+        1006
+      ]
+    },
+    {
+      "page": "integration-3",
+      "domain": "integration",
+      "title": "Tích hợp ngoài (t.3)",
+      "tables": 4,
+      "stubs": 0,
+      "size": [
+        940,
+        795
+      ]
+    },
+    {
+      "page": "integration-4",
+      "domain": "integration",
+      "title": "Tích hợp ngoài (t.4)",
+      "tables": 4,
+      "stubs": 0,
+      "size": [
+        940,
+        933
+      ]
+    },
+    {
+      "page": "kitchen-1",
+      "domain": "kitchen",
+      "title": "Bếp & In món (t.1)",
+      "tables": 4,
+      "stubs": 3,
+      "size": [
+        940,
+        1056
+      ]
+    },
+    {
+      "page": "kitchen-2",
+      "domain": "kitchen",
+      "title": "Bếp & In món (t.2)",
+      "tables": 3,
+      "stubs": 7,
+      "size": [
+        940,
+        1225
+      ]
+    },
+    {
+      "page": "kitchen-3",
+      "domain": "kitchen",
+      "title": "Bếp & In món (t.3)",
+      "tables": 4,
+      "stubs": 5,
+      "size": [
+        940,
+        1198
+      ]
+    },
+    {
+      "page": "sync-1",
+      "domain": "sync",
+      "title": "Đồng bộ nhiều máy POS (t.1)",
+      "tables": 6,
+      "stubs": 0,
+      "size": [
+        940,
+        891
+      ]
+    },
+    {
+      "page": "sync-2",
+      "domain": "sync",
+      "title": "Đồng bộ nhiều máy POS (t.2)",
+      "tables": 4,
+      "stubs": 0,
+      "size": [
+        940,
+        818
+      ]
+    },
+    {
+      "page": "sync-3",
+      "domain": "sync",
+      "title": "Đồng bộ nhiều máy POS (t.3)",
+      "tables": 1,
+      "stubs": 0,
+      "size": [
+        940,
+        515
+      ]
+    },
+    {
+      "page": "auth-1",
+      "domain": "auth",
+      "title": "Đăng nhập & Phân quyền (t.1)",
+      "tables": 5,
+      "stubs": 1,
+      "size": [
+        940,
+        937
+      ]
+    },
+    {
+      "page": "auth-2",
+      "domain": "auth",
+      "title": "Đăng nhập & Phân quyền (t.2)",
+      "tables": 4,
+      "stubs": 3,
+      "size": [
+        940,
+        734
+      ]
+    },
+    {
+      "page": "buffet-1",
+      "domain": "buffet",
+      "title": "Buffet (t.1)",
+      "tables": 3,
+      "stubs": 4,
+      "size": [
+        940,
+        1033
+      ]
+    },
+    {
+      "page": "buffet-2",
+      "domain": "buffet",
+      "title": "Buffet (t.2)",
+      "tables": 4,
+      "stubs": 5,
+      "size": [
+        940,
         1221
       ]
     },
     {
-      "page": "kitchen",
-      "domain": "kitchen",
-      "title": "Bếp & In món",
-      "tables": 11,
-      "stubs": 6,
-      "size": [
-        1700,
-        1410
-      ]
-    },
-    {
-      "page": "sync",
-      "domain": "sync",
-      "title": "Đồng bộ nhiều máy POS",
-      "tables": 11,
-      "stubs": 0,
-      "size": [
-        1368,
-        773
-      ]
-    },
-    {
-      "page": "auth",
-      "domain": "auth",
-      "title": "Đăng nhập & Phân quyền",
-      "tables": 9,
-      "stubs": 1,
-      "size": [
-        1368,
-        794
-      ]
-    },
-    {
-      "page": "buffet",
+      "page": "buffet-3",
       "domain": "buffet",
-      "title": "Buffet",
-      "tables": 8,
-      "stubs": 7,
-      "size": [
-        1700,
-        899
-      ]
-    },
-    {
-      "page": "discount",
-      "domain": "discount",
-      "title": "Khuyến mãi & Giảm giá",
-      "tables": 7,
+      "title": "Buffet (t.3)",
+      "tables": 1,
       "stubs": 4,
       "size": [
-        1368,
-        1487
+        940,
+        611
       ]
     },
     {
-      "page": "accounting",
+      "page": "discount-1",
+      "domain": "discount",
+      "title": "Khuyến mãi & Giảm giá (t.1)",
+      "tables": 2,
+      "stubs": 0,
+      "size": [
+        940,
+        952
+      ]
+    },
+    {
+      "page": "discount-2",
+      "domain": "discount",
+      "title": "Khuyến mãi & Giảm giá (t.2)",
+      "tables": 5,
+      "stubs": 6,
+      "size": [
+        940,
+        1206
+      ]
+    },
+    {
+      "page": "accounting-1",
       "domain": "accounting",
-      "title": "Sổ kế toán",
-      "tables": 5,
+      "title": "Sổ kế toán (t.1)",
+      "tables": 4,
       "stubs": 3,
       "size": [
-        1368,
-        934
+        940,
+        1148
       ]
     },
     {
-      "page": "floor",
+      "page": "accounting-2",
+      "domain": "accounting",
+      "title": "Sổ kế toán (t.2)",
+      "tables": 1,
+      "stubs": 2,
+      "size": [
+        940,
+        404
+      ]
+    },
+    {
+      "page": "floor-1",
       "domain": "floor",
-      "title": "Sơ đồ bàn",
-      "tables": 5,
-      "stubs": 3,
+      "title": "Sơ đồ bàn (t.1)",
+      "tables": 4,
+      "stubs": 2,
       "size": [
-        1368,
-        724
+        940,
+        941
       ]
     },
     {
-      "page": "customer",
+      "page": "floor-2",
+      "domain": "floor",
+      "title": "Sơ đồ bàn (t.2)",
+      "tables": 1,
+      "stubs": 2,
+      "size": [
+        940,
+        404
+      ]
+    },
+    {
+      "page": "customer-1",
       "domain": "customer",
-      "title": "Khách hàng",
+      "title": "Khách hàng (t.1)",
       "tables": 4,
       "stubs": 0,
       "size": [
-        1036,
-        724
+        940,
+        910
       ]
     }
   ],
@@ -281,72 +743,86 @@
     "inventory": {
       "title": "Kho & Nguyên liệu",
       "tables": 50,
-      "color": "#0b7285"
+      "color": "#0b7285",
+      "diagrams": 15
     },
     "order-payment": {
       "title": "Đơn hàng & Thanh toán",
       "tables": 37,
-      "color": "#3b5bdb"
+      "color": "#3b5bdb",
+      "diagrams": 9
     },
     "hr": {
       "title": "Nhân sự & Lương",
       "tables": 26,
-      "color": "#5f3dc4"
+      "color": "#5f3dc4",
+      "diagrams": 8
     },
     "core": {
       "title": "Dữ liệu lõi dùng chung",
       "tables": 24,
-      "color": "#495057"
+      "color": "#495057",
+      "diagrams": 6
     },
     "menu-recipe": {
       "title": "Thực đơn & Công thức",
       "tables": 24,
-      "color": "#e8590c"
+      "color": "#e8590c",
+      "diagrams": 6
     },
     "integration": {
       "title": "Tích hợp ngoài",
       "tables": 17,
-      "color": "#862e9c"
+      "color": "#862e9c",
+      "diagrams": 4
     },
     "kitchen": {
       "title": "Bếp & In món",
       "tables": 11,
-      "color": "#c92a2a"
+      "color": "#c92a2a",
+      "diagrams": 3
     },
     "sync": {
       "title": "Đồng bộ nhiều máy POS",
       "tables": 11,
-      "color": "#1864ab"
+      "color": "#1864ab",
+      "diagrams": 3
     },
     "auth": {
       "title": "Đăng nhập & Phân quyền",
       "tables": 9,
-      "color": "#2b8a3e"
+      "color": "#2b8a3e",
+      "diagrams": 2
     },
     "buffet": {
       "title": "Buffet",
       "tables": 8,
-      "color": "#a61e4d"
+      "color": "#a61e4d",
+      "diagrams": 3
     },
     "discount": {
       "title": "Khuyến mãi & Giảm giá",
       "tables": 7,
-      "color": "#7048e8"
+      "color": "#7048e8",
+      "diagrams": 2
     },
     "accounting": {
       "title": "Sổ kế toán",
       "tables": 5,
-      "color": "#087f5b"
+      "color": "#087f5b",
+      "diagrams": 2
     },
     "floor": {
       "title": "Sơ đồ bàn",
       "tables": 5,
-      "color": "#1971c2"
+      "color": "#1971c2",
+      "diagrams": 2
     },
     "customer": {
       "title": "Khách hàng",
       "tables": 4,
-      "color": "#d9480f"
+      "color": "#d9480f",
+      "diagrams": 1
     }
   },
   "flows": [

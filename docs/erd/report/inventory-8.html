@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>Kho &amp; Nguyên liệu (t.8)</title>
+<style>
+  body { background:#fff; color:#111827; font-family:'Segoe UI',system-ui,sans-serif; margin:0; padding:26px 34px; }
+  h1 { font-size:23px; margin:0 0 4px; }
+  h1 .chip { display:inline-block; width:15px; height:15px; border-radius:4px; background:#0b7285; vertical-align:-2px; margin-right:10px; }
+  .sub { color:#4b5563; font-size:13.5px; margin-bottom:12px; }
+  .legend { font-size:12px; color:#4b5563; margin-bottom:14px; }
+  .b { font-size:10px; font-weight:700; border-radius:3px; padding:0 4px; margin-left:4px; vertical-align:1px; }
+  .pk { background:#1d4ed8; color:#fff; }
+  .fk { background:#c2410c; color:#fff; }
+  .wrap { position:relative; }
+  .ent { position:absolute; background:#fff; border-radius:6px; box-shadow:0 1px 4px rgba(15,23,42,.14); overflow:hidden; }
+  .eh { color:#fff; font-weight:700; font-size:15px; padding:4.5px 9px; letter-spacing:.2px; }
+  .stub { font-size:10.5px; color:#64748b; padding:2px 9px; background:#f1f5f9; }
+  .r { display:flex; align-items:center; font-size:13px; padding:2.5px 9px; line-height:18px; }
+  .r:nth-child(even) { background:#f7f9fc; }
+  .cn { flex:1; font-family:Consolas,ui-monospace,monospace; font-size:13px; white-space:nowrap; }
+  .ct { color:#6b7280; font-size:11px; margin-left:8px; white-space:nowrap; }
+</style></head>
+<body>
+  <h1><span class="chip"></span>Kho &amp; Nguyên liệu
+      <span style="font-size:14px;color:#6b7280;font-weight:normal"> — trang 8/15 · 4 bảng + 6 bảng tham chiếu · domain <code>inventory</code></span></h1>
+  <div class="sub">Nguyên liệu, định mức, nhà cung cấp, phiếu nhập/xuất/điều chỉnh và sổ kho.</div>
+  <div class="legend"><b>PK</b> khóa chính (kiểu gạch chân) · <b>FK</b> khóa ngoại · nhãn nghiêng bên cạnh kênh dọc = cột FK · mũi tên vuông góc hướng về bảng được tham chiếu · khung đứt nét = bảng ở trang khác</div>
+  <div class="wrap" id="wrap" style="width:940px;height:1267px">
+    <svg width="940" height="1267" style="position:absolute;left:0;top:0">
+      <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8494ab"/></marker></defs>
+      <path d="M 380 127.6 L 406 127.6 L 406 1027 L 380 1027" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 195.2 L 429 195.2 L 429 727.5 L 380 727.5" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 262.8 L 452 262.8 L 452 801.6666666666666 L 560 801.6666666666666" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 330.4 L 475 330.4 L 475 874.6666666666666 L 380 874.6666666666666" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 127.83333333333333 L 498 127.83333333333333 L 498 954 L 560 954" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 195.66666666666666 L 521 195.66666666666666 L 521 1096 L 560 1096" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 263.5 L 416 263.5 L 416 743 L 380 743" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 331.3333333333333 L 439 331.3333333333333 L 439 822.3333333333334 L 560 822.3333333333334" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 399.1666666666667 L 462 399.1666666666667 L 462 895.3333333333334 L 380 895.3333333333334" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 624 L 485 624 L 485 758.5 L 380 758.5" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+    </svg>
+    <div class="ent" style="left:60px;top:60px;width:320px;border:1.6px solid #0b7285;">
+        <div class="eh" style="background:#0b7285">inventory_adjustment_item</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">adjustment</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">comments</span><span class="ct">text</span></div><div class="r"><span class="cn">item</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">location</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">quantity_change</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_price</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_quantity</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_uom</span><span class="ct">text</span></div><div class="r"><span class="cn">store</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">unit_cost</span><span class="ct">double</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:60px;top:478px;width:320px;border:1.6px solid #0b7285;">
+        <div class="eh" style="background:#0b7285">inventory_category</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">name</span><span class="ct">text</span></div><div class="r"><span class="cn">priority</span><span class="ct">bigint</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:560px;top:60px;width:320px;border:1.6px solid #0b7285;">
+        <div class="eh" style="background:#0b7285">inventory_issue_return_item</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">comments</span><span class="ct">text</span></div><div class="r"><span class="cn">inventory_issue_return</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">issue_return</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">issued</span><span class="ct">double</span></div><div class="r"><span class="cn">issued_item</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">item</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">location</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">price</span><span class="ct">double</span></div><div class="r"><span class="cn">quantity</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_price</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_quantity</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_uom</span><span class="ct">text</span></div><div class="r"><span class="cn">store</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:560px;top:547px;width:320px;border:1.6px solid #0b7285;">
+        <div class="eh" style="background:#0b7285">inventory_item_group</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">base_quantity</span><span class="ct">double</span></div><div class="r"><span class="cn">main_item</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:60px;top:712px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">inventory_item</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:560px;top:781px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">inventory_location</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:60px;top:854px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">inventory_store</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:560px;top:923px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">inventory_issue_return</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:60px;top:996px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">inventory_adjustment</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:560px;top:1065px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">inventory_issue_item</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <svg width="940" height="1267" style="position:absolute;left:0;top:0;pointer-events:none">
+      <text x="411" y="581.3" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">adjustment</text>
+      <text x="434" y="465.35" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">item</text>
+      <text x="457" y="536.2333333333333" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">location</text>
+      <text x="480" y="606.5333333333333" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">store</text>
+      <text x="503" y="544.9166666666666" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">inventory_issue_return, issue_return</text>
+      <text x="526" y="649.8333333333334" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">issued_item</text>
+      <text x="421" y="507.25" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">item</text>
+      <text x="444" y="580.8333333333334" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">location</text>
+      <text x="467" y="651.25" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">store</text>
+      <text x="490" y="695.25" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">main_item</text>
+    </svg>
+  </div>
+  <script>
+    window.addEventListener('load', () => {
+      const w = document.getElementById('wrap');
+      window.__READY = { w: Math.ceil(w.offsetWidth) + 68, h: Math.ceil(w.offsetHeight) + 110 };
+      document.title = 'OK ' + document.title;
+    });
+  </script>
+</body></html>

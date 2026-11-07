@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>Bếp &amp; In món (t.2)</title>
+<style>
+  body { background:#fff; color:#111827; font-family:'Segoe UI',system-ui,sans-serif; margin:0; padding:26px 34px; }
+  h1 { font-size:23px; margin:0 0 4px; }
+  h1 .chip { display:inline-block; width:15px; height:15px; border-radius:4px; background:#c92a2a; vertical-align:-2px; margin-right:10px; }
+  .sub { color:#4b5563; font-size:13.5px; margin-bottom:12px; }
+  .legend { font-size:12px; color:#4b5563; margin-bottom:14px; }
+  .b { font-size:10px; font-weight:700; border-radius:3px; padding:0 4px; margin-left:4px; vertical-align:1px; }
+  .pk { background:#1d4ed8; color:#fff; }
+  .fk { background:#c2410c; color:#fff; }
+  .wrap { position:relative; }
+  .ent { position:absolute; background:#fff; border-radius:6px; box-shadow:0 1px 4px rgba(15,23,42,.14); overflow:hidden; }
+  .eh { color:#fff; font-weight:700; font-size:15px; padding:4.5px 9px; letter-spacing:.2px; }
+  .stub { font-size:10.5px; color:#64748b; padding:2px 9px; background:#f1f5f9; }
+  .r { display:flex; align-items:center; font-size:13px; padding:2.5px 9px; line-height:18px; }
+  .r:nth-child(even) { background:#f7f9fc; }
+  .cn { flex:1; font-family:Consolas,ui-monospace,monospace; font-size:13px; white-space:nowrap; }
+  .ct { color:#6b7280; font-size:11px; margin-left:8px; white-space:nowrap; }
+</style></head>
+<body>
+  <h1><span class="chip"></span>Bếp &amp; In món
+      <span style="font-size:14px;color:#6b7280;font-weight:normal"> — trang 2/3 · 3 bảng + 7 bảng tham chiếu · domain <code>kitchen</code></span></h1>
+  <div class="sub">Cấu hình bếp, máy in, luồng chế biến món.</div>
+  <div class="legend"><b>PK</b> khóa chính (kiểu gạch chân) · <b>FK</b> khóa ngoại · nhãn nghiêng bên cạnh kênh dọc = cột FK · mũi tên vuông góc hướng về bảng được tham chiếu · khung đứt nét = bảng ở trang khác</div>
+  <div class="wrap" id="wrap" style="width:940px;height:1225px">
+    <svg width="940" height="1225" style="position:absolute;left:0;top:0">
+      <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8494ab"/></marker></defs>
+      <path d="M 380 96 L 406 96 L 406 770 L 380 770" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 132 L 429 132 L 429 881 L 560 881" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 292.8333333333333 L 452 292.8333333333333 L 452 912 L 380 912" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 337.6666666666667 L 475 337.6666666666667 L 475 617.6666666666666 L 380 617.6666666666666" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 382.5 L 498 382.5 L 498 1023 L 560 1023" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 427.33333333333337 L 521 427.33333333333337 L 521 1054 L 380 1054" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 380 472.16666666666663 L 416 472.16666666666663 L 416 728.6666666666666 L 560 728.6666666666666" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 249.33333333333334 L 439 249.33333333333334 L 439 638.3333333333334 L 380 638.3333333333334" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+      <path d="M 560 438.6666666666667 L 462 438.6666666666667 L 462 749.3333333333334 L 560 749.3333333333334" fill="none" stroke="#8494ab" stroke-width="1.6" opacity="0.8" marker-end="url(#arrow)"/>
+    </svg>
+    <div class="ent" style="left:60px;top:60px;width:320px;border:1.6px solid #c92a2a;">
+        <div class="eh" style="background:#c92a2a">kitchen__printers</div><div class="r"><span class="cn">parent_id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span><span class="b fk">FK</span></div><div class="r"><span class="cn">ord</span><span class="ct"><u>int</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">ref_id</span><span class="ct">varchar</span><span class="b fk">FK</span></div></div>
+    <div class="ent" style="left:60px;top:248px;width:320px;border:1.6px solid #c92a2a;">
+        <div class="eh" style="background:#c92a2a">kitchen_complimentary_item</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">created_at</span><span class="ct">datetime</span></div><div class="r"><span class="cn">created_by</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">item</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">ledger_waste_item</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">order_item</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">quantity</span><span class="ct">double</span></div><div class="r"><span class="cn">reconciliation</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:560px;top:60px;width:320px;border:1.6px solid #c92a2a;">
+        <div class="eh" style="background:#c92a2a">kitchen_reconciliation_item</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div><div class="r"><span class="cn">actual_consumption</span><span class="ct">double</span></div><div class="r"><span class="cn">complimentary_qty</span><span class="ct">double</span></div><div class="r"><span class="cn">expected_stock</span><span class="ct">double</span></div><div class="r"><span class="cn">issued_qty</span><span class="ct">double</span></div><div class="r"><span class="cn">item</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">opening_stock</span><span class="ct">double</span></div><div class="r"><span class="cn">physical_count</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_uom</span><span class="ct">text</span></div><div class="r"><span class="cn">entered_physical_count</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_waste_qty</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_staff_meal_qty</span><span class="ct">double</span></div><div class="r"><span class="cn">entered_complimentary_qty</span><span class="ct">double</span></div><div class="r"><span class="cn">posted_to_ledger</span><span class="ct">bool</span></div><div class="r"><span class="cn">reconciliation</span><span class="ct">varchar</span><span class="b fk">FK</span></div><div class="r"><span class="cn">staff_meal_qty</span><span class="ct">double</span></div><div class="r"><span class="cn">theoretical_consumption</span><span class="ct">double</span></div><div class="r"><span class="cn">transfers_in</span><span class="ct">double</span></div><div class="r"><span class="cn">transfers_out</span><span class="ct">double</span></div><div class="r"><span class="cn">variance</span><span class="ct">double</span></div><div class="r"><span class="cn">waste_qty</span><span class="ct">double</span></div><div class="r"><span class="cn">row_created_at</span><span class="ct">timestamp</span></div><div class="r"><span class="cn">row_updated_at</span><span class="ct">timestamp</span></div></div>
+    <div class="ent" style="left:60px;top:597px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">inventory_item</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:560px;top:708px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">kitchen_reconciliation</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:60px;top:739px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">printer</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:560px;top:850px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">kitchen</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:60px;top:881px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">user</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:560px;top:992px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">inventory_item_waste_item</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <div class="ent" style="left:60px;top:1023px;width:320px;border:1.6px dashed #94a3b8;">
+        <div class="eh" style="background:#94a3b8">order_item</div><div class="stub">bảng khác — xem trang tương ứng</div><div class="r"><span class="cn">id</span><span class="ct"><u>varchar</u></span><span class="b pk">PK</span></div></div>
+    <svg width="940" height="1225" style="position:absolute;left:0;top:0;pointer-events:none">
+      <text x="411" y="437" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">ref_id</text>
+      <text x="434" y="510.5" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">parent_id</text>
+      <text x="457" y="606.4166666666666" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">created_by</text>
+      <text x="480" y="481.66666666666663" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">item</text>
+      <text x="503" y="706.75" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">ledger_waste_item</text>
+      <text x="526" y="744.6666666666667" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">order_item</text>
+      <text x="421" y="604.4166666666666" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">reconciliation</text>
+      <text x="444" y="447.83333333333337" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">item</text>
+      <text x="467" y="598" font-size="11" fill="#3f4e66" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" font-style="italic">reconciliation</text>
+    </svg>
+  </div>
+  <script>
+    window.addEventListener('load', () => {
+      const w = document.getElementById('wrap');
+      window.__READY = { w: Math.ceil(w.offsetWidth) + 68, h: Math.ceil(w.offsetHeight) + 110 };
+      document.title = 'OK ' + document.title;
+    });
+  </script>
+</body></html>
