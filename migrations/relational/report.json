@@ -1,0 +1,4278 @@
+{
+  "generatedAt": "2026-11-07T19:24:57.379Z",
+  "sourceDatabase": "restaurant_manager",
+  "tables": 167,
+  "tablesWithData": 49,
+  "rows": 293,
+  "columns": 1403,
+  "childTables": 111,
+  "foreignKeys": 384,
+  "warnings": [
+    "integration_provider.id duplicates the record key and is stored as the primary key",
+    "order.discount is declared record<discount> but holds non-reference values",
+    "order.tax is declared record<tax> but holds non-reference values",
+    "order_item_kitchen.stage is declared record<workflow_stage> but holds non-reference values",
+    "order_payment.payment_type is declared record<payment_type> but holds non-reference values",
+    "skip UNIQUE sync_event_event_id on sync_event: duplicate value in current data",
+    "skip FK employee.user -> user: 4 dangling reference(s)"
+  ],
+  "perTable": [
+    {
+      "table": "_schema_migration",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "account",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "account_group_fk",
+          "column": "group",
+          "refTable": "account_group",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "account_parent_fk",
+          "column": "parent",
+          "refTable": "account",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "account_group",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "account_journal_entry",
+      "rows": 3,
+      "columns": 21,
+      "arrayFields": [
+        {
+          "field": "documents",
+          "childTable": "account_journal_entry__documents",
+          "item": "ref",
+          "refTable": "document"
+        },
+        {
+          "field": "lines",
+          "childTable": "account_journal_entry__lines",
+          "item": "ref",
+          "refTable": "account_journal_line"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "account_journal_entry_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "account_journal_entry_documents_ref_fk",
+          "childTable": "account_journal_entry__documents",
+          "childColumn": "ref_id",
+          "refTable": "document",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "account_journal_entry_lines_ref_fk",
+          "childTable": "account_journal_entry__lines",
+          "childColumn": "ref_id",
+          "refTable": "account_journal_line",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "account_journal_line",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "account_journal_line_account_fk",
+          "column": "account",
+          "refTable": "account",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "account_journal_line_entry_fk",
+          "column": "entry",
+          "refTable": "account_journal_entry",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "audit_log",
+      "rows": 37,
+      "columns": 7,
+      "arrayFields": [
+        {
+          "field": "actor_roles",
+          "childTable": "audit_log__actor_roles",
+          "item": "string",
+          "refTable": null
+        },
+        {
+          "field": "changed_fields",
+          "childTable": "audit_log__changed_fields",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": "audit_log__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "auth_permission",
+      "rows": 0,
+      "columns": 0,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "buffet_consumption_log",
+      "rows": 0,
+      "columns": 13,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "buffet_consumption_log_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_consumption_log_session_fk",
+          "column": "session",
+          "refTable": "buffet_session",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "buffet_guest_count",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "buffet_guest_count_recorded_by_fk",
+          "column": "recorded_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_guest_count_session_fk",
+          "column": "session",
+          "refTable": "buffet_session",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "buffet_menu",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "buffet_menu_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "buffet_menu_item",
+      "rows": 0,
+      "columns": 4,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "buffet_menu_item_menu_fk",
+          "column": "menu",
+          "refTable": "buffet_menu",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_menu_item_recipe_fk",
+          "column": "recipe",
+          "refTable": "recipe",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "buffet_production_batch",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "buffet_production_batch_menu_item_fk",
+          "column": "menu_item",
+          "refTable": "buffet_menu_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_production_batch_production_batch_fk",
+          "column": "production_batch",
+          "refTable": "production_batch",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "buffet_production_batch_session_fk",
+          "column": "session",
+          "refTable": "buffet_session",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "buffet_session",
+      "rows": 0,
+      "columns": 19,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "buffet_session_closed_by_fk",
+          "column": "closed_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "buffet_session_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_session_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "buffet_session_menu_fk",
+          "column": "menu",
+          "refTable": "buffet_menu",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_session_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "buffet_stock_snapshot",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "buffet_stock_snapshot_captured_by_fk",
+          "column": "captured_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_stock_snapshot_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_stock_snapshot_production_batch_fk",
+          "column": "production_batch",
+          "refTable": "production_batch",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "buffet_stock_snapshot_session_fk",
+          "column": "session",
+          "refTable": "buffet_session",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "buffet_waste_log",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "buffet_waste_log_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_waste_log_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "buffet_waste_log_ledger_waste_item_fk",
+          "column": "ledger_waste_item",
+          "refTable": "inventory_item_waste_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "buffet_waste_log_session_fk",
+          "column": "session",
+          "refTable": "buffet_session",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "catalog_branch_override",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": "catalog_branch_override__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "catalog_release",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [
+        {
+          "field": "branch_ids",
+          "childTable": "catalog_release__branch_ids",
+          "item": "string",
+          "refTable": null
+        },
+        {
+          "field": "tables",
+          "childTable": "catalog_release__tables",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "category",
+      "rows": 2,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "category_parent_fk",
+          "column": "parent",
+          "refTable": "category",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "cost_center",
+      "rows": 1,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "coupon",
+      "rows": 2,
+      "columns": 25,
+      "arrayFields": [
+        {
+          "field": "valid_days",
+          "childTable": "coupon__valid_days",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "coupon_redemption",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "coupon_redemption_coupon_fk",
+          "column": "coupon",
+          "refTable": "coupon",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "coupon_redemption_customer_fk",
+          "column": "customer",
+          "refTable": "customer",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "coupon_redemption_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "coupon_redemption_user_fk",
+          "column": "user",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "customer",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [
+        {
+          "field": "addresses",
+          "childTable": "customer__addresses",
+          "item": "ref",
+          "refTable": "customer_address"
+        },
+        {
+          "field": "tags",
+          "childTable": "customer__tags",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "customer_addresses_ref_fk",
+          "childTable": "customer__addresses",
+          "childColumn": "ref_id",
+          "refTable": "customer_address",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "customer_address",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "day_closing",
+      "rows": 0,
+      "columns": 19,
+      "arrayFields": [],
+      "extras": "day_closing__attrs",
+      "foreignKeys": [
+        {
+          "name": "day_closing_closed_by_fk",
+          "column": "closed_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "day_closing_opened_by_fk",
+          "column": "opened_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "department",
+      "rows": 1,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "discount",
+      "rows": 2,
+      "columns": 29,
+      "arrayFields": [
+        {
+          "field": "applicable_floors",
+          "childTable": "discount__applicable_floors",
+          "item": "ref",
+          "refTable": "floor"
+        },
+        {
+          "field": "schedules",
+          "childTable": "discount__schedules",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "discount_applicable_floors_ref_fk",
+          "childTable": "discount__applicable_floors",
+          "childColumn": "ref_id",
+          "refTable": "floor",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "discount_reason",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "document",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "employee",
+      "rows": 11,
+      "columns": 16,
+      "arrayFields": [],
+      "extras": "employee__attrs",
+      "foreignKeys": [
+        {
+          "name": "employee_cost_center_fk",
+          "column": "cost_center",
+          "refTable": "cost_center",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_department_fk",
+          "column": "department",
+          "refTable": "department",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_manager_fk",
+          "column": "manager",
+          "refTable": "employee",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_position_fk",
+          "column": "position",
+          "refTable": "position",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "employee_assignment_history",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "employee_assignment_history_changed_by_fk",
+          "column": "changed_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_assignment_history_cost_center_fk",
+          "column": "cost_center",
+          "refTable": "cost_center",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_assignment_history_department_fk",
+          "column": "department",
+          "refTable": "department",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_assignment_history_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "employee_assignment_history_manager_fk",
+          "column": "manager",
+          "refTable": "employee",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_assignment_history_position_fk",
+          "column": "position",
+          "refTable": "position",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "employee_document",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "employee_document_document_fk",
+          "column": "document",
+          "refTable": "document",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "employee_document_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "employee_document_uploaded_by_fk",
+          "column": "uploaded_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "employee_pay_profile",
+      "rows": 0,
+      "columns": 16,
+      "arrayFields": [],
+      "extras": "employee_pay_profile__attrs",
+      "foreignKeys": [
+        {
+          "name": "employee_pay_profile_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_pay_profile_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "employee_pay_profile_holiday_policy_fk",
+          "column": "holiday_policy",
+          "refTable": "labor_policy",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_pay_profile_night_policy_fk",
+          "column": "night_policy",
+          "refTable": "labor_policy",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_pay_profile_overtime_policy_fk",
+          "column": "overtime_policy",
+          "refTable": "labor_policy",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_pay_profile_weekend_policy_fk",
+          "column": "weekend_policy",
+          "refTable": "labor_policy",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "employee_performance_note",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "employee_performance_note_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "employee_performance_note_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "extra",
+      "rows": 1,
+      "columns": 4,
+      "arrayFields": [
+        {
+          "field": "tables",
+          "childTable": "extra__tables",
+          "item": "string",
+          "refTable": null
+        },
+        {
+          "field": "order_types",
+          "childTable": "extra__order_types",
+          "item": "string",
+          "refTable": null
+        },
+        {
+          "field": "payment_types",
+          "childTable": "extra__payment_types",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "extras",
+      "rows": 0,
+      "columns": 2,
+      "arrayFields": [
+        {
+          "field": "order_types",
+          "childTable": "extras__order_types",
+          "item": "ref",
+          "refTable": "order_type"
+        },
+        {
+          "field": "payment_types",
+          "childTable": "extras__payment_types",
+          "item": "ref",
+          "refTable": "payment_type"
+        },
+        {
+          "field": "tables",
+          "childTable": "extras__tables",
+          "item": "ref",
+          "refTable": "floor_table"
+        }
+      ],
+      "extras": "extras__attrs",
+      "foreignKeys": [
+        {
+          "name": "extras_order_types_ref_fk",
+          "childTable": "extras__order_types",
+          "childColumn": "ref_id",
+          "refTable": "order_type",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "extras_payment_types_ref_fk",
+          "childTable": "extras__payment_types",
+          "childColumn": "ref_id",
+          "refTable": "payment_type",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "extras_tables_ref_fk",
+          "childTable": "extras__tables",
+          "childColumn": "ref_id",
+          "refTable": "floor_table",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "floor",
+      "rows": 2,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "floor_table",
+      "rows": 3,
+      "columns": 20,
+      "arrayFields": [
+        {
+          "field": "categories",
+          "childTable": "floor_table__categories",
+          "item": "ref",
+          "refTable": "category"
+        },
+        {
+          "field": "order_types",
+          "childTable": "floor_table__order_types",
+          "item": "ref",
+          "refTable": "order_type"
+        },
+        {
+          "field": "payment_types",
+          "childTable": "floor_table__payment_types",
+          "item": "ref",
+          "refTable": "payment_type"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "floor_table_floor_fk",
+          "column": "floor",
+          "refTable": "floor",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "floor_table_categories_ref_fk",
+          "childTable": "floor_table__categories",
+          "childColumn": "ref_id",
+          "refTable": "category",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "floor_table_order_types_ref_fk",
+          "childTable": "floor_table__order_types",
+          "childColumn": "ref_id",
+          "refTable": "order_type",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "floor_table_payment_types_ref_fk",
+          "childTable": "floor_table__payment_types",
+          "childColumn": "ref_id",
+          "refTable": "payment_type",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "integration_entity_mapping",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": "integration_entity_mapping__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_execution_history",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": "integration_execution_history__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_installed_provider",
+      "rows": 6,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_oauth_credential",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_oauth_state",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_order_fiscal",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": "integration_order_fiscal__attrs",
+      "foreignKeys": [
+        {
+          "name": "integration_order_fiscal_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "integration_provider",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": "integration_provider__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_provider_certificate",
+      "rows": 0,
+      "columns": 4,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_provider_config",
+      "rows": 0,
+      "columns": 2,
+      "arrayFields": [],
+      "extras": "integration_provider_config__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_provider_health",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": "integration_provider_health__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_provider_secret",
+      "rows": 0,
+      "columns": 0,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_provider_webhook",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": "integration_provider_webhook__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_queue",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": "integration_queue__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_queue_attempt",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_schedule",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_sync_failure",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "integration_sync_run",
+      "rows": 0,
+      "columns": 9,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "inventory_adjustment",
+      "rows": 0,
+      "columns": 16,
+      "arrayFields": [
+        {
+          "field": "items",
+          "childTable": "inventory_adjustment__items",
+          "item": "ref",
+          "refTable": "inventory_adjustment_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_adjustment_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_adjustment_cancelled_by_fk",
+          "column": "cancelled_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_adjustment_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_adjustment_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_adjustment_posted_by_fk",
+          "column": "posted_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_adjustment_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_adjustment_voided_by_fk",
+          "column": "voided_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_adjustment_items_ref_fk",
+          "childTable": "inventory_adjustment__items",
+          "childColumn": "ref_id",
+          "refTable": "inventory_adjustment_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_adjustment_item",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_adjustment_item_adjustment_fk",
+          "column": "adjustment",
+          "refTable": "inventory_adjustment",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_adjustment_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_adjustment_item_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_adjustment_item_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_category",
+      "rows": 0,
+      "columns": 2,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "inventory_issue",
+      "rows": 1,
+      "columns": 22,
+      "arrayFields": [
+        {
+          "field": "documents",
+          "childTable": "inventory_issue__documents",
+          "item": "ref",
+          "refTable": "document"
+        },
+        {
+          "field": "items",
+          "childTable": "inventory_issue__items",
+          "item": "ref",
+          "refTable": "inventory_issue_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_issue_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_cancelled_by_fk",
+          "column": "cancelled_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_issued_to_fk",
+          "column": "issued_to",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_kitchen_fk",
+          "column": "kitchen",
+          "refTable": "kitchen",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_parent_fk",
+          "column": "parent",
+          "refTable": "inventory_issue",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_posted_by_fk",
+          "column": "posted_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_superseded_by_fk",
+          "column": "superseded_by",
+          "refTable": "inventory_issue",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_voided_by_fk",
+          "column": "voided_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_documents_ref_fk",
+          "childTable": "inventory_issue__documents",
+          "childColumn": "ref_id",
+          "refTable": "document",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_items_ref_fk",
+          "childTable": "inventory_issue__items",
+          "childColumn": "ref_id",
+          "refTable": "inventory_issue_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_issue_item",
+      "rows": 0,
+      "columns": 12,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_issue_item_issue_fk",
+          "column": "issue",
+          "refTable": "inventory_issue",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_issue_item_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_item_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_issue_return",
+      "rows": 0,
+      "columns": 17,
+      "arrayFields": [
+        {
+          "field": "documents",
+          "childTable": "inventory_issue_return__documents",
+          "item": "ref",
+          "refTable": "document"
+        },
+        {
+          "field": "items",
+          "childTable": "inventory_issue_return__items",
+          "item": "ref",
+          "refTable": "inventory_issue_return_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_issue_return_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_cancelled_by_fk",
+          "column": "cancelled_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_issue_return_issuance_fk",
+          "column": "issuance",
+          "refTable": "inventory_issue",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_issued_to_fk",
+          "column": "issued_to",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_kitchen_fk",
+          "column": "kitchen",
+          "refTable": "kitchen",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_posted_by_fk",
+          "column": "posted_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_voided_by_fk",
+          "column": "voided_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_documents_ref_fk",
+          "childTable": "inventory_issue_return__documents",
+          "childColumn": "ref_id",
+          "refTable": "document",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_items_ref_fk",
+          "childTable": "inventory_issue_return__items",
+          "childColumn": "ref_id",
+          "refTable": "inventory_issue_return_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_issue_return_item",
+      "rows": 0,
+      "columns": 13,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_issue_return_item_inventory_issue_return_fk",
+          "column": "inventory_issue_return",
+          "refTable": "inventory_issue_return",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_item_issue_return_fk",
+          "column": "issue_return",
+          "refTable": "inventory_issue_return",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_item_issued_item_fk",
+          "column": "issued_item",
+          "refTable": "inventory_issue_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_issue_return_item_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_issue_return_item_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_item",
+      "rows": 2,
+      "columns": 13,
+      "arrayFields": [
+        {
+          "field": "item_types",
+          "childTable": "inventory_item__item_types",
+          "item": "string",
+          "refTable": null
+        },
+        {
+          "field": "locations",
+          "childTable": "inventory_item__locations",
+          "item": "ref",
+          "refTable": "inventory_location"
+        },
+        {
+          "field": "stores",
+          "childTable": "inventory_item__stores",
+          "item": "ref",
+          "refTable": "inventory_store"
+        },
+        {
+          "field": "suppliers",
+          "childTable": "inventory_item__suppliers",
+          "item": "ref",
+          "refTable": "inventory_supplier"
+        }
+      ],
+      "extras": "inventory_item__attrs",
+      "foreignKeys": [
+        {
+          "name": "inventory_item_category_fk",
+          "column": "category",
+          "refTable": "inventory_category",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_locations_ref_fk",
+          "childTable": "inventory_item__locations",
+          "childColumn": "ref_id",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_stores_ref_fk",
+          "childTable": "inventory_item__stores",
+          "childColumn": "ref_id",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_suppliers_ref_fk",
+          "childTable": "inventory_item__suppliers",
+          "childColumn": "ref_id",
+          "refTable": "inventory_supplier",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_item_group",
+      "rows": 0,
+      "columns": 2,
+      "arrayFields": [
+        {
+          "field": "sub_items",
+          "childTable": "inventory_item_group__sub_items",
+          "item": "ref",
+          "refTable": "inventory_item_group_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_item_group_main_item_fk",
+          "column": "main_item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_item_group_sub_items_ref_fk",
+          "childTable": "inventory_item_group__sub_items",
+          "childColumn": "ref_id",
+          "refTable": "inventory_item_group_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_item_group_item",
+      "rows": 0,
+      "columns": 2,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_item_group_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "inventory_item_waste",
+      "rows": 0,
+      "columns": 14,
+      "arrayFields": [
+        {
+          "field": "documents",
+          "childTable": "inventory_item_waste__documents",
+          "item": "ref",
+          "refTable": "document"
+        },
+        {
+          "field": "items",
+          "childTable": "inventory_item_waste__items",
+          "item": "ref",
+          "refTable": "inventory_item_waste_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_item_waste_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_cancelled_by_fk",
+          "column": "cancelled_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_item_waste_issue_fk",
+          "column": "issue",
+          "refTable": "inventory_issue",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_posted_by_fk",
+          "column": "posted_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_purchase_fk",
+          "column": "purchase",
+          "refTable": "inventory_purchase",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_voided_by_fk",
+          "column": "voided_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_documents_ref_fk",
+          "childTable": "inventory_item_waste__documents",
+          "childColumn": "ref_id",
+          "refTable": "document",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_items_ref_fk",
+          "childTable": "inventory_item_waste__items",
+          "childColumn": "ref_id",
+          "refTable": "inventory_item_waste_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_item_waste_item",
+      "rows": 0,
+      "columns": 13,
+      "arrayFields": [
+        {
+          "field": "documents",
+          "childTable": "inventory_item_waste_item__documents",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_item_waste_item_issue_item_fk",
+          "column": "issue_item",
+          "refTable": "inventory_issue_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_item_waste_item_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_item_purchase_item_fk",
+          "column": "purchase_item",
+          "refTable": "inventory_purchase_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_item_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_item_waste_item_waste_fk",
+          "column": "waste",
+          "refTable": "inventory_item_waste",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_ledger",
+      "rows": 0,
+      "columns": 17,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_ledger_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_ledger_inventory_item_fk",
+          "column": "inventory_item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_ledger_inventory_location_fk",
+          "column": "inventory_location",
+          "refTable": "inventory_location",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_ledger_reversal_of_fk",
+          "column": "reversal_of",
+          "refTable": "inventory_ledger",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_location",
+      "rows": 2,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_location_linked_kitchen_fk",
+          "column": "linked_kitchen",
+          "refTable": "kitchen",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_location_linked_store_fk",
+          "column": "linked_store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_purchase",
+      "rows": 1,
+      "columns": 26,
+      "arrayFields": [
+        {
+          "field": "documents",
+          "childTable": "inventory_purchase__documents",
+          "item": "ref",
+          "refTable": "document"
+        },
+        {
+          "field": "items",
+          "childTable": "inventory_purchase__items",
+          "item": "ref",
+          "refTable": "inventory_purchase_item"
+        }
+      ],
+      "extras": "inventory_purchase__attrs",
+      "foreignKeys": [
+        {
+          "name": "inventory_purchase_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_cancelled_by_fk",
+          "column": "cancelled_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_parent_fk",
+          "column": "parent",
+          "refTable": "inventory_purchase",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_payment_method_fk",
+          "column": "payment_method",
+          "refTable": "payment_type",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_posted_by_fk",
+          "column": "posted_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_purchase_order_fk",
+          "column": "purchase_order",
+          "refTable": "inventory_purchase_order",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_superseded_by_fk",
+          "column": "superseded_by",
+          "refTable": "inventory_purchase",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_supplier_fk",
+          "column": "supplier",
+          "refTable": "inventory_supplier",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_voided_by_fk",
+          "column": "voided_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_documents_ref_fk",
+          "childTable": "inventory_purchase__documents",
+          "childColumn": "ref_id",
+          "refTable": "document",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_items_ref_fk",
+          "childTable": "inventory_purchase__items",
+          "childColumn": "ref_id",
+          "refTable": "inventory_purchase_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_purchase_item",
+      "rows": 0,
+      "columns": 24,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_purchase_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_purchase_item_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_item_purchase_fk",
+          "column": "purchase",
+          "refTable": "inventory_purchase",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_item_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_item_supplier_fk",
+          "column": "supplier",
+          "refTable": "inventory_supplier",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_purchase_order",
+      "rows": 0,
+      "columns": 13,
+      "arrayFields": [
+        {
+          "field": "documents",
+          "childTable": "inventory_purchase_order__documents",
+          "item": "ref",
+          "refTable": "document"
+        },
+        {
+          "field": "items",
+          "childTable": "inventory_purchase_order__items",
+          "item": "ref",
+          "refTable": "inventory_purchase_order_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_purchase_order_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_order_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_order_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_order_rejected_by_fk",
+          "column": "rejected_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_order_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_order_submitted_by_fk",
+          "column": "submitted_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_order_supplier_fk",
+          "column": "supplier",
+          "refTable": "inventory_supplier",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_order_documents_ref_fk",
+          "childTable": "inventory_purchase_order__documents",
+          "childColumn": "ref_id",
+          "refTable": "document",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_order_items_ref_fk",
+          "childTable": "inventory_purchase_order__items",
+          "childColumn": "ref_id",
+          "refTable": "inventory_purchase_order_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_purchase_order_item",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_purchase_order_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_purchase_order_item_purchase_order_fk",
+          "column": "purchase_order",
+          "refTable": "inventory_purchase_order",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_order_item_supplier_fk",
+          "column": "supplier",
+          "refTable": "inventory_supplier",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_purchase_payment",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_purchase_payment_payment_type_fk",
+          "column": "payment_type",
+          "refTable": "payment_type",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_purchase_payment_purchase_fk",
+          "column": "purchase",
+          "refTable": "inventory_purchase",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_payment_supplier_fk",
+          "column": "supplier",
+          "refTable": "inventory_supplier",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "inventory_purchase_return",
+      "rows": 0,
+      "columns": 15,
+      "arrayFields": [
+        {
+          "field": "documents",
+          "childTable": "inventory_purchase_return__documents",
+          "item": "ref",
+          "refTable": "document"
+        },
+        {
+          "field": "items",
+          "childTable": "inventory_purchase_return__items",
+          "item": "ref",
+          "refTable": "inventory_purchase_return_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_purchase_return_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_cancelled_by_fk",
+          "column": "cancelled_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_purchase_return_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_posted_by_fk",
+          "column": "posted_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_purchase_fk",
+          "column": "purchase",
+          "refTable": "inventory_purchase",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_voided_by_fk",
+          "column": "voided_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_documents_ref_fk",
+          "childTable": "inventory_purchase_return__documents",
+          "childColumn": "ref_id",
+          "refTable": "document",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_items_ref_fk",
+          "childTable": "inventory_purchase_return__items",
+          "childColumn": "ref_id",
+          "refTable": "inventory_purchase_return_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_purchase_return_item",
+      "rows": 0,
+      "columns": 13,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_purchase_return_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "inventory_purchase_return_item_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_item_purchase_item_fk",
+          "column": "purchase_item",
+          "refTable": "inventory_purchase_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_item_purchase_return_fk",
+          "column": "purchase_return",
+          "refTable": "inventory_purchase_return",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_item_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_purchase_return_item_supplier_fk",
+          "column": "supplier",
+          "refTable": "inventory_supplier",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_store",
+      "rows": 0,
+      "columns": 1,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "inventory_supplier",
+      "rows": 1,
+      "columns": 5,
+      "arrayFields": [
+        {
+          "field": "payments",
+          "childTable": "inventory_supplier__payments",
+          "item": "ref",
+          "refTable": "inventory_purchase_payment"
+        },
+        {
+          "field": "purchases",
+          "childTable": "inventory_supplier__purchases",
+          "item": "ref",
+          "refTable": "inventory_purchase"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "inventory_supplier_payments_ref_fk",
+          "childTable": "inventory_supplier__payments",
+          "childColumn": "ref_id",
+          "refTable": "inventory_purchase_payment",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "inventory_supplier_purchases_ref_fk",
+          "childTable": "inventory_supplier__purchases",
+          "childColumn": "ref_id",
+          "refTable": "inventory_purchase",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "inventory_uom",
+      "rows": 14,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "kitchen",
+      "rows": 2,
+      "columns": 3,
+      "arrayFields": [
+        {
+          "field": "items",
+          "childTable": "kitchen__items",
+          "item": "ref",
+          "refTable": "menu_item"
+        },
+        {
+          "field": "printers",
+          "childTable": "kitchen__printers",
+          "item": "ref",
+          "refTable": "printer"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "kitchen_items_ref_fk",
+          "childTable": "kitchen__items",
+          "childColumn": "ref_id",
+          "refTable": "menu_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_printers_ref_fk",
+          "childTable": "kitchen__printers",
+          "childColumn": "ref_id",
+          "refTable": "printer",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "kitchen_complimentary_item",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "kitchen_complimentary_item_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_complimentary_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_complimentary_item_ledger_waste_item_fk",
+          "column": "ledger_waste_item",
+          "refTable": "inventory_item_waste_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_complimentary_item_order_item_fk",
+          "column": "order_item",
+          "refTable": "order_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_complimentary_item_reconciliation_fk",
+          "column": "reconciliation",
+          "refTable": "kitchen_reconciliation",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "kitchen_reconciliation",
+      "rows": 0,
+      "columns": 14,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "kitchen_reconciliation_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_reconciliation_kitchen_fk",
+          "column": "kitchen",
+          "refTable": "kitchen",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_reconciliation_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_reconciliation_parent_fk",
+          "column": "parent",
+          "refTable": "kitchen_reconciliation",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_reconciliation_superseded_by_fk",
+          "column": "superseded_by",
+          "refTable": "kitchen_reconciliation",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_reconciliation_verified_by_fk",
+          "column": "verified_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "kitchen_reconciliation_item",
+      "rows": 0,
+      "columns": 20,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "kitchen_reconciliation_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_reconciliation_item_reconciliation_fk",
+          "column": "reconciliation",
+          "refTable": "kitchen_reconciliation",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "kitchen_reconciliation_revision",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": "kitchen_reconciliation_revision__attrs",
+      "foreignKeys": [
+        {
+          "name": "kitchen_reconciliation_revision_changed_by_fk",
+          "column": "changed_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_reconciliation_revision_reconciliation_fk",
+          "column": "reconciliation",
+          "refTable": "kitchen_reconciliation",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "kitchen_staff_meal",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "kitchen_staff_meal_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_staff_meal_dish_fk",
+          "column": "dish",
+          "refTable": "menu_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_staff_meal_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_staff_meal_ledger_waste_item_fk",
+          "column": "ledger_waste_item",
+          "refTable": "inventory_item_waste_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_staff_meal_reconciliation_fk",
+          "column": "reconciliation",
+          "refTable": "kitchen_reconciliation",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "kitchen_stock_count",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "kitchen_stock_count_counted_by_fk",
+          "column": "counted_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_stock_count_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_stock_count_reconciliation_fk",
+          "column": "reconciliation",
+          "refTable": "kitchen_reconciliation",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "kitchen_waste",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "kitchen_waste_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_waste_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "kitchen_waste_ledger_waste_item_fk",
+          "column": "ledger_waste_item",
+          "refTable": "inventory_item_waste_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "kitchen_waste_reconciliation_fk",
+          "column": "reconciliation",
+          "refTable": "kitchen_reconciliation",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "labor_adjustment",
+      "rows": 0,
+      "columns": 11,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "labor_adjustment_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "labor_adjustment_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "labor_adjustment_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "labor_adjustment_payroll_period_fk",
+          "column": "payroll_period",
+          "refTable": "payroll_period",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "labor_audit_log",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": "labor_audit_log__attrs",
+      "foreignKeys": [
+        {
+          "name": "labor_audit_log_changed_by_fk",
+          "column": "changed_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "labor_cost_event",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": "labor_cost_event__attrs",
+      "foreignKeys": [
+        {
+          "name": "labor_cost_event_payroll_run_fk",
+          "column": "payroll_run",
+          "refTable": "payroll_run",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "labor_pay_rule",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": "labor_pay_rule__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "labor_policy",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": "labor_policy__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "leave_balance",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "leave_balance_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "leave_balance_leave_type_fk",
+          "column": "leave_type",
+          "refTable": "leave_type",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "leave_request",
+      "rows": 0,
+      "columns": 12,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "leave_request_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "leave_request_auth_permission_fk",
+          "column": "auth_permission",
+          "refTable": "auth_permission",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "leave_request_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "leave_request_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "leave_request_leave_type_fk",
+          "column": "leave_type",
+          "refTable": "leave_type",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "leave_type",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "menu",
+      "rows": 1,
+      "columns": 7,
+      "arrayFields": [
+        {
+          "field": "items",
+          "childTable": "menu__items",
+          "item": "ref",
+          "refTable": "menu_menu_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "menu_items_ref_fk",
+          "childTable": "menu__items",
+          "childColumn": "ref_id",
+          "refTable": "menu_menu_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "menu_item",
+      "rows": 4,
+      "columns": 17,
+      "arrayFields": [
+        {
+          "field": "categories",
+          "childTable": "menu_item__categories",
+          "item": "ref",
+          "refTable": "category"
+        },
+        {
+          "field": "items",
+          "childTable": "menu_item__items",
+          "item": "ref",
+          "refTable": "menu_item_recipe"
+        }
+      ],
+      "extras": "menu_item__attrs",
+      "foreignKeys": [
+        {
+          "name": "menu_item_dish_photo_fk",
+          "column": "dish_photo",
+          "refTable": "document",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "menu_item_tax_fk",
+          "column": "tax",
+          "refTable": "tax",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "menu_item_workflow_fk",
+          "column": "workflow",
+          "refTable": "workflow",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "menu_item_categories_ref_fk",
+          "childTable": "menu_item__categories",
+          "childColumn": "ref_id",
+          "refTable": "category",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "menu_item_items_ref_fk",
+          "childTable": "menu_item__items",
+          "childColumn": "ref_id",
+          "refTable": "menu_item_recipe",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "menu_item_modifier_group",
+      "rows": 1,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "menu_item_modifier_group_in_fk",
+          "column": "in",
+          "refTable": "menu_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "menu_item_modifier_group_out_fk",
+          "column": "out",
+          "refTable": "modifier_group",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "menu_item_recipe",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "menu_item_recipe_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "menu_item_recipe_menu_item_fk",
+          "column": "menu_item",
+          "refTable": "menu_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "menu_menu_item",
+      "rows": 3,
+      "columns": 6,
+      "arrayFields": [
+        {
+          "field": "taxes",
+          "childTable": "menu_menu_item__taxes",
+          "item": "ref",
+          "refTable": "tax"
+        }
+      ],
+      "extras": "menu_menu_item__attrs",
+      "foreignKeys": [
+        {
+          "name": "menu_menu_item_menu_item_fk",
+          "column": "menu_item",
+          "refTable": "menu_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "menu_menu_item_tax_fk",
+          "column": "tax",
+          "refTable": "tax",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "menu_menu_item_taxes_ref_fk",
+          "childTable": "menu_menu_item__taxes",
+          "childColumn": "ref_id",
+          "refTable": "tax",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "menu_menu_item_tax",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "menu_menu_item_tax_menu_menu_item_fk",
+          "column": "menu_menu_item",
+          "refTable": "menu_menu_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "menu_menu_item_tax_tax_fk",
+          "column": "tax",
+          "refTable": "tax",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "modifier",
+      "rows": 1,
+      "columns": 2,
+      "arrayFields": [
+        {
+          "field": "allowed_next_groups",
+          "childTable": "modifier__allowed_next_groups",
+          "item": "any",
+          "refTable": null
+        },
+        {
+          "field": "next_group_overrides",
+          "childTable": "modifier__next_group_overrides",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "modifier_modifier_fk",
+          "column": "modifier",
+          "refTable": "menu_item",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "modifier_group",
+      "rows": 2,
+      "columns": 6,
+      "arrayFields": [
+        {
+          "field": "modifiers",
+          "childTable": "modifier_group__modifiers",
+          "item": "ref",
+          "refTable": "modifier"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "modifier_group_modifiers_ref_fk",
+          "childTable": "modifier_group__modifiers",
+          "childColumn": "ref_id",
+          "refTable": "modifier",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "notes",
+      "rows": 0,
+      "columns": 1,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "order",
+      "rows": 3,
+      "columns": 37,
+      "arrayFields": [
+        {
+          "field": "extras",
+          "childTable": "order__extras",
+          "item": "ref",
+          "refTable": "order_extras"
+        },
+        {
+          "field": "items",
+          "childTable": "order__items",
+          "item": "ref",
+          "refTable": "order_item"
+        },
+        {
+          "field": "order_discounts",
+          "childTable": "order__order_discounts",
+          "item": "ref",
+          "refTable": "order_discount"
+        },
+        {
+          "field": "order_taxes",
+          "childTable": "order__order_taxes",
+          "item": "ref",
+          "refTable": "order_tax"
+        },
+        {
+          "field": "payments",
+          "childTable": "order__payments",
+          "item": "ref",
+          "refTable": "order_payment"
+        },
+        {
+          "field": "tags",
+          "childTable": "order__tags",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": "order__attrs",
+      "foreignKeys": [
+        {
+          "name": "order_cashier_fk",
+          "column": "cashier",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_coupon_fk",
+          "column": "coupon",
+          "refTable": "order_coupon",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_customer_fk",
+          "column": "customer",
+          "refTable": "customer",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_discount_manager_fk",
+          "column": "discount_manager",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_floor_fk",
+          "column": "floor",
+          "refTable": "floor",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_order_type_fk",
+          "column": "order_type",
+          "refTable": "order_type",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_table_fk",
+          "column": "table",
+          "refTable": "floor_table",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_user_fk",
+          "column": "user",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_extras_ref_fk",
+          "childTable": "order__extras",
+          "childColumn": "ref_id",
+          "refTable": "order_extras",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_items_ref_fk",
+          "childTable": "order__items",
+          "childColumn": "ref_id",
+          "refTable": "order_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_order_discounts_ref_fk",
+          "childTable": "order__order_discounts",
+          "childColumn": "ref_id",
+          "refTable": "order_discount",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_order_taxes_ref_fk",
+          "childTable": "order__order_taxes",
+          "childColumn": "ref_id",
+          "refTable": "order_tax",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_payments_ref_fk",
+          "childTable": "order__payments",
+          "childColumn": "ref_id",
+          "refTable": "order_payment",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "order_coupon",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "order_coupon_coupon_fk",
+          "column": "coupon",
+          "refTable": "coupon",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "order_discount",
+      "rows": 1,
+      "columns": 19,
+      "arrayFields": [
+        {
+          "field": "order_items",
+          "childTable": "order_discount__order_items",
+          "item": "ref",
+          "refTable": "order_item"
+        }
+      ],
+      "extras": "order_discount__attrs",
+      "foreignKeys": [
+        {
+          "name": "order_discount_applied_by_fk",
+          "column": "applied_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_discount_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_discount_discount_fk",
+          "column": "discount",
+          "refTable": "discount",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_discount_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_discount_reason_fk",
+          "column": "reason",
+          "refTable": "discount_reason",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_discount_removed_by_fk",
+          "column": "removed_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_discount_order_items_ref_fk",
+          "childTable": "order_discount__order_items",
+          "childColumn": "ref_id",
+          "refTable": "order_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "order_extras",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "order_item",
+      "rows": 5,
+      "columns": 31,
+      "arrayFields": [
+        {
+          "field": "modifiers",
+          "childTable": "order_item__modifiers",
+          "item": "string",
+          "refTable": null
+        },
+        {
+          "field": "taxes",
+          "childTable": "order_item__taxes",
+          "item": "ref",
+          "refTable": "tax"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "order_item_category_id_fk",
+          "column": "category_id",
+          "refTable": "category",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_item_fk",
+          "column": "item",
+          "refTable": "menu_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_workflow_fk",
+          "column": "workflow",
+          "refTable": "workflow",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_menu_item_fk",
+          "column": "menu_item",
+          "refTable": "menu_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_taxes_ref_fk",
+          "childTable": "order_item__taxes",
+          "childColumn": "ref_id",
+          "refTable": "tax",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "order_item_kitchen",
+      "rows": 3,
+      "columns": 13,
+      "arrayFields": [
+        {
+          "field": "completed_by",
+          "childTable": "order_item_kitchen__completed_by",
+          "item": "ref",
+          "refTable": "user"
+        }
+      ],
+      "extras": "order_item_kitchen__attrs",
+      "foreignKeys": [
+        {
+          "name": "order_item_kitchen_kitchen_fk",
+          "column": "kitchen",
+          "refTable": "kitchen",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_item_kitchen_order_item_fk",
+          "column": "order_item",
+          "refTable": "order_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_kitchen_user_fk",
+          "column": "user",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_kitchen_workflow_fk",
+          "column": "workflow",
+          "refTable": "workflow",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_kitchen_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_kitchen_completed_by_ref_fk",
+          "childTable": "order_item_kitchen__completed_by",
+          "childColumn": "ref_id",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "order_merge",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [
+        {
+          "field": "old_orders",
+          "childTable": "order_merge__old_orders",
+          "item": "ref",
+          "refTable": "order"
+        }
+      ],
+      "extras": "order_merge__attrs",
+      "foreignKeys": [
+        {
+          "name": "order_merge_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_merge_new_order_fk",
+          "column": "new_order",
+          "refTable": "order",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_merge_old_orders_ref_fk",
+          "childTable": "order_merge__old_orders",
+          "childColumn": "ref_id",
+          "refTable": "order",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "order_meta",
+      "rows": 0,
+      "columns": 1,
+      "arrayFields": [],
+      "extras": "order_meta__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "order_number_seq",
+      "rows": 0,
+      "columns": 1,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "order_payment",
+      "rows": 1,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": "order_payment__attrs",
+      "foreignKeys": [
+        {
+          "name": "order_payment_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "order_print",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "order_print_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_print_printed_by_fk",
+          "column": "printed_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "order_refund",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [
+        {
+          "field": "items",
+          "childTable": "order_refund__items",
+          "item": "ref",
+          "refTable": "order_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "order_refund_logged_in_user_fk",
+          "column": "logged_in_user",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_refund_manager_fk",
+          "column": "manager",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_refund_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_refund_items_ref_fk",
+          "childTable": "order_refund__items",
+          "childColumn": "ref_id",
+          "refTable": "order_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "order_split",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [
+        {
+          "field": "new_orders",
+          "childTable": "order_split__new_orders",
+          "item": "ref",
+          "refTable": "order"
+        }
+      ],
+      "extras": "order_split__attrs",
+      "foreignKeys": [
+        {
+          "name": "order_split_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_split_old_order_fk",
+          "column": "old_order",
+          "refTable": "order",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_split_new_orders_ref_fk",
+          "childTable": "order_split__new_orders",
+          "childColumn": "ref_id",
+          "refTable": "order",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "order_tax",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "order_tax_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_tax_tax_fk",
+          "column": "tax",
+          "refTable": "tax",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "order_type",
+      "rows": 2,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "order_void",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [
+        {
+          "field": "items",
+          "childTable": "order_void__items",
+          "item": "ref",
+          "refTable": "order_item"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "order_void_deleted_by_fk",
+          "column": "deleted_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "order_void_logged_in_user_fk",
+          "column": "logged_in_user",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_void_order_fk",
+          "column": "order",
+          "refTable": "order",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_void_items_ref_fk",
+          "childTable": "order_void__items",
+          "childColumn": "ref_id",
+          "refTable": "order_item",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "payment_type",
+      "rows": 2,
+      "columns": 12,
+      "arrayFields": [
+        {
+          "field": "discounts",
+          "childTable": "payment_type__discounts",
+          "item": "ref",
+          "refTable": "discount"
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "payment_type_gateway_config_fk",
+          "column": "gateway_config",
+          "refTable": "payment_type_gateway_config",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "payment_type_tax_fk",
+          "column": "tax",
+          "refTable": "tax",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "payment_type_discounts_ref_fk",
+          "childTable": "payment_type__discounts",
+          "childColumn": "ref_id",
+          "refTable": "discount",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "payment_type_gateway_config",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "payment_webhook",
+      "rows": 0,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": "payment_webhook__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "payroll_period",
+      "rows": 0,
+      "columns": 9,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "payroll_period_locked_by_fk",
+          "column": "locked_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "payroll_run",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "payroll_run_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "payroll_run_generated_by_fk",
+          "column": "generated_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "payroll_run_payroll_period_fk",
+          "column": "payroll_period",
+          "refTable": "payroll_period",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "payroll_snapshot",
+      "rows": 0,
+      "columns": 27,
+      "arrayFields": [],
+      "extras": "payroll_snapshot__attrs",
+      "foreignKeys": [
+        {
+          "name": "payroll_snapshot_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "payroll_snapshot_overridden_by_fk",
+          "column": "overridden_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "payroll_snapshot_pay_profile_id_fk",
+          "column": "pay_profile_id",
+          "refTable": "employee_pay_profile",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "payroll_snapshot_payroll_run_fk",
+          "column": "payroll_run",
+          "refTable": "payroll_run",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "position",
+      "rows": 1,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "position_default_cost_center_fk",
+          "column": "default_cost_center",
+          "refTable": "cost_center",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "position_department_fk",
+          "column": "department",
+          "refTable": "department",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "printer",
+      "rows": 0,
+      "columns": 12,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "production_batch",
+      "rows": 0,
+      "columns": 15,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "production_batch_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "production_batch_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "production_batch_recipe_fk",
+          "column": "recipe",
+          "refTable": "recipe",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "production_batch_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "production_batch_input",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "production_batch_input_batch_fk",
+          "column": "batch",
+          "refTable": "production_batch",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "production_batch_input_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "production_batch_input_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "production_batch_input_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "production_batch_output",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "production_batch_output_batch_fk",
+          "column": "batch",
+          "refTable": "production_batch",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "production_batch_output_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "production_batch_output_ledger_waste_item_fk",
+          "column": "ledger_waste_item",
+          "refTable": "inventory_item_waste_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "production_batch_output_location_fk",
+          "column": "location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "production_batch_output_store_fk",
+          "column": "store",
+          "refTable": "inventory_store",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "public_holiday",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": "public_holiday__attrs",
+      "foreignKeys": [
+        {
+          "name": "public_holiday_labor_policy_fk",
+          "column": "labor_policy",
+          "refTable": "labor_policy",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "recipe",
+      "rows": 0,
+      "columns": 9,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "recipe_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "recipe_primary_output_fk",
+          "column": "primary_output",
+          "refTable": "recipe_output",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "recipe_item",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "recipe_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "recipe_item_recipe_fk",
+          "column": "recipe",
+          "refTable": "recipe",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "recipe_output",
+      "rows": 0,
+      "columns": 7,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "recipe_output_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "recipe_output_recipe_fk",
+          "column": "recipe",
+          "refTable": "recipe",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "revoked_session",
+      "rows": 13,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "role_discount_policy",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [
+        {
+          "field": "allowed_categories",
+          "childTable": "role_discount_policy__allowed_categories",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "role_discount_policy_user_role_fk",
+          "column": "user_role",
+          "refTable": "user_role",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "schedule_template",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [
+        {
+          "field": "days_of_week",
+          "childTable": "schedule_template__days_of_week",
+          "item": "int",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "schedule_template_cost_center_fk",
+          "column": "cost_center",
+          "refTable": "cost_center",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "schedule_template_department_fk",
+          "column": "department",
+          "refTable": "department",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "schedule_template_position_fk",
+          "column": "position",
+          "refTable": "position",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "schedule_template_shift_template_fk",
+          "column": "shift_template",
+          "refTable": "shift",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "scheduled_shift",
+      "rows": 0,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "scheduled_shift_cost_center_fk",
+          "column": "cost_center",
+          "refTable": "cost_center",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "scheduled_shift_department_fk",
+          "column": "department",
+          "refTable": "department",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "scheduled_shift_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "scheduled_shift_position_fk",
+          "column": "position",
+          "refTable": "position",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "scheduled_shift_shift_template_fk",
+          "column": "shift_template",
+          "refTable": "shift",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "scheduled_shift_work_schedule_fk",
+          "column": "work_schedule",
+          "refTable": "work_schedule",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "security_alert_rules",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "security_alerts",
+      "rows": 0,
+      "columns": 13,
+      "arrayFields": [
+        {
+          "field": "actor_roles",
+          "childTable": "security_alerts__actor_roles",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": "security_alerts__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "self_order_checkout",
+      "rows": 0,
+      "columns": 0,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "self_order_table",
+      "rows": 1,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "setting",
+      "rows": 2,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": "setting__attrs",
+      "foreignKeys": [
+        {
+          "name": "setting_user_fk",
+          "column": "user",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "shift",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "shift_swap_request",
+      "rows": 0,
+      "columns": 8,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "shift_swap_request_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "shift_swap_request_auth_permission_fk",
+          "column": "auth_permission",
+          "refTable": "auth_permission",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "shift_swap_request_proposed_shift_fk",
+          "column": "proposed_shift",
+          "refTable": "scheduled_shift",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "shift_swap_request_requesting_employee_fk",
+          "column": "requesting_employee",
+          "refTable": "employee",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "shift_swap_request_scheduled_shift_fk",
+          "column": "scheduled_shift",
+          "refTable": "scheduled_shift",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "shift_swap_request_target_employee_fk",
+          "column": "target_employee",
+          "refTable": "employee",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "stock_transfer",
+      "rows": 0,
+      "columns": 18,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "stock_transfer_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "stock_transfer_cancelled_by_fk",
+          "column": "cancelled_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "stock_transfer_created_by_fk",
+          "column": "created_by",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "stock_transfer_from_kitchen_fk",
+          "column": "from_kitchen",
+          "refTable": "kitchen",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "stock_transfer_from_location_fk",
+          "column": "from_location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "stock_transfer_from_store_fk",
+          "column": "from_store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "stock_transfer_posted_by_fk",
+          "column": "posted_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "stock_transfer_to_kitchen_fk",
+          "column": "to_kitchen",
+          "refTable": "kitchen",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "stock_transfer_to_location_fk",
+          "column": "to_location",
+          "refTable": "inventory_location",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "stock_transfer_to_store_fk",
+          "column": "to_store",
+          "refTable": "inventory_store",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "stock_transfer_voided_by_fk",
+          "column": "voided_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "stock_transfer_item",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "stock_transfer_item_item_fk",
+          "column": "item",
+          "refTable": "inventory_item",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "stock_transfer_item_transfer_fk",
+          "column": "transfer",
+          "refTable": "stock_transfer",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "sync_accepted_operation",
+      "rows": 9,
+      "columns": 4,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_branch",
+      "rows": 0,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_catalog_down_cursor",
+      "rows": 0,
+      "columns": 0,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_cloud_cursor",
+      "rows": 0,
+      "columns": 0,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_conflict",
+      "rows": 0,
+      "columns": 0,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_cursor",
+      "rows": 0,
+      "columns": 0,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_event",
+      "rows": 9,
+      "columns": 9,
+      "arrayFields": [],
+      "extras": "sync_event__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_event_seq",
+      "rows": 1,
+      "columns": 1,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_number_counter",
+      "rows": 3,
+      "columns": 4,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_number_reservation",
+      "rows": 5,
+      "columns": 10,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "sync_terminal",
+      "rows": 8,
+      "columns": 9,
+      "arrayFields": [],
+      "extras": "sync_terminal__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "tax",
+      "rows": 1,
+      "columns": 5,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "time_entry",
+      "rows": 7,
+      "columns": 16,
+      "arrayFields": [],
+      "extras": "time_entry__attrs",
+      "foreignKeys": [
+        {
+          "name": "time_entry_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "time_entry_employee_fk",
+          "column": "employee",
+          "refTable": "employee",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "time_entry_original_time_entry_fk",
+          "column": "original_time_entry",
+          "refTable": "time_entry",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "time_entry_scheduled_shift_fk",
+          "column": "scheduled_shift",
+          "refTable": "scheduled_shift",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "time_entry_shift_template_fk",
+          "column": "shift_template",
+          "refTable": "shift",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "time_entry_user_fk",
+          "column": "user",
+          "refTable": "user",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "time_entry_break",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": "time_entry_break__attrs",
+      "foreignKeys": [
+        {
+          "name": "time_entry_break_approved_by_fk",
+          "column": "approved_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "time_entry_break_time_entry_fk",
+          "column": "time_entry",
+          "refTable": "time_entry",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    },
+    {
+      "table": "tracking",
+      "rows": 94,
+      "columns": 11,
+      "arrayFields": [],
+      "extras": "tracking__attrs",
+      "foreignKeys": []
+    },
+    {
+      "table": "user",
+      "rows": 7,
+      "columns": 8,
+      "arrayFields": [
+        {
+          "field": "branch_ids",
+          "childTable": "user__branch_ids",
+          "item": "string",
+          "refTable": null
+        },
+        {
+          "field": "roles",
+          "childTable": "user__roles",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "user_user_role_fk",
+          "column": "user_role",
+          "refTable": "user_role",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "user_user_shift_fk",
+          "column": "user_shift",
+          "refTable": "shift",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "user_role",
+      "rows": 7,
+      "columns": 2,
+      "arrayFields": [
+        {
+          "field": "roles",
+          "childTable": "user_role__roles",
+          "item": "string",
+          "refTable": null
+        }
+      ],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "work_schedule",
+      "rows": 0,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "work_schedule_published_by_fk",
+          "column": "published_by",
+          "refTable": "user",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "table": "workflow",
+      "rows": 1,
+      "columns": 3,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": []
+    },
+    {
+      "table": "workflow_stage",
+      "rows": 1,
+      "columns": 6,
+      "arrayFields": [],
+      "extras": null,
+      "foreignKeys": [
+        {
+          "name": "workflow_stage_kitchen_fk",
+          "column": "kitchen",
+          "refTable": "kitchen",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "name": "workflow_stage_workflow_fk",
+          "column": "workflow",
+          "refTable": "workflow",
+          "onDelete": "RESTRICT"
+        }
+      ]
+    }
+  ]
+}

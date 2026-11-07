@@ -8,6 +8,7 @@
 
 import mysql from 'mysql2/promise';
 import { MySqlStore } from './store.mjs';
+import { RelationalStore } from './store.relational.mjs';
 import { DbAuth } from './auth.mjs';
 import { LiveRegistry } from './live.mjs';
 import { RpcServer } from './rpc.mjs';
@@ -51,10 +52,15 @@ const pool = mysql.createPool({
 });
 
 async function main() {
-  const store = new MySqlStore(pool, logger);
+  // DB_LAYOUT=relational stores every business record in its own typed table
+  // (migrations/relational/); the default keeps the legacy JSON `records` store.
+  const relational = process.env.DB_LAYOUT === 'relational';
+  const store = relational ? new RelationalStore(pool, logger) : new MySqlStore(pool, logger);
   const t0 = Date.now();
   await store.init();
-  logger.info(`MySQL store ready (schema initialized in ${Date.now() - t0}ms)`);
+  logger.info(
+    `MySQL store ready (${relational ? 'relational layout' : 'JSON records layout'}, schema initialized in ${Date.now() - t0}ms)`
+  );
 
   const auth = new DbAuth();
   const liveRegistry = new LiveRegistry(store, { logger, pollMs: DB_LIVE_POLL_MS ? Number(DB_LIVE_POLL_MS) : undefined });

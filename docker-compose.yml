@@ -74,7 +74,12 @@ services:
     environment:
       - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_NAME=${MYSQL_DB:-restaurant_manager}
+      # DB_LAYOUT=relational stores every business record in its own typed
+      # table (migrations/relational/) instead of the legacy JSON `records`
+      # blob. json remains the default for installs that have not run the
+      # relational import yet.
+      - DB_NAME=${MYSQL_DB_REL:-${MYSQL_DB:-restaurant_manager}}
+      - DB_LAYOUT=${DB_LAYOUT:-json}
       - DB_USER=${MYSQL_USER:?Set MYSQL_USER in .env}
       - DB_PASS=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
       - DB_ROOT_USER=${SURREAL_USER:?Set SURREAL_USER in .env}
