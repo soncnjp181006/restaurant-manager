@@ -74,7 +74,7 @@ Database đích mặc định: `restaurant_manager_relational` (đổi bằng `D
 | `float` / `number` | `DOUBLE` | Giữ đúng ngữ nghĩa số thực mà app đang dùng. |
 | `bool` | `TINYINT(1)` | |
 | `datetime` | `DATETIME(3)` | UTC (connection `timezone:'+00:00'`), giữ mili-giây. |
-| `record<X>` | `VARCHAR(512)` + `FOREIGN KEY → X(id)` | `ON DELETE SET NULL` nếu cho phép null, `RESTRICT` nếu bắt buộc. |
+| `record<X>` | `VARCHAR(512)` + `FOREIGN KEY → X(id)` | Cột luôn cho phép `NULL`, FK `ON DELETE SET NULL ON UPDATE CASCADE`. |
 | `array<record<X>>` | bảng con `T__field(parent_id, ord, ref_id)` | `ord` giữ thứ tự mảng; FK `parent_id → T(id) ON DELETE CASCADE` và `ref_id → X(id)`. |
 | `array<string>` | bảng con `T__field(parent_id, ord, value_text)` | |
 | `array<int/float/bool>` | bảng con với `value_number` / `value_bool` | |
@@ -83,6 +83,15 @@ Database đích mặc định: `restaurant_manager_relational` (đổi bằng `D
 | `DEFINE INDEX` (thường) | `KEY` | Bỏ qua nếu cột là `TEXT`/quá 500 ký tự. |
 
 Thêm hai cột metadata giữ nguyên vai trò của `records` cũ: `row_created_at`, `row_updated_at` (`TIMESTAMP(3)`).
+
+**Chỉ `id` là `NOT NULL`.** Mọi cột nghiệp vụ đều cho phép `NULL` (trừ cột hệ thống của bảng con: `parent_id`, `ord`, `path`, `kind`). Lý do: app ghi record theo kiểu document — payload từng phần (`MERGE_RECORD`), và link chuẩn nằm ở mảng của bảng cha (`order.payments`), client cố ý bỏ qua cột back-reference ở bảng con. Đặt `NOT NULL` theo dữ liệu mẫu làm hỏng đúng những đường ghi đó (`Field 'order' doesn't have a default value`, `Field 'created_at' …`). Tính toàn vẹn vẫn do `PRIMARY KEY` / `FOREIGN KEY` / `UNIQUE KEY` đảm bảo.
+
+**Chiều ngược của quan hệ được tự điền:** khi ghi mảng `T.field` trỏ tới bảng con `C`, nếu `C` có cột cùng tên bảng cha và trỏ về `T` (ví dụ `order_payment.order`, `order_item.order`) thì `RelationalStore` set cột đó bằng `parent_id` nếu đang `NULL`. Nhờ vậy cả hai chiều đều truy vấn được bằng SQL thuần:
+
+```sql
+SELECT * FROM order_payment WHERE `order` = 'ifQmkjFcCR1fXW1F126kr';
+SELECT * FROM order__payments WHERE parent_id = 'ifQmkjFcCR1fXW1F126kr';
+```
 
 Quy ước đặt tên:
 
@@ -145,7 +154,7 @@ Sinh schema ghi các mục này vào `report.json` và in ra khi chạy:
 
 ## 6. Giới hạn — đọc kỹ
 
-1. **Đây là bản sao quan hệ đã kiểm chứng, chưa phải nơi app đang ghi.** `dbproxy` vẫn đọc/ghi `records` (JSON) để POS, KDS và 5 sidecar không phải đổi giao thức. Muốn "không còn JSON" ở đường ghi, bước tiếp theo là thay `dbproxy/src/store.mjs` bằng store đọc/ghi các bảng này (đọc `INFORMATION_SCHEMA` để biết cột/bảng con, field lạ ghi vào `__attrs`) — thay đổi tầng wire nên cần chạy lại 61 test dbproxy + sync + full-stack.
+1. **Cutover đã bật** (`DB_LAYOUT=relational`): `dbproxy` đọc/ghi thẳng các bảng này qua `dbproxy/src/store.relational.mjs`; layout JSON cũ vẫn còn để rollback (`DB_LAYOUT=json`).
 2. **Schema là ảnh chụp theo dữ liệu.** Cột phát sinh từ dữ liệu của bảng SCHEMALESS sẽ thay đổi nếu dữ liệu đổi; chạy lại `generate.mjs` sau mỗi migration mới rồi so `001_tables.sql`.
 3. **`_schema_migration`, `change_log`, `field_kinds`, `unique_indexes`, `field_defaults`, `event_defs`** vẫn nằm ở DB cũ: chúng là metadata/công cụ của dbproxy (AST event, watermark sync), không phải bảng nghiệp vụ. `change_log.data` vẫn là JSON vì giao thức `SHOW CHANGES`/LIVE cần before/after image.
 4. **Xóa dữ liệu giờ bị chặn bởi FK** (`RESTRICT` với tham chiếu bắt buộc), khác hành vi cũ (xóa tự do, để lại tham chiếu mồ côi). Đây là chủ ý của mô hình quan hệ; app cần soft-delete hoặc xóa theo thứ tự khi chuyển sang dùng các bảng này.
@@ -153,9 +162,20 @@ Sinh schema ghi các mục này vào `report.json` và in ra khi chạy:
 
 ---
 
-## 7. Bước tiếp theo (cutover)
+## 7. Cutover (đã thực hiện)
 
-1. Viết `RelationalStore` trong `dbproxy/src/` cùng interface `getRecords/scanTable/writeRecord/updateRecord/deleteRecord/…`; đọc lược đồ từ `INFORMATION_SCHEMA` + quy ước `__` để dựng lại record.
-2. Chạy test dbproxy (61) + `verify-sync-compat` + `verify-fullstack-gateway` trên database quan hệ.
-3. Đổi `docker-compose.yml` cho `dbproxy` trỏ `DB_NAME=restaurant_manager_relational`, giữ `records` làm kho lưu trữ chỉ đọc một thời gian.
-4. Chỉ khi đó mới có thể bỏ `records`/`field_kinds` và nói "hệ thống không còn lưu JSON".
+1. `dbproxy/src/store.relational.mjs` — `RelationalStore` cùng interface với `MySqlStore` (`getRecords/scanTable/scanTables/writeRecord/updateRecord/deleteRecord/bulkImport/…`), tự đọc `INFORMATION_SCHEMA` lúc khởi động và tạo bảng `__attrs` cho mọi bảng nghiệp vụ (DDL một lần, không nằm trong transaction của request).
+2. `docker-compose.yml`: `DB_NAME=${MYSQL_DB_REL:-…}`, `DB_LAYOUT=${DB_LAYOUT:-json}`; `.env` đặt `DB_LAYOUT=relational`. Không đặt thì chạy layout JSON cũ.
+3. Kiểm thử live (2026-11-08):
+   - đăng nhập PIN qua gateway → 200; `audit_log` ghi cột thật;
+   - POS đọc `order`/`order_item`/`menu_item`/`setting`/`inventory_item`/`account_journal_entry`, `count() GROUP ALL`, `FETCH` đều đúng;
+   - thanh toán một đơn trong UI → `order.status='Paid'`, `order_payment` có dòng mới, `order__payments` có link, `change_log` tăng;
+   - sync-service đẩy outbox → `sync_accepted_operation`/`sync_event` ghi vào bảng riêng, không còn `APPLY_ERROR`;
+   - tracking: 94 → 178 dòng sau khi đổi `tracking.user_agent` sang `TEXT`.
+4. Bộ test: dbproxy **71/71**, `npm run test:sync` **27/27**; DDL mới nạp sạch vào database trắng (278 bảng, 495 FK).
+
+### Còn lại
+
+- `change_log`, `field_kinds`, `unique_indexes`, `field_defaults`, `event_defs`, `_schema_migration` là metadata của dbproxy nên vẫn giữ nguyên dạng (before/after JSON cần cho `SHOW CHANGES`/LIVE); chúng không phải bảng nghiệp vụ.
+- Bảng SCHEMALESS chưa có dòng nào (`sync_conflict`, `sync_cursor`, `integration_provider_secret`, …) chỉ có `id`; field mới ghi vào `T__attrs` — muốn thành cột thật thì chạy lại `generate.mjs` sau khi bảng có dữ liệu.
+- `records` (JSON) vẫn còn nguyên làm bản sao lưu/rollback; chỉ đọc. Có thể bỏ sau khi chạy relational ổn định.

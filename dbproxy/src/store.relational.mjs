@@ -388,6 +388,20 @@ export class RelationalStore extends MySqlStore {
         `INSERT INTO ${qid(array.table)} (parent_id, ord, ${qid(valueColumn)}) VALUES ?`,
         [rows]
       );
+      // Mirror the link on the child's own back-reference column when the
+      // schema has one (order_payment.order, order_item.order, …). Clients keep
+      // the canonical link on the parent array and omit it on the child.
+      if (array.kind === 'ref' && array.ref) {
+        const child = this.schema.get(array.ref);
+        const backRef = child?.refs.get(table) === table ? table : null;
+        if (backRef) {
+          await client.query(
+            `UPDATE ${qid(array.ref)} SET ${qid(backRef)} = ?` +
+              ` WHERE ${qid(backRef)} IS NULL AND id IN (${rows.map(() => '?').join(', ')})`,
+            [id, ...rows.map((row) => row[2])]
+          );
+        }
+      }
     }
 
     if (attrs.length > 0 && this.attrsFor(table)) {

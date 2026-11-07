@@ -1,20 +1,16 @@
 {
-  "generatedAt": "2026-11-07T19:24:57.379Z",
+  "generatedAt": "2026-11-07T19:57:48.236Z",
   "sourceDatabase": "restaurant_manager",
   "tables": 167,
-  "tablesWithData": 49,
-  "rows": 293,
-  "columns": 1403,
-  "childTables": 111,
-  "foreignKeys": 384,
+  "tablesWithData": 46,
+  "rows": 6694,
+  "columns": 1370,
+  "childTables": 110,
+  "foreignKeys": 385,
   "warnings": [
     "integration_provider.id duplicates the record key and is stored as the primary key",
-    "order.discount is declared record<discount> but holds non-reference values",
-    "order.tax is declared record<tax> but holds non-reference values",
-    "order_item_kitchen.stage is declared record<workflow_stage> but holds non-reference values",
-    "order_payment.payment_type is declared record<payment_type> but holds non-reference values",
     "skip UNIQUE sync_event_event_id on sync_event: duplicate value in current data",
-    "skip FK employee.user -> user: 4 dangling reference(s)"
+    "skip FK employee.user -> user: 3 dangling reference(s)"
   ],
   "perTable": [
     {
@@ -56,8 +52,8 @@
     },
     {
       "table": "account_journal_entry",
-      "rows": 3,
-      "columns": 21,
+      "rows": 0,
+      "columns": 18,
       "arrayFields": [
         {
           "field": "documents",
@@ -107,19 +103,19 @@
           "name": "account_journal_line_account_fk",
           "column": "account",
           "refTable": "account",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "account_journal_line_entry_fk",
           "column": "entry",
           "refTable": "account_journal_entry",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
     {
       "table": "audit_log",
-      "rows": 37,
+      "rows": 2,
       "columns": 7,
       "arrayFields": [
         {
@@ -157,13 +153,13 @@
           "name": "buffet_consumption_log_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_consumption_log_session_fk",
           "column": "session",
           "refTable": "buffet_session",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -178,13 +174,13 @@
           "name": "buffet_guest_count_recorded_by_fk",
           "column": "recorded_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_guest_count_session_fk",
           "column": "session",
           "refTable": "buffet_session",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -199,7 +195,7 @@
           "name": "buffet_menu_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -214,13 +210,13 @@
           "name": "buffet_menu_item_menu_fk",
           "column": "menu",
           "refTable": "buffet_menu",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_menu_item_recipe_fk",
           "column": "recipe",
           "refTable": "recipe",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -235,7 +231,7 @@
           "name": "buffet_production_batch_menu_item_fk",
           "column": "menu_item",
           "refTable": "buffet_menu_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_production_batch_production_batch_fk",
@@ -247,7 +243,7 @@
           "name": "buffet_production_batch_session_fk",
           "column": "session",
           "refTable": "buffet_session",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -268,7 +264,7 @@
           "name": "buffet_session_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_session_location_fk",
@@ -280,13 +276,13 @@
           "name": "buffet_session_menu_fk",
           "column": "menu",
           "refTable": "buffet_menu",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_session_store_fk",
           "column": "store",
           "refTable": "inventory_store",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -301,13 +297,13 @@
           "name": "buffet_stock_snapshot_captured_by_fk",
           "column": "captured_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_stock_snapshot_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_stock_snapshot_production_batch_fk",
@@ -319,7 +315,7 @@
           "name": "buffet_stock_snapshot_session_fk",
           "column": "session",
           "refTable": "buffet_session",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -334,13 +330,13 @@
           "name": "buffet_waste_log_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_waste_log_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "buffet_waste_log_ledger_waste_item_fk",
@@ -352,7 +348,7 @@
           "name": "buffet_waste_log_session_fk",
           "column": "session",
           "refTable": "buffet_session",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -387,7 +383,7 @@
     },
     {
       "table": "category",
-      "rows": 2,
+      "rows": 1,
       "columns": 8,
       "arrayFields": [],
       "extras": null,
@@ -402,7 +398,7 @@
     },
     {
       "table": "cost_center",
-      "rows": 1,
+      "rows": 0,
       "columns": 5,
       "arrayFields": [],
       "extras": null,
@@ -410,8 +406,8 @@
     },
     {
       "table": "coupon",
-      "rows": 2,
-      "columns": 25,
+      "rows": 1,
+      "columns": 22,
       "arrayFields": [
         {
           "field": "valid_days",
@@ -425,7 +421,7 @@
     },
     {
       "table": "coupon_redemption",
-      "rows": 0,
+      "rows": 1,
       "columns": 6,
       "arrayFields": [],
       "extras": null,
@@ -434,7 +430,7 @@
           "name": "coupon_redemption_coupon_fk",
           "column": "coupon",
           "refTable": "coupon",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "coupon_redemption_customer_fk",
@@ -446,7 +442,7 @@
           "name": "coupon_redemption_order_fk",
           "column": "order",
           "refTable": "order",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "coupon_redemption_user_fk",
@@ -495,9 +491,22 @@
     },
     {
       "table": "day_closing",
-      "rows": 0,
+      "rows": 1,
       "columns": 19,
-      "arrayFields": [],
+      "arrayFields": [
+        {
+          "field": "batch_totals",
+          "childTable": "day_closing__batch_totals",
+          "item": "string",
+          "refTable": null
+        },
+        {
+          "field": "expenses_data",
+          "childTable": "day_closing__expenses_data",
+          "item": "string",
+          "refTable": null
+        }
+      ],
       "extras": "day_closing__attrs",
       "foreignKeys": [
         {
@@ -516,7 +525,7 @@
     },
     {
       "table": "department",
-      "rows": 1,
+      "rows": 0,
       "columns": 5,
       "arrayFields": [],
       "extras": null,
@@ -524,8 +533,8 @@
     },
     {
       "table": "discount",
-      "rows": 2,
-      "columns": 29,
+      "rows": 1,
+      "columns": 28,
       "arrayFields": [
         {
           "field": "applicable_floors",
@@ -569,7 +578,7 @@
     },
     {
       "table": "employee",
-      "rows": 11,
+      "rows": 4,
       "columns": 16,
       "arrayFields": [],
       "extras": "employee__attrs",
@@ -629,7 +638,7 @@
           "name": "employee_assignment_history_employee_fk",
           "column": "employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "employee_assignment_history_manager_fk",
@@ -656,13 +665,13 @@
           "name": "employee_document_document_fk",
           "column": "document",
           "refTable": "document",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "employee_document_employee_fk",
           "column": "employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "employee_document_uploaded_by_fk",
@@ -689,7 +698,7 @@
           "name": "employee_pay_profile_employee_fk",
           "column": "employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "employee_pay_profile_holiday_policy_fk",
@@ -734,7 +743,7 @@
           "name": "employee_performance_note_employee_fk",
           "column": "employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -816,7 +825,7 @@
     },
     {
       "table": "floor",
-      "rows": 2,
+      "rows": 1,
       "columns": 5,
       "arrayFields": [],
       "extras": null,
@@ -824,7 +833,7 @@
     },
     {
       "table": "floor_table",
-      "rows": 3,
+      "rows": 2,
       "columns": 20,
       "arrayFields": [
         {
@@ -928,7 +937,7 @@
           "name": "integration_order_fiscal_order_fk",
           "column": "order",
           "refTable": "order",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -1102,7 +1111,7 @@
           "name": "inventory_adjustment_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_adjustment_item_location_fk",
@@ -1128,8 +1137,8 @@
     },
     {
       "table": "inventory_issue",
-      "rows": 1,
-      "columns": 22,
+      "rows": 0,
+      "columns": 19,
       "arrayFields": [
         {
           "field": "documents",
@@ -1245,7 +1254,7 @@
           "name": "inventory_issue_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_issue_item_location_fk",
@@ -1297,7 +1306,7 @@
           "name": "inventory_issue_return_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_issue_return_issuance_fk",
@@ -1386,7 +1395,7 @@
           "name": "inventory_issue_return_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_issue_return_item_location_fk",
@@ -1404,8 +1413,8 @@
     },
     {
       "table": "inventory_item",
-      "rows": 2,
-      "columns": 13,
+      "rows": 1,
+      "columns": 8,
       "arrayFields": [
         {
           "field": "item_types",
@@ -1481,7 +1490,7 @@
           "name": "inventory_item_group_main_item_fk",
           "column": "main_item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_item_group_sub_items_ref_fk",
@@ -1503,7 +1512,7 @@
           "name": "inventory_item_group_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -1543,7 +1552,7 @@
           "name": "inventory_item_waste_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_item_waste_issue_fk",
@@ -1609,7 +1618,7 @@
           "name": "inventory_item_waste_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_item_waste_item_location_fk",
@@ -1654,13 +1663,13 @@
           "name": "inventory_ledger_inventory_item_fk",
           "column": "inventory_item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_ledger_inventory_location_fk",
           "column": "inventory_location",
           "refTable": "inventory_location",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_ledger_reversal_of_fk",
@@ -1672,7 +1681,7 @@
     },
     {
       "table": "inventory_location",
-      "rows": 2,
+      "rows": 1,
       "columns": 6,
       "arrayFields": [],
       "extras": null,
@@ -1693,8 +1702,8 @@
     },
     {
       "table": "inventory_purchase",
-      "rows": 1,
-      "columns": 26,
+      "rows": 0,
+      "columns": 24,
       "arrayFields": [
         {
           "field": "documents",
@@ -1810,7 +1819,7 @@
           "name": "inventory_purchase_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_purchase_item_location_fk",
@@ -1927,7 +1936,7 @@
           "name": "inventory_purchase_order_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_purchase_order_item_purchase_order_fk",
@@ -1954,7 +1963,7 @@
           "name": "inventory_purchase_payment_payment_type_fk",
           "column": "payment_type",
           "refTable": "payment_type",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_purchase_payment_purchase_fk",
@@ -1966,7 +1975,7 @@
           "name": "inventory_purchase_payment_supplier_fk",
           "column": "supplier",
           "refTable": "inventory_supplier",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2006,7 +2015,7 @@
           "name": "inventory_purchase_return_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_purchase_return_location_fk",
@@ -2065,7 +2074,7 @@
           "name": "inventory_purchase_return_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "inventory_purchase_return_item_location_fk",
@@ -2109,8 +2118,8 @@
     },
     {
       "table": "inventory_supplier",
-      "rows": 1,
-      "columns": 5,
+      "rows": 0,
+      "columns": 4,
       "arrayFields": [
         {
           "field": "payments",
@@ -2153,7 +2162,7 @@
     },
     {
       "table": "kitchen",
-      "rows": 2,
+      "rows": 1,
       "columns": 3,
       "arrayFields": [
         {
@@ -2198,13 +2207,13 @@
           "name": "kitchen_complimentary_item_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_complimentary_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_complimentary_item_ledger_waste_item_fk",
@@ -2222,7 +2231,7 @@
           "name": "kitchen_complimentary_item_reconciliation_fk",
           "column": "reconciliation",
           "refTable": "kitchen_reconciliation",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2237,7 +2246,7 @@
           "name": "kitchen_reconciliation_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_reconciliation_kitchen_fk",
@@ -2282,13 +2291,13 @@
           "name": "kitchen_reconciliation_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_reconciliation_item_reconciliation_fk",
           "column": "reconciliation",
           "refTable": "kitchen_reconciliation",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2303,13 +2312,13 @@
           "name": "kitchen_reconciliation_revision_changed_by_fk",
           "column": "changed_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_reconciliation_revision_reconciliation_fk",
           "column": "reconciliation",
           "refTable": "kitchen_reconciliation",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2324,7 +2333,7 @@
           "name": "kitchen_staff_meal_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_staff_meal_dish_fk",
@@ -2336,7 +2345,7 @@
           "name": "kitchen_staff_meal_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_staff_meal_ledger_waste_item_fk",
@@ -2348,7 +2357,7 @@
           "name": "kitchen_staff_meal_reconciliation_fk",
           "column": "reconciliation",
           "refTable": "kitchen_reconciliation",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2363,19 +2372,19 @@
           "name": "kitchen_stock_count_counted_by_fk",
           "column": "counted_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_stock_count_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_stock_count_reconciliation_fk",
           "column": "reconciliation",
           "refTable": "kitchen_reconciliation",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2390,13 +2399,13 @@
           "name": "kitchen_waste_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_waste_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "kitchen_waste_ledger_waste_item_fk",
@@ -2408,7 +2417,7 @@
           "name": "kitchen_waste_reconciliation_fk",
           "column": "reconciliation",
           "refTable": "kitchen_reconciliation",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2435,7 +2444,7 @@
           "name": "labor_adjustment_employee_fk",
           "column": "employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "labor_adjustment_payroll_period_fk",
@@ -2502,13 +2511,13 @@
           "name": "leave_balance_employee_fk",
           "column": "employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "leave_balance_leave_type_fk",
           "column": "leave_type",
           "refTable": "leave_type",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2541,13 +2550,13 @@
           "name": "leave_request_employee_fk",
           "column": "employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "leave_request_leave_type_fk",
           "column": "leave_type",
           "refTable": "leave_type",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2584,7 +2593,7 @@
     },
     {
       "table": "menu_item",
-      "rows": 4,
+      "rows": 3,
       "columns": 17,
       "arrayFields": [
         {
@@ -2647,13 +2656,13 @@
           "name": "menu_item_modifier_group_in_fk",
           "column": "in",
           "refTable": "menu_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "menu_item_modifier_group_out_fk",
           "column": "out",
           "refTable": "modifier_group",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2668,7 +2677,7 @@
           "name": "menu_item_recipe_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "menu_item_recipe_menu_item_fk",
@@ -2696,7 +2705,7 @@
           "name": "menu_menu_item_menu_item_fk",
           "column": "menu_item",
           "refTable": "menu_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "menu_menu_item_tax_fk",
@@ -2724,13 +2733,13 @@
           "name": "menu_menu_item_tax_menu_menu_item_fk",
           "column": "menu_menu_item",
           "refTable": "menu_menu_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "menu_menu_item_tax_tax_fk",
           "column": "tax",
           "refTable": "tax",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -2758,13 +2767,13 @@
           "name": "modifier_modifier_fk",
           "column": "modifier",
           "refTable": "menu_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
     {
       "table": "modifier_group",
-      "rows": 2,
+      "rows": 1,
       "columns": 6,
       "arrayFields": [
         {
@@ -2795,8 +2804,8 @@
     },
     {
       "table": "order",
-      "rows": 3,
-      "columns": 37,
+      "rows": 6,
+      "columns": 31,
       "arrayFields": [
         {
           "field": "extras",
@@ -2835,7 +2844,7 @@
           "refTable": null
         }
       ],
-      "extras": "order__attrs",
+      "extras": null,
       "foreignKeys": [
         {
           "name": "order_cashier_fk",
@@ -2853,6 +2862,12 @@
           "name": "order_customer_fk",
           "column": "customer",
           "refTable": "customer",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_discount_fk",
+          "column": "discount",
+          "refTable": "discount",
           "onDelete": "SET NULL"
         },
         {
@@ -2877,6 +2892,12 @@
           "name": "order_table_fk",
           "column": "table",
           "refTable": "floor_table",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_tax_fk",
+          "column": "tax",
+          "refTable": "tax",
           "onDelete": "SET NULL"
         },
         {
@@ -2924,7 +2945,7 @@
     },
     {
       "table": "order_coupon",
-      "rows": 0,
+      "rows": 1,
       "columns": 3,
       "arrayFields": [],
       "extras": null,
@@ -2933,14 +2954,14 @@
           "name": "order_coupon_coupon_fk",
           "column": "coupon",
           "refTable": "coupon",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
     {
       "table": "order_discount",
-      "rows": 1,
-      "columns": 19,
+      "rows": 0,
+      "columns": 18,
       "arrayFields": [
         {
           "field": "order_items",
@@ -2967,13 +2988,13 @@
           "name": "order_discount_discount_fk",
           "column": "discount",
           "refTable": "discount",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_discount_order_fk",
           "column": "order",
           "refTable": "order",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_discount_reason_fk",
@@ -2998,7 +3019,7 @@
     },
     {
       "table": "order_extras",
-      "rows": 0,
+      "rows": 4,
       "columns": 3,
       "arrayFields": [],
       "extras": null,
@@ -3006,8 +3027,8 @@
     },
     {
       "table": "order_item",
-      "rows": 5,
-      "columns": 31,
+      "rows": 9,
+      "columns": 27,
       "arrayFields": [
         {
           "field": "modifiers",
@@ -3055,12 +3076,6 @@
           "onDelete": "SET NULL"
         },
         {
-          "name": "order_item_menu_item_fk",
-          "column": "menu_item",
-          "refTable": "menu_item",
-          "onDelete": "SET NULL"
-        },
-        {
           "name": "order_item_taxes_ref_fk",
           "childTable": "order_item__taxes",
           "childColumn": "ref_id",
@@ -3071,7 +3086,7 @@
     },
     {
       "table": "order_item_kitchen",
-      "rows": 3,
+      "rows": 9,
       "columns": 13,
       "arrayFields": [
         {
@@ -3081,18 +3096,24 @@
           "refTable": "user"
         }
       ],
-      "extras": "order_item_kitchen__attrs",
+      "extras": null,
       "foreignKeys": [
         {
           "name": "order_item_kitchen_kitchen_fk",
           "column": "kitchen",
           "refTable": "kitchen",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_item_kitchen_order_item_fk",
           "column": "order_item",
           "refTable": "order_item",
+          "onDelete": "SET NULL"
+        },
+        {
+          "name": "order_item_kitchen_stage_fk",
+          "column": "stage",
+          "refTable": "workflow_stage",
           "onDelete": "SET NULL"
         },
         {
@@ -3105,12 +3126,6 @@
           "name": "order_item_kitchen_workflow_fk",
           "column": "workflow",
           "refTable": "workflow",
-          "onDelete": "SET NULL"
-        },
-        {
-          "name": "order_item_kitchen_order_fk",
-          "column": "order",
-          "refTable": "order",
           "onDelete": "SET NULL"
         },
         {
@@ -3140,13 +3155,13 @@
           "name": "order_merge_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_merge_new_order_fk",
           "column": "new_order",
           "refTable": "order",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_merge_old_orders_ref_fk",
@@ -3175,16 +3190,16 @@
     },
     {
       "table": "order_payment",
-      "rows": 1,
-      "columns": 8,
+      "rows": 5,
+      "columns": 4,
       "arrayFields": [],
-      "extras": "order_payment__attrs",
+      "extras": null,
       "foreignKeys": [
         {
-          "name": "order_payment_order_fk",
-          "column": "order",
-          "refTable": "order",
-          "onDelete": "RESTRICT"
+          "name": "order_payment_payment_type_fk",
+          "column": "payment_type",
+          "refTable": "payment_type",
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -3199,7 +3214,7 @@
           "name": "order_print_order_fk",
           "column": "order",
           "refTable": "order",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_print_printed_by_fk",
@@ -3227,7 +3242,7 @@
           "name": "order_refund_logged_in_user_fk",
           "column": "logged_in_user",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_refund_manager_fk",
@@ -3239,7 +3254,7 @@
           "name": "order_refund_order_fk",
           "column": "order",
           "refTable": "order",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_refund_items_ref_fk",
@@ -3268,13 +3283,13 @@
           "name": "order_split_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_split_old_order_fk",
           "column": "old_order",
           "refTable": "order",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_split_new_orders_ref_fk",
@@ -3287,7 +3302,7 @@
     },
     {
       "table": "order_tax",
-      "rows": 0,
+      "rows": 2,
       "columns": 3,
       "arrayFields": [],
       "extras": null,
@@ -3296,13 +3311,13 @@
           "name": "order_tax_order_fk",
           "column": "order",
           "refTable": "order",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_tax_tax_fk",
           "column": "tax",
           "refTable": "tax",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -3316,7 +3331,7 @@
     },
     {
       "table": "order_void",
-      "rows": 0,
+      "rows": 3,
       "columns": 7,
       "arrayFields": [
         {
@@ -3332,7 +3347,7 @@
           "name": "order_void_deleted_by_fk",
           "column": "deleted_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "order_void_logged_in_user_fk",
@@ -3444,7 +3459,7 @@
           "name": "payroll_run_payroll_period_fk",
           "column": "payroll_period",
           "refTable": "payroll_period",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -3459,7 +3474,7 @@
           "name": "payroll_snapshot_employee_fk",
           "column": "employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "payroll_snapshot_overridden_by_fk",
@@ -3477,13 +3492,13 @@
           "name": "payroll_snapshot_payroll_run_fk",
           "column": "payroll_run",
           "refTable": "payroll_run",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
     {
       "table": "position",
-      "rows": 1,
+      "rows": 0,
       "columns": 6,
       "arrayFields": [],
       "extras": null,
@@ -3521,7 +3536,7 @@
           "name": "production_batch_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "production_batch_location_fk",
@@ -3533,13 +3548,13 @@
           "name": "production_batch_recipe_fk",
           "column": "recipe",
           "refTable": "recipe",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "production_batch_store_fk",
           "column": "store",
           "refTable": "inventory_store",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -3554,13 +3569,13 @@
           "name": "production_batch_input_batch_fk",
           "column": "batch",
           "refTable": "production_batch",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "production_batch_input_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "production_batch_input_location_fk",
@@ -3572,7 +3587,7 @@
           "name": "production_batch_input_store_fk",
           "column": "store",
           "refTable": "inventory_store",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -3587,13 +3602,13 @@
           "name": "production_batch_output_batch_fk",
           "column": "batch",
           "refTable": "production_batch",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "production_batch_output_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "production_batch_output_ledger_waste_item_fk",
@@ -3611,7 +3626,7 @@
           "name": "production_batch_output_store_fk",
           "column": "store",
           "refTable": "inventory_store",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -3641,7 +3656,7 @@
           "name": "recipe_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "recipe_primary_output_fk",
@@ -3662,13 +3677,13 @@
           "name": "recipe_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "recipe_item_recipe_fk",
           "column": "recipe",
           "refTable": "recipe",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -3683,19 +3698,19 @@
           "name": "recipe_output_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "recipe_output_recipe_fk",
           "column": "recipe",
           "refTable": "recipe",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
     {
       "table": "revoked_session",
-      "rows": 13,
+      "rows": 0,
       "columns": 3,
       "arrayFields": [],
       "extras": null,
@@ -3719,7 +3734,7 @@
           "name": "role_discount_policy_user_role_fk",
           "column": "user_role",
           "refTable": "user_role",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -3786,7 +3801,7 @@
           "name": "scheduled_shift_employee_fk",
           "column": "employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "scheduled_shift_position_fk",
@@ -3849,7 +3864,7 @@
     },
     {
       "table": "setting",
-      "rows": 2,
+      "rows": 1,
       "columns": 3,
       "arrayFields": [],
       "extras": "setting__attrs",
@@ -3899,13 +3914,13 @@
           "name": "shift_swap_request_requesting_employee_fk",
           "column": "requesting_employee",
           "refTable": "employee",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "shift_swap_request_scheduled_shift_fk",
           "column": "scheduled_shift",
           "refTable": "scheduled_shift",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "shift_swap_request_target_employee_fk",
@@ -3938,7 +3953,7 @@
           "name": "stock_transfer_created_by_fk",
           "column": "created_by",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "stock_transfer_from_kitchen_fk",
@@ -4001,19 +4016,19 @@
           "name": "stock_transfer_item_item_fk",
           "column": "item",
           "refTable": "inventory_item",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "stock_transfer_item_transfer_fk",
           "column": "transfer",
           "refTable": "stock_transfer",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
     {
       "table": "sync_accepted_operation",
-      "rows": 9,
+      "rows": 2923,
       "columns": 4,
       "arrayFields": [],
       "extras": null,
@@ -4061,7 +4076,7 @@
     },
     {
       "table": "sync_event",
-      "rows": 9,
+      "rows": 2923,
       "columns": 9,
       "arrayFields": [],
       "extras": "sync_event__attrs",
@@ -4085,7 +4100,7 @@
     },
     {
       "table": "sync_number_reservation",
-      "rows": 5,
+      "rows": 1,
       "columns": 10,
       "arrayFields": [],
       "extras": null,
@@ -4093,7 +4108,7 @@
     },
     {
       "table": "sync_terminal",
-      "rows": 8,
+      "rows": 3,
       "columns": 9,
       "arrayFields": [],
       "extras": "sync_terminal__attrs",
@@ -4109,7 +4124,7 @@
     },
     {
       "table": "time_entry",
-      "rows": 7,
+      "rows": 1,
       "columns": 16,
       "arrayFields": [],
       "extras": "time_entry__attrs",
@@ -4148,7 +4163,7 @@
           "name": "time_entry_user_fk",
           "column": "user",
           "refTable": "user",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
@@ -4169,13 +4184,13 @@
           "name": "time_entry_break_time_entry_fk",
           "column": "time_entry",
           "refTable": "time_entry",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     },
     {
       "table": "tracking",
-      "rows": 94,
+      "rows": 741,
       "columns": 11,
       "arrayFields": [],
       "extras": "tracking__attrs",
@@ -4183,7 +4198,7 @@
     },
     {
       "table": "user",
-      "rows": 7,
+      "rows": 1,
       "columns": 8,
       "arrayFields": [
         {
@@ -4217,7 +4232,7 @@
     },
     {
       "table": "user_role",
-      "rows": 7,
+      "rows": 1,
       "columns": 2,
       "arrayFields": [
         {
@@ -4264,13 +4279,13 @@
           "name": "workflow_stage_kitchen_fk",
           "column": "kitchen",
           "refTable": "kitchen",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         },
         {
           "name": "workflow_stage_workflow_fk",
           "column": "workflow",
           "refTable": "workflow",
-          "onDelete": "RESTRICT"
+          "onDelete": "SET NULL"
         }
       ]
     }

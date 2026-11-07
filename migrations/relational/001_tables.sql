@@ -5,8 +5,8 @@ SET NAMES utf8mb4;
 
 CREATE TABLE `_schema_migration` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `applied_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `name` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `applied_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `name` varchar(255) COLLATE utf8mb4_bin NULL,
   `note` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -17,12 +17,12 @@ CREATE TABLE `_schema_migration` (
 CREATE TABLE `account` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `account_type` text COLLATE utf8mb4_bin NULL,
-  `code` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_bin NULL,
   `created_at` datetime(3) NULL,
   `group` varchar(512) COLLATE utf8mb4_bin NULL,
   `is_active` tinyint(1) NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `normal_balance` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `normal_balance` text COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `parent` varchar(512) COLLATE utf8mb4_bin NULL,
   `updated_at` datetime(3) NULL,
@@ -36,12 +36,12 @@ CREATE TABLE `account` (
 
 CREATE TABLE `account_group` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `code` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_bin NULL,
   `created_at` datetime(3) NULL,
-  `head_type` text COLLATE utf8mb4_bin NOT NULL,
+  `head_type` text COLLATE utf8mb4_bin NULL,
   `is_active` tinyint(1) NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `normal_balance` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `normal_balance` text COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `updated_at` datetime(3) NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -68,11 +68,8 @@ CREATE TABLE `account_journal_entry` (
   `posting_rule_id` text COLLATE utf8mb4_bin NULL,
   `source_id` text COLLATE utf8mb4_bin NULL,
   `source_module` text COLLATE utf8mb4_bin NULL,
-  `status` varchar(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'draft',
+  `status` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'draft',
   `updated_at` datetime(3) NULL,
-  `amount` bigint NULL,
-  `reference` text COLLATE utf8mb4_bin NULL,
-  `description` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -81,7 +78,7 @@ CREATE TABLE `account_journal_entry` (
   KEY `account_journal_entry_aje_date` (`date`),
   KEY `account_journal_entry_aje_status_date` (`status`, `date`),
   KEY `account_journal_entry_created_by_idx` (`created_by`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table account_journal_entry (3 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table account_journal_entry (0 rows at conversion)';
 
 -- 1-n children of `account_journal_entry`.`documents` (order preserved by `ord`)
 CREATE TABLE `account_journal_entry__documents` (
@@ -105,12 +102,12 @@ CREATE TABLE `account_journal_entry__lines` (
 
 CREATE TABLE `account_journal_line` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `account` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `account` varchar(512) COLLATE utf8mb4_bin NULL,
   `created_at` datetime(3) NULL,
-  `credit` double NOT NULL DEFAULT 0,
-  `debit` double NOT NULL DEFAULT 0,
+  `credit` double NULL DEFAULT 0,
+  `debit` double NULL DEFAULT 0,
   `description` text COLLATE utf8mb4_bin NULL,
-  `entry` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `entry` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -120,10 +117,10 @@ CREATE TABLE `account_journal_line` (
 
 CREATE TABLE `audit_log` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `action` varchar(64) COLLATE utf8mb4_bin NOT NULL,
+  `action` varchar(64) COLLATE utf8mb4_bin NULL,
   `actor_id` varchar(64) COLLATE utf8mb4_bin NULL,
   `actor_login` text COLLATE utf8mb4_bin NULL,
-  `occurred_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `occurred_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `record_id` varchar(255) COLLATE utf8mb4_bin NULL,
   `source` text COLLATE utf8mb4_bin NULL,
   `table_name` varchar(255) COLLATE utf8mb4_bin NULL,
@@ -134,7 +131,7 @@ CREATE TABLE `audit_log` (
   KEY `audit_log_audit_log_occurred_at` (`occurred_at`),
   KEY `audit_log_audit_log_record_id` (`record_id`),
   KEY `audit_log_audit_log_table_action` (`table_name`, `action`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table audit_log (37 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table audit_log (2 rows at conversion)';
 
 -- 1-n children of `audit_log`.`actor_roles` (order preserved by `ord`)
 CREATE TABLE `audit_log__actor_roles` (
@@ -178,19 +175,19 @@ CREATE TABLE `auth_permission` (
 
 CREATE TABLE `buffet_consumption_log` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `guest_consumption` double NOT NULL DEFAULT 0,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `leftover_qty` double NOT NULL DEFAULT 0,
-  `posted_to_ledger` tinyint(1) NOT NULL DEFAULT 0,
-  `produced_qty` double NOT NULL DEFAULT 0,
-  `session` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `staff_meal_qty` double NOT NULL DEFAULT 0,
-  `theoretical_guest_qty` double NOT NULL DEFAULT 0,
-  `total_consumed` double NOT NULL DEFAULT 0,
-  `total_food_cost` double NOT NULL DEFAULT 0,
-  `unit_food_cost` double NOT NULL DEFAULT 0,
-  `variance_qty` double NOT NULL DEFAULT 0,
-  `waste_qty` double NOT NULL DEFAULT 0,
+  `guest_consumption` double NULL DEFAULT 0,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `leftover_qty` double NULL DEFAULT 0,
+  `posted_to_ledger` tinyint(1) NULL DEFAULT 0,
+  `produced_qty` double NULL DEFAULT 0,
+  `session` varchar(512) COLLATE utf8mb4_bin NULL,
+  `staff_meal_qty` double NULL DEFAULT 0,
+  `theoretical_guest_qty` double NULL DEFAULT 0,
+  `total_consumed` double NULL DEFAULT 0,
+  `total_food_cost` double NULL DEFAULT 0,
+  `unit_food_cost` double NULL DEFAULT 0,
+  `variance_qty` double NULL DEFAULT 0,
+  `waste_qty` double NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -200,11 +197,11 @@ CREATE TABLE `buffet_consumption_log` (
 
 CREATE TABLE `buffet_guest_count` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `count_type` text COLLATE utf8mb4_bin NOT NULL,
-  `guest_count` bigint NOT NULL,
-  `recorded_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `recorded_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `session` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `count_type` text COLLATE utf8mb4_bin NULL,
+  `guest_count` bigint NULL,
+  `recorded_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `recorded_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `session` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -215,12 +212,12 @@ CREATE TABLE `buffet_guest_count` (
 CREATE TABLE `buffet_menu` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `code` text COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
-  `session_type` text COLLATE utf8mb4_bin NOT NULL,
+  `session_type` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -230,10 +227,10 @@ CREATE TABLE `buffet_menu` (
 
 CREATE TABLE `buffet_menu_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `menu` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `per_guest_qty` double NOT NULL DEFAULT 1,
-  `recipe` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `sort_order` bigint NOT NULL DEFAULT 0,
+  `menu` varchar(512) COLLATE utf8mb4_bin NULL,
+  `per_guest_qty` double NULL DEFAULT 1,
+  `recipe` varchar(512) COLLATE utf8mb4_bin NULL,
+  `sort_order` bigint NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -243,11 +240,11 @@ CREATE TABLE `buffet_menu_item` (
 
 CREATE TABLE `buffet_production_batch` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `menu_item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `planned_qty` double NOT NULL DEFAULT 0,
+  `menu_item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `planned_qty` double NULL DEFAULT 0,
   `production_batch` varchar(512) COLLATE utf8mb4_bin NULL,
-  `session` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `session` varchar(512) COLLATE utf8mb4_bin NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -258,25 +255,25 @@ CREATE TABLE `buffet_production_batch` (
 
 CREATE TABLE `buffet_session` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `actual_guests` bigint NOT NULL DEFAULT 0,
-  `buffet_price` double NOT NULL DEFAULT 0,
-  `business_date` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `actual_guests` bigint NULL DEFAULT 0,
+  `buffet_price` double NULL DEFAULT 0,
+  `business_date` varchar(255) COLLATE utf8mb4_bin NULL,
   `closed_at` datetime(3) NULL,
   `closed_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `expected_guests` bigint NOT NULL DEFAULT 0,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `expected_guests` bigint NULL DEFAULT 0,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
-  `menu` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `menu` varchar(512) COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
-  `posted_to_ledger` tinyint(1) NOT NULL DEFAULT 0,
+  `posted_to_ledger` tinyint(1) NULL DEFAULT 0,
   `scheduled_end` datetime(3) NULL,
   `scheduled_start` datetime(3) NULL,
-  `session_number` text COLLATE utf8mb4_bin NOT NULL,
-  `session_type` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT 'lunch',
+  `session_number` text COLLATE utf8mb4_bin NULL,
+  `session_type` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'lunch',
   `started_at` datetime(3) NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
-  `store` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
+  `store` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -289,14 +286,14 @@ CREATE TABLE `buffet_session` (
 
 CREATE TABLE `buffet_stock_snapshot` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `captured_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `captured_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `captured_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `captured_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `production_batch` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
-  `session` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `snapshot_type` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `quantity` double NULL,
+  `session` varchar(512) COLLATE utf8mb4_bin NULL,
+  `snapshot_type` varchar(255) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -308,13 +305,13 @@ CREATE TABLE `buffet_stock_snapshot` (
 
 CREATE TABLE `buffet_waste_log` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `ledger_waste_item` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
+  `quantity` double NULL,
   `reason` text COLLATE utf8mb4_bin NULL,
-  `session` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `session` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -326,9 +323,9 @@ CREATE TABLE `buffet_waste_log` (
 
 CREATE TABLE `catalog_branch_override` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `base_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `branch_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `table` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `base_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `branch_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `table` varchar(255) COLLATE utf8mb4_bin NULL,
   `updated_at` datetime(3) NULL,
   `updated_by` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -357,7 +354,7 @@ CREATE TABLE `catalog_release` (
   `note` text COLLATE utf8mb4_bin NULL,
   `published_at` datetime(3) NULL,
   `published_by` text COLLATE utf8mb4_bin NULL,
-  `version` bigint NOT NULL,
+  `version` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -389,33 +386,33 @@ CREATE TABLE `category` (
   `branch_id` text COLLATE utf8mb4_bin NULL,
   `color` text COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `parent` varchar(512) COLLATE utf8mb4_bin NULL,
-  `priority` bigint NOT NULL,
+  `priority` bigint NULL,
   `show_in_menu` tinyint(1) NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `category_parent_idx` (`parent`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table category (2 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table category (1 rows at conversion)';
 
 CREATE TABLE `cost_center` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `code` varchar(255) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
   `description` text COLLATE utf8mb4_bin NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   UNIQUE KEY `cost_center_cc_code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table cost_center (1 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table cost_center (0 rows at conversion)';
 
 CREATE TABLE `coupon` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `branch_id` text COLLATE utf8mb4_bin NULL,
-  `code` text COLLATE utf8mb4_bin NOT NULL,
+  `code` text COLLATE utf8mb4_bin NULL,
   `coupon_type` text COLLATE utf8mb4_bin NULL,
   `created_at` datetime(3) NULL,
   `deleted_at` datetime(3) NULL,
@@ -436,13 +433,10 @@ CREATE TABLE `coupon` (
   `usage_limit` bigint NULL,
   `usage_limit_per_user` bigint NULL,
   `used_count` bigint NULL DEFAULT 0,
-  `type` text COLLATE utf8mb4_bin NULL,
-  `active` tinyint(1) NULL,
-  `discount` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table coupon (2 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table coupon (1 rows at conversion)';
 
 -- 1-n children of `coupon`.`valid_days` (order preserved by `ord`)
 CREATE TABLE `coupon__valid_days` (
@@ -456,11 +450,11 @@ CREATE TABLE `coupon__valid_days` (
 
 CREATE TABLE `coupon_redemption` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `coupon` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `coupon` varchar(512) COLLATE utf8mb4_bin NULL,
   `customer` varchar(512) COLLATE utf8mb4_bin NULL,
-  `discount_amount` double NOT NULL,
-  `order` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `redeemed_at` datetime(3) NOT NULL,
+  `discount_amount` double NULL,
+  `order` varchar(512) COLLATE utf8mb4_bin NULL,
+  `redeemed_at` datetime(3) NULL,
   `user` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -469,7 +463,7 @@ CREATE TABLE `coupon_redemption` (
   KEY `coupon_redemption_customer_idx` (`customer`),
   KEY `coupon_redemption_order_idx` (`order`),
   KEY `coupon_redemption_user_idx` (`user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table coupon_redemption (0 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table coupon_redemption (1 rows at conversion)';
 
 CREATE TABLE `customer` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
@@ -477,7 +471,7 @@ CREATE TABLE `customer` (
   `email` text COLLATE utf8mb4_bin NULL,
   `lat` double NULL,
   `lng` double NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `number` bigint NULL,
   `phone` text COLLATE utf8mb4_bin NULL,
   `points` double NULL,
@@ -515,7 +509,7 @@ CREATE TABLE `customer_address` (
   `lat` double NULL,
   `lng` double NULL,
   `postal_code` bigint NULL,
-  `primary_address` text COLLATE utf8mb4_bin NOT NULL,
+  `primary_address` text COLLATE utf8mb4_bin NULL,
   `region` text COLLATE utf8mb4_bin NULL,
   `secondary_address` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -525,16 +519,16 @@ CREATE TABLE `customer_address` (
 
 CREATE TABLE `day_closing` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `cash_added` double NOT NULL,
+  `cash_added` double NULL,
   `cash_withdrawn` double NULL,
   `closed_at` datetime(3) NULL,
   `closed_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `closing_balance` double NULL,
-  `created_at` datetime(3) NOT NULL,
+  `created_at` datetime(3) NULL,
   `date_from` datetime(3) NULL,
   `date_to` datetime(3) NULL,
   `drawer_float` double NULL,
-  `expenses` double NOT NULL,
+  `expenses` double NULL,
   `net_amount` double NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `opened_by` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -551,7 +545,27 @@ CREATE TABLE `day_closing` (
   KEY `day_closing_dc_date_from` (`date_from`),
   KEY `day_closing_closed_by_idx` (`closed_by`),
   KEY `day_closing_opened_by_idx` (`opened_by`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table day_closing (0 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table day_closing (1 rows at conversion)';
+
+-- 1-n children of `day_closing`.`batch_totals` (order preserved by `ord`)
+CREATE TABLE `day_closing__batch_totals` (
+  `parent_id` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `ord` int NOT NULL,
+  `value_text` varchar(512) COLLATE utf8mb4_bin NULL,
+  PRIMARY KEY (`parent_id`, `ord`),
+  KEY `day_closing__batch_totals_parent_idx` (`parent_id`),
+  CONSTRAINT `day_closing__batch_totals_parent_fk` FOREIGN KEY (`parent_id`) REFERENCES `day_closing` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- 1-n children of `day_closing`.`expenses_data` (order preserved by `ord`)
+CREATE TABLE `day_closing__expenses_data` (
+  `parent_id` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `ord` int NOT NULL,
+  `value_text` varchar(512) COLLATE utf8mb4_bin NULL,
+  PRIMARY KEY (`parent_id`, `ord`),
+  KEY `day_closing__expenses_data_parent_idx` (`parent_id`),
+  CONSTRAINT `day_closing__expenses_data_parent_fk` FOREIGN KEY (`parent_id`) REFERENCES `day_closing` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- Nested / schemaless values of `day_closing` (path = dotted location, arrays use [index]).
 -- Stored as typed key/value rows so no column has to hold JSON.
@@ -571,13 +585,13 @@ CREATE TABLE `department` (
   `code` varchar(255) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
   `description` text COLLATE utf8mb4_bin NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   UNIQUE KEY `department_dept_code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table department (1 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table department (0 rows at conversion)';
 
 CREATE TABLE `discount` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
@@ -595,8 +609,8 @@ CREATE TABLE `discount` (
   `min_order_amount` double NULL,
   `min_rate` double NULL,
   `min_value` double NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `priority` bigint NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `priority` bigint NULL,
   `requires_approval` tinyint(1) NULL DEFAULT 0,
   `requires_reason` tinyint(1) NULL DEFAULT 0,
   `scope` text COLLATE utf8mb4_bin NULL,
@@ -606,15 +620,14 @@ CREATE TABLE `discount` (
   `stacking_mode` text COLLATE utf8mb4_bin NULL,
   `targets` text COLLATE utf8mb4_bin NULL,
   `tax_treatment` text COLLATE utf8mb4_bin NULL,
-  `type` text COLLATE utf8mb4_bin NOT NULL,
+  `type` text COLLATE utf8mb4_bin NULL,
   `value` double NULL,
   `value_type` text COLLATE utf8mb4_bin NULL,
-  `active` tinyint(1) NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `discount_d_active_priority` (`is_active`, `priority`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table discount (2 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table discount (1 rows at conversion)';
 
 -- 1-n children of `discount`.`applicable_floors` (order preserved by `ord`)
 CREATE TABLE `discount__applicable_floors` (
@@ -638,11 +651,11 @@ CREATE TABLE `discount__schedules` (
 
 CREATE TABLE `discount_reason` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `code` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `requires_approval` tinyint(1) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `requires_approval` tinyint(1) NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -652,7 +665,7 @@ CREATE TABLE `discount_reason` (
 CREATE TABLE `document` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `content` longblob NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `path` text COLLATE utf8mb4_bin NULL,
   `size` bigint NULL,
   `type` text COLLATE utf8mb4_bin NULL,
@@ -666,10 +679,10 @@ CREATE TABLE `employee` (
   `cost_center` varchar(512) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
   `department` varchar(512) COLLATE utf8mb4_bin NULL,
-  `employee_number` varchar(64) COLLATE utf8mb4_bin NOT NULL,
-  `employment_status` varchar(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'active',
-  `employment_type` text COLLATE utf8mb4_bin NOT NULL,
-  `first_name` text COLLATE utf8mb4_bin NOT NULL,
+  `employee_number` varchar(64) COLLATE utf8mb4_bin NULL,
+  `employment_status` varchar(64) COLLATE utf8mb4_bin NULL DEFAULT 'active',
+  `employment_type` text COLLATE utf8mb4_bin NULL,
+  `first_name` text COLLATE utf8mb4_bin NULL,
   `hire_date` datetime(3) NULL,
   `is_rehire` tinyint(1) NULL DEFAULT 0,
   `last_name` text COLLATE utf8mb4_bin NULL,
@@ -689,7 +702,7 @@ CREATE TABLE `employee` (
   KEY `employee_department_idx` (`department`),
   KEY `employee_manager_idx` (`manager`),
   KEY `employee_position_idx` (`position`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table employee (11 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table employee (4 rows at conversion)';
 
 -- Nested / schemaless values of `employee` (path = dotted location, arrays use [index]).
 -- Stored as typed key/value rows so no column has to hold JSON.
@@ -708,11 +721,11 @@ CREATE TABLE `employee_assignment_history` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `changed_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `cost_center` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `department` varchar(512) COLLATE utf8mb4_bin NULL,
-  `effective_from` datetime(3) NOT NULL,
+  `effective_from` datetime(3) NULL,
   `effective_to` datetime(3) NULL,
-  `employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `employee` varchar(512) COLLATE utf8mb4_bin NULL,
   `manager` varchar(512) COLLATE utf8mb4_bin NULL,
   `position` varchar(512) COLLATE utf8mb4_bin NULL,
   `reason` text COLLATE utf8mb4_bin NULL,
@@ -729,12 +742,12 @@ CREATE TABLE `employee_assignment_history` (
 
 CREATE TABLE `employee_document` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `category` text COLLATE utf8mb4_bin NOT NULL,
-  `document` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `category` text COLLATE utf8mb4_bin NULL,
+  `document` varchar(512) COLLATE utf8mb4_bin NULL,
+  `employee` varchar(512) COLLATE utf8mb4_bin NULL,
   `expires_at` datetime(3) NULL,
-  `title` text COLLATE utf8mb4_bin NOT NULL,
-  `uploaded_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `title` text COLLATE utf8mb4_bin NULL,
+  `uploaded_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `uploaded_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -746,13 +759,13 @@ CREATE TABLE `employee_document` (
 
 CREATE TABLE `employee_pay_profile` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `base_rate` double NOT NULL DEFAULT 0,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `base_rate` double NULL DEFAULT 0,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `currency` text COLLATE utf8mb4_bin NOT NULL,
-  `effective_from` datetime(3) NOT NULL,
+  `currency` text COLLATE utf8mb4_bin NULL,
+  `effective_from` datetime(3) NULL,
   `effective_to` datetime(3) NULL,
-  `employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `employee` varchar(512) COLLATE utf8mb4_bin NULL,
   `expected_work_days` double NULL,
   `holiday_policy` varchar(512) COLLATE utf8mb4_bin NULL,
   `maximum_hours_per_day` double NULL,
@@ -760,7 +773,7 @@ CREATE TABLE `employee_pay_profile` (
   `night_policy` varchar(512) COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `overtime_policy` varchar(512) COLLATE utf8mb4_bin NULL,
-  `pay_type` text COLLATE utf8mb4_bin NOT NULL,
+  `pay_type` text COLLATE utf8mb4_bin NULL,
   `weekend_policy` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -788,14 +801,14 @@ CREATE TABLE `employee_pay_profile__attrs` (
 
 CREATE TABLE `employee_performance_note` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `content` text COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `content` text COLLATE utf8mb4_bin NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `employee` varchar(512) COLLATE utf8mb4_bin NULL,
   `severity` text COLLATE utf8mb4_bin NULL,
-  `title` text COLLATE utf8mb4_bin NOT NULL,
-  `type` text COLLATE utf8mb4_bin NOT NULL,
-  `visible_to_employee` tinyint(1) NOT NULL DEFAULT 0,
+  `title` text COLLATE utf8mb4_bin NULL,
+  `type` text COLLATE utf8mb4_bin NULL,
+  `visible_to_employee` tinyint(1) NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -847,7 +860,7 @@ CREATE TABLE `extra__payment_types` (
 CREATE TABLE `extras` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `apply_to_all` tinyint(1) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -901,12 +914,12 @@ CREATE TABLE `floor` (
   `background` text COLLATE utf8mb4_bin NULL,
   `color` text COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `priority` bigint NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `priority` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table floor (2 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table floor (1 rows at conversion)';
 
 CREATE TABLE `floor_table` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
@@ -923,9 +936,9 @@ CREATE TABLE `floor_table` (
   `is_locked` tinyint(1) NULL,
   `locked_at` datetime(3) NULL,
   `locked_by` text COLLATE utf8mb4_bin NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `number` text COLLATE utf8mb4_bin NULL,
-  `priority` bigint NOT NULL,
+  `priority` bigint NULL,
   `rounded` text COLLATE utf8mb4_bin NULL,
   `width` double NULL,
   `x` double NULL,
@@ -934,7 +947,7 @@ CREATE TABLE `floor_table` (
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `floor_table_floor_idx` (`floor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table floor_table (3 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table floor_table (2 rows at conversion)';
 
 -- 1-n children of `floor_table`.`categories` (order preserved by `ord`)
 CREATE TABLE `floor_table__categories` (
@@ -968,12 +981,12 @@ CREATE TABLE `floor_table__payment_types` (
 
 CREATE TABLE `integration_entity_mapping` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `entity_type` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `external_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `local_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `provider_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `tenant_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `entity_type` varchar(255) COLLATE utf8mb4_bin NULL,
+  `external_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `local_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `provider_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `tenant_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `updated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -996,11 +1009,11 @@ CREATE TABLE `integration_entity_mapping__attrs` (
 
 CREATE TABLE `integration_execution_history` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `action` text COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `action` text COLLATE utf8mb4_bin NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `error` text COLLATE utf8mb4_bin NULL,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1021,9 +1034,9 @@ CREATE TABLE `integration_execution_history__attrs` (
 
 CREATE TABLE `integration_installed_provider` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `enabled` tinyint(1) NULL DEFAULT 1,
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `updated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1031,16 +1044,16 @@ CREATE TABLE `integration_installed_provider` (
 
 CREATE TABLE `integration_oauth_credential` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `access_token_enc` text COLLATE utf8mb4_bin NOT NULL,
+  `access_token_enc` text COLLATE utf8mb4_bin NULL,
   `company_name` text COLLATE utf8mb4_bin NULL,
   `expires_at` datetime(3) NULL,
-  `provider_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `provider_id` varchar(255) COLLATE utf8mb4_bin NULL,
   `refresh_token_enc` text COLLATE utf8mb4_bin NULL,
   `scopes` text COLLATE utf8mb4_bin NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
-  `tenant_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `token_type` text COLLATE utf8mb4_bin NOT NULL,
-  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `status` text COLLATE utf8mb4_bin NULL,
+  `tenant_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `token_type` text COLLATE utf8mb4_bin NULL,
+  `updated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -1049,12 +1062,12 @@ CREATE TABLE `integration_oauth_credential` (
 
 CREATE TABLE `integration_oauth_state` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `expires_at` datetime(3) NOT NULL,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `redirect_path` text COLLATE utf8mb4_bin NOT NULL,
-  `state` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `expires_at` datetime(3) NULL,
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `redirect_path` text COLLATE utf8mb4_bin NULL,
+  `state` varchar(255) COLLATE utf8mb4_bin NULL,
   `used_at` datetime(3) NULL,
-  `user_id` text COLLATE utf8mb4_bin NOT NULL,
+  `user_id` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -1063,16 +1076,16 @@ CREATE TABLE `integration_oauth_state` (
 
 CREATE TABLE `integration_order_fiscal` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `error` text COLLATE utf8mb4_bin NULL,
   `invoice_number` text COLLATE utf8mb4_bin NULL,
-  `order` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `provider_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `qr_priority` double NOT NULL DEFAULT 0,
+  `order` varchar(512) COLLATE utf8mb4_bin NULL,
+  `provider_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `qr_priority` double NULL DEFAULT 0,
   `qrcode` text COLLATE utf8mb4_bin NULL,
-  `selected_for_print` tinyint(1) NOT NULL DEFAULT 0,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
-  `submitted_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `selected_for_print` tinyint(1) NULL DEFAULT 0,
+  `status` text COLLATE utf8mb4_bin NULL,
+  `submitted_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -1095,9 +1108,9 @@ CREATE TABLE `integration_order_fiscal__attrs` (
 
 CREATE TABLE `integration_provider` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `enabled` tinyint(1) NULL DEFAULT 1,
+  `updated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1118,10 +1131,10 @@ CREATE TABLE `integration_provider__attrs` (
 
 CREATE TABLE `integration_provider_certificate` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `expires_at` datetime(3) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `provider_id` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1129,8 +1142,8 @@ CREATE TABLE `integration_provider_certificate` (
 
 CREATE TABLE `integration_provider_config` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `updated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1151,16 +1164,16 @@ CREATE TABLE `integration_provider_config__attrs` (
 
 CREATE TABLE `integration_provider_health` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `authentication_status` text COLLATE utf8mb4_bin NOT NULL,
+  `authentication_status` text COLLATE utf8mb4_bin NULL,
   `average_response_time_ms` double NULL,
   `certificate_expiry` datetime(3) NULL,
-  `failed_jobs` bigint NOT NULL DEFAULT 0,
+  `failed_jobs` bigint NULL DEFAULT 0,
   `last_synchronization` datetime(3) NULL,
-  `pending_jobs` bigint NOT NULL DEFAULT 0,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
-  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `version` text COLLATE utf8mb4_bin NOT NULL,
+  `pending_jobs` bigint NULL DEFAULT 0,
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
+  `updated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `version` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1188,9 +1201,9 @@ CREATE TABLE `integration_provider_secret` (
 
 CREATE TABLE `integration_provider_webhook` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `event_name` text COLLATE utf8mb4_bin NOT NULL,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `received_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `event_name` text COLLATE utf8mb4_bin NULL,
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `received_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1211,16 +1224,16 @@ CREATE TABLE `integration_provider_webhook__attrs` (
 
 CREATE TABLE `integration_queue` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `action` text COLLATE utf8mb4_bin NOT NULL,
-  `attempts` bigint NOT NULL DEFAULT 0,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `action` text COLLATE utf8mb4_bin NULL,
+  `attempts` bigint NULL DEFAULT 0,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `dedupe_key` text COLLATE utf8mb4_bin NULL,
-  `max_retries` bigint NOT NULL DEFAULT 5,
+  `max_retries` bigint NULL DEFAULT 5,
   `next_run_at` datetime(3) NULL,
   `partition_key` text COLLATE utf8mb4_bin NULL,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
-  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
+  `updated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1241,12 +1254,12 @@ CREATE TABLE `integration_queue__attrs` (
 
 CREATE TABLE `integration_queue_attempt` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `attempts` bigint NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `attempts` bigint NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `error` text COLLATE utf8mb4_bin NULL,
-  `job_id` text COLLATE utf8mb4_bin NOT NULL,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `job_id` text COLLATE utf8mb4_bin NULL,
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1254,12 +1267,12 @@ CREATE TABLE `integration_queue_attempt` (
 
 CREATE TABLE `integration_schedule` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `interval_ms` bigint NOT NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `enabled` tinyint(1) NULL DEFAULT 1,
+  `interval_ms` bigint NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `next_run_at` datetime(3) NULL,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `updated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1267,16 +1280,16 @@ CREATE TABLE `integration_schedule` (
 
 CREATE TABLE `integration_sync_failure` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `action` text COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `entity_type` text COLLATE utf8mb4_bin NOT NULL,
-  `error` text COLLATE utf8mb4_bin NOT NULL,
-  `error_category` text COLLATE utf8mb4_bin NOT NULL,
-  `local_id` text COLLATE utf8mb4_bin NOT NULL,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `retriable` tinyint(1) NOT NULL DEFAULT 1,
-  `retry_count` bigint NOT NULL DEFAULT 0,
-  `tenant_id` text COLLATE utf8mb4_bin NOT NULL,
+  `action` text COLLATE utf8mb4_bin NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `entity_type` text COLLATE utf8mb4_bin NULL,
+  `error` text COLLATE utf8mb4_bin NULL,
+  `error_category` text COLLATE utf8mb4_bin NULL,
+  `local_id` text COLLATE utf8mb4_bin NULL,
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `retriable` tinyint(1) NULL DEFAULT 1,
+  `retry_count` bigint NULL DEFAULT 0,
+  `tenant_id` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1287,12 +1300,12 @@ CREATE TABLE `integration_sync_run` (
   `cursor` text COLLATE utf8mb4_bin NULL,
   `error` text COLLATE utf8mb4_bin NULL,
   `finished_at` datetime(3) NULL,
-  `mode` text COLLATE utf8mb4_bin NOT NULL,
+  `mode` text COLLATE utf8mb4_bin NULL,
   `progress` text COLLATE utf8mb4_bin NULL,
-  `provider_id` text COLLATE utf8mb4_bin NOT NULL,
-  `started_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `status` text COLLATE utf8mb4_bin NOT NULL,
-  `tenant_id` text COLLATE utf8mb4_bin NOT NULL,
+  `provider_id` text COLLATE utf8mb4_bin NULL,
+  `started_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `status` text COLLATE utf8mb4_bin NULL,
+  `tenant_id` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -1304,15 +1317,15 @@ CREATE TABLE `inventory_adjustment` (
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `cancelled_at` datetime(3) NULL,
   `cancelled_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `invoice_number` bigint NOT NULL,
+  `invoice_number` bigint NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `posted_at` datetime(3) NULL,
   `posted_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `reason` text COLLATE utf8mb4_bin NOT NULL,
-  `status` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT 'draft',
+  `reason` text COLLATE utf8mb4_bin NULL,
+  `status` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'draft',
   `store` varchar(512) COLLATE utf8mb4_bin NULL,
   `voided_at` datetime(3) NULL,
   `voided_by` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -1345,9 +1358,9 @@ CREATE TABLE `inventory_adjustment_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `adjustment` varchar(512) COLLATE utf8mb4_bin NULL,
   `comments` text COLLATE utf8mb4_bin NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity_change` double NOT NULL,
+  `quantity_change` double NULL,
   `entered_price` double NULL,
   `entered_quantity` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
@@ -1365,7 +1378,7 @@ CREATE TABLE `inventory_adjustment_item` (
 
 CREATE TABLE `inventory_category` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `priority` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -1378,7 +1391,7 @@ CREATE TABLE `inventory_issue` (
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `cancelled_at` datetime(3) NULL,
   `cancelled_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL,
+  `created_at` datetime(3) NULL,
   `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `invoice_number` bigint NULL,
   `issued_to` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -1388,14 +1401,11 @@ CREATE TABLE `inventory_issue` (
   `posted_at` datetime(3) NULL,
   `posted_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `revision` bigint NULL DEFAULT 1,
-  `status` varchar(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'posted',
+  `status` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'posted',
   `store` varchar(512) COLLATE utf8mb4_bin NULL,
   `superseded_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `voided_at` datetime(3) NULL,
   `voided_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `total` bigint NULL,
-  `reference` text COLLATE utf8mb4_bin NULL,
-  `destination` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -1414,7 +1424,7 @@ CREATE TABLE `inventory_issue` (
   KEY `inventory_issue_store_idx` (`store`),
   KEY `inventory_issue_superseded_by_idx` (`superseded_by`),
   KEY `inventory_issue_voided_by_idx` (`voided_by`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_issue (1 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_issue (0 rows at conversion)';
 
 -- 1-n children of `inventory_issue`.`documents` (order preserved by `ord`)
 CREATE TABLE `inventory_issue__documents` (
@@ -1441,7 +1451,7 @@ CREATE TABLE `inventory_issue_item` (
   `code` text COLLATE utf8mb4_bin NULL,
   `comments` text COLLATE utf8mb4_bin NULL,
   `issue` varchar(512) COLLATE utf8mb4_bin NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `price` double NULL,
   `quantity` double NULL,
@@ -1465,16 +1475,16 @@ CREATE TABLE `inventory_issue_return` (
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `cancelled_at` datetime(3) NULL,
   `cancelled_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL,
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `invoice_number` bigint NOT NULL,
+  `created_at` datetime(3) NULL,
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `invoice_number` bigint NULL,
   `issuance` varchar(512) COLLATE utf8mb4_bin NULL,
   `issued_to` varchar(512) COLLATE utf8mb4_bin NULL,
   `kitchen` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `posted_at` datetime(3) NULL,
   `posted_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `status` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT 'posted',
+  `status` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'posted',
   `store` varchar(512) COLLATE utf8mb4_bin NULL,
   `voided_at` datetime(3) NULL,
   `voided_by` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -1524,10 +1534,10 @@ CREATE TABLE `inventory_issue_return_item` (
   `issue_return` varchar(512) COLLATE utf8mb4_bin NULL,
   `issued` double NULL,
   `issued_item` varchar(512) COLLATE utf8mb4_bin NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `price` double NULL,
-  `quantity` double NOT NULL,
+  `quantity` double NULL,
   `entered_price` double NULL,
   `entered_quantity` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
@@ -1549,20 +1559,15 @@ CREATE TABLE `inventory_item` (
   `base_quantity` double NULL,
   `category` varchar(512) COLLATE utf8mb4_bin NULL,
   `code` text COLLATE utf8mb4_bin NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `price` double NULL,
   `taxable` tinyint(1) NULL,
   `uom` text COLLATE utf8mb4_bin NULL,
-  `sku` text COLLATE utf8mb4_bin NULL,
-  `cost` bigint NULL,
-  `location` text COLLATE utf8mb4_bin NULL,
-  `supplier` text COLLATE utf8mb4_bin NULL,
-  `is_active` tinyint(1) NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `inventory_item_category_idx` (`category`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_item (2 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_item (1 rows at conversion)';
 
 -- 1-n children of `inventory_item`.`item_types` (order preserved by `ord`)
 CREATE TABLE `inventory_item__item_types` (
@@ -1619,8 +1624,8 @@ CREATE TABLE `inventory_item__attrs` (
 
 CREATE TABLE `inventory_item_group` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `base_quantity` double NOT NULL,
-  `main_item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `base_quantity` double NULL,
+  `main_item` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -1639,8 +1644,8 @@ CREATE TABLE `inventory_item_group__sub_items` (
 
 CREATE TABLE `inventory_item_group_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `quantity` double NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `quantity` double NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -1653,14 +1658,14 @@ CREATE TABLE `inventory_item_waste` (
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `cancelled_at` datetime(3) NULL,
   `cancelled_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL,
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `invoice_number` bigint NOT NULL,
+  `created_at` datetime(3) NULL,
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `invoice_number` bigint NULL,
   `issue` varchar(512) COLLATE utf8mb4_bin NULL,
   `posted_at` datetime(3) NULL,
   `posted_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `purchase` varchar(512) COLLATE utf8mb4_bin NULL,
-  `status` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT 'posted',
+  `status` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'posted',
   `voided_at` datetime(3) NULL,
   `voided_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -1703,11 +1708,11 @@ CREATE TABLE `inventory_item_waste_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `comments` text COLLATE utf8mb4_bin NULL,
   `issue_item` varchar(512) COLLATE utf8mb4_bin NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `price` double NULL,
   `purchase_item` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
+  `quantity` double NULL,
   `entered_price` double NULL,
   `entered_quantity` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
@@ -1738,19 +1743,19 @@ CREATE TABLE `inventory_item_waste_item__documents` (
 CREATE TABLE `inventory_ledger` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `batch_code` text COLLATE utf8mb4_bin NULL,
-  `business_date` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `business_date` varchar(255) COLLATE utf8mb4_bin NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `expiry_date` text COLLATE utf8mb4_bin NULL,
-  `inventory_item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `inventory_location` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `ledger_key` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `inventory_item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `inventory_location` varchar(512) COLLATE utf8mb4_bin NULL,
+  `ledger_key` varchar(255) COLLATE utf8mb4_bin NULL,
   `manufacturing_date` text COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
-  `quantity_change` double NOT NULL,
-  `reference_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `quantity_change` double NULL,
+  `reference_id` varchar(255) COLLATE utf8mb4_bin NULL,
   `reference_item` text COLLATE utf8mb4_bin NULL,
-  `reference_type` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `reference_type` varchar(255) COLLATE utf8mb4_bin NULL,
   `reversal_of` varchar(512) COLLATE utf8mb4_bin NULL,
   `total_cost` double NULL,
   `unit_cost` double NULL,
@@ -1769,17 +1774,17 @@ CREATE TABLE `inventory_ledger` (
 CREATE TABLE `inventory_location` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `is_active` tinyint(1) NULL DEFAULT 1,
   `linked_kitchen` varchar(512) COLLATE utf8mb4_bin NULL,
   `linked_store` varchar(512) COLLATE utf8mb4_bin NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `type` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `inventory_location_inventory_location_kitchen` (`linked_kitchen`),
   KEY `inventory_location_inventory_location_store` (`linked_store`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_location (2 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_location (1 rows at conversion)';
 
 CREATE TABLE `inventory_purchase` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
@@ -1788,7 +1793,7 @@ CREATE TABLE `inventory_purchase` (
   `cancelled_at` datetime(3) NULL,
   `cancelled_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `comments` text COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL,
+  `created_at` datetime(3) NULL,
   `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `invoice_number` bigint NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -1799,7 +1804,7 @@ CREATE TABLE `inventory_purchase` (
   `posted_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `purchase_order` varchar(512) COLLATE utf8mb4_bin NULL,
   `revision` bigint NULL DEFAULT 1,
-  `status` varchar(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'posted',
+  `status` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'posted',
   `store` varchar(512) COLLATE utf8mb4_bin NULL,
   `superseded_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `supplier` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -1807,8 +1812,6 @@ CREATE TABLE `inventory_purchase` (
   `tax_rate` double NULL,
   `voided_at` datetime(3) NULL,
   `voided_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `total` bigint NULL,
-  `reference` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -1828,7 +1831,7 @@ CREATE TABLE `inventory_purchase` (
   KEY `inventory_purchase_store_idx` (`store`),
   KEY `inventory_purchase_superseded_by_idx` (`superseded_by`),
   KEY `inventory_purchase_voided_by_idx` (`voided_by`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_purchase (1 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_purchase (0 rows at conversion)';
 
 -- 1-n children of `inventory_purchase`.`documents` (order preserved by `ord`)
 CREATE TABLE `inventory_purchase__documents` (
@@ -1868,19 +1871,19 @@ CREATE TABLE `inventory_purchase_item` (
   `allocated_discount` double NULL,
   `allocated_extra_cost` double NULL,
   `allocated_tax` double NULL,
-  `base_quantity` double NOT NULL,
+  `base_quantity` double NULL,
   `code` text COLLATE utf8mb4_bin NULL,
   `comments` text COLLATE utf8mb4_bin NULL,
   `expiry_date` datetime(3) NULL,
   `final_unit_cost` double NULL,
   `is_done` tinyint(1) NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `manufacturing_date` datetime(3) NULL,
-  `price` double NOT NULL,
+  `price` double NULL,
   `purchase` varchar(512) COLLATE utf8mb4_bin NULL,
   `purchase_price` double NULL,
-  `quantity` double NOT NULL,
+  `quantity` double NULL,
   `entered_price` double NULL,
   `entered_quantity` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
@@ -1903,13 +1906,13 @@ CREATE TABLE `inventory_purchase_order` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `approved_at` datetime(3) NULL,
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL,
+  `created_at` datetime(3) NULL,
   `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
-  `po_number` bigint NOT NULL,
+  `po_number` bigint NULL,
   `rejected_at` datetime(3) NULL,
   `rejected_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `status` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `status` varchar(255) COLLATE utf8mb4_bin NULL,
   `store` varchar(512) COLLATE utf8mb4_bin NULL,
   `submitted_at` datetime(3) NULL,
   `submitted_by` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -1952,10 +1955,10 @@ CREATE TABLE `inventory_purchase_order__items` (
 
 CREATE TABLE `inventory_purchase_order_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `price` double NULL,
   `purchase_order` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
+  `quantity` double NULL,
   `entered_price` double NULL,
   `entered_quantity` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
@@ -1970,11 +1973,11 @@ CREATE TABLE `inventory_purchase_order_item` (
 
 CREATE TABLE `inventory_purchase_payment` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `amount` double NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `payment_type` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `amount` double NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `payment_type` varchar(512) COLLATE utf8mb4_bin NULL,
   `purchase` varchar(512) COLLATE utf8mb4_bin NULL,
-  `supplier` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `supplier` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -1989,14 +1992,14 @@ CREATE TABLE `inventory_purchase_return` (
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `cancelled_at` datetime(3) NULL,
   `cancelled_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL,
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `invoice_number` bigint NOT NULL,
+  `created_at` datetime(3) NULL,
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `invoice_number` bigint NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `posted_at` datetime(3) NULL,
   `posted_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `purchase` varchar(512) COLLATE utf8mb4_bin NULL,
-  `status` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT 'posted',
+  `status` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'posted',
   `store` varchar(512) COLLATE utf8mb4_bin NULL,
   `voided_at` datetime(3) NULL,
   `voided_by` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -2040,13 +2043,13 @@ CREATE TABLE `inventory_purchase_return__items` (
 CREATE TABLE `inventory_purchase_return_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `comments` text COLLATE utf8mb4_bin NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `price` double NULL,
   `purchase_item` varchar(512) COLLATE utf8mb4_bin NULL,
   `purchase_return` varchar(512) COLLATE utf8mb4_bin NULL,
   `purchased` double NULL,
-  `quantity` double NOT NULL,
+  `quantity` double NULL,
   `entered_price` double NULL,
   `entered_quantity` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
@@ -2065,7 +2068,7 @@ CREATE TABLE `inventory_purchase_return_item` (
 
 CREATE TABLE `inventory_store` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -2075,13 +2078,12 @@ CREATE TABLE `inventory_supplier` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `address` text COLLATE utf8mb4_bin NULL,
   `email` text COLLATE utf8mb4_bin NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `phone` text COLLATE utf8mb4_bin NULL,
-  `is_active` tinyint(1) NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_supplier (1 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table inventory_supplier (0 rows at conversion)';
 
 -- 1-n children of `inventory_supplier`.`payments` (order preserved by `ord`)
 CREATE TABLE `inventory_supplier__payments` (
@@ -2105,13 +2107,13 @@ CREATE TABLE `inventory_supplier__purchases` (
 
 CREATE TABLE `inventory_uom` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `code` varchar(64) COLLATE utf8mb4_bin NOT NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `family` varchar(64) COLLATE utf8mb4_bin NOT NULL,
-  `base_factor` double NOT NULL,
-  `is_system` tinyint(1) NOT NULL DEFAULT 0,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `sort` bigint NOT NULL DEFAULT 0,
+  `code` varchar(64) COLLATE utf8mb4_bin NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `family` varchar(64) COLLATE utf8mb4_bin NULL,
+  `base_factor` double NULL,
+  `is_system` tinyint(1) NULL DEFAULT 0,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `sort` bigint NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2123,12 +2125,12 @@ CREATE TABLE `inventory_uom` (
 CREATE TABLE `kitchen` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `deleted_at` datetime(3) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `priority` bigint NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `priority` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table kitchen (2 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table kitchen (1 rows at conversion)';
 
 -- 1-n children of `kitchen`.`items` (order preserved by `ord`)
 CREATE TABLE `kitchen__items` (
@@ -2152,13 +2154,13 @@ CREATE TABLE `kitchen__printers` (
 
 CREATE TABLE `kitchen_complimentary_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `ledger_waste_item` varchar(512) COLLATE utf8mb4_bin NULL,
   `order_item` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
-  `reconciliation` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `quantity` double NULL,
+  `reconciliation` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2171,17 +2173,17 @@ CREATE TABLE `kitchen_complimentary_item` (
 
 CREATE TABLE `kitchen_reconciliation` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `business_date` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `date_from` datetime(3) NOT NULL,
-  `date_to` datetime(3) NOT NULL,
+  `business_date` varchar(255) COLLATE utf8mb4_bin NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `date_from` datetime(3) NULL,
+  `date_to` datetime(3) NULL,
   `kitchen` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `parent` varchar(512) COLLATE utf8mb4_bin NULL,
-  `revision` bigint NOT NULL DEFAULT 1,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `revision` bigint NULL DEFAULT 1,
+  `status` text COLLATE utf8mb4_bin NULL,
   `superseded_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `verified_at` datetime(3) NULL,
   `verified_by` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -2198,26 +2200,26 @@ CREATE TABLE `kitchen_reconciliation` (
 
 CREATE TABLE `kitchen_reconciliation_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `actual_consumption` double NOT NULL DEFAULT 0,
-  `complimentary_qty` double NOT NULL DEFAULT 0,
-  `expected_stock` double NOT NULL DEFAULT 0,
-  `issued_qty` double NOT NULL DEFAULT 0,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `opening_stock` double NOT NULL DEFAULT 0,
+  `actual_consumption` double NULL DEFAULT 0,
+  `complimentary_qty` double NULL DEFAULT 0,
+  `expected_stock` double NULL DEFAULT 0,
+  `issued_qty` double NULL DEFAULT 0,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `opening_stock` double NULL DEFAULT 0,
   `physical_count` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
   `entered_physical_count` double NULL,
   `entered_waste_qty` double NULL,
   `entered_staff_meal_qty` double NULL,
   `entered_complimentary_qty` double NULL,
-  `posted_to_ledger` tinyint(1) NOT NULL DEFAULT 0,
-  `reconciliation` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `staff_meal_qty` double NOT NULL DEFAULT 0,
-  `theoretical_consumption` double NOT NULL DEFAULT 0,
-  `transfers_in` double NOT NULL DEFAULT 0,
-  `transfers_out` double NOT NULL DEFAULT 0,
-  `variance` double NOT NULL DEFAULT 0,
-  `waste_qty` double NOT NULL DEFAULT 0,
+  `posted_to_ledger` tinyint(1) NULL DEFAULT 0,
+  `reconciliation` varchar(512) COLLATE utf8mb4_bin NULL,
+  `staff_meal_qty` double NULL DEFAULT 0,
+  `theoretical_consumption` double NULL DEFAULT 0,
+  `transfers_in` double NULL DEFAULT 0,
+  `transfers_out` double NULL DEFAULT 0,
+  `variance` double NULL DEFAULT 0,
+  `waste_qty` double NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2227,11 +2229,11 @@ CREATE TABLE `kitchen_reconciliation_item` (
 
 CREATE TABLE `kitchen_reconciliation_revision` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `change_type` text COLLATE utf8mb4_bin NOT NULL,
-  `changed_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `changed_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `reconciliation` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `revision_number` bigint NOT NULL,
+  `change_type` text COLLATE utf8mb4_bin NULL,
+  `changed_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `changed_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `reconciliation` varchar(512) COLLATE utf8mb4_bin NULL,
+  `revision_number` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2254,14 +2256,14 @@ CREATE TABLE `kitchen_reconciliation_revision__attrs` (
 
 CREATE TABLE `kitchen_staff_meal` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `dish` varchar(512) COLLATE utf8mb4_bin NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `ledger_waste_item` varchar(512) COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
-  `reconciliation` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `quantity` double NULL,
+  `reconciliation` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2274,11 +2276,11 @@ CREATE TABLE `kitchen_staff_meal` (
 
 CREATE TABLE `kitchen_stock_count` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `counted_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `counted_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `quantity` double NOT NULL,
-  `reconciliation` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `counted_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `counted_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `quantity` double NULL,
+  `reconciliation` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2289,13 +2291,13 @@ CREATE TABLE `kitchen_stock_count` (
 
 CREATE TABLE `kitchen_waste` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `ledger_waste_item` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
+  `quantity` double NULL,
   `reason` text COLLATE utf8mb4_bin NULL,
-  `reconciliation` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `reconciliation` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2307,17 +2309,17 @@ CREATE TABLE `kitchen_waste` (
 
 CREATE TABLE `labor_adjustment` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `amount` double NOT NULL,
+  `amount` double NULL,
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `currency` text COLLATE utf8mb4_bin NOT NULL,
+  `currency` text COLLATE utf8mb4_bin NULL,
   `description` text COLLATE utf8mb4_bin NULL,
-  `effective_date` datetime(3) NOT NULL,
-  `employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `effective_date` datetime(3) NULL,
+  `employee` varchar(512) COLLATE utf8mb4_bin NULL,
   `payroll_period` varchar(512) COLLATE utf8mb4_bin NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
-  `type` text COLLATE utf8mb4_bin NOT NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
+  `type` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2329,11 +2331,11 @@ CREATE TABLE `labor_adjustment` (
 
 CREATE TABLE `labor_audit_log` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `action` text COLLATE utf8mb4_bin NOT NULL,
-  `changed_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `action` text COLLATE utf8mb4_bin NULL,
+  `changed_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `changed_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `entity_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `entity_type` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `entity_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `entity_type` varchar(255) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2357,8 +2359,8 @@ CREATE TABLE `labor_audit_log__attrs` (
 CREATE TABLE `labor_cost_event` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `consumed_at` datetime(3) NULL,
-  `emitted_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `event_type` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `emitted_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `event_type` varchar(255) COLLATE utf8mb4_bin NULL,
   `payroll_run` varchar(512) COLLATE utf8mb4_bin NULL,
   `period_end` datetime(3) NULL,
   `period_start` datetime(3) NULL,
@@ -2384,13 +2386,13 @@ CREATE TABLE `labor_cost_event__attrs` (
 
 CREATE TABLE `labor_pay_rule` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `code` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `exclusive` tinyint(1) NOT NULL DEFAULT 0,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `priority` bigint NOT NULL DEFAULT 100,
-  `stacking_mode` text COLLATE utf8mb4_bin NOT NULL,
+  `exclusive` tinyint(1) NULL DEFAULT 0,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `priority` bigint NULL DEFAULT 100,
+  `stacking_mode` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2413,11 +2415,11 @@ CREATE TABLE `labor_pay_rule__attrs` (
 
 CREATE TABLE `labor_policy` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `code` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `policy_type` text COLLATE utf8mb4_bin NOT NULL,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `policy_type` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2439,13 +2441,13 @@ CREATE TABLE `labor_policy__attrs` (
 
 CREATE TABLE `leave_balance` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `accrued` double NOT NULL DEFAULT 0,
-  `carried_over` double NOT NULL DEFAULT 0,
-  `employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `leave_type` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `pending` double NOT NULL DEFAULT 0,
-  `used` double NOT NULL DEFAULT 0,
-  `year` bigint NOT NULL,
+  `accrued` double NULL DEFAULT 0,
+  `carried_over` double NULL DEFAULT 0,
+  `employee` varchar(512) COLLATE utf8mb4_bin NULL,
+  `leave_type` varchar(512) COLLATE utf8mb4_bin NULL,
+  `pending` double NULL DEFAULT 0,
+  `used` double NULL DEFAULT 0,
+  `year` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2458,15 +2460,15 @@ CREATE TABLE `leave_request` (
   `approved_at` datetime(3) NULL,
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `auth_permission` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `days` double NOT NULL,
-  `employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `end_date` datetime(3) NOT NULL,
-  `leave_type` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `days` double NULL,
+  `employee` varchar(512) COLLATE utf8mb4_bin NULL,
+  `end_date` datetime(3) NULL,
+  `leave_type` varchar(512) COLLATE utf8mb4_bin NULL,
   `reason` text COLLATE utf8mb4_bin NULL,
-  `start_date` datetime(3) NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `start_date` datetime(3) NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2480,13 +2482,13 @@ CREATE TABLE `leave_request` (
 CREATE TABLE `leave_type` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `accrual_rate` double NULL,
-  `code` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `is_active` tinyint(1) NULL DEFAULT 1,
   `max_days_per_year` double NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `paid` tinyint(1) NOT NULL DEFAULT 1,
-  `requires_approval` tinyint(1) NOT NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `paid` tinyint(1) NULL DEFAULT 1,
+  `requires_approval` tinyint(1) NULL DEFAULT 1,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2500,7 +2502,7 @@ CREATE TABLE `menu` (
   `deleted_at` datetime(3) NULL,
   `end_time` datetime(3) NULL,
   `ends_on_next_day` tinyint(1) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `start_from` datetime(3) NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -2528,11 +2530,11 @@ CREATE TABLE `menu_item` (
   `discount` double NULL,
   `discount_type` text COLLATE utf8mb4_bin NULL,
   `dish_photo` varchar(512) COLLATE utf8mb4_bin NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `number` varchar(64) COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `number` varchar(64) COLLATE utf8mb4_bin NULL,
   `photo` longblob NULL,
   `position` bigint NULL,
-  `price` double NOT NULL,
+  `price` double NULL,
   `priority` bigint NULL,
   `tax` varchar(512) COLLATE utf8mb4_bin NULL,
   `workflow` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -2543,7 +2545,7 @@ CREATE TABLE `menu_item` (
   KEY `menu_item_dish_photo_idx` (`dish_photo`),
   KEY `menu_item_tax_idx` (`tax`),
   KEY `menu_item_workflow_idx` (`workflow`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table menu_item (4 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table menu_item (3 rows at conversion)';
 
 -- 1-n children of `menu_item`.`categories` (order preserved by `ord`)
 CREATE TABLE `menu_item__categories` (
@@ -2581,8 +2583,8 @@ CREATE TABLE `menu_item__attrs` (
 CREATE TABLE `menu_item_modifier_group` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `has_required_modifiers` tinyint(1) NULL,
-  `in` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `out` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `in` varchar(512) COLLATE utf8mb4_bin NULL,
+  `out` varchar(512) COLLATE utf8mb4_bin NULL,
   `priority` bigint NULL DEFAULT 0,
   `required_modifiers` bigint NULL,
   `should_auto_open` tinyint(1) NULL,
@@ -2596,11 +2598,11 @@ CREATE TABLE `menu_item_modifier_group` (
 
 CREATE TABLE `menu_item_recipe` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `cost` double NOT NULL,
+  `cost` double NULL,
   `is_price_locked` tinyint(1) NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `menu_item` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
+  `quantity` double NULL,
   `entered_price` double NULL,
   `entered_quantity` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
@@ -2615,10 +2617,10 @@ CREATE TABLE `menu_menu_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `active` tinyint(1) NULL,
   `base_price` double NULL,
-  `menu_item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `menu_item` varchar(512) COLLATE utf8mb4_bin NULL,
   `price` double NULL,
   `tax` varchar(512) COLLATE utf8mb4_bin NULL,
-  `tax_mode` text COLLATE utf8mb4_bin NOT NULL,
+  `tax_mode` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2651,9 +2653,9 @@ CREATE TABLE `menu_menu_item__attrs` (
 
 CREATE TABLE `menu_menu_item_tax` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `menu_menu_item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `priority` bigint NOT NULL DEFAULT 0,
-  `tax` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `menu_menu_item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `priority` bigint NULL DEFAULT 0,
+  `tax` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2663,8 +2665,8 @@ CREATE TABLE `menu_menu_item_tax` (
 
 CREATE TABLE `modifier` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `modifier` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `price` double NOT NULL,
+  `modifier` varchar(512) COLLATE utf8mb4_bin NULL,
+  `price` double NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2697,12 +2699,12 @@ CREATE TABLE `modifier_group` (
   `branch_id` text COLLATE utf8mb4_bin NULL,
   `color` text COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `priority` bigint NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `priority` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table modifier_group (2 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table modifier_group (1 rows at conversion)';
 
 -- 1-n children of `modifier_group`.`modifiers` (order preserved by `ord`)
 CREATE TABLE `modifier_group__modifiers` (
@@ -2729,9 +2731,10 @@ CREATE TABLE `order` (
   `completed_at` datetime(3) NULL,
   `coupon` varchar(512) COLLATE utf8mb4_bin NULL,
   `covers` bigint NULL,
-  `created_at` datetime(3) NOT NULL,
+  `created_at` datetime(3) NULL,
   `customer` varchar(512) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
+  `discount` varchar(512) COLLATE utf8mb4_bin NULL,
   `discount_amount` double NULL,
   `discount_manager` varchar(512) COLLATE utf8mb4_bin NULL,
   `discount_rate` double NULL,
@@ -2748,19 +2751,12 @@ CREATE TABLE `order` (
   `service_charge_amount` double NULL,
   `service_charge_type` text COLLATE utf8mb4_bin NULL,
   `split` bigint NULL,
-  `status` varchar(64) COLLATE utf8mb4_bin NOT NULL,
+  `status` varchar(64) COLLATE utf8mb4_bin NULL,
   `table` varchar(512) COLLATE utf8mb4_bin NULL,
+  `tax` varchar(512) COLLATE utf8mb4_bin NULL,
   `tax_amount` double NULL,
   `updated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `user` varchar(512) COLLATE utf8mb4_bin NULL,
-  `net` bigint NULL,
-  `paid` bigint NULL,
-  `total` bigint NULL,
-  `change` bigint NULL,
-  `number` text COLLATE utf8mb4_bin NULL,
-  `persons` bigint NULL,
-  `closed_at` datetime(3) NULL,
-  `sub_total` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2774,8 +2770,10 @@ CREATE TABLE `order` (
   KEY `order_order_user` (`user`),
   KEY `order_cashier_idx` (`cashier`),
   KEY `order_coupon_idx` (`coupon`),
-  KEY `order_discount_manager_idx` (`discount_manager`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order (3 rows at conversion)';
+  KEY `order_discount_idx` (`discount`),
+  KEY `order_discount_manager_idx` (`discount_manager`),
+  KEY `order_tax_idx` (`tax`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order (6 rows at conversion)';
 
 -- 1-n children of `order`.`extras` (order preserved by `ord`)
 CREATE TABLE `order__extras` (
@@ -2837,29 +2835,16 @@ CREATE TABLE `order__tags` (
   CONSTRAINT `order__tags_parent_fk` FOREIGN KEY (`parent_id`) REFERENCES `order` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
--- Nested / schemaless values of `order` (path = dotted location, arrays use [index]).
--- Stored as typed key/value rows so no column has to hold JSON.
-CREATE TABLE `order__attrs` (
-  `parent_id` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `path` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `kind` varchar(16) COLLATE utf8mb4_bin NOT NULL,
-  `value_text` longtext COLLATE utf8mb4_bin NULL,
-  `value_number` double NULL,
-  `value_bool` tinyint(1) NULL,
-  PRIMARY KEY (`parent_id`, `path`),
-  CONSTRAINT `order__attrs_parent_fk` FOREIGN KEY (`parent_id`) REFERENCES `order` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
-
 CREATE TABLE `order_coupon` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `coupon` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `discount` double NOT NULL,
+  `coupon` varchar(512) COLLATE utf8mb4_bin NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `discount` double NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `order_coupon_coupon_idx` (`coupon`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_coupon (0 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_coupon (1 rows at conversion)';
 
 CREATE TABLE `order_discount` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
@@ -2871,9 +2856,9 @@ CREATE TABLE `order_discount` (
   `auth_method` text COLLATE utf8mb4_bin NULL,
   `base_amount` double NULL DEFAULT 0,
   `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `discount` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `order` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `discount` varchar(512) COLLATE utf8mb4_bin NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `order` varchar(512) COLLATE utf8mb4_bin NULL,
   `reason` varchar(512) COLLATE utf8mb4_bin NULL,
   `reason_text` text COLLATE utf8mb4_bin NULL,
   `removed_at` datetime(3) NULL,
@@ -2881,7 +2866,6 @@ CREATE TABLE `order_discount` (
   `scope` text COLLATE utf8mb4_bin NULL,
   `tax_treatment` text COLLATE utf8mb4_bin NULL,
   `value_type` text COLLATE utf8mb4_bin NULL,
-  `amount` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2892,7 +2876,7 @@ CREATE TABLE `order_discount` (
   KEY `order_discount_discount_idx` (`discount`),
   KEY `order_discount_reason_idx` (`reason`),
   KEY `order_discount_removed_by_idx` (`removed_by`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_discount (1 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_discount (0 rows at conversion)';
 
 -- 1-n children of `order_discount`.`order_items` (order preserved by `ord`)
 CREATE TABLE `order_discount__order_items` (
@@ -2919,13 +2903,13 @@ CREATE TABLE `order_discount__attrs` (
 
 CREATE TABLE `order_extras` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `value` double NOT NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `name` text COLLATE utf8mb4_bin NULL,
+  `value` double NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_extras (0 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_extras (4 rows at conversion)';
 
 CREATE TABLE `order_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
@@ -2947,8 +2931,8 @@ CREATE TABLE `order_item` (
   `order` varchar(512) COLLATE utf8mb4_bin NULL,
   `original_price` double NULL,
   `position` bigint NULL,
-  `price` double NOT NULL,
-  `quantity` double NOT NULL,
+  `price` double NULL,
+  `quantity` double NULL,
   `seat` text COLLATE utf8mb4_bin NULL,
   `service_charges` double NULL,
   `tax` double NULL,
@@ -2956,10 +2940,6 @@ CREATE TABLE `order_item` (
   `updated_at` datetime(3) NULL,
   `workflow` varchar(512) COLLATE utf8mb4_bin NULL,
   `workflow_status` text COLLATE utf8mb4_bin NULL,
-  `name` text COLLATE utf8mb4_bin NULL,
-  `total` bigint NULL,
-  `status` text COLLATE utf8mb4_bin NULL,
-  `menu_item` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -2967,9 +2947,8 @@ CREATE TABLE `order_item` (
   KEY `order_item_category_id_idx` (`category_id`),
   KEY `order_item_created_by_idx` (`created_by`),
   KEY `order_item_item_idx` (`item`),
-  KEY `order_item_workflow_idx` (`workflow`),
-  KEY `order_item_menu_item_idx` (`menu_item`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_item (5 rows at conversion)';
+  KEY `order_item_workflow_idx` (`workflow`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_item (9 rows at conversion)';
 
 -- 1-n children of `order_item`.`modifiers` (order preserved by `ord`)
 CREATE TABLE `order_item__modifiers` (
@@ -2995,26 +2974,26 @@ CREATE TABLE `order_item_kitchen` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `activated_at` datetime(3) NULL,
   `completed_at` datetime(3) NULL,
-  `created_at` datetime(3) NOT NULL,
+  `created_at` datetime(3) NULL,
   `is_terminal` tinyint(1) NULL DEFAULT 0,
-  `kitchen` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `kitchen` varchar(512) COLLATE utf8mb4_bin NULL,
   `order_item` varchar(512) COLLATE utf8mb4_bin NULL,
   `sequence` bigint NULL DEFAULT 0,
+  `stage` varchar(512) COLLATE utf8mb4_bin NULL,
   `stage_name` text COLLATE utf8mb4_bin NULL,
   `started_at` datetime(3) NULL,
   `status` varchar(64) COLLATE utf8mb4_bin NULL DEFAULT 'pending',
   `user` varchar(512) COLLATE utf8mb4_bin NULL,
   `workflow` varchar(512) COLLATE utf8mb4_bin NULL,
-  `order` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `order_item_kitchen_oik_kitchen_status` (`kitchen`(384), `status`),
   KEY `order_item_kitchen_oik_order_item` (`order_item`),
+  KEY `order_item_kitchen_stage_idx` (`stage`),
   KEY `order_item_kitchen_user_idx` (`user`),
-  KEY `order_item_kitchen_workflow_idx` (`workflow`),
-  KEY `order_item_kitchen_order_idx` (`order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_item_kitchen (3 rows at conversion)';
+  KEY `order_item_kitchen_workflow_idx` (`workflow`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_item_kitchen (9 rows at conversion)';
 
 -- 1-n children of `order_item_kitchen`.`completed_by` (order preserved by `ord`)
 CREATE TABLE `order_item_kitchen__completed_by` (
@@ -3026,24 +3005,11 @@ CREATE TABLE `order_item_kitchen__completed_by` (
   CONSTRAINT `order_item_kitchen__completed_by_parent_fk` FOREIGN KEY (`parent_id`) REFERENCES `order_item_kitchen` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
--- Nested / schemaless values of `order_item_kitchen` (path = dotted location, arrays use [index]).
--- Stored as typed key/value rows so no column has to hold JSON.
-CREATE TABLE `order_item_kitchen__attrs` (
-  `parent_id` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `path` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `kind` varchar(16) COLLATE utf8mb4_bin NOT NULL,
-  `value_text` longtext COLLATE utf8mb4_bin NULL,
-  `value_number` double NULL,
-  `value_bool` tinyint(1) NULL,
-  PRIMARY KEY (`parent_id`, `path`),
-  CONSTRAINT `order_item_kitchen__attrs_parent_fk` FOREIGN KEY (`parent_id`) REFERENCES `order_item_kitchen` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
-
 CREATE TABLE `order_merge` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL,
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `new_order` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL,
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `new_order` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3076,7 +3042,7 @@ CREATE TABLE `order_merge__attrs` (
 
 CREATE TABLE `order_meta` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -3097,7 +3063,7 @@ CREATE TABLE `order_meta__attrs` (
 
 CREATE TABLE `order_number_seq` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `value` bigint NOT NULL DEFAULT 0,
+  `value` bigint NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -3105,40 +3071,23 @@ CREATE TABLE `order_number_seq` (
 
 CREATE TABLE `order_payment` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `amount` double NOT NULL,
+  `amount` double NULL,
   `comments` text COLLATE utf8mb4_bin NULL,
   `payable` double NULL,
-  `paid` bigint NULL,
-  `order` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `change` bigint NULL,
-  `status` text COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NULL,
+  `payment_type` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
-  KEY `order_payment_order_idx` (`order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_payment (1 rows at conversion)';
-
--- Nested / schemaless values of `order_payment` (path = dotted location, arrays use [index]).
--- Stored as typed key/value rows so no column has to hold JSON.
-CREATE TABLE `order_payment__attrs` (
-  `parent_id` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `path` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `kind` varchar(16) COLLATE utf8mb4_bin NOT NULL,
-  `value_text` longtext COLLATE utf8mb4_bin NULL,
-  `value_number` double NULL,
-  `value_bool` tinyint(1) NULL,
-  PRIMARY KEY (`parent_id`, `path`),
-  CONSTRAINT `order_payment__attrs_parent_fk` FOREIGN KEY (`parent_id`) REFERENCES `order_payment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+  KEY `order_payment_payment_type_idx` (`payment_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_payment (5 rows at conversion)';
 
 CREATE TABLE `order_print` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `is_duplicate` tinyint(1) NOT NULL DEFAULT 0,
-  `is_override` tinyint(1) NOT NULL DEFAULT 0,
-  `order` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `print_type` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `printed_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `is_duplicate` tinyint(1) NULL DEFAULT 0,
+  `is_override` tinyint(1) NULL DEFAULT 0,
+  `order` varchar(512) COLLATE utf8mb4_bin NULL,
+  `print_type` varchar(255) COLLATE utf8mb4_bin NULL,
+  `printed_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `printed_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -3149,10 +3098,10 @@ CREATE TABLE `order_print` (
 
 CREATE TABLE `order_refund` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL,
-  `logged_in_user` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL,
+  `logged_in_user` varchar(512) COLLATE utf8mb4_bin NULL,
   `manager` varchar(512) COLLATE utf8mb4_bin NULL,
-  `order` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `order` varchar(512) COLLATE utf8mb4_bin NULL,
   `reason` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -3174,9 +3123,9 @@ CREATE TABLE `order_refund__items` (
 
 CREATE TABLE `order_split` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `old_order` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `old_order` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3209,23 +3158,23 @@ CREATE TABLE `order_split__attrs` (
 
 CREATE TABLE `order_tax` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `amount` double NOT NULL,
-  `order` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `tax` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `amount` double NULL,
+  `order` varchar(512) COLLATE utf8mb4_bin NULL,
+  `tax` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_tax_order_tax_unique` (`order`(384), `tax`(384)),
   KEY `order_tax_tax_idx` (`tax`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_tax (0 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_tax (2 rows at conversion)';
 
 CREATE TABLE `order_type` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `allow_service_charges` tinyint(1) NULL,
   `branch_id` text COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `priority` bigint NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `priority` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -3234,12 +3183,12 @@ CREATE TABLE `order_type` (
 CREATE TABLE `order_void` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `comments` text COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL,
-  `deleted_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL,
+  `deleted_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `logged_in_user` varchar(512) COLLATE utf8mb4_bin NULL,
   `order` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
-  `reason` text COLLATE utf8mb4_bin NOT NULL,
+  `quantity` double NULL,
+  `reason` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3247,7 +3196,7 @@ CREATE TABLE `order_void` (
   KEY `order_void_ov_order` (`order`),
   KEY `order_void_deleted_by_idx` (`deleted_by`),
   KEY `order_void_logged_in_user_idx` (`logged_in_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_void (0 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table order_void (3 rows at conversion)';
 
 -- 1-n children of `order_void`.`items` (order preserved by `ord`)
 CREATE TABLE `order_void__items` (
@@ -3269,10 +3218,10 @@ CREATE TABLE `payment_type` (
   `gateway_config_encrypted` text COLLATE utf8mb4_bin NULL,
   `gateway_mode` text COLLATE utf8mb4_bin NULL,
   `has_discount` tinyint(1) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `priority` bigint NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `priority` bigint NULL,
   `tax` varchar(512) COLLATE utf8mb4_bin NULL,
-  `type` text COLLATE utf8mb4_bin NOT NULL,
+  `type` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3306,9 +3255,9 @@ CREATE TABLE `payment_type_gateway_config` (
 
 CREATE TABLE `payment_webhook` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `gateway` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `gateway` varchar(255) COLLATE utf8mb4_bin NULL,
+  `key` varchar(255) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3331,14 +3280,14 @@ CREATE TABLE `payment_webhook__attrs` (
 CREATE TABLE `payroll_period` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `closed_at` datetime(3) NULL,
-  `end_date` datetime(3) NOT NULL,
+  `end_date` datetime(3) NULL,
   `locked_at` datetime(3) NULL,
   `locked_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `paid_at` datetime(3) NULL,
-  `period_type` text COLLATE utf8mb4_bin NOT NULL,
-  `start_date` datetime(3) NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `period_type` text COLLATE utf8mb4_bin NULL,
+  `start_date` datetime(3) NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3353,9 +3302,9 @@ CREATE TABLE `payroll_run` (
   `generated_at` datetime(3) NULL,
   `generated_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
-  `payroll_period` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `run_number` bigint NOT NULL DEFAULT 1,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `payroll_period` varchar(512) COLLATE utf8mb4_bin NULL,
+  `run_number` bigint NULL DEFAULT 1,
+  `status` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3366,33 +3315,33 @@ CREATE TABLE `payroll_run` (
 
 CREATE TABLE `payroll_snapshot` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `adjustments` double NOT NULL DEFAULT 0,
-  `bonuses` double NOT NULL DEFAULT 0,
-  `calculated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `calculation_version` text COLLATE utf8mb4_bin NOT NULL,
-  `deductions` double NOT NULL DEFAULT 0,
-  `double_time_hours` double NOT NULL DEFAULT 0,
-  `employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `adjustments` double NULL DEFAULT 0,
+  `bonuses` double NULL DEFAULT 0,
+  `calculated_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `calculation_version` text COLLATE utf8mb4_bin NULL,
+  `deductions` double NULL DEFAULT 0,
+  `double_time_hours` double NULL DEFAULT 0,
+  `employee` varchar(512) COLLATE utf8mb4_bin NULL,
   `expected_work_days` double NULL,
-  `gross_pay` double NOT NULL DEFAULT 0,
-  `holiday_premium_hours` double NOT NULL DEFAULT 0,
-  `is_overridden` tinyint(1) NOT NULL DEFAULT 0,
-  `net_pay` double NOT NULL DEFAULT 0,
-  `night_premium_hours` double NOT NULL DEFAULT 0,
+  `gross_pay` double NULL DEFAULT 0,
+  `holiday_premium_hours` double NULL DEFAULT 0,
+  `is_overridden` tinyint(1) NULL DEFAULT 0,
+  `net_pay` double NULL DEFAULT 0,
+  `night_premium_hours` double NULL DEFAULT 0,
   `overridden_at` datetime(3) NULL,
   `overridden_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `override_note` text COLLATE utf8mb4_bin NULL,
-  `overtime_hours` double NOT NULL DEFAULT 0,
-  `overtime_pay` double NOT NULL DEFAULT 0,
+  `overtime_hours` double NULL DEFAULT 0,
+  `overtime_pay` double NULL DEFAULT 0,
   `paid_days` double NULL,
   `pay_profile_id` varchar(512) COLLATE utf8mb4_bin NULL,
   `pay_type` text COLLATE utf8mb4_bin NULL,
-  `payroll_run` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `premium_pay` double NOT NULL DEFAULT 0,
-  `regular_hours` double NOT NULL DEFAULT 0,
-  `regular_pay` double NOT NULL DEFAULT 0,
+  `payroll_run` varchar(512) COLLATE utf8mb4_bin NULL,
+  `premium_pay` double NULL DEFAULT 0,
+  `regular_hours` double NULL DEFAULT 0,
+  `regular_pay` double NULL DEFAULT 0,
   `unpaid_leave_days` double NULL,
-  `weekend_premium_hours` double NOT NULL DEFAULT 0,
+  `weekend_premium_hours` double NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3421,27 +3370,27 @@ CREATE TABLE `position` (
   `default_cost_center` varchar(512) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
   `department` varchar(512) COLLATE utf8mb4_bin NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   UNIQUE KEY `position_pos_code` (`code`),
   KEY `position_default_cost_center_idx` (`default_cost_center`),
   KEY `position_department_idx` (`department`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table position (1 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table position (0 rows at conversion)';
 
 CREATE TABLE `printer` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `command_set` text COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `ip_address` text COLLATE utf8mb4_bin NOT NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `ip_address` text COLLATE utf8mb4_bin NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `paper_width_mm` bigint NULL,
   `pid` text COLLATE utf8mb4_bin NULL,
   `port` bigint NULL,
   `print_mode` text COLLATE utf8mb4_bin NULL,
-  `prints` bigint NOT NULL,
+  `prints` bigint NULL,
   `priority` bigint NULL,
   `type` text COLLATE utf8mb4_bin NULL,
   `vid` text COLLATE utf8mb4_bin NULL,
@@ -3452,21 +3401,21 @@ CREATE TABLE `printer` (
 
 CREATE TABLE `production_batch` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `batch_number` text COLLATE utf8mb4_bin NOT NULL,
-  `completed_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `cost_allocation` text COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `batch_number` text COLLATE utf8mb4_bin NULL,
+  `completed_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `cost_allocation` text COLLATE utf8mb4_bin NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
-  `produced_qty` double NOT NULL,
-  `recipe` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `scale_factor` double NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
-  `store` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `total_input_cost` double NOT NULL DEFAULT 0,
-  `total_output_cost` double NOT NULL DEFAULT 0,
-  `yield_loss_percent` double NOT NULL DEFAULT 0,
+  `produced_qty` double NULL,
+  `recipe` varchar(512) COLLATE utf8mb4_bin NULL,
+  `scale_factor` double NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
+  `store` varchar(512) COLLATE utf8mb4_bin NULL,
+  `total_input_cost` double NULL DEFAULT 0,
+  `total_output_cost` double NULL DEFAULT 0,
+  `yield_loss_percent` double NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3478,13 +3427,13 @@ CREATE TABLE `production_batch` (
 
 CREATE TABLE `production_batch_input` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `batch` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `batch` varchar(512) COLLATE utf8mb4_bin NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
-  `store` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `total_cost` double NOT NULL DEFAULT 0,
-  `unit_cost` double NOT NULL DEFAULT 0,
+  `quantity` double NULL,
+  `store` varchar(512) COLLATE utf8mb4_bin NULL,
+  `total_cost` double NULL DEFAULT 0,
+  `unit_cost` double NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3496,16 +3445,16 @@ CREATE TABLE `production_batch_input` (
 
 CREATE TABLE `production_batch_output` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `allocated_cost` double NOT NULL DEFAULT 0,
-  `batch` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `disposition` text COLLATE utf8mb4_bin NOT NULL,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `allocated_cost` double NULL DEFAULT 0,
+  `batch` varchar(512) COLLATE utf8mb4_bin NULL,
+  `disposition` text COLLATE utf8mb4_bin NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
   `ledger_waste_item` varchar(512) COLLATE utf8mb4_bin NULL,
   `location` varchar(512) COLLATE utf8mb4_bin NULL,
-  `quantity` double NOT NULL,
-  `store` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `unit_cost` double NOT NULL DEFAULT 0,
-  `yield_percent` double NOT NULL DEFAULT 0,
+  `quantity` double NULL,
+  `store` varchar(512) COLLATE utf8mb4_bin NULL,
+  `unit_cost` double NULL DEFAULT 0,
+  `yield_percent` double NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3519,12 +3468,12 @@ CREATE TABLE `production_batch_output` (
 CREATE TABLE `public_holiday` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `country_code` text COLLATE utf8mb4_bin NULL,
-  `date` datetime(3) NOT NULL,
+  `date` datetime(3) NULL,
   `deleted_at` datetime(3) NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `is_recurring` tinyint(1) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `is_recurring` tinyint(1) NULL DEFAULT 0,
   `labor_policy` varchar(512) COLLATE utf8mb4_bin NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3547,13 +3496,13 @@ CREATE TABLE `public_holiday__attrs` (
 
 CREATE TABLE `recipe` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `base_batch_qty` double NOT NULL DEFAULT 1,
+  `base_batch_qty` double NULL DEFAULT 1,
   `code` text COLLATE utf8mb4_bin NULL,
-  `cost_allocation` text COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `cost_allocation` text COLLATE utf8mb4_bin NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `primary_output` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -3565,13 +3514,13 @@ CREATE TABLE `recipe` (
 
 CREATE TABLE `recipe_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `quantity` double NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `quantity` double NULL,
   `entered_price` double NULL,
   `entered_quantity` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
-  `recipe` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `sort_order` bigint NOT NULL DEFAULT 0,
+  `recipe` varchar(512) COLLATE utf8mb4_bin NULL,
+  `sort_order` bigint NULL DEFAULT 0,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3581,13 +3530,13 @@ CREATE TABLE `recipe_item` (
 
 CREATE TABLE `recipe_output` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `disposition` text COLLATE utf8mb4_bin NOT NULL,
-  `is_primary` tinyint(1) NOT NULL DEFAULT 0,
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `recipe` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `sort_order` bigint NOT NULL DEFAULT 0,
-  `value_weight` double NOT NULL DEFAULT 1,
-  `yield_percent` double NOT NULL,
+  `disposition` text COLLATE utf8mb4_bin NULL,
+  `is_primary` tinyint(1) NULL DEFAULT 0,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `recipe` varchar(512) COLLATE utf8mb4_bin NULL,
+  `sort_order` bigint NULL DEFAULT 0,
+  `value_weight` double NULL DEFAULT 1,
+  `yield_percent` double NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3597,23 +3546,23 @@ CREATE TABLE `recipe_output` (
 
 CREATE TABLE `revoked_session` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `expires_at` datetime(3) NOT NULL,
-  `jti` varchar(64) COLLATE utf8mb4_bin NOT NULL,
-  `revoked_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `expires_at` datetime(3) NULL,
+  `jti` varchar(255) COLLATE utf8mb4_bin NULL,
+  `revoked_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `revoked_session_revoked_session_expires_at` (`expires_at`),
   UNIQUE KEY `revoked_session_revoked_session_jti` (`jti`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table revoked_session (13 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table revoked_session (0 rows at conversion)';
 
 CREATE TABLE `role_discount_policy` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `can_apply_manual` tinyint(1) NOT NULL DEFAULT 1,
-  `can_override_approval` tinyint(1) NOT NULL DEFAULT 0,
+  `can_apply_manual` tinyint(1) NULL DEFAULT 1,
+  `can_override_approval` tinyint(1) NULL DEFAULT 0,
   `max_fixed_amount` double NULL,
   `max_percent` double NULL,
-  `user_role` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `user_role` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3636,12 +3585,12 @@ CREATE TABLE `schedule_template` (
   `cost_center` varchar(512) COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
   `department` varchar(512) COLLATE utf8mb4_bin NULL,
-  `end_time` text COLLATE utf8mb4_bin NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `end_time` text COLLATE utf8mb4_bin NULL,
+  `is_active` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
   `position` varchar(512) COLLATE utf8mb4_bin NULL,
   `shift_template` varchar(512) COLLATE utf8mb4_bin NULL,
-  `start_time` text COLLATE utf8mb4_bin NOT NULL,
+  `start_time` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3665,13 +3614,13 @@ CREATE TABLE `scheduled_shift` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `cost_center` varchar(512) COLLATE utf8mb4_bin NULL,
   `department` varchar(512) COLLATE utf8mb4_bin NULL,
-  `employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `end_at` datetime(3) NOT NULL,
+  `employee` varchar(512) COLLATE utf8mb4_bin NULL,
+  `end_at` datetime(3) NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `position` varchar(512) COLLATE utf8mb4_bin NULL,
   `shift_template` varchar(512) COLLATE utf8mb4_bin NULL,
-  `start_at` datetime(3) NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `start_at` datetime(3) NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
   `work_schedule` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -3686,12 +3635,12 @@ CREATE TABLE `scheduled_shift` (
 
 CREATE TABLE `security_alert_rules` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `description` text COLLATE utf8mb4_bin NULL,
-  `enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `rule_type` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `severity` text COLLATE utf8mb4_bin NOT NULL,
+  `enabled` tinyint(1) NULL DEFAULT 1,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `rule_type` varchar(255) COLLATE utf8mb4_bin NULL,
+  `severity` text COLLATE utf8mb4_bin NULL,
   `threshold` bigint NULL,
   `window_minutes` bigint NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -3707,15 +3656,15 @@ CREATE TABLE `security_alerts` (
   `acknowledged_by` text COLLATE utf8mb4_bin NULL,
   `actor_id` varchar(255) COLLATE utf8mb4_bin NULL,
   `actor_login` text COLLATE utf8mb4_bin NULL,
-  `count` bigint NOT NULL DEFAULT 1,
-  `emitted_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `count` bigint NULL DEFAULT 1,
+  `emitted_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `resolution_notes` text COLLATE utf8mb4_bin NULL,
   `rule_id` varchar(255) COLLATE utf8mb4_bin NULL,
-  `rule_name` text COLLATE utf8mb4_bin NOT NULL,
-  `rule_type` text COLLATE utf8mb4_bin NOT NULL,
-  `severity` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `rule_name` text COLLATE utf8mb4_bin NULL,
+  `rule_type` text COLLATE utf8mb4_bin NULL,
+  `severity` varchar(255) COLLATE utf8mb4_bin NULL,
   `source_ip` text COLLATE utf8mb4_bin NULL,
-  `status` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT 'open',
+  `status` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'open',
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3770,14 +3719,14 @@ CREATE TABLE `self_order_table` (
 CREATE TABLE `setting` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `is_global` tinyint(1) NULL,
-  `key` varchar(64) COLLATE utf8mb4_bin NOT NULL,
+  `key` varchar(64) COLLATE utf8mb4_bin NULL,
   `user` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   KEY `setting_setting_key_global` (`key`, `is_global`),
   KEY `setting_user_idx` (`user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table setting (2 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table setting (1 rows at conversion)';
 
 -- Nested / schemaless values of `setting` (path = dotted location, arrays use [index]).
 -- Stored as typed key/value rows so no column has to hold JSON.
@@ -3795,10 +3744,10 @@ CREATE TABLE `setting__attrs` (
 CREATE TABLE `shift` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `deleted_at` datetime(3) NULL,
-  `end_time` text COLLATE utf8mb4_bin NOT NULL,
-  `ends_next_day` tinyint(1) NOT NULL DEFAULT 0,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `start_time` text COLLATE utf8mb4_bin NOT NULL,
+  `end_time` text COLLATE utf8mb4_bin NULL,
+  `ends_next_day` tinyint(1) NULL DEFAULT 0,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `start_time` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -3810,9 +3759,9 @@ CREATE TABLE `shift_swap_request` (
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `auth_permission` varchar(512) COLLATE utf8mb4_bin NULL,
   `proposed_shift` varchar(512) COLLATE utf8mb4_bin NULL,
-  `requesting_employee` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `scheduled_shift` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `requesting_employee` varchar(512) COLLATE utf8mb4_bin NULL,
+  `scheduled_shift` varchar(512) COLLATE utf8mb4_bin NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
   `target_employee` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -3831,15 +3780,15 @@ CREATE TABLE `stock_transfer` (
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `cancelled_at` datetime(3) NULL,
   `cancelled_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `created_by` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_by` varchar(512) COLLATE utf8mb4_bin NULL,
   `from_kitchen` varchar(512) COLLATE utf8mb4_bin NULL,
   `from_location` varchar(512) COLLATE utf8mb4_bin NULL,
   `from_store` varchar(512) COLLATE utf8mb4_bin NULL,
   `notes` text COLLATE utf8mb4_bin NULL,
   `posted_at` datetime(3) NULL,
   `posted_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `status` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT 'posted',
+  `status` varchar(255) COLLATE utf8mb4_bin NULL DEFAULT 'posted',
   `to_kitchen` varchar(512) COLLATE utf8mb4_bin NULL,
   `to_location` varchar(512) COLLATE utf8mb4_bin NULL,
   `to_store` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -3865,12 +3814,12 @@ CREATE TABLE `stock_transfer` (
 
 CREATE TABLE `stock_transfer_item` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `item` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `quantity` double NOT NULL,
+  `item` varchar(512) COLLATE utf8mb4_bin NULL,
+  `quantity` double NULL,
   `entered_price` double NULL,
   `entered_quantity` double NULL,
   `entered_uom` text COLLATE utf8mb4_bin NULL,
-  `transfer` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `transfer` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -3888,14 +3837,14 @@ CREATE TABLE `sync_accepted_operation` (
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   UNIQUE KEY `sync_accepted_operation_sync_accepted_operation_id` (`operation_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table sync_accepted_operation (9 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table sync_accepted_operation (2923 rows at conversion)';
 
 CREATE TABLE `sync_branch` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `active` tinyint(1) NOT NULL DEFAULT 1,
-  `client_id` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `active` tinyint(1) NULL DEFAULT 1,
+  `client_id` varchar(255) COLLATE utf8mb4_bin NULL,
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `name` text COLLATE utf8mb4_bin NULL,
   `updated_at` datetime(3) NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
@@ -3945,7 +3894,7 @@ CREATE TABLE `sync_event` (
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table sync_event (9 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table sync_event (2923 rows at conversion)';
 
 -- Nested / schemaless values of `sync_event` (path = dotted location, arrays use [index]).
 -- Stored as typed key/value rows so no column has to hold JSON.
@@ -3995,7 +3944,7 @@ CREATE TABLE `sync_number_reservation` (
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   UNIQUE KEY `sync_number_reservation_sync_number_reservation_id` (`reservation_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table sync_number_reservation (5 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table sync_number_reservation (1 rows at conversion)';
 
 CREATE TABLE `sync_terminal` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
@@ -4012,7 +3961,7 @@ CREATE TABLE `sync_terminal` (
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
   UNIQUE KEY `sync_terminal_sync_terminal_terminal_id` (`terminal_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table sync_terminal (8 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table sync_terminal (3 rows at conversion)';
 
 -- Nested / schemaless values of `sync_terminal` (path = dotted location, arrays use [index]).
 -- Stored as typed key/value rows so no column has to hold JSON.
@@ -4031,9 +3980,9 @@ CREATE TABLE `tax` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `branch_id` text COLLATE utf8mb4_bin NULL,
   `deleted_at` datetime(3) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `priority` bigint NOT NULL,
-  `rate` double NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `priority` bigint NULL,
+  `rate` double NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -4044,8 +3993,8 @@ CREATE TABLE `time_entry` (
   `approval_status` text COLLATE utf8mb4_bin NULL,
   `approved_at` datetime(3) NULL,
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `attendance_status` text COLLATE utf8mb4_bin NOT NULL,
-  `clock_in` datetime(3) NOT NULL,
+  `attendance_status` text COLLATE utf8mb4_bin NULL,
+  `clock_in` datetime(3) NULL,
   `clock_out` datetime(3) NULL,
   `early_leave_minutes` double NULL,
   `employee` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -4055,8 +4004,8 @@ CREATE TABLE `time_entry` (
   `platform` text COLLATE utf8mb4_bin NULL,
   `scheduled_shift` varchar(512) COLLATE utf8mb4_bin NULL,
   `shift_template` varchar(512) COLLATE utf8mb4_bin NULL,
-  `source` text COLLATE utf8mb4_bin NOT NULL,
-  `user` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `source` text COLLATE utf8mb4_bin NULL,
+  `user` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -4067,7 +4016,7 @@ CREATE TABLE `time_entry` (
   KEY `time_entry_original_time_entry_idx` (`original_time_entry`),
   KEY `time_entry_scheduled_shift_idx` (`scheduled_shift`),
   KEY `time_entry_shift_template_idx` (`shift_template`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table time_entry (7 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table time_entry (1 rows at conversion)';
 
 -- Nested / schemaless values of `time_entry` (path = dotted location, arrays use [index]).
 -- Stored as typed key/value rows so no column has to hold JSON.
@@ -4085,11 +4034,11 @@ CREATE TABLE `time_entry__attrs` (
 CREATE TABLE `time_entry_break` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `approved_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `break_type` text COLLATE utf8mb4_bin NOT NULL,
+  `break_type` text COLLATE utf8mb4_bin NULL,
   `end_at` datetime(3) NULL,
-  `missed` tinyint(1) NOT NULL DEFAULT 0,
-  `start_at` datetime(3) NOT NULL,
-  `time_entry` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `missed` tinyint(1) NULL DEFAULT 0,
+  `start_at` datetime(3) NULL,
+  `time_entry` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -4113,13 +4062,13 @@ CREATE TABLE `time_entry_break__attrs` (
 CREATE TABLE `tracking` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `auth_method` text COLLATE utf8mb4_bin NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `manager` text COLLATE utf8mb4_bin NULL,
   `manager_role` text COLLATE utf8mb4_bin NULL,
   `module` varchar(64) COLLATE utf8mb4_bin NULL,
-  `page` text COLLATE utf8mb4_bin NOT NULL,
+  `page` text COLLATE utf8mb4_bin NULL,
   `resolution` text COLLATE utf8mb4_bin NULL,
-  `user` text COLLATE utf8mb4_bin NOT NULL,
+  `user` text COLLATE utf8mb4_bin NULL,
   `user_agent` text COLLATE utf8mb4_bin NULL,
   `user_role` text COLLATE utf8mb4_bin NULL,
   `user_shift` text COLLATE utf8mb4_bin NULL,
@@ -4128,7 +4077,7 @@ CREATE TABLE `tracking` (
   PRIMARY KEY (`id`),
   KEY `tracking_tracking_created_at` (`created_at`),
   KEY `tracking_tracking_module_created_at` (`module`, `created_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table tracking (94 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table tracking (741 rows at conversion)';
 
 -- Nested / schemaless values of `tracking` (path = dotted location, arrays use [index]).
 -- Stored as typed key/value rows so no column has to hold JSON.
@@ -4146,9 +4095,9 @@ CREATE TABLE `tracking__attrs` (
 CREATE TABLE `user` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `deleted_at` datetime(3) NULL,
-  `first_name` text COLLATE utf8mb4_bin NOT NULL,
+  `first_name` text COLLATE utf8mb4_bin NULL,
   `last_name` text COLLATE utf8mb4_bin NULL,
-  `login` text COLLATE utf8mb4_bin NOT NULL,
+  `login` text COLLATE utf8mb4_bin NULL,
   `login_method` text COLLATE utf8mb4_bin NULL,
   `password` text COLLATE utf8mb4_bin NULL,
   `user_role` varchar(512) COLLATE utf8mb4_bin NULL,
@@ -4158,7 +4107,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   KEY `user_user_role_idx` (`user_role`),
   KEY `user_user_shift_idx` (`user_shift`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table user (7 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table user (1 rows at conversion)';
 
 -- 1-n children of `user`.`branch_ids` (order preserved by `ord`)
 CREATE TABLE `user__branch_ids` (
@@ -4183,11 +4132,11 @@ CREATE TABLE `user__roles` (
 CREATE TABLE `user_role` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `deleted_at` datetime(3) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table user_role (7 rows at conversion)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='record table user_role (1 rows at conversion)';
 
 -- 1-n children of `user_role`.`roles` (order preserved by `ord`)
 CREATE TABLE `user_role__roles` (
@@ -4201,12 +4150,12 @@ CREATE TABLE `user_role__roles` (
 
 CREATE TABLE `work_schedule` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `period_end` datetime(3) NOT NULL,
-  `period_start` datetime(3) NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `period_end` datetime(3) NULL,
+  `period_start` datetime(3) NULL,
   `published_at` datetime(3) NULL,
   `published_by` varchar(512) COLLATE utf8mb4_bin NULL,
-  `status` text COLLATE utf8mb4_bin NOT NULL,
+  `status` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -4218,7 +4167,7 @@ CREATE TABLE `workflow` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
   `deleted_at` datetime(3) NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -4227,11 +4176,11 @@ CREATE TABLE `workflow` (
 CREATE TABLE `workflow_stage` (
   `id` varchar(512) COLLATE utf8mb4_bin NOT NULL COMMENT 'record key (table:id without prefix)',
   `created_at` datetime(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `is_terminal` tinyint(1) NOT NULL DEFAULT 0,
-  `kitchen` varchar(512) COLLATE utf8mb4_bin NOT NULL,
-  `name` text COLLATE utf8mb4_bin NOT NULL,
-  `sequence` bigint NOT NULL DEFAULT 1,
-  `workflow` varchar(512) COLLATE utf8mb4_bin NOT NULL,
+  `is_terminal` tinyint(1) NULL DEFAULT 0,
+  `kitchen` varchar(512) COLLATE utf8mb4_bin NULL,
+  `name` text COLLATE utf8mb4_bin NULL,
+  `sequence` bigint NULL DEFAULT 1,
+  `workflow` varchar(512) COLLATE utf8mb4_bin NULL,
   `row_created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `row_updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),

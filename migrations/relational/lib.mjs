@@ -293,7 +293,9 @@ export function buildModel(schema, rowsByTable) {
             maxLength: 512,
             kind: 'ref',
             refTable: target,
-            nullable: present < rows.length || nonNull.length !== values.length,
+            // Link columns stay nullable: clients write the canonical link on the
+            // parent array (order.payments, …) and omit the back-reference.
+            nullable: true,
             default: null,
             orphans: [...orphans],
           });
@@ -345,10 +347,11 @@ export function buildModel(schema, rowsByTable) {
         columns.push({
           field: fieldName,
           sql: 'varchar(512)',
-          maxLength: 512,
-          kind: 'ref',
-          refTable: typeInfo.refTable,
-          nullable: typeInfo.nullable || present < rows.length || nonNull.length !== values.length,
+          maxLength: 512,            kind: 'ref',
+            refTable: typeInfo.refTable,
+            // See above: FK columns must stay nullable so document-style writes
+            // that rely on the parent array do not fail on a NOT NULL back-ref.
+            nullable: true,
           default: defaultSql(field.default, 'varchar(512)'),
           orphans: [...orphans],
         });
@@ -548,7 +551,10 @@ function columnDdl(column) {
   if (column.sql === 'text' || column.sql === 'longblob' || column.sql.startsWith('varchar')) {
     if (column.sql.startsWith('varchar') || column.sql === 'text') parts.push('COLLATE utf8mb4_bin');
   }
-  parts.push(column.nullable === false ? 'NOT NULL' : 'NULL');
+  // The app writes document-shaped records (partial payloads, the canonical
+  // link kept on the parent array), so only `id` is mandatory at the DB level;
+  // integrity comes from PRIMARY/FOREIGN/UNIQUE keys, not from NOT NULL.
+  parts.push('NULL');
   if (column.default != null) parts.push(`DEFAULT ${column.default}`);
   return '  ' + parts.join(' ');
 }
