@@ -1,4 +1,11 @@
 {
+  "title": "Đơn hiện tại",
+  "newLines": "Chưa gửi",
+  "sentLines": "Đã gửi bếp",
+  "empty": {
+    "title": "Chưa có món nào",
+    "hint": "Chạm vào một món để bắt đầu gọi."
+  },
   "seats": {
     "seat": "Chỗ ngồi",
     "noSeat": "Không có chỗ",

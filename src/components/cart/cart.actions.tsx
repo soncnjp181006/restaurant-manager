@@ -243,42 +243,66 @@ export const CartActions = () => {
   }
 
   return (
-    <div className="flex gap-3">
-      <IconTooltipButton label={t('common:actions.selectAll')} size="lg" variant="primary" onClick={toggleCartItems}>
-        <FontAwesomeIcon icon={faSquareCheck} size="lg"/>
+    <div className="flex flex-wrap items-center gap-1.5">
+      <IconTooltipButton
+        label={t('common:actions.selectAll')}
+        variant="secondary"
+        onClick={toggleCartItems}
+        className="!h-8 !w-8"
+      >
+        <FontAwesomeIcon icon={faSquareCheck} className="text-[13px]" />
       </IconTooltipButton>
+
       {hasNewItems && (
         <>
-          <span className="bg-neutral-400 h-[48px] w-[2px]"></span>
-          <IconTooltipButton label={t('common:actions.copy')} size="lg" variant="primary" onClick={copySelectedCartItems}>
-            <FontAwesomeIcon icon={faCopy} size="lg"/>
+          <span className="mx-0.5 h-5 w-px bg-border" aria-hidden="true"></span>
+          <IconTooltipButton
+            label={t('common:actions.copy')}
+            variant="secondary"
+            onClick={copySelectedCartItems}
+            className="!h-8 !w-8"
+          >
+            <FontAwesomeIcon icon={faCopy} className="text-[12px]" />
           </IconTooltipButton>
-          <IconTooltipButton label={t('common:actions.remove')} size="lg" variant="danger" onClick={deleteSelectedCartItems}>
-            <FontAwesomeIcon icon={faTrash} size="lg"/>
+          <IconTooltipButton
+            label={t('common:actions.remove')}
+            variant="danger"
+            onClick={deleteSelectedCartItems}
+            className="!h-8 !w-8"
+          >
+            <FontAwesomeIcon icon={faTrash} className="text-[12px]" />
           </IconTooltipButton>
         </>
       )}
 
-
       {hasHoldItems ? (
-        <IconTooltipButton label={t('common:actions.fire')} size="lg" variant="success" onClick={fireSelectedCartItems}>
-          <FontAwesomeIcon icon={faPlay} size="lg"/>
+        <IconTooltipButton
+          label={t('common:actions.fire')}
+          variant="success"
+          onClick={fireSelectedCartItems}
+          className="!h-8 !w-8"
+        >
+          <FontAwesomeIcon icon={faPlay} className="text-[12px]" />
         </IconTooltipButton>
       ) : (
-        <IconTooltipButton label={t('common:actions.hold')} size="lg" variant="warning" onClick={toggleHoldSelectedCartItems}>
-          <FontAwesomeIcon icon={faPause} size="lg"/>
+        <IconTooltipButton
+          label={t('common:actions.hold')}
+          variant="secondary"
+          onClick={toggleHoldSelectedCartItems}
+          className="!h-8 !w-8"
+        >
+          <FontAwesomeIcon icon={faPause} className="text-[12px]" />
         </IconTooltipButton>
       )}
 
       {hasNewItems && (
-        <Dropdown label={t('seats.seat')} btnSize="lg" onAction={onClickSeatItem}>
+        <Dropdown label={t('seats.seat')} btnSize="sm" onAction={onClickSeatItem}>
           {state.seats.map((seat, index) => (
             <DropdownItem id={seat} key={seat} className="min-w-[50px]">{index + 1}</DropdownItem>
           ))}
           <DropdownItem id="new" key="new" className="min-w-[50px]">{t('seats.newSeat')}</DropdownItem>
         </Dropdown>
       )}
-
     </div>
   )
 }

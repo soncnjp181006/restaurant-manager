@@ -16,29 +16,30 @@ export const CartItemName = ({ item, mainItem }: Omit<Props, "index">) => {
 
   return (
     <>
-      <div className={
-        cn("pl-x flex justify-between", item.isModifier ? 'text-sm' : '')
-      } style={{
-        '--padding': (item.level * 0.875) + 'rem'
-      } as any}>
-        <span className="text-ellipsis line-clamp-1">{item.dish.name}</span>
-        <div className={
-          cn(
-            // Sized for grouped currency ("₫45,000") — the old 40px clipped it.
-            showTotalInCart ? "grid grid-cols-2 gap-2 w-[110px] text-right" : "grid grid-cols-1 w-[64px] text-right"
-          )
-        }>
+      <div
+        className={cn("flex items-start justify-between gap-2 pl-x", item.isModifier ? 'text-[12px] text-muted' : '')}
+        style={{
+          '--padding': item.isModifier ? '0' : (item.level * 0.875) + 'rem'
+        } as any}
+      >
+        <span className="min-w-0 flex-1 line-clamp-2">{item.dish.name}</span>
+        <div className={cn(
+          "flex-shrink-0 text-right text-[12.5px] tabular-nums",
+          item.isModifier ? "text-muted" : "text-muted",
+          // Sized for grouped currency ("₫45,000") — the old 40px clipped it.
+          showTotalInCart && !item.isModifier ? "grid grid-cols-2 gap-2 w-[110px]" : "grid grid-cols-1 w-[64px]"
+        )}>
           <span>{withCurrency(item.price)}</span>
           {showTotalInCart && (
-            <span>{withCurrency(item.price * mainItem.quantity)}</span>
+            <span className="font-semibold text-foreground">{withCurrency(item.price * mainItem.quantity)}</span>
           )}
         </div>
       </div>
       {item.comments && (
-        <div className="italic text-sm">({item.comments})</div>
+        <div className="mt-0.5 text-[12px] leading-snug text-muted">{item.comments}</div>
       )}
       {item?.selectedGroups?.map(group =>
-        <div className="border-[3px] border-l-warning border-r-0 border-y-0 mb-2" key={group.out?.id}>
+        <div className="mt-1 border-l border-border pl-2" key={group.out?.id}>
           {group?.selectedModifiers?.map(modifier => (
             <CartItemName key={modifier.id} item={modifier} mainItem={mainItem} />
           ))}

@@ -21,7 +21,8 @@
     "confirmTitle": "Please confirm",
     "confirmCartMessage_one": "There is {{count}} item in cart, choose an action",
     "confirmCartMessage_other": "There are {{count}} items in cart, choose an action",
-    "pax": "{{count}} PAX"
+    "pax": "{{count}} PAX",
+    "switchTable": "Switch table"
   },
   "modifiers": {
     "modifyTitle": "Modify {{name}}",
@@ -29,6 +30,9 @@
     "replacedWarning": "Last modifier is replaced, to replace any other modifier remove it from right sidebar and choose again."
   },
   "persons": {
-    "chooseCount": "Choose number of persons"
+    "chooseCount": "Choose number of persons",
+    "hint": "How many guests are at this table?",
+    "clear": "Clear",
+    "confirm": "OK"
   }
-}
+}

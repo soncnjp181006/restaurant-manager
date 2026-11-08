@@ -21,7 +21,7 @@ export const Layout = ({
     }>
       <div className="flex h-full min-h-0">
         {showSidebar && (
-          <div className="flex-grow-0 flex-shrink-0 w-[130px]">
+          <div className="flex-grow-0 flex-shrink-0 w-[76px] xl:w-[216px]">
             <Sidebar/>
           </div>
         )}

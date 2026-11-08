@@ -3,6 +3,8 @@
   "verifyClosingFailed": "Không xác minh được trạng thái chu kỳ chốt ngày. Vui lòng thử lại.",
   "tableLocked": "{{user}} đang nhận đơn hàng trên bàn này rồi",
   "floor": {
+    "title": "Sơ đồ bàn",
+    "tables": "{{count}} bàn",
     "switchTable": "Chuyển từ Bàn {{table}} sang bàn khác",
     "noFloors": "Thiết bị này chưa có khu vực hay bàn nào để mở hoá đơn.",
     "noFloorsFix": "Hãy tạo khu vực và bàn trong phần Quản lý; nếu đã có sẵn thì nạp lại bộ nhớ đệm trên thiết bị này.",

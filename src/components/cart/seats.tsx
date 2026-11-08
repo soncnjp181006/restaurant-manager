@@ -1,5 +1,5 @@
-import { Button } from "@/components/common/input/button.tsx";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { nanoid } from "nanoid";
 import ScrollContainer from "react-indiana-drag-scroll";
 import React, { useMemo } from "react";
@@ -16,39 +16,50 @@ export const Seats = () => {
   }, [state.cart]);
 
   return (
-    <ScrollContainer>
-      <div className="flex gap-2" data-testid="cart-seats">
-        <Button variant="warning" size="lg" icon={faPlus} data-testid="cart-add-seat" onClick={() => {
-          const newSeat = nanoid();
-          setState(prev => ({
-            ...prev,
-            seats: [
-              ...prev.seats,
-              newSeat
-            ],
-            seat: newSeat
-          }))
-        }}>{t('seats.seat')}</Button>
+    <ScrollContainer className="clean-scroll">
+      <div className="flex items-center gap-1.5" data-testid="cart-seats">
+        <button
+          type="button"
+          className="chip !h-8 !px-2.5 !text-[12.5px]"
+          data-testid="cart-add-seat"
+          onClick={() => {
+            const newSeat = nanoid();
+            setState(prev => ({
+              ...prev,
+              seats: [
+                ...prev.seats,
+                newSeat
+              ],
+              seat: newSeat
+            }))
+          }}
+        >
+          <FontAwesomeIcon icon={faPlus} className="text-[9px]" />
+          {t('seats.seat')}
+        </button>
         {noSeat && (
-          <Button
-            size="lg"
-            className="btn btn-primary whitespace-nowrap" active={undefined === state.seat}
+          <button
+            type="button"
+            className="chip !h-8 whitespace-nowrap !text-[12.5px]"
+            data-active={undefined === state.seat}
             onClick={() => setState(prev => ({
               ...prev,
               seat: undefined
             }))}
-          >{t('seats.noSeat')}</Button>
+          >{t('seats.noSeat')}</button>
         )}
         {state.seats.map((item, index) => (
-          <Button
-            size="lg"
-            className="btn btn-primary whitespace-nowrap" active={item === state.seat}
+          <button
+            type="button"
+            className="chip !h-8 whitespace-nowrap !text-[12.5px] tnum"
+            aria-label={t('seats.seatNumber', { number: index + 1 })}
+            data-active={item === state.seat}
             onClick={() => setState(prev => ({
               ...prev,
               seat: item
             }))}
             key={index}
-          >{t('seats.seatNumber', { number: index + 1 })}</Button>
+          >{index + 1}</button>
         ))}
       </div>
     </ScrollContainer>

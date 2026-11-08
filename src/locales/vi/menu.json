@@ -21,7 +21,8 @@
     "confirmTitle": "Vui lòng xác nhận",
     "confirmCartMessage_one": "Giỏ có {{count}} món, hãy chọn thao tác",
     "confirmCartMessage_other": "Giỏ có {{count}} món, hãy chọn thao tác",
-    "pax": "{{count}} khách"
+    "pax": "{{count}} khách",
+    "switchTable": "Đổi bàn"
   },
   "modifiers": {
     "modifyTitle": "Sửa {{name}}",
@@ -29,6 +30,9 @@
     "replacedWarning": "Tuỳ chọn thêm cuối cùng đã được thay thế, muốn thay thế tuỳ chọn khác hãy xoá nó khỏi thanh bên phải rồi chọn lại."
   },
   "persons": {
-    "chooseCount": "Chọn số người"
+    "chooseCount": "Chọn số người",
+    "hint": "Bàn này có bao nhiêu khách?",
+    "clear": "Xoá",
+    "confirm": "OK"
   }
 }

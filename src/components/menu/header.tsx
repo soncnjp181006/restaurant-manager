@@ -3,7 +3,7 @@ import {useAtom} from "jotai";
 import {appSettings, appState, closingEnforcementAtom} from "@/store/jotai.ts";
 import {Button} from "@/components/common/input/button.tsx";
 import {faArrowLeft, faPlus, faTable, faTimes, faUser, faUsers} from "@fortawesome/free-solid-svg-icons";
-import {cn} from "@/lib/utils.ts";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import React, {useEffect, useState} from "react";
 import {Modal} from "@/components/common/react-aria/modal.tsx";
 import {MenuItemType} from "@/api/model/cart_item.ts";
@@ -177,99 +177,120 @@ export const MenuHeader = () => {
     }));
   }
 
+  const newItemCount = state.cart.filter(item => item.newOrOld === MenuItemType.new).length;
+
   return (
     <>
-      <div className="flex justify-between items-center w-full" data-testid="menu-header">
-        <div className="flex items-center gap-2">
-          {!hideTableSelection && (
-            <Button variant="primary" icon={faArrowLeft} onClick={reset} size="lg" data-testid="menu-back-floor">{state?.floor?.name}</Button>
-          )}
-          {state?.orders?.length > 0 ? (
-            <>
-              <ScrollContainer className="max-w-[300px] flex flex-nowrap gap-3">
-                <div className="input-group" data-testid="menu-order-tabs">
-                  {state?.orders?.map((order, index) => (
-                    <Button
-                      key={index}
-                      variant="primary"
-                      onClick={() => onOrderClick(order.id)}
-                      flat
-                      size="lg"
-                      active={state?.order?.id?.toString() === order?.id.toString()}
-                    >
-                      {t('header.orderNumber', { number: getInvoiceNumber(order) })}
-                    </Button>
-                  ))}
-                </div>
-              </ScrollContainer>
+      <div className="flex w-full flex-col gap-2" data-testid="menu-header">
+        <div className="flex w-full items-center gap-3 min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
+            {!hideTableSelection && (
               <Button
-                active={state?.order?.id === MenuItemType.new}
-                variant="primary"
-                flat
-                size="lg"
-                disabled={orderTakingBlocked}
-                onClick={() => onOrderClick('new')}
-                icon={faPlus}
-                data-testid="menu-new-order"
-              >{t('header.newOrder')}</Button>
-            </>
-          ) : null}
+                variant="secondary"
+                icon={faArrowLeft}
+                onClick={reset}
+                data-testid="menu-back-floor"
+                className="btn-flat flex-shrink-0"
+              >
+                <span className="max-w-[140px] truncate">{state?.floor?.name}</span>
+              </Button>
+            )}
 
-          {!hideTableSelection && (
+            {/* Table is the headline of the order: it is the one thing a
+                waiter checks before every tap. */}
+            {!hideTableSelection && (
+              <Button
+                type="button"
+                onClick={switchTable}
+                data-testid="menu-table"
+                aria-label={t('header.switchTable', { defaultValue: 'Switch table' })}
+                className="min-w-0 gap-2 !border-transparent !bg-transparent px-2 text-[19px] font-semibold leading-none hover:!bg-foreground/5"
+              >
+                <FontAwesomeIcon icon={faTable} className="text-[14px] text-muted" />
+                <span className="truncate">{getTableLabel(state?.table)}</span>
+              </Button>
+            )}
+
             <Button
               type="button"
-              className="btn btn-primary lg btn-flat min-w-[50px]"
-              onClick={switchTable}
-              icon={faTable}
-              data-testid="menu-table"
-            >{getTableLabel(state?.table)}</Button>
-          )}
-          <Button type="button"
-                  className="btn btn-primary lg btn-flat"
-                  onClick={openPersons}
-                  icon={faUsers}
-                  data-testid="menu-persons"
-          >
-            {t('header.pax', { count: Number(state?.persons) || 0 })}
-          </Button>
-
-          <div className="input-group">
-            <Button flat variant="primary" size="lg" icon={faUser} onClick={() => setCustomerModal(true)} data-testid="menu-customer">
-              {state?.customer ? state.customer?.name : t('header.customer')}
-            </Button>
-          </div>
-          {state.cart.filter(item => item.newOrOld === MenuItemType.new).length > 0 && (
-            <Button variant="danger" className="flex-1" size="lg" icon={faTimes} onClick={clear}
-                    data-testid="menu-clear-cart"
-            >{t('header.clear')}</Button>
-          )}
-        </div>
-
-        <div className="flex input-group rounded-full" data-testid="menu-order-types">
-          {setting?.order_types?.map((item, index) => (
-            <Button
-              variant="primary"
-              size="lg"
-              className={cn(
-                "flex-1",
-                index === 0 && '!rounded-l-lg',
-                index === setting?.order_types?.length - 1 && ' !rounded-r-lg'
-              )}
-              active={item.id.toString() === state?.orderType?.id?.toString()}
-              onClick={() => {
-                setState(prev => ({
-                  ...prev,
-                  orderType: item
-                }))
-              }}
-              key={index}
-              flat
-              data-testid={`menu-order-type-${index}`}
+              className="chip flex-shrink-0"
+              onClick={openPersons}
+              icon={faUsers}
+              data-testid="menu-persons"
             >
-              {item.name}
+              {t('header.pax', { count: Number(state?.persons) || 0 })}
             </Button>
-          ))}
+
+            <Button
+              className="chip max-w-[200px] flex-shrink-0"
+              icon={faUser}
+              onClick={() => setCustomerModal(true)}
+              data-testid="menu-customer"
+            >
+              <span className="truncate">
+                {state?.customer ? state.customer?.name : t('header.customer')}
+              </span>
+            </Button>
+
+            {newItemCount > 0 && (
+              <Button
+                variant="danger"
+                className="chip btn-flat flex-shrink-0"
+                icon={faTimes}
+                onClick={clear}
+                data-testid="menu-clear-cart"
+              >{t('header.clear')}</Button>
+            )}
+          </div>
+
+          <div className="ml-auto flex-shrink-0">
+            <div className="flex items-center gap-0.5 rounded-[10px] border border-border bg-surface p-0.5" data-testid="menu-order-types">
+              {setting?.order_types?.map((item, index) => (
+                <button
+                  type="button"
+                  className="segment"
+                  data-active={item.id.toString() === state?.orderType?.id?.toString()}
+                  onClick={() => {
+                    setState(prev => ({
+                      ...prev,
+                      orderType: item
+                    }))
+                  }}
+                  key={index}
+                  data-testid={`menu-order-type-${index}`}
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
+
+        {state?.orders?.length > 0 ? (
+          <div className="flex min-w-0 items-center gap-2" data-testid="menu-order-tabs">
+            <ScrollContainer className="flex min-w-0 flex-1 flex-nowrap items-center gap-1.5">
+              {state?.orders?.map((order, index) => (
+                <button
+                  type="button"
+                  className="chip"
+                  data-active={state?.order?.id?.toString() === order?.id.toString()}
+                  onClick={() => onOrderClick(order.id)}
+                  key={index}
+                >
+                  {t('header.orderNumber', { number: getInvoiceNumber(order) })}
+                </button>
+              ))}
+            </ScrollContainer>
+            <Button
+              variant="secondary"
+              disabled={orderTakingBlocked}
+              onClick={() => onOrderClick('new')}
+              icon={faPlus}
+              data-testid="menu-new-order"
+              data-active={state?.order?.id === MenuItemType.new}
+            >{t('header.newOrder')}</Button>
+          </div>
+        ) : null}
       </div>
       <Modal
         open={customerModal}

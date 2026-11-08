@@ -104,55 +104,48 @@ export const MenuPersons = () => {
     }
   }, [error]);
 
-  const btnClasses = 'size-[85px] sm:size-[100px] md:size-[120px] p-0 text-foreground active:scale-[0.95] transition-all duration-75 bg-surface active:text-neutral-100 active:bg-neutral-900 rounded-full text-3xl';
-
   return (
-    <div className="flex h-full w-full justify-center items-center flex-col gap-5 bg-surface-elevated" data-testid="menu-persons-screen">
-      <h3 className={
-        cn("text-4xl", error && 'login-error')
-      }>{t('persons.chooseCount')}</h3>
-      <div
-        className="w-[380px] h-[75px] flex items-center justify-center text-3xl font-bold">{state.persons}</div>
-      <div className="grid grid-cols-3 gap-3">
-        <button type="button" onClick={() => onKey('1')}
-                className={btnClasses}>1
-        </button>
-        <button type="button" onClick={() => onKey('2')}
-                className={btnClasses}>2
-        </button>
-        <button type="button" onClick={() => onKey('3')}
-                className={btnClasses}>3
-        </button>
-        <button type="button" onClick={() => onKey('4')}
-                className={btnClasses}>4
-        </button>
-        <button type="button" onClick={() => onKey('5')}
-                className={btnClasses}>5
-        </button>
-        <button type="button" onClick={() => onKey('6')}
-                className={btnClasses}>6
-        </button>
-        <button type="button" onClick={() => onKey('7')}
-                className={btnClasses}>7
-        </button>
-        <button type="button" onClick={() => onKey('8')}
-                className={btnClasses}>8
-        </button>
-        <button type="button" onClick={() => onKey('9')}
-                className={btnClasses}>9
-        </button>
-        <button type="button" onClick={() => setState(prev => ({
-          ...prev,
-          persons: undefined
-        }))}
-                className="size-[85px] sm:size-[100px] md:size-[120px] p-0 text-white active:scale-[0.95] transition-all duration-75 bg-danger-500 active:bg-danger-900 rounded-full text-3xl">C
-        </button>
-        <button type="button" onClick={() => onKey('0')}
-                className={btnClasses}>0
-        </button>
-        <button type="button" onClick={onOk} data-testid="menu-persons-ok"
-                className="size-[85px] sm:size-[100px] md:size-[120px] p-0 text-white active:scale-[0.95] transition-all duration-75 bg-success-500 active:bg-success-900 rounded-full text-3xl">OK
-        </button>
+    <div className="flex h-full w-full flex-col items-center justify-center gap-8 bg-canvas px-4" data-testid="menu-persons-screen">
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h2 className={cn("text-[24px] font-semibold tracking-[-0.02em]", error && 'login-error')}>
+          {t('persons.chooseCount')}
+        </h2>
+        <p className="text-[13px] text-muted">
+          {t('persons.hint', { defaultValue: 'How many guests are at this table?' })}
+        </p>
+        <div className="mt-3 min-w-[120px] rounded-[10px] border border-border bg-surface px-6 py-2 text-center text-[32px] font-semibold leading-none tnum">
+          {state.persons || '0'}
+        </div>
+      </div>
+
+      <div className="w-full max-w-[340px]">
+        <div className="keypad">
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
+            <button key={digit} type="button" onClick={() => onKey(digit)} className="keypad-key">
+              {digit}
+            </button>
+          ))}
+          <button
+            type="button"
+            aria-label={t('persons.clear', { defaultValue: 'Clear' })}
+            onClick={() => setState(prev => ({
+              ...prev,
+              persons: undefined
+            }))}
+            className="keypad-key keypad-key--danger"
+          >
+            C
+          </button>
+          <button type="button" onClick={() => onKey('0')} className="keypad-key">0</button>
+          <button
+            type="button"
+            onClick={onOk}
+            data-testid="menu-persons-ok"
+            className="keypad-key keypad-key--confirm"
+          >
+            {t('persons.confirm', { defaultValue: 'OK' })}
+          </button>
+        </div>
       </div>
     </div>
   );

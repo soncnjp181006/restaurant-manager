@@ -190,66 +190,63 @@ export const FloorTable = ({
         width: settings.width,
         left: clampAxis(displayX, getMaxX()),
         top: clampAxis(displayY, getMaxY()),
-        borderColor: settings.color,
         '--scale': 0.95,
       } as CSSProperties}
       className={cn(
-        "border absolute z-0 cursor-pointer flex flex-col justify-center items-center",
+        "floor-table absolute z-0 flex cursor-pointer flex-col items-center justify-center border",
         settings.rounded,
-        isSelected && "ring-4 ring-primary z-10"
+        isSelected && "z-10 ring-2 ring-primary"
       )}
       onClick={() => {
         if (onClick) onClick();
       }}
     >
       {isSelected && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs bg-primary text-white px-2 py-[2px] rounded-full">
+        <span className="absolute left-1/2 top-1 -translate-x-1/2 rounded bg-primary px-1.5 py-px text-[9.5px] font-semibold text-primary-fg">
           {t('ui.selectedLabel')}
         </span>
       )}
       {isLocked && (
-        <span
-          className="absolute -top-3 -right-3 rounded-full h-6 w-6 flex items-center justify-center shadow"
-          style={{
-            color: table.background,
-            background: table.color
-          }}
-        >
-          <FontAwesomeIcon icon={faLock} size="sm"/>
+        <span className="absolute right-1 top-1 text-[10px] opacity-70">
+          <FontAwesomeIcon icon={faLock} />
         </span>
       )}
-      {order && (
-        <>
-          {isLateOrder && (
-            <span
-              className="absolute -top-3 -left-3 rounded-full h-6 w-6 flex items-center justify-center bg-surface-elevated text-danger-500 shadow"
-              title={t('forms.moreThanTwoHours')}
-            >
-              <FontAwesomeIcon icon={faExclamationCircle} beat/>
+      {isLateOrder && order && (
+        <span className="absolute left-1 top-1 text-[10px] text-danger" title={t('forms.moreThanTwoHours')}>
+          <FontAwesomeIcon icon={faExclamationCircle} />
+        </span>
+      )}
+      {Number(numberOfOrders) > 1 && (
+        <span className="absolute right-1 top-1 rounded bg-current/15 px-1 text-[9.5px] font-semibold tnum">
+          {numberOfOrders}
+        </span>
+      )}
+
+      <div className="flex w-full min-w-0 flex-col items-center justify-center gap-0.5 px-2 text-center">
+        {order ? (
+          <>
+            {order?.user?.first_name && (
+              <span className="max-w-full truncate text-[10.5px] leading-none opacity-65">
+                {order.user.first_name}
+              </span>
+            )}
+            <span className="max-w-full truncate text-[21px] font-semibold leading-tight">
+              {getTableLabel(table)}
             </span>
-          )}
-          <span className="text-xs font-bold rounded-2xl py-[2px] px-2 absolute -top-3 shadow-lg" style={{
-            color: table.background,
-            background: table.color
-          }}>
-            <Countdown time={order.created_at}/>
+            <span className="text-[12.5px] font-semibold leading-none tnum">
+              {withCurrency(total)}
+            </span>
+            <span className="text-[10px] leading-none opacity-60">
+              <Countdown time={order.created_at}/>
+            </span>
+          </>
+        ) : (
+          <span className="max-w-full truncate text-[21px] font-semibold leading-tight">
+            {getTableLabel(table)}
           </span>
-          <div className="text-sm">({order?.user?.first_name})</div>
-          {Number(numberOfOrders) > 1 && (
-            <span className="text-xs font-bold rounded-2xl py-[2px] px-2 absolute -top-3 -right-3 shadow-lg" style={{
-              color: table.background,
-              background: table.color
-            }}>{numberOfOrders}</span>
-          )}
-        </>
-      )}
-      <span className="text-2xl">{getTableLabel(table)}</span>
-      {order && (
-        <span className="text-lg font-bold rounded-2xl py-[2px] px-2" style={{
-          color: table.background,
-          background: table.color
-        }}>{withCurrency(total)}</span>
-      )}
+        )}
+      </div>
+
       {isEditing && (
         <>
           <DialogTrigger>

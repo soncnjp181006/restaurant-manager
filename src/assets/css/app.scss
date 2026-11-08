@@ -17,68 +17,69 @@ body {
   --app-toolbar-h: 0px;
 
   /*
-   * Cold fallback tokens. ThemeProvider overwrites these from
-   * `brand-palettes.ts` on mount, but the first paint and anything that
-   * renders before that (login, self-order, print previews) uses these —
-   * so they must be the same cold family, not neutral gray.
+   * Fallback tokens. ThemeProvider overwrites these from `brand-palettes.ts`
+   * on mount, but the first paint and anything that renders before that
+   * (login, self-order, print previews) uses these — so they must match the
+   * shipped "ink" palette exactly.
    */
-  --canvas: 226 234 243; /* blue-tinted slate */
-  --surface: 243 246 251;
+  --canvas: 233 236 241;
+  --surface: 245 247 249;
   --surface-elevated: 255 255 255;
-  --foreground: 22 34 48;
-  --muted: 88 108 130; /* 7.1:1 on --surface */
-  --border: 206 218 231;
-  --primary: 14 116 144;
+  --foreground: 17 21 28;
+  --muted: 88 99 113; /* 5.7:1 on --surface */
+  --border: 217 223 231;
+  --primary: 43 62 224;
   --primary-fg: 255 255 255;
   --warning: 180 83 9;
   --danger: 190 18 60;
-  --success: 13 148 136;
-  --info: 2 132 199;
+  --success: 13 116 110;
+  --info: 3 105 161;
 
-  /* Elevation + accent ramps (cold). Components read these, never raw hex. */
-  --elev-1: 0 1px 2px rgb(15 34 56 / 0.06), 0 1px 3px rgb(15 34 56 / 0.05);
-  --elev-2: 0 2px 6px rgb(15 34 56 / 0.08), 0 8px 20px -8px rgb(15 34 56 / 0.14);
-  --elev-3: 0 4px 10px rgb(15 34 56 / 0.1), 0 18px 40px -12px rgb(15 34 56 / 0.22);
-  --ring: rgb(var(--primary) / 0.28);
+  /* Elevation + accent ramps. Components read these, never raw hex. */
+  --elev-1: 0 1px 2px rgb(16 20 28 / 0.05), 0 1px 1px rgb(16 20 28 / 0.04);
+  --elev-2: 0 2px 4px rgb(16 20 28 / 0.06), 0 10px 24px -14px rgb(16 20 28 / 0.18);
+  --elev-3: 0 4px 10px rgb(16 20 28 / 0.08), 0 24px 48px -24px rgb(16 20 28 / 0.28);
+  --ring: rgb(var(--primary) / 0.3);
   --accent-1: rgb(var(--primary));
   --accent-2: rgb(var(--info));
-  --accent-soft: rgb(var(--primary) / 0.08);
-  --accent-line: linear-gradient(90deg, rgb(var(--primary) / 0), rgb(var(--primary)) 18%, rgb(var(--info)) 82%, rgb(var(--info) / 0));
+  --accent-soft: rgb(var(--primary) / 0.07);
+  --accent-line: linear-gradient(90deg, rgb(var(--primary) / 0), rgb(var(--primary)) 22%, rgb(var(--primary) / 0));
   --hairline: rgb(var(--border));
-  --grid-line: rgb(15 34 56 / 0.07);
+  --grid-line: rgb(16 20 28 / 0.06);
 
   /*
-   * "Quầy đêm 2.0" redesign tokens (see gui-test preview pos-ui-redesign.html):
-   * radius hierarchy by surface level + one primary glow for the boldest
-   * action on screen. Light theme keeps quiet shadows; dark gets the glow.
+   * Geometry ladder: one card radius, one control radius. Everything in the
+   * shell (panels, tiles, inputs) uses these instead of ad-hoc radii, so
+   * nesting never produces three different corner roundings.
    */
-  --radius-card: 18px;
-  --radius-tile: 13px;
+  --radius-card: 14px;
+  --radius-tile: 10px;
+  --radius-control: 9px;
   --radius-pill: 999px;
-  --glow: 0 6px 22px rgb(var(--primary) / 0.22);
+  --glow: 0 2px 0 rgb(var(--primary) / 0.14);
 }
 
 .dark {
-  --canvas: 6 10 17; /* deep blue-black */
-  --surface: 13 20 31;
-  --surface-elevated: 20 30 46;
-  --foreground: 237 243 250;
-  --muted: 139 161 183;
-  --border: 42 58 78;
-  --primary: 45 212 238;
-  --primary-fg: 4 30 38;
-  --warning: 252 194 60;
+  --canvas: 10 12 16;
+  --surface: 18 21 27;
+  --surface-elevated: 26 30 38;
+  --foreground: 238 241 245;
+  --muted: 154 163 176;
+  --border: 44 50 61;
+  --primary: 140 160 255;
+  --primary-fg: 10 15 38;
+  --warning: 251 191 36;
   --danger: 251 113 133;
-  --success: 63 219 160;
+  --success: 52 211 153;
   --info: 56 189 248;
 
-  --elev-1: 0 1px 2px rgb(0 0 0 / 0.45), 0 1px 3px rgb(2 12 24 / 0.4);
-  --elev-2: 0 2px 6px rgb(0 0 0 / 0.5), 0 10px 24px -10px rgb(0 4 12 / 0.7);
-  --elev-3: 0 4px 12px rgb(0 0 0 / 0.55), 0 22px 44px -14px rgb(0 4 12 / 0.8);
-  --ring: rgb(var(--primary) / 0.35);
-  --accent-soft: rgb(var(--primary) / 0.13);
-  --grid-line: rgb(120 180 220 / 0.09);
-  --glow: 0 4px 26px rgb(var(--primary) / 0.33);
+  --elev-1: 0 1px 1px rgb(0 0 0 / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.03);
+  --elev-2: 0 2px 6px rgb(0 0 0 / 0.45), 0 14px 32px -20px rgb(0 0 0 / 0.8);
+  --elev-3: 0 8px 18px rgb(0 0 0 / 0.5), 0 32px 60px -30px rgb(0 0 0 / 0.9);
+  --ring: rgb(var(--primary) / 0.4);
+  --accent-soft: rgb(var(--primary) / 0.12);
+  --grid-line: rgb(148 163 200 / 0.08);
+  --glow: 0 2px 0 rgb(var(--primary) / 0.2);
 }
 
 html[data-app-toolbar='1'] {
@@ -90,21 +91,20 @@ html[data-app-toolbar='1'] {
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  /* Was bg-warning-100 — a warm yellow thumb on every cold surface. */
-  background: rgb(var(--muted) / 0.45);
+  background: rgb(var(--muted) / 0.32);
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--primary) / 0.75);
+  background: rgb(var(--muted) / 0.6);
   background-clip: padding-box;
 }
 
@@ -137,9 +137,9 @@ html[data-app-toolbar='1'] {
 
 /* Shared motion language: one curve, two durations. Respect reduced motion. */
 :root {
-  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.3, 1);
-  --dur-quick: 140ms;
-  --dur-move: 240ms;
+  --ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);
+  --dur-quick: 120ms;
+  --dur-move: 200ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -155,7 +155,7 @@ html[data-app-toolbar='1'] {
 
 html,
 body {
-  @apply bg-surface text-foreground;
+  @apply bg-canvas text-foreground;
 }
 
 html,
@@ -166,6 +166,20 @@ optgroup,
 select,
 textarea {
   font-family: "Urbanist", sans-serif;
+}
+
+body {
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Prices, counts and anything that lands in a column get tabular figures. */
+.tnum,
+.digital,
+[data-price] {
+  font-variant-numeric: tabular-nums;
 }
 
 .form-label {
@@ -192,8 +206,17 @@ a {
 h1, h2, h3, h4, h5, h6, .title, .card-title {
   font-family: "Urbanist", sans-serif;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.022em;
+  line-height: 1.2;
   @apply text-foreground;
+}
+
+/* Section labels are sentence case and quiet — none of the old tracked-out caps. */
+.eyebrow {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgb(var(--muted));
 }
 
 th {
@@ -247,14 +270,14 @@ th {
     vertical-align: middle;
   }
   th{
-    font-weight: 700;
-    font-size: 11.5px;
-    letter-spacing: 0.04em;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0;
     color: rgb(var(--muted));
   }
   th, td{
     border-collapse: collapse;
-    padding: 13px 16px;
+    padding: 12px 16px;
     //text-align: left;
     vertical-align: middle;
     border-bottom: 1px solid rgb(var(--border));
@@ -263,7 +286,7 @@ th {
     transition: background var(--dur-quick) var(--ease-out-soft);
   }
   tbody tr:hover td {
-    background: rgb(var(--primary) / 0.07);
+    background: rgb(var(--foreground) / 0.03);
   }
   &.table-sm{
     th, td{
@@ -299,8 +322,7 @@ th {
       position: sticky;
       top: 0;
       background: rgb(var(--surface-elevated));
-      /* Cold hairline under the sticky header instead of a gray shadow. */
-      box-shadow: inset 0 -1px 0 rgb(var(--primary) / 0.25), var(--elev-1);
+      box-shadow: inset 0 -1px 0 rgb(var(--border));
     }
   }
 }
@@ -1475,3 +1497,5 @@ h1, h2, h3, h4, h5, h6, .title, .card-title {
     scroll-behavior: auto !important;
   }
 }
+
+@import "ink";

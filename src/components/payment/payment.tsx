@@ -579,32 +579,40 @@ export const Payment = () => {
 
   return (
     <>
-      <div className="font-bold">
-        {order && (
-          <>
-            <div className="p-3">
-              <OrderTotals order={order} cart={state.cart} />
-            </div>
-            <div className="h-[2px] separator"></div>
-          </>
-        )}
-        {!order && (
-          <div className="p-3">
-            <CartTotals itemCount={cartItemCount} cart={state.cart} />
-          </div>
-        )}
+      <div>
+        {order && <OrderTotals order={order} cart={state.cart} />}
+        {!order && <CartTotals itemCount={cartItemCount} cart={state.cart} />}
 
-
-        <div className="p-3" data-testid="cart-payment-actions">
-          <div className="flex gap-3 mt-3">
-            <Button variant="primary" filled className="flex-1" size="lg" icon={faCheck} onClick={createOrderAndBack}
-                    disabled={isLoading || state.cart.length === 0 || orderTakingBlocked} isLoading={isLoading}
-                    data-testid="cart-to-kitchen">{t("payment:actions.toKitchen")}</Button>
-            <Button variant="warning" className="flex-1" size="lg" icon={faCreditCard} onClick={openPayment}
-                    disabled={isLoading || state.cart.length === 0 || orderTakingBlocked} isLoading={isLoading}
-                    data-testid="cart-pay-now">{t("payment:actions.payNow")}</Button>
-            <Button variant="danger" className="flex-1" size="lg" icon={faCancel} onClick={cancel}
-                    disabled={isLoading} data-testid="cart-cancel">{t("payment:actions.cancel")}</Button>
+        <div className="mt-3" data-testid="cart-payment-actions">
+          <Button
+            variant="primary"
+            filled
+            className="w-full"
+            size="lg"
+            icon={faCheck}
+            onClick={createOrderAndBack}
+            disabled={isLoading || state.cart.length === 0 || orderTakingBlocked}
+            isLoading={isLoading}
+            data-testid="cart-to-kitchen"
+          >{t("payment:actions.toKitchen")}</Button>
+          <div className="mt-2 flex gap-2">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              icon={faCreditCard}
+              onClick={openPayment}
+              disabled={isLoading || state.cart.length === 0 || orderTakingBlocked}
+              isLoading={isLoading}
+              data-testid="cart-pay-now"
+            >{t("payment:actions.payNow")}</Button>
+            <Button
+              variant="secondary"
+              className="btn-flat flex-1 !text-muted hover:!text-foreground"
+              icon={faCancel}
+              onClick={cancel}
+              disabled={isLoading}
+              data-testid="cart-cancel"
+            >{t("payment:actions.cancel")}</Button>
           </div>
         </div>
       </div>

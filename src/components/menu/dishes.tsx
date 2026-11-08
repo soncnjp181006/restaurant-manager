@@ -185,8 +185,8 @@ export const MenuDishes = () => {
               className={cn(
                 "rounded-full transition-all",
                 activeSlide === index
-                  ? "h-2.5 w-2.5 bg-warning"
-                  : "h-1.5 w-1.5 bg-neutral-400 hover:bg-neutral-500"
+                  ? "h-2.5 w-2.5 bg-foreground"
+                  : "h-1.5 w-1.5 bg-muted/40 hover:bg-muted"
               )}
             />
           ))}
@@ -197,18 +197,17 @@ export const MenuDishes = () => {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden" data-testid="menu-dishes-panel">
-      <div className="mb-3 flex shrink-0 items-center gap-2">
-        <div className="min-w-0 flex-1 rounded-xl">
+      <div className="mb-2 flex shrink-0 items-center gap-2">
+        <div className="min-w-0 flex-1">
           <MenuCategories/>
         </div>
         {enableDishSearch && (
           <Button
-            size="lg"
-            variant="primary"
+            variant="secondary"
             icon={faSearch}
             active={searchOpen}
             onClick={toggleSearch}
-            className="flex-shrink-0 h-[56px]"
+            className="flex-shrink-0"
             data-testid="menu-dish-search"
           >
             {t('actions.search')}

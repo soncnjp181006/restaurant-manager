@@ -523,87 +523,108 @@ export const FloorLayout = () => {
 
   return (
     <>
-      <div className="flex flex-col h-full min-h-0 transition-all delay-75" data-testid="menu-floor" style={{
-        background: state.floor?.background
-      }}>
-        <div className="h-[80px] bg-surface-elevated p-3 flex items-center">
-          {state.switchTable && <div className="text-xl"><FontAwesomeIcon icon={faChair}/> {t('floor.switchTable', {
-            table: getTableLabel(state?.table)
-          })}</div>}
-          {ordersWarming && (
-            <div className="alert alert-info w-full" data-testid="floor-orders-warming">
-              {t('floor.ordersWarming', {
-                defaultValue: 'Loading open checks… please wait a moment.',
-              })}
-            </div>
-          )}
-          {isClosingLocked && closingLockMessage && (
-            <div className="alert alert-warning w-full">
-              {closingLockMessage}
-            </div>
+      <div className="flex h-full min-h-0 flex-col" data-testid="menu-floor">
+        <div className="flex items-start justify-between gap-3 px-4 pb-3 pt-4">
+          <div className="min-w-0">
+            <h1 className="text-[20px] font-semibold leading-tight tracking-[-0.022em]">
+              {t('floor.title')}
+            </h1>
+            <p className="mt-0.5 truncate text-[12.5px] text-muted">
+              {state.floor?.name}
+              {tables.length > 0 && (
+                <> · {t('floor.tables', { count: tables.length })}</>
+              )}
+            </p>
+          </div>
+          {state.switchTable && (
+            <span className="chip pointer-events-none !h-8 flex-shrink-0">
+              <FontAwesomeIcon icon={faChair} className="text-[10px]" />
+              <span className="max-w-[320px] truncate text-[12.5px]">
+                {t('floor.switchTable', { table: getTableLabel(state?.table) })}
+              </span>
+            </span>
           )}
         </div>
-        <div className="layout relative flex-1 min-h-0 p-3 overflow-hidden" data-testid="menu-floor-tables">
-          {catalogLoading && (
-            <div className="flex items-center justify-center text-2xl text-muted">
-              {t('common:offline.syncing', { count: 0, defaultValue: 'Loading floors…' })}
-            </div>
-          )}
-          {!catalogLoading && floors?.length === 0 && (
-            <div
-              className="max-w-[560px] mx-auto mt-6 rounded-xl border border-border bg-surface-elevated p-5 flex flex-col gap-3"
-              data-testid="floor-no-data"
-            >
-              <strong className="text-xl">{t('floor.noFloors')}</strong>
-              <span className="text-muted">{t('floor.noFloorsFix')}</span>
-              <div className="flex gap-3">
-                <Link to={ADMIN} className="btn btn-primary">{t('floor.openAdmin')}</Link>
-                <Link to="/settings" className="btn btn-secondary">{t('floor.reloadCache')}</Link>
+
+        {ordersWarming && (
+          <div className="mx-4 mb-2 rounded-lg border border-info/30 bg-info/8 px-3 py-2 text-[12.5px]" data-testid="floor-orders-warming">
+            {t('floor.ordersWarming', {
+              defaultValue: 'Loading open checks… please wait a moment.',
+            })}
+          </div>
+        )}
+        {isClosingLocked && closingLockMessage && (
+          <div className="mx-4 mb-2 rounded-lg border border-warning/30 bg-warning/8 px-3 py-2 text-[12.5px]">
+            {closingLockMessage}
+          </div>
+        )}
+
+        <div className="mx-4 mb-3 min-h-0 flex-1" data-testid="menu-floor-tables">
+          <div
+            className="floor-canvas"
+            style={{ '--floor-bg': state.floor?.background } as CSSProperties}
+          >
+            {catalogLoading && (
+              <div className="empty-state">
+                <span className="empty-state-icon">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                </span>
+                <p className="text-[13px]">{t('common:offline.syncing', { count: 0, defaultValue: 'Loading floors…' })}</p>
               </div>
-            </div>
-          )}
-          {!catalogLoading && state.floor && (
-            <>
-              {tables?.map(item => (
-                <FloorTable
-                  order={tableOrder(item.id)}
-                  table={item}
-                  isEditing={false}
-                  isLocked={item.is_locked}
-                  onClick={() => onClick(item)}
-                  key={item.id}
-                  numberOfOrders={tableOrders(item.id)?.length}
-                />
-              ))}
-            </>
-          )}
+            )}
+
+            {!catalogLoading && floors?.length === 0 && (
+              <div
+                className="absolute inset-0 flex items-center justify-center p-6"
+                data-testid="floor-no-data"
+              >
+                <div className="panel flex max-w-[440px] flex-col gap-2 p-5">
+                  <strong className="text-[16px] font-semibold">{t('floor.noFloors')}</strong>
+                  <span className="text-[13px] leading-relaxed text-muted">{t('floor.noFloorsFix')}</span>
+                  <div className="mt-2 flex gap-2">
+                    <Link to={ADMIN} className="btn btn-primary btn-filled">{t('floor.openAdmin')}</Link>
+                    <Link to="/settings" className="btn btn-secondary">{t('floor.reloadCache')}</Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!catalogLoading && state.floor && tables?.map(item => (
+              <FloorTable
+                order={tableOrder(item.id)}
+                table={item}
+                isEditing={false}
+                isLocked={item.is_locked}
+                onClick={() => onClick(item)}
+                key={item.id}
+                numberOfOrders={tableOrders(item.id)?.length}
+              />
+            ))}
+          </div>
         </div>
-        <div className="floor-btns flex gap-3 p-3" data-testid="menu-floor-switcher">
-          {floors?.map(item => (
-            <Button
-              variant="custom"
-              key={item.id}
-              size="lg"
-              data-testid="menu-floor-btn"
-              className={
-                cn(
-                  "flex-1 max-w-[320px] relative outline-none pressable",
-                  state?.floor && item.id.toString() === state?.floor?.id?.toString() && 'bg-gradient'
-                )
-              }
-              onClick={() => setState(prev => ({
-                ...prev,
-                floor: item
-              }))}
-              style={{
-                '--background': item.background,
-                '--color': item.color,
-                '--scale': 0.98
-              } as CSSProperties}
-            >{item.name}</Button>
-          ))}
+
+        <div className="flex items-center gap-1.5 overflow-x-auto px-4 pb-4 clean-scroll" data-testid="menu-floor-switcher">
+          {floors?.map(item => {
+            const isActive = state?.floor && item.id.toString() === state?.floor?.id?.toString();
+            return (
+              <button
+                type="button"
+                key={item.id}
+                data-testid="menu-floor-btn"
+                data-active={isActive ? 'true' : undefined}
+                className="chip !h-9 flex-shrink-0 !px-3.5 !text-[13px]"
+                onClick={() => setState(prev => ({
+                  ...prev,
+                  floor: item
+                }))}
+              >
+                {item.name}
+              </button>
+            );
+          })}
         </div>
       </div>
     </>
   );
+
 }

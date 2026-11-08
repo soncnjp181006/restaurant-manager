@@ -1,4 +1,11 @@
 {
+  "title": "Current order",
+  "newLines": "Not sent",
+  "sentLines": "Sent to kitchen",
+  "empty": {
+    "title": "No items yet",
+    "hint": "Tap a dish to start this order."
+  },
   "seats": {
     "seat": "Seat",
     "noSeat": "No Seat",

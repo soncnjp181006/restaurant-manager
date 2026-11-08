@@ -16,6 +16,11 @@
     "integrations": "Tích hợp",
     "requiresApproval": "Cần quản lý phê duyệt"
   },
+  "groups": {
+    "sales": "Bán hàng",
+    "operations": "Ca làm",
+    "admin": "Doanh nghiệp"
+  },
   "modules": {
     "Menu": "Thực đơn",
     "Orders": "Đơn hàng",

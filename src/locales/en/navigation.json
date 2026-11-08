@@ -16,6 +16,11 @@
     "integrations": "Integrations",
     "requiresApproval": "Requires manager approval"
   },
+  "groups": {
+    "sales": "Selling",
+    "operations": "Shift",
+    "admin": "Business"
+  },
   "modules": {
     "Menu": "Menu",
     "Orders": "Orders",

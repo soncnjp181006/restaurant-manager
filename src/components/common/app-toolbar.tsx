@@ -230,7 +230,7 @@ export function AppToolbar() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[9990] flex h-[var(--app-toolbar-h)] items-center justify-between gap-3 border-t border-border bg-surface-elevated px-4 pointer-events-auto"
+      className="app-statusbar fixed bottom-0 left-0 right-0 z-[9990] flex h-[var(--app-toolbar-h)] items-center justify-between gap-3 px-4 pointer-events-auto"
       data-testid="app-toolbar"
       data-app-toolbar
       style={{ height: APP_TOOLBAR_HEIGHT }}
@@ -241,7 +241,7 @@ export function AppToolbar() {
         )}
         {/* Future left/center slots: sync progress, printers, clock, … */}
       </div>
-      <div className="relative flex items-center gap-1 shrink-0">
+      <div className="relative flex shrink-0 items-center gap-2">
         <UomConverterToolbar />
         {showConflicts && (
           <SyncConflictPanel onChanged={() => setSync(getSyncStatus())} />
@@ -253,11 +253,11 @@ export function AppToolbar() {
           data-testid="sync-status-dot"
           data-sync-kind={kind}
           onClick={onDotClick}
-          className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-surface"
+          className="flex h-8 items-center gap-2 rounded-full px-2 transition-colors hover:bg-foreground/5"
         >
           <span
             className={cn(
-              "inline-block h-3 w-3 rounded-full",
+              "inline-block h-2 w-2 rounded-full",
               kind === "offline" || kind === "conflict" || kind === "error"
                 ? "bg-danger-500"
                 : kind === "syncing" || kind === "pending"
@@ -266,6 +266,9 @@ export function AppToolbar() {
               kind === "syncing" && "animate-pulse",
             )}
           />
+          <span className="hidden max-w-[360px] truncate text-[12px] text-muted md:block">
+            {title}
+          </span>
         </button>
       </div>
     </div>

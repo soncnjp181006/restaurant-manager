@@ -218,9 +218,9 @@ export const Menu = () => {
     }
 
     return (
-      <div className="grid grid-cols-[minmax(0,1fr)_440px] gap-3 p-3 h-full min-h-0 overflow-hidden" data-testid="menu-page">
+      <div className="grid grid-cols-[minmax(0,1fr)_minmax(360px,404px)] gap-4 p-4 h-full min-h-0 overflow-hidden" data-testid="menu-page">
         <div className="flex min-h-0 flex-col overflow-hidden">
-          <div className="mb-3 flex h-[70px] shrink-0 items-center gap-3">
+          <div className="mb-3 flex shrink-0 items-center gap-3">
             <MenuHeader/>
           </div>
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden" data-testid="menu-dishes">
@@ -230,7 +230,7 @@ export const Menu = () => {
             <MenuActions/>
           </div>*/}
         </div>
-        <div className="bg-surface-elevated rounded-xl flex flex-col h-full min-h-0 overflow-hidden" data-testid="menu-cart">
+        <div className="panel flex flex-col h-full min-h-0 overflow-hidden" data-testid="menu-cart">
           <MenuCart/>
         </div>
       </div>

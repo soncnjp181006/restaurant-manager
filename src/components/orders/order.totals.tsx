@@ -36,22 +36,21 @@ export const CartTotals = ({cart, itemCount, className}: CartTotalsProps) => {
 
   return (
     <div className={cn("flex flex-col gap-1", className)}>
-      <div className="flex font-bold">
-        <div className="flex-1">{t('totals.items', {count: itemCount})}</div>
-        <div className="text-right">{withCurrency(itemsBase)}</div>
+      <div className="flex items-baseline justify-between text-[13px]">
+        <span className="text-muted">{t('totals.items', {count: itemCount})}</span>
+        <span className="tnum">{withCurrency(itemsBase)}</span>
       </div>
-      <div className="separator h-[2px]" style={separatorStyle}></div>
       {taxPreviewTotals.length > 0 ? (
         taxPreviewTotals.map(({tax, total}) => (
-          <div className="flex font-bold text-2xl text-success-900 dark:text-success-400" key={tax.id?.toString() ?? `${tax.name}-${tax.rate}`}>
-            <div className="flex-1">{t('totals.totalWithTax', {name: tax.name, rate: tax.rate})}</div>
-            <div className="text-right">{withCurrency(total)}</div>
+          <div className="mt-1 flex items-baseline justify-between gap-2 border-t border-border pt-2" key={tax.id?.toString() ?? `${tax.name}-${tax.rate}`}>
+            <span className="text-[12.5px] font-medium text-muted">{t('totals.totalWithTax', {name: tax.name, rate: tax.rate})}</span>
+            <span className="text-[20px] font-semibold tnum">{withCurrency(total)}</span>
           </div>
         ))
       ) : (
-        <div className="flex font-bold text-2xl text-success-900 dark:text-success-400">
-          <div className="flex-1">{t('totals.total')}</div>
-          <div className="text-right">{withCurrency(itemsBase)}</div>
+        <div className="mt-1 flex items-baseline justify-between gap-2 border-t border-border pt-2">
+          <span className="text-[12.5px] font-medium text-muted">{t('totals.total')}</span>
+          <span className="text-[20px] font-semibold tnum">{withCurrency(itemsBase)}</span>
         </div>
       )}
     </div>
@@ -144,10 +143,10 @@ export const OrderTotals = ({order, cart, className}: Props) => {
   const showLegacyDiscount = activeDiscountLines.length === 0 && (!!order?.discount || preview.discountAmount > 0);
 
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
-      <div className="flex font-bold">
-        <div className="flex-1">{t('totals.items', {count: preview.itemCount})}</div>
-        <div className="text-right">{withCurrency(preview.itemsTotal)}</div>
+    <div className={cn("flex flex-col gap-1 text-[12.5px] text-muted", className)}>
+      <div className="flex items-baseline justify-between text-[13px]">
+        <span>{t('totals.items', {count: preview.itemCount})}</span>
+        <span className="text-foreground tnum">{withCurrency(preview.itemsTotal)}</span>
       </div>
       {preview.taxAmount > 0 && (
         taxBreakdown.length > 0 ? taxBreakdown.map((entry, index) => (
@@ -223,10 +222,9 @@ export const OrderTotals = ({order, cart, className}: Props) => {
           <div className="text-right">{withCurrency(item.amount)}</div>
         </div>
       ))}
-      <div className="separator h-[2px]" style={separatorStyle}></div>
-      <div className="flex font-bold text-2xl text-success-900 dark:text-success-400">
-        <div className="flex-1">{t('totals.total')}</div>
-        <div className="text-right">{withCurrency(preview.total)}</div>
+      <div className="mt-1 flex items-baseline justify-between gap-2 border-t border-border pt-2 text-foreground">
+        <span className="text-[13px] font-medium">{t('totals.total')}</span>
+        <span className="text-[22px] font-semibold tracking-[-0.01em] tnum">{withCurrency(preview.total)}</span>
       </div>
       {order?.payments?.length > 0 && changeDue > 0 && (
         <>

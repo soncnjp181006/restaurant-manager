@@ -10,18 +10,26 @@ const withAlpha = (cssVar) => `rgb(var(${cssVar}) / <alpha-value>)`;
  * whole app cold without a text sweep — the lightness ladder is unchanged, so
  * every existing contrast ratio still holds.
  */
+/**
+ * Ink neutral ramp.
+ *
+ * Sits behind every `neutral-*`/`gray-*` utility. Near-achromatic on purpose:
+ * only a 1-2% cool bias, so cobalt and the four status colors stay the only
+ * saturated things on screen. Lightness steps match the old ramp, so the
+ * ~290 existing utilities keep their contrast relationships.
+ */
 const ice = {
-  50: "#f7fafc",
-  100: "#eef3f8",
-  200: "#dfe7f0",
-  300: "#c3cfdd",
-  400: "#8fa2b8",
-  500: "#64798f",
-  600: "#4c5f74",
-  700: "#374658",
-  800: "#22303f",
-  900: "#0f1620",
-  950: "#070b12",
+  50: "#f7f8fa",
+  100: "#eff1f4",
+  200: "#e2e6eb",
+  300: "#c9d0d8",
+  400: "#98a2af",
+  500: "#68737f",
+  600: "#505a66",
+  700: "#3a434d",
+  800: "#262d36",
+  900: "#151a20",
+  950: "#0b0e12",
 };
 
 const slate = {
@@ -132,18 +140,31 @@ module.exports = {
        * cold navy shadow instead — no per-component edits.
        */
       boxShadow: {
-        DEFAULT: "0 1px 3px 0 rgb(15 34 56 / 0.12), 0 1px 2px -1px rgb(15 34 56 / 0.10)",
-        md: "0 4px 6px -1px rgb(15 34 56 / 0.14), 0 2px 4px -2px rgb(15 34 56 / 0.10)",
-        lg: "0 10px 15px -3px rgb(15 34 56 / 0.18), 0 4px 6px -4px rgb(15 34 56 / 0.12)",
-        xl: "0 20px 25px -5px rgb(15 34 56 / 0.24), 0 8px 10px -6px rgb(15 34 56 / 0.16)",
-        "2xl": "0 25px 50px -12px rgb(15 34 56 / 0.40)",
+        DEFAULT: "0 1px 2px 0 rgb(16 20 28 / 0.06), 0 1px 1px 0 rgb(16 20 28 / 0.04)",
+        md: "0 2px 4px -1px rgb(16 20 28 / 0.08), 0 8px 18px -10px rgb(16 20 28 / 0.16)",
+        lg: "0 4px 10px -2px rgb(16 20 28 / 0.10), 0 16px 32px -18px rgb(16 20 28 / 0.22)",
+        xl: "0 8px 24px -6px rgb(16 20 28 / 0.16), 0 32px 56px -28px rgb(16 20 28 / 0.34)",
+        "2xl": "0 24px 64px -24px rgb(16 20 28 / 0.45)",
+      },
+      borderRadius: {
+        sm: "6px",
+        DEFAULT: "8px",
+        md: "9px",
+        lg: "10px",
+        xl: "12px",
+        "2xl": "16px",
+        "3xl": "20px",
+      },
+      fontFamily: {
+        sans: ["Urbanist", "system-ui", "sans-serif"],
+        display: ["Urbanist", "system-ui", "sans-serif"],
       },
     },
     colors: {
       transparent: "transparent",
       current: "currentColor",
-      black: "#0a0f16",
-      white: "#f8fafc",
+      black: "#0b0d11",
+      white: "#ffffff",
       gray: ice,
       neutral: ice,
       // Semantic theme surfaces (see :root / .dark in app.scss)

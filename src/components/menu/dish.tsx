@@ -176,7 +176,7 @@ export const MenuDish = ({
   return (
     <>
       <div
-        className="flex justify-center p-1 relative select-none"
+        className="relative flex select-none p-0.5"
         role="button"
         tabIndex={0}
         data-testid="menu-dish"
@@ -202,35 +202,31 @@ export const MenuDish = ({
           }
         }}
       >
-        <div
-          className="dish-tile flex-1 w-full min-h-[128px] rounded-xl cursor-pointer menu-item active:shadow-none flex text-foreground active:text-warning"
-          style={{
-            '--padding': '0'
-          } as any}
-        >
-          <div className="flex-shrink-0 self-center px-3">
+        <div className="dish-tile flex h-full w-full min-h-[116px] cursor-pointer flex-col justify-between gap-2 p-3.5 text-foreground">
+          <div className="flex items-start justify-between gap-2">
+            <h6
+              className="min-h-0 flex-1 line-clamp-2 text-pretty text-[16px] font-semibold leading-snug tracking-[-0.01em]"
+              title={item.name}
+            >
+              {item.name}
+            </h6>
             <img
               loading="lazy"
               src={imageSrc}
-              alt={item.name}
-              className="rounded-xl pointer-events-none w-12 h-12 object-cover shadow-[var(--elev-1)]"/>
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none h-9 w-9 flex-shrink-0 rounded-lg object-cover"
+            />
           </div>
-          <div className="flex flex-1 min-w-0 flex-col justify-between px-3 py-3 gap-1">
-            <span className="flex flex-row gap-2 items-center flex-wrap">
-              {showDishNumber && item.number != null && String(item.number).trim() !== '' && (
-                <span
-                  className="bg-primary/10 text-primary rounded-full py-0.5 px-2.5 text-xs font-bold"
-                  title={String(item.number)}
-                >
-                  #{String(item.number).trim()}
-                </span>
-              )}
-              <span className="text-warning font-extrabold text-[15px] tracking-tight">{withCurrency(price)}</span>
+          <div className="flex items-end justify-between gap-2">
+            {showDishNumber && item.number != null && String(item.number).trim() !== '' && (
+              <span className="text-[11.5px] font-medium text-muted tnum" title={String(item.number)}>
+                #{String(item.number).trim()}
+              </span>
+            )}
+            <span className="ml-auto text-[15px] font-semibold tnum" data-price>
+              {withCurrency(price)}
             </span>
-            <h6 className="flex-1 min-h-0 text-ellipsis line-clamp-2 text-pretty text-foreground font-semibold"
-                title={item.name}>
-              {item.name}
-            </h6>
           </div>
         </div>
         {dishCount(item) ? (

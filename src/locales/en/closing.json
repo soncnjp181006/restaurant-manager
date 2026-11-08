@@ -3,6 +3,8 @@
   "verifyClosingFailed": "Unable to verify closing cycle status. Please try again.",
   "tableLocked": "{{user}} is already taking order on this table",
   "floor": {
+    "title": "Floor plan",
+    "tables": "{{count}} tables",
     "switchTable": "Switch from Table {{table}} to another",
     "noFloors": "This terminal has no area or table to open a check on.",
     "noFloorsFix": "Create an area and its tables in Admin, then reload the cache on this device if they already exist.",

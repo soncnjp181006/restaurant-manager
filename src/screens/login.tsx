@@ -34,7 +34,6 @@ import {
   type GatewayLoginResponse,
 } from "@/lib/session.ts";
 import { fetchLoginBrandLogo } from "@/lib/branding.ts";
-import { LoginAurora } from "@/screens/login-aurora.tsx";
 import { AdminSetupWizard } from "@/components/auth/admin-setup.wizard";
 
 const TIME_ENTRY_CHECK_RETRIES = 3;
@@ -503,125 +502,165 @@ export const Login = () => {
   }
 
   return (
-    <div className="relative" data-testid="login-page">
+    <div className="login-shell" data-testid="login-page">
       <DocumentTitle parts={[t('login.title')]} />
-      <div className="bg-canvas flex flex-col lg:flex-row min-h-screen">
-        <aside
-          className="relative z-10 flex flex-col items-center justify-center gap-6 px-8 py-10 lg:w-2/5 lg:min-h-screen border-b lg:border-b-0 lg:border-r border-border bg-[linear-gradient(200deg,var(--accent-soft),transparent_55%)]"
-          data-testid="login-branding-panel"
-        >
-          {brandLogo && (
-            <>
 
-              {import.meta.env.VITE_RESTAURANT_NAME && (
-                <h1 className="text-4xl">{import.meta.env.VITE_RESTAURANT_NAME}</h1>
-              )}
-              <img
-                src={brandLogo}
-                alt={t('login.brandLogoAlt')}
-                className="max-h-28 sm:max-h-36 max-w-[220px] sm:max-w-[280px] object-contain"
-                data-testid="login-brand-logo"
-              />
-              <div className="w-24 sm:w-32 border-t border-border" aria-hidden="true" />
-            </>
-          )}
-          <img
-            src="/pwa-512.png"
-            alt={t('login.brandLogoAlt')}
-            className="w-28 h-28 sm:w-36 sm:h-36 object-contain rounded-2xl"
-            data-testid="login-brand-logo"
-          />
-        </aside>
-        <div className="relative isolate flex-1 flex justify-center items-center flex-col gap-8 px-4 py-10 overflow-hidden">
-          <LoginAurora />
-          <h4 className="text-4xl font-semibold tracking-tight text-foreground">
-            {t('login.title')}
-          </h4>
-          <div className="flex flex-col items-center gap-3">
+      <aside className="login-brand" data-testid="login-branding-panel">
+        <div className="relative z-10 flex items-center gap-2.5">
+          <span
+            aria-hidden="true"
+            className="grid h-8 w-8 place-items-center rounded-lg bg-foreground text-[13px] font-semibold text-canvas"
+          >
+            {(import.meta.env.VITE_RESTAURANT_NAME || 'P').trim().charAt(0).toUpperCase()}
+          </span>
+          <span className="text-[13.5px] font-semibold tracking-[-0.01em]">
+            {import.meta.env.VITE_RESTAURANT_NAME || 'POS'}
+          </span>
+        </div>
+
+        <div className="relative z-10 max-w-[460px]">
+          {brandLogo ? (
+            <img
+              src={brandLogo}
+              alt={t('login.brandLogoAlt')}
+              className="mb-10 max-h-24 max-w-[240px] object-contain"
+              data-testid="login-brand-logo"
+            />
+          ) : (
             <div
-              className="flex rounded-full border border-border/80 bg-surface/60 p-1 backdrop-blur"
-              data-testid="login-method-switcher"
+              role="img"
+              aria-label={t('login.brandLogoAlt')}
+              className="mb-10 grid h-24 w-24 place-items-center rounded-2xl bg-primary text-[40px] font-semibold leading-none text-primary-fg"
+              data-testid="login-brand-logo"
             >
-              {(['pin', 'form'] as const).map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  data-testid={m === 'pin' ? 'login-method-pin' : 'login-method-form'}
-                  aria-pressed={loginMethod === m}
-                  className={cn(
-                    'w-32 rounded-full px-6 py-2.5 text-[15px] font-semibold transition-all duration-200',
-                    loginMethod === m
-                      ? 'bg-primary text-primary-fg shadow-lg'
-                      : 'text-neutral-300 hover:text-neutral-100'
-                  )}
-                  onClick={() => {
-                    setLoginMethod(m);
-                    setError(false);
-                    setUsername('');
-                    setPassword('');
-                    setCode('');
-                  }}
-                >
-                  {m === 'pin' ? t('login.pin') : t('login.form')}
-                </button>
-              ))}
+              {(import.meta.env.VITE_RESTAURANT_NAME || 'P').trim().charAt(0).toUpperCase()}
             </div>
-            {needsBootstrap && (
-              <p
-                className="max-w-[420px] text-center text-sm text-neutral-400"
-                data-testid="login-bootstrap-hint"
-              >
-                {t('login.bootstrapHint', {
-                  defaultValue: 'First-time setup? Sign in with PIN 0000 to create the admin account.',
-                })}
-              </p>
-            )}
-          </div>
-          {page.locked && (
-            <div className="alert alert-warning" data-testid="login-locked-banner">{t('login.systemLocked', {
-              name: `${page?.lockedBy?.first_name ?? ''} ${page?.lockedBy?.last_name ?? ''}`.trim()
-            })}</div>
           )}
+
+          <h1 className="text-[38px] font-semibold leading-[1.08] tracking-[-0.03em]">
+            {import.meta.env.VITE_RESTAURANT_NAME || t('login.brandTitle', { defaultValue: 'Start your shift' })}
+          </h1>
+          <p className="mt-3 max-w-[38ch] text-[14px] leading-relaxed text-muted">
+            {t('login.brandTagline', {
+              defaultValue: 'Order taking, the floor and the day’s numbers in one place.',
+            })}
+          </p>
+        </div>
+
+      </aside>
+
+      <div className="login-form-column">
+        <div className="login-card">
+          <div>
+            <h2 className="text-[23px] font-semibold leading-tight tracking-[-0.02em]">
+              {t('login.title')}
+            </h2>
+            <p className="mt-1 text-[13px] leading-relaxed text-muted">
+              {loginMethod === 'pin'
+                ? t('login.pinHint', { defaultValue: 'Enter your 4-digit PIN to start.' })
+                : t('login.formHint', { defaultValue: 'Sign in with your username and password.' })}
+            </p>
+          </div>
+
+          <div
+            className="flex rounded-[10px] border border-border bg-surface p-0.5"
+            data-testid="login-method-switcher"
+          >
+            {(['pin', 'form'] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                data-testid={m === 'pin' ? 'login-method-pin' : 'login-method-form'}
+                aria-pressed={loginMethod === m}
+                data-active={loginMethod === m}
+                className="segment flex-1"
+                onClick={() => {
+                  setLoginMethod(m);
+                  setError(false);
+                  setUsername('');
+                  setPassword('');
+                  setCode('');
+                }}
+              >
+                {m === 'pin' ? t('login.pin') : t('login.form')}
+              </button>
+            ))}
+          </div>
+
+          {needsBootstrap && (
+            <p
+              className="rounded-lg border border-info/25 bg-info/8 px-3 py-2 text-[12px] leading-relaxed"
+              data-testid="login-bootstrap-hint"
+            >
+              {t('login.bootstrapHint', {
+                defaultValue: 'First-time setup? Sign in with PIN 0000 to create the admin account.',
+              })}
+            </p>
+          )}
+
+          {page.locked && (
+            <div
+              className="rounded-lg border border-warning/30 bg-warning/8 px-3 py-2 text-[12px] leading-relaxed"
+              data-testid="login-locked-banner"
+            >
+              {t('login.systemLocked', {
+                name: `${page?.lockedBy?.first_name ?? ''} ${page?.lockedBy?.last_name ?? ''}`.trim()
+              })}
+            </div>
+          )}
+
           {loginMethod === 'pin' && (
             <>
               <div
-                className={cn('flex items-center gap-3', error && 'login-error')}
+                className={cn('pin-dots', error && 'login-error')}
                 aria-hidden="true"
               >
                 {[0, 1, 2, 3].map((idx) => (
                   <span
                     key={idx}
-                    className={cn(
-                      'h-3 rounded-full transition-all duration-200',
-                      code.trim().length > idx
-                        ? 'w-8 bg-primary shadow-[0_0_12px_rgb(var(--primary)/0.5)]'
-                        : 'w-3 bg-neutral-600/70'
-                    )}
+                    className="pin-dot"
+                    data-filled={code.trim().length > idx}
                   />
                 ))}
               </div>
-              <div className="wrapper w-[400px]" data-testid="login-pin-pad">
-                <div className="grid grid-cols-3 gap-3 sm:gap-5 place-items-center">
-                  <button type="button" onClick={() => onKey('1')} className="btn-login">1</button>
-                  <button type="button" onClick={() => onKey('2')} className="btn-login">2</button>
-                  <button type="button" onClick={() => onKey('3')} className="btn-login">3</button>
-                  <button type="button" onClick={() => onKey('4')} className="btn-login">4</button>
-                  <button type="button" onClick={() => onKey('5')} className="btn-login">5</button>
-                  <button type="button" onClick={() => onKey('6')} className="btn-login">6</button>
-                  <button type="button" onClick={() => onKey('7')} className="btn-login">7</button>
-                  <button type="button" onClick={() => onKey('8')} className="btn-login">8</button>
-                  <button type="button" onClick={() => onKey('9')} className="btn-login">9</button>
-                  <button type="button" onClick={onBack} className="btn-login"><FontAwesomeIcon icon={faBackspace}/>
+
+              <div data-testid="login-pin-pad">
+                <div className="keypad">
+                  {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
+                    <button
+                      key={digit}
+                      type="button"
+                      onClick={() => onKey(digit)}
+                      className="login-key"
+                    >
+                      {digit}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    className="login-key !text-[17px]"
+                    aria-label={tCommon('actions.back')}
+                  >
+                    <FontAwesomeIcon icon={faBackspace} />
                   </button>
-                  <button type="button" onClick={() => onKey('0')} className="btn-login">0</button>
-                  <button type="button" onClick={onClear} className="btn-login danger">C</button>
+                  <button type="button" onClick={() => onKey('0')} className="login-key">0</button>
+                  <button
+                    type="button"
+                    onClick={onClear}
+                    className="login-key danger !text-[17px]"
+                    aria-label={tCommon('actions.clear')}
+                  >
+                    C
+                  </button>
                 </div>
               </div>
             </>
           )}
+
           {loginMethod === 'form' && (
             <form
-              className="w-[400px] flex flex-col gap-3"
+              className="flex flex-col gap-3"
               data-testid="login-form"
               onSubmit={async (event) => {
                 event.preventDefault();
@@ -629,7 +668,9 @@ export const Login = () => {
               }}
             >
               <div>
-                <label className="text-white" htmlFor="username">{t('login.username')}</label>
+                <label className="mb-1.5 block text-[12.5px] font-medium text-muted" htmlFor="username">
+                  {t('login.username')}
+                </label>
                 <Input
                   id="username"
                   data-testid="login-username"
@@ -639,7 +680,9 @@ export const Login = () => {
               </div>
 
               <div>
-                <label className="text-white" htmlFor="password">{t('login.password')}</label>
+                <label className="mb-1.5 block text-[12.5px] font-medium text-muted" htmlFor="password">
+                  {t('login.password')}
+                </label>
                 <Input
                   id="password"
                   data-testid="login-password"
@@ -648,7 +691,9 @@ export const Login = () => {
                   onChange={(event) => setPassword(event.target.value)}
                 />
               </div>
-              <Button type="submit" variant="primary" data-testid="login-submit">{t('login.submit')}</Button>
+              <Button type="submit" variant="primary" filled className="mt-1 w-full" size="lg" data-testid="login-submit">
+                {t('login.submit')}
+              </Button>
             </form>
           )}
         </div>
@@ -657,4 +702,5 @@ export const Login = () => {
       {clockInModal}
     </div>
   );
+
 }

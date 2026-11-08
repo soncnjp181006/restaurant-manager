@@ -39,30 +39,20 @@ export const MenuCategories = () => {
     }
   }, [categories, state.category]);
 
-  // Content-sized chips: `flex-auto` let a single category stretch across the
-  // whole bar, which reads as a full-width panel rather than a selector.
-  const categoryClasses = 'shrink-0 whitespace-nowrap !h-[56px] pressable rounded-full px-5';
-  const categoryStyles = {
-    '--padding': '0 1.25rem'
-  } as CSSProperties;
-
   return (
     <div data-testid="menu-categories">
-      <ScrollContainer className="flex flex-row gap-1 p-1" mouseScroll>
+      <ScrollContainer className="flex flex-row gap-1" mouseScroll>
         {categories.map((item, index) => (
           <button
             key={index}
             type="button"
             data-testid={`menu-category-${index}`}
-            className={cn(
-              categoryClasses,
-              state?.category?.id?.toString() === item?.id?.toString() ? 'bg-gradient' : 'bg-surface-elevated border-3 border-transparent select-none'
-            )}
+            data-active={state?.category?.id?.toString() === item?.id?.toString()}
+            className="category-chip"
             onClick={() => setState(prev => ({
               ...prev,
               category: item
             }))}
-            style={categoryStyles}
           >
             {item.name}
           </button>

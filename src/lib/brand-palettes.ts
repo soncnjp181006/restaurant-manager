@@ -8,42 +8,46 @@ import {
 /**
  * Every preset is cold (hue band ~180-260). Status colors stay semantic —
  * warning is still amber, danger still red — but each is tuned to sit on a
- * blue-tinted surface instead of a warm one.
+ * cool surface instead of a warm one.
  *
  * `classic` is the app default and the fallback for `custom` and for unknown
  * brand ids stored on disk, so recoloring it (rather than renaming it) is what
- * turns an existing install cold without a data migration.
+ * reskins an existing install without a data migration.
+ *
+ * Classic is "ink": achromatic graphite surfaces (only a 1-2% cool bias) and
+ * one saturated cobalt stamp for actions and selection. The neutral base is
+ * deliberately quiet so the four status colors keep their meaning, and so
+ * table/check state is the loudest thing on a busy screen.
  */
 const classicLight: BrandPalette = {
-  canvas: '226 234 243',
-  surface: '243 246 251',
+  canvas: '233 236 241',
+  surface: '245 247 249',
   surfaceElevated: '255 255 255',
-  foreground: '22 34 48',
-  muted: '88 108 130',
-  border: '206 218 231',
-  primary: '14 116 144',
+  foreground: '17 21 28',
+  muted: '88 99 113',
+  border: '217 223 231',
+  primary: '43 62 224',
   primaryFg: '255 255 255',
   warning: '180 83 9',
   danger: '190 18 60',
-  success: '13 148 136',
-  info: '2 132 199',
+  success: '13 116 110',
+  info: '3 105 161',
 };
 
 const classicDark: BrandPalette = {
-  // "Quầy đêm 2.0": deeper canvas, glass-friendly elevated layer, brighter
-  // cyan — must keep clearing the WCAG + cold-hue gates in
-  // brand-palettes.contrast.test.ts.
-  canvas: '6 10 17',
-  surface: '13 20 31',
-  surfaceElevated: '20 30 46',
-  foreground: '237 243 250',
-  muted: '139 161 183',
-  border: '42 58 78',
-  primary: '45 212 238',
-  primaryFg: '4 30 38',
-  warning: '252 194 60',
+  // Ink. Near-black graphite canvas, three barely-separated surface steps and
+  // a light cobalt that clears AA on every surface in both themes.
+  canvas: '10 12 16',
+  surface: '18 21 27',
+  surfaceElevated: '26 30 38',
+  foreground: '238 241 245',
+  muted: '154 163 176',
+  border: '44 50 61',
+  primary: '140 160 255',
+  primaryFg: '10 15 38',
+  warning: '251 191 36',
   danger: '251 113 133',
-  success: '63 219 160',
+  success: '52 211 153',
   info: '56 189 248',
 };
 
