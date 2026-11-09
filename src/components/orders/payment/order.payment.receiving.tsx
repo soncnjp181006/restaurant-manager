@@ -1,7 +1,7 @@
 import ScrollContainer from "react-indiana-drag-scroll";
 import {Button} from "@/components/common/input/button.tsx";
 import {cn, DENOMINATION_COINS, DENOMINATION_NOTES, withCurrency} from "@/lib/utils.ts";
-import {faClose, faPrint} from "@fortawesome/free-solid-svg-icons";
+import {faBackspace, faClose, faPrint} from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
 import {useEffect, useMemo, useState} from "react";
 import {PaymentType} from "@/api/model/payment_type.ts";
@@ -499,41 +499,70 @@ const OrderPaymentReceivingContent = ({
   const allTaxes = settings.taxes;
 
   return (
-    <div className="grid grid-cols-2 gap-5 h-[calc(100vh_-_120px_-_var(--app-toolbar-h))]" data-testid="payment-receiving">
-      <div className="bg-surface-elevated rounded-xl h-full" data-testid="payment-tender-panel">
-        <div className="mb-3 text-5xl p-5 text-center " data-testid="payment-tendered">
-          {withCurrency(tendered)}
+    <div className="grid h-full min-h-0 grid-cols-[minmax(0,1fr)_minmax(280px,320px)] gap-3" data-testid="payment-receiving">
+      <div
+        className="flex min-h-0 flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface-elevated"
+        data-testid="payment-tender-panel"
+      >
+        <div className="flex items-start justify-between gap-3 border-b border-border px-4 py-3">
+          <div className="min-w-0">
+            <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
+              {t('receiving.entry', { defaultValue: 'Amount received' })}
+            </div>
+            <div
+              className={cn(
+                "mt-1 text-[30px] font-semibold leading-none tnum",
+                selectedAmount.trim().length > 0 ? 'text-foreground' : 'text-muted/50',
+              )}
+              data-testid="payment-amount-entry"
+            >
+              {selectedAmount.trim().length > 0 ? selectedAmount : '0'}
+            </div>
+          </div>
+          <div className="flex flex-shrink-0 gap-1">
+            <button
+              type="button"
+              aria-label={t('receiving.backspace', { defaultValue: 'Backspace' })}
+              className="btn btn-secondary btn-flat btn-square !h-8 !w-8"
+              onClick={() => setSelectedAmount(prev => prev.slice(0, -1))}
+            >
+              <FontAwesomeIcon icon={faBackspace} className="text-[12px]" />
+            </button>
+            <button
+              type="button"
+              aria-label={t('receiving.clear', { defaultValue: 'Clear' })}
+              className="btn btn-secondary btn-flat !h-8 px-2 text-[11.5px]"
+              onClick={() => setSelectedAmount('')}
+            >
+              {t('receiving.clear', { defaultValue: 'Clear' })}
+            </button>
+          </div>
         </div>
-        <div
-          data-testid="payment-change-due"
-          className={
-          cn(
-            "mb-3 text-3xl p-5 text-center",
-            changeDue < 0 && 'text-danger-700',
-            changeDue > 0 && 'text-success-700'
-          )
-        }>
-          {changeDue < 0 ? t('receiving.remaining') : t('receiving.change')}: <span className="">{withCurrency(changeDue)}</span>
-        </div>
-        <div className="relative">
-          <ScrollContainer className="gap-3 flex overflow-x-auto mb-5" data-testid="payment-quick-amounts">
-          <span
-            className="btn btn-primary w-[100px] lg"
-            data-testid="payment-quick-exact"
-            onClick={() => {
-              if (!paymentTypes || paymentTypes.length === 0) {
-                return;
-              }
-              const pt = paymentTypes[0];
-              const payable = applyPaymentTypeTaxAndDiscount(pt);
-              void addPayment(payable, pt, payable);
-              setMode('quick');
-            }}
-          >{withCurrency(total)}</span>
-            {quickAmounts.reverse().map(item => (
-              <span
+
+        <div className="border-b border-border px-3 py-2.5" data-testid="payment-quick-amounts">
+          <div className="grid grid-cols-4 gap-1.5">
+            <button
+              type="button"
+              className="chip !h-8 justify-center !px-1 text-[11.5px] tnum"
+              data-emphasis="primary"
+              data-testid="payment-quick-exact"
+              onClick={() => {
+                if (!paymentTypes || paymentTypes.length === 0) {
+                  return;
+                }
+                const pt = paymentTypes[0];
+                const payable = applyPaymentTypeTaxAndDiscount(pt);
+                void addPayment(payable, pt, payable);
+                setMode('quick');
+              }}
+            >
+              {withCurrency(total)}
+            </button>
+            {[...quickAmounts].sort((a, b) => a - b).map(item => (
+              <button
+                type="button"
                 key={item}
-                className="btn btn-primary w-[100px] lg"
+                className="chip !h-8 justify-center !px-1 text-[11.5px] tnum"
                 onClick={() => {
                   if (!paymentTypes || paymentTypes.length === 0) {
                     return;
@@ -543,49 +572,21 @@ const OrderPaymentReceivingContent = ({
                   void addPayment(item, pt, payable);
                   setMode('quick');
                 }}
-              >{withCurrency(item)}</span>
+              >
+                {withCurrency(item)}
+              </button>
             ))}
-          </ScrollContainer>
-          {/*{!isCash && <div className="payment-disabled absolute w-full z-10 top-0 bg-surface/50 h-[48px]"></div>}*/}
+          </div>
         </div>
 
-        <ScrollContainer className="gap-5 flex overflow-x-auto mb-5" data-testid="payment-types">
-          {paymentTypes?.map(item => (
-            <Button
-              className="min-w-[150px]"
-              variant="primary"
-              key={item.id}
-              data-testid="payment-type"
-              onClick={() => {
-                const payable = applyPaymentTypeTaxAndDiscount(item);
-
-                if (selectedAmount.trim().length > 0) {
-                  void addPayment(selectedAmount, item, payable)
-                } else if (changeDue < 0) {
-                  const remaining = payable - tendered;
-                  const amt = remaining.toString();
-                  setSelectedAmount(amt);
-                  void addPayment(amt, item, payable)
-                } else {
-                  // Nothing typed and no remaining due – do nothing (card will be blocked inside addPayment)
-                }
-              }}
-              size="lg"
-            >
-              {item.name}
-            </Button>
-          ))}
-        </ScrollContainer>
-
-        <div className="flex justify-center items-center mb-3 text-xl h-[28px]" data-testid="payment-amount-entry">
-          {selectedAmount.trim().length > 0 && selectedAmount}
-        </div>
-
-        <div className="flex">
-          <div className="flex-1">
-            <div className="grid grid-cols-3 gap-3 mb-3" data-testid="payment-keypad">
-              {keyboardKeys.map(item => (
-                <Button key={item} size="xl" flat variant="primary" onClick={() => {
+        <div className="min-h-0 flex-1 p-3">
+          <div className="keypad pay-keypad h-full" data-testid="payment-keypad">
+            {keyboardKeys.map(item => (
+              <button
+                type="button"
+                key={item}
+                className="keypad-key"
+                onClick={() => {
                   if (mode === 'button') {
                     setSelectedAmount((prev: string) => {
                       return prev + item.toString()
@@ -595,98 +596,209 @@ const OrderPaymentReceivingContent = ({
                   }
 
                   setMode('button');
-                }}>
-                  {item}
-                </Button>
-              ))}
-              <Button size="xl" flat variant="primary" onClick={() => {
-                setSelectedAmount('')
-              }}>
-                C
-              </Button>
-            </div>
-            <div className="flex gap-5" data-testid="payment-finish-actions">
-              <span title={tempPrinted ? t('receiving.tempAlreadyPrinted') : undefined} className="flex-1 flex">
-                <Button
-                  variant={tempPrinted ? "warning" : "primary"}
-                  className="flex-1"
-                  flat
-                  icon={faPrint}
-                  size="lg"
-                  data-testid="payment-temp-bill"
-                  onClick={() => {
-                    void requestBillPrint({
-                      db,
-                      protectAction,
-                      orderId: order.id.toString(),
-                      printType: 'temp',
-                      printModule: 'orders.print_temp',
-                      description: 'Print temp bill',
-                      payload: { order: order.id.toString() },
-                      userId: page?.user?.id?.toString?.() ?? page?.user?.id,
-                      doPrint: async () => {
-                        const full = await fetchOrderFull(db, order.id);
-                        if (!full) {
-                          throw new Error('Failed to load order for temp bill print');
-                        }
-                        await dispatchPrint(db, PRINT_TYPE.presale_bill, {
-                          order: full,
-                          taxes: allTaxes
-                        }, {userId: page?.user?.id});
-                        // Deliberately falsy (this callback's declared contract is
-                        // `() => Promise<boolean>` and it always resolved to undefined
-                        // here): requestBillPrint only records the print attempt and
-                        // fires onPrinted for a truthy result, so returning
-                        // dispatchPrint()'s boolean would start writing order_print
-                        // rows and flip the temp-printed state. Needs sign-off.
-                        return false;
-                      },
-                      onPrinted: () => setTempPrinted(true),
-                    });
-                  }}
-                >{t('receiving.tempBill')}</Button>
-              </span>
-              <Button
-                variant="success"
-                className="flex-1"
-                filled
-                size="lg"
-                data-testid="payment-complete"
-                onClick={async () => {
-                  await protectAction(async () => await closeOrder(), {
-                    module: 'orders.complete',
-                    description: 'Complete order',
-                    payload: {
-                      order: order.id.toString()
-                    }
-                  });
                 }}
-                disabled={changeDue < 0 || closing || remote.isProcessing}
-                flat
-              >{t('receiving.complete')}</Button>
-            </div>
+              >
+                {item}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="keypad-key keypad-key--danger"
+              onClick={() => setSelectedAmount('')}
+            >
+              C
+            </button>
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-2 p-3 bg-surface-elevated rounded-xl h-full" data-testid="payment-lines">
-        <RemotePaymentPendingSlot/>
-        {payments.map(payment => (
-          <div
-            className="flex justify-between text-lg cursor-pointer"
-            key={payment.id}
-            data-testid="payment-line"
-            onClick={() => {
-              setPayments(prev => prev.filter(item => item.id !== payment.id))
-            }}
-          >
-            <strong className="flex gap-3 justify-center items-center">
-              <FontAwesomeIcon icon={faClose}
-                               className="text-danger-500 p-2 px-3 rounded border border-danger-500"/>
-              {payment.payment_type.name}
-            </strong>
-            <span>{withCurrency(payment.amount)}</span>
+
+      <div className="flex min-h-0 flex-col gap-3">
+        <div className="rounded-[var(--radius-card)] border border-border bg-surface-elevated p-4">
+          <div className="flex items-baseline justify-between gap-2">
+            <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
+              {t('receiving.due', { defaultValue: 'Amount due' })}
+            </span>
+            <span className="text-[11.5px] text-muted">
+              {changeDue >= 0
+                ? t('receiving.inFull', { defaultValue: 'Paid in full' })
+                : payments.length > 0
+                  ? t('receiving.partial', { defaultValue: 'Partial payment' })
+                  : null}
+            </span>
           </div>
-        ))}
+          <div className="mt-1 text-[30px] font-semibold leading-none tracking-[-0.02em] tnum">
+            {withCurrency(total)}
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3">
+            <div>
+              <div className="text-[11px] text-muted">
+                {t('receiving.tendered', { defaultValue: 'Tendered' })}
+              </div>
+              <div className="mt-0.5 text-[15px] font-semibold tnum" data-testid="payment-tendered">
+                {withCurrency(tendered)}
+              </div>
+            </div>
+            {payments.length > 0 && (
+              <div className="text-right">
+                <div
+                  className={cn(
+                    "text-[15px] font-semibold tnum",
+                    changeDue < 0 ? 'text-danger' : changeDue > 0 ? 'text-success' : 'text-muted',
+                  )}
+                  data-testid="payment-change-due"
+                >
+                  <div className="text-[11px] font-normal text-muted">
+                    {changeDue < 0 ? t('receiving.remaining') : t('receiving.change')}
+                  </div>
+                  {withCurrency(changeDue < 0 ? Math.abs(changeDue) : changeDue)}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface-elevated">
+          <div className="px-4 pb-1.5 pt-3 text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
+            {t('receiving.methods', { defaultValue: 'Payment method' })}
+          </div>
+          <div className="grid grid-cols-2 gap-1.5 px-3" data-testid="payment-types">
+            {paymentTypes?.map(item => (
+              <Button
+                className="method-btn justify-center !text-[12.5px]"
+                variant="secondary"
+                key={item.id}
+                data-testid="payment-type"
+                onClick={() => {
+                  const payable = applyPaymentTypeTaxAndDiscount(item);
+
+                  if (selectedAmount.trim().length > 0) {
+                    void addPayment(selectedAmount, item, payable)
+                  } else if (changeDue < 0) {
+                    const remaining = payable - tendered;
+                    const amt = remaining.toString();
+                    setSelectedAmount(amt);
+                    void addPayment(amt, item, payable)
+                  }
+                }}
+                size="lg"
+              >
+                {item.name}
+              </Button>
+            ))}
+            {(!paymentTypes || paymentTypes.length === 0) && (
+              <span className="col-span-2 px-1 py-2 text-[12px] text-muted">
+                {t('receiving.noMethods', { defaultValue: 'No payment method configured.' })}
+              </span>
+            )}
+          </div>
+
+          <div className="mt-3 flex items-center justify-between px-4 pb-1.5 pt-2 text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
+            <span>{t('receiving.added', { defaultValue: 'Taken' })}</span>
+            <span className="tnum normal-case tracking-normal">{payments.length}</span>
+          </div>
+
+          <div className="min-h-0 flex-1 overflow-y-auto px-2 clean-scroll" data-testid="payment-lines">
+            <RemotePaymentPendingSlot/>
+            {payments.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-1 px-4 py-6 text-center">
+                <p className="text-[12.5px] text-muted">
+                  {t('receiving.empty', { defaultValue: 'No payments yet' })}
+                </p>
+                <p className="text-[11.5px] text-muted/70">
+                  {t('receiving.emptyHint', { defaultValue: 'Enter an amount, then choose a method.' })}
+                </p>
+              </div>
+            ) : payments.map(payment => (
+              <button
+                type="button"
+                className="group flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left transition-colors hover:bg-danger/5"
+                key={payment.id}
+                data-testid="payment-line"
+                onClick={() => {
+                  setPayments(prev => prev.filter(item => item.id !== payment.id))
+                }}
+              >
+                <span className="flex min-w-0 items-center gap-2">
+                  <FontAwesomeIcon
+                    icon={faClose}
+                    className="text-[9px] text-muted transition-colors group-hover:text-danger"
+                  />
+                  <span className="truncate text-[12.5px] font-medium">
+                    {payment.payment_type.name}
+                  </span>
+                </span>
+                <span className="flex-shrink-0 text-[12.5px] font-semibold tnum">
+                  {withCurrency(payment.amount)}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className="border-t border-border p-3" data-testid="payment-finish-actions">
+            <Button
+              variant="primary"
+              filled
+              size="lg"
+              className="w-full"
+              data-testid="payment-complete"
+              isLoading={closing}
+              onClick={async () => {
+                await protectAction(async () => await closeOrder(), {
+                  module: 'orders.complete',
+                  description: 'Complete order',
+                  payload: {
+                    order: order.id.toString()
+                  }
+                });
+              }}
+              disabled={changeDue < 0 || closing || remote.isProcessing}
+            >{t('receiving.complete')}</Button>
+            <span
+              title={tempPrinted ? t('receiving.tempAlreadyPrinted') : undefined}
+              className="mt-1.5 flex"
+            >
+              <Button
+                variant={tempPrinted ? "warning" : "secondary"}
+                className="btn-flat w-full"
+                flat
+                icon={faPrint}
+                size="lg"
+                data-testid="payment-temp-bill"
+                onClick={() => {
+                  void requestBillPrint({
+                    db,
+                    protectAction,
+                    orderId: order.id.toString(),
+                    printType: 'temp',
+                    printModule: 'orders.print_temp',
+                    description: 'Print temp bill',
+                    payload: { order: order.id.toString() },
+                    userId: page?.user?.id?.toString?.() ?? page?.user?.id,
+                    doPrint: async () => {
+                      const full = await fetchOrderFull(db, order.id);
+                      if (!full) {
+                        throw new Error('Failed to load order for temp bill print');
+                      }
+                      await dispatchPrint(db, PRINT_TYPE.presale_bill, {
+                        order: full,
+                        taxes: allTaxes
+                      }, {userId: page?.user?.id});
+                      // Deliberately falsy (this callback's declared contract is
+                      // `() => Promise<boolean>` and it always resolved to undefined
+                      // here): requestBillPrint only records the print attempt and
+                      // fires onPrinted for a truthy result, so returning
+                      // dispatchPrint()'s boolean would start writing order_print
+                      // rows and flip the temp-printed state. Needs sign-off.
+                      return false;
+                    },
+                    onPrinted: () => setTempPrinted(true),
+                  });
+                }}
+              >{t('receiving.tempBill')}</Button>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   )

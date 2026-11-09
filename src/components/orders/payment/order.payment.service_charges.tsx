@@ -1,7 +1,7 @@
 import {Button} from "@/components/common/input/button.tsx";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {DiscountType} from "@/api/model/discount.ts";
-import {withCurrency} from "@/lib/utils.ts";
+import {cn, withCurrency} from "@/lib/utils.ts";
 import {Order} from "@/api/model/order.ts";
 import {useTranslation} from "react-i18next";
 import {useAtom} from "jotai";
@@ -88,70 +88,75 @@ export const OrderPaymentServiceCharges = ({
   }, [defaultFromSettings, allowServiceCharges, serviceCharge]);
 
   return (
-    <div className="flex flex-col justify-between h-full" data-testid="payment-panel-service-charges">
-      <div className="mb-5 flex justify-between flex-col gap-5">
-        <div className="text-xl bg-warning px-3 py-5 text-white">
-          {t('serviceCharges.defaultFromSettings')} <span className="font-semibold ">{defaultFromSettings.label}</span>
+    <div className="flex h-full flex-col" data-testid="payment-panel-service-charges">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto clean-scroll">
+        <div className="rounded-lg border border-warning/25 bg-warning/8 px-3 py-2 text-[12px] leading-relaxed">
+          {t('serviceCharges.defaultFromSettings')}{' '}
+          <span className="font-semibold">{defaultFromSettings.label}</span>
         </div>
-        <Button
-          className="min-w-[150px]"
-          variant="danger"
-          active={draftServiceCharge === 0}
+
+        <button
+          type="button"
+          className={cn('option-row', draftServiceCharge === 0 && 'option-row--active')}
+          aria-pressed={draftServiceCharge === 0}
           onClick={() => setDraftServiceCharge(0)}
-          size="lg"
         >
-          {t('serviceCharges.noServiceCharge')}
-        </Button>
-        <div className="flex gap-5 flex-wrap">
+          <span>{t('serviceCharges.noServiceCharge')}</span>
+        </button>
+
+        <div className="grid grid-cols-3 gap-1.5">
           {quickPercentOptions.map(item => (
-            <Button
-              className="min-w-[150px]"
-              variant="primary"
-              active={draftServiceCharge === item && draftServiceChargeType === DiscountType.Percent}
+            <button
+              type="button"
+              key={item}
+              className="chip !h-9 justify-center tnum"
+              data-active={draftServiceCharge === item && draftServiceChargeType === DiscountType.Percent}
               onClick={() => {
                 setDraftServiceCharge(item);
                 setDraftServiceChargeType(DiscountType.Percent);
               }}
-              key={item}
-              size="lg"
             >
               {item}%
-            </Button>
+            </button>
           ))}
         </div>
-        <div className="flex gap-3 flex-wrap">
+
+        <div className="rounded-[var(--radius-control)] border border-border bg-surface px-3 py-2 text-right text-[22px] font-semibold tnum">
+          {draftServiceChargeType === DiscountType.Percent
+            ? `${draftServiceCharge}%`
+            : withCurrency(draftServiceCharge)}
+        </div>
+
+        <div className="pay-keypad" style={{gridAutoRows: '44px', height: 'auto'}}>
           {keyboardKeys.map((item, index) => (
-            <Button
-              className="w-[70px]"
-              variant="primary"
-              key={index}
-              flat
-              disabled={item === ''}
-              onClick={() => {
-                if (item === '') return;
-                setDraftServiceChargeType(DiscountType.Fixed);
-                setDraftServiceCharge(Number(`${draftServiceChargeType === DiscountType.Fixed ? draftServiceCharge : ''}${item}`));
-              }}
-              size="lg"
-            >
-              {item}
-            </Button>
+            item === '' ? <span key={`empty-${index}`} /> : (
+              <button
+                type="button"
+                className="keypad-key"
+                key={index}
+                onClick={() => {
+                  setDraftServiceChargeType(DiscountType.Fixed);
+                  setDraftServiceCharge(Number(`${draftServiceChargeType === DiscountType.Fixed ? draftServiceCharge : ''}${item}`));
+                }}
+              >
+                {item}
+              </button>
+            )
           ))}
-          <Button
-            className="w-[70px]"
-            variant="danger"
-            flat
+          <button
+            type="button"
+            className="keypad-key keypad-key--danger"
             onClick={() => {
               setDraftServiceCharge(0);
               setDraftServiceChargeType(DiscountType.Fixed);
             }}
-            size="lg"
           >
             C
-          </Button>
+          </button>
         </div>
       </div>
-      <div>
+
+      <div className="mt-3 border-t border-border pt-3">
         <Button
           variant="primary"
           filled
@@ -163,7 +168,7 @@ export const OrderPaymentServiceCharges = ({
             setServiceChargeType(draftServiceChargeType);
           }}
         >
-          {t('common:actions.ok')}
+          {t('common:actions.apply')}
         </Button>
       </div>
     </div>

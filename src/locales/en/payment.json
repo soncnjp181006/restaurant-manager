@@ -43,7 +43,8 @@
     "items": "Items ({{count}})"
   },
   "tax": {
-    "noTax": "No Tax"
+    "noTax": "No Tax",
+    "hint": "Choose the tax rate applied to this order."
   },
   "discount": {
     "noDiscount": "No discount",
@@ -94,7 +95,19 @@
     "cannotAddCard": "Cannot add more payment for card",
     "exactCardAmount": "Added exact amount for card based payment",
     "alreadyClosed": "This order is already closed.",
-    "notOwner": "This order is being handled by another terminal."
+    "notOwner": "This order is being handled by another terminal.",
+    "due": "Amount due",
+    "entry": "Amount received",
+    "tendered": "Tendered",
+    "methods": "Payment method",
+    "added": "Taken",
+    "empty": "No payments yet",
+    "emptyHint": "Enter an amount, then choose a method.",
+    "noMethods": "No payment method configured.",
+    "partial": "Partial payment",
+    "inFull": "In full",
+    "clear": "Clear",
+    "backspace": "Delete digit"
   },
   "remote": {
     "remoteLabel": "{{name}} (Remote)",
@@ -137,5 +150,12 @@
     "payWithCard": "Pay with card",
     "payWithRazorpay": "Pay with Razorpay"
   },
-  "fiscalProvidersFailed": "Some fiscal providers failed; check the Integrations queue"
+  "fiscalProvidersFailed": "Some fiscal providers failed; check the Integrations queue",
+  "titleScreen": "Checkout",
+  "receipt": {
+    "item": "Item",
+    "qty": "Qty",
+    "price": "Price",
+    "total": "Total"
+  }
 }

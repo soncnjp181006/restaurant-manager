@@ -1,12 +1,6 @@
-import useApi, { SettingsData } from "@/api/db/use.api.ts";
-import { Tables } from "@/api/db/tables.ts";
-import React, { useEffect, useState } from "react";
-import { Button } from "@/components/common/input/button.tsx";
-import { Discount, DiscountType } from "@/api/model/discount.ts";
-import { withCurrency } from "@/lib/utils.ts";
-import {Textarea} from "@/components/common/input/textarea.tsx";
-import {Input} from "@/components/common/input/input.tsx";
-import {useTranslation} from "react-i18next";
+import React from "react";
+import { Textarea } from "@/components/common/input/textarea.tsx";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   notes?: string
@@ -16,18 +10,21 @@ interface Props {
 export const OrderPaymentNotes = ({
   notes, setNotes
 }: Props) => {
-  const {t} = useTranslation('payment');
+  const { t } = useTranslation('payment');
 
   return (
-    <div className="flex flex-col h-full" data-testid="payment-panel-notes">
-      <h5 className="text-3xl">{t('notes.title')}</h5>
-      <p className="text-muted">{t('notes.hint')}</p>
+    <div className="flex h-full flex-col gap-3" data-testid="payment-panel-notes">
+      <div>
+        <h4 className="text-[13.5px] font-semibold">{t('notes.title')}</h4>
+        <p className="mt-1 text-[12px] leading-relaxed text-muted">{t('notes.hint')}</p>
+      </div>
       <Textarea
         value={notes}
         onChange={(e) => setNotes(e.currentTarget.value)}
         enableKeyboard
-        rows={5}
+        rows={7}
+        className="flex-1 resize-none"
       />
     </div>
   );
-}
+};

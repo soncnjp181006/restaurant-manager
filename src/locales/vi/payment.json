@@ -43,7 +43,8 @@
     "items": "Món ({{count}})"
   },
   "tax": {
-    "noTax": "Không thuế"
+    "noTax": "Không thuế",
+    "hint": "Chọn mức thuế áp dụng cho đơn này."
   },
   "discount": {
     "noDiscount": "Không giảm giá",
@@ -94,7 +95,19 @@
     "cannotAddCard": "Không thể thêm thanh toán bằng thẻ",
     "exactCardAmount": "Đã thêm đúng số tiền cho thanh toán bằng thẻ",
     "alreadyClosed": "Đơn hàng này đã được đóng.",
-    "notOwner": "Đơn hàng này đang được xử lý trên một thiết bị đầu cuối khác."
+    "notOwner": "Đơn hàng này đang được xử lý trên một thiết bị đầu cuối khác.",
+    "due": "Cần thu",
+    "entry": "Khách đưa",
+    "tendered": "Đã thu",
+    "methods": "Phương thức thanh toán",
+    "added": "Đã ghi nhận",
+    "empty": "Chưa có thanh toán nào",
+    "emptyHint": "Nhập số tiền rồi chọn phương thức.",
+    "noMethods": "Chưa cấu hình phương thức thanh toán.",
+    "partial": "Thu một phần",
+    "inFull": "Thu đủ",
+    "clear": "Xoá",
+    "backspace": "Xoá một số"
   },
   "remote": {
     "remoteLabel": "{{name}} (Từ xa)",
@@ -137,5 +150,12 @@
     "payWithCard": "Thanh toán bằng thẻ",
     "payWithRazorpay": "Thanh toán bằng Razorpay"
   },
-  "fiscalProvidersFailed": "Một số nhà cung cấp hoá đơn điện tử gặp lỗi; kiểm tra hàng đợi Tích hợp"
+  "fiscalProvidersFailed": "Một số nhà cung cấp hoá đơn điện tử gặp lỗi; kiểm tra hàng đợi Tích hợp",
+  "titleScreen": "Thanh toán",
+  "receipt": {
+    "item": "Món",
+    "qty": "SL",
+    "price": "Đơn giá",
+    "total": "Tổng"
+  }
 }

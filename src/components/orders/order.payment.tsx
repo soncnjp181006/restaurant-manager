@@ -658,163 +658,176 @@ export const OrderPayment = ({
     onClose();
   };
 
-  const [pageState] = useAtom(appPage);
-  const {
-    showTotalInOrderCard = false,
-    showModifierPriceInOrderCard = false,
-    showModifiersInOrderCard = false,
-    showQuantityInOrderCard = false,
-    showPriceInOrderCard = false,
-    showGroupsInOrderCard = false,
-  } = pageState.menuConfig ?? {};
+
+  const modeTitle = mode === PaymentOptions.Tax
+    ? t('tabs.tax')
+    : mode === PaymentOptions.Discount
+      ? t('tabs.discount')
+      : mode === PaymentOptions.Coupon
+        ? t('tabs.coupon')
+        : mode === PaymentOptions['Service Charges']
+          ? t('tabs.serviceCharges', {
+            value: serviceCharge,
+            unit: serviceChargeType === DiscountType.Percent ? '%' : '',
+          })
+          : t('tabs.notes');
+
+  const totalCount = getOrderFilteredItems(order).length;
+  const rowClass = (active: boolean) => cn('pay-row', active && 'pay-row--active');
 
   return (
     <Modal
-      title={t('title', {invoice: getInvoiceNumber(order)})}
+      title={t('titleScreen', {defaultValue: 'Checkout'})}
       open={true}
       onClose={closeModal}
       size="full"
     >
-      <div className="grid grid-cols-4 gap-5 mb-0 select-none" data-testid="payment-screen">
-        <div className="bg-surface-elevated rounded-xl flex flex-col overflow-auto h-[calc(100vh_-_120px_-_var(--app-toolbar-h))]" data-testid="payment-order-summary">
-          <div className="p-3 flex gap-3 flex-col">
+      <div
+        className="grid h-[calc(100vh_-_140px_-_var(--app-toolbar-h))] min-h-0 select-none grid-cols-[minmax(0,320px)_minmax(0,340px)_minmax(0,1fr)] gap-3"
+        data-testid="payment-screen"
+      >
+        <div
+          className="flex min-h-0 flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface-elevated"
+          data-testid="payment-order-summary"
+        >
+          <div className="flex flex-col gap-2 border-b border-border p-4">
             <OrderHeader order={order} tempPrinted={tempPrinted}/>
             <OrderTimes order={order}/>
-            <div className="separator h-[2px]" style={{'--size': '10px', '--space': '5px'} as CSSProperties}></div>
-            <ScrollContainer className="gap-1 flex flex-col">
-              <div className="overflow-ellipsis max-h-[170px]" data-testid="payment-line-items">
-                {getOrderFilteredItems(order).map(item => (
-                  <OrderItemName
-                    key={item.id}
-                    item={item}
-                    showPrice={showPriceInOrderCard}
-                    showModifierPrice={showModifierPriceInOrderCard}
-                    showQuantity={showQuantityInOrderCard}
-                    showTotal={showTotalInOrderCard}
-                    showGroups={showGroupsInOrderCard}
-                    showModifiers={showModifiersInOrderCard}
-                  />
-                  // <div className="flex gap-3 hover:bg-surface" key={item.id}>
-                  //   <div className="flex-1 whitespace-break-spaces">{item.item.name}</div>
-                  //   <div className="text-right w-[50px] flex-shrink-0">{formatNumber(item.quantity)}</div>
-                  //   <div className="text-right w-[80px] flex-shrink-0">{formatNumber(item.price)}</div>
-                  //   {showTotalInPaymentCard && (
-                  //     <div className="text-right w-[80px] flex-shrink-0">{formatNumber(item.quantity * item.price)}</div>
-                  //   )}
-                  // </div>
-                ))}
-              </div>
-            </ScrollContainer>
-            <div className="separator h-[2px]" style={{'--size': '10px', '--space': '5px'} as CSSProperties}></div>
           </div>
-          <div className="flex flex-col font-bold text-lg" data-testid="payment-totals">
-            <div className="flex justify-between p-3">
-              <div>{t('totals.items', {count: getOrderFilteredItems(order).length})}</div>
-              <div className="text-right">{withCurrency(itemsTotal)}</div>
+
+          <ScrollContainer className="min-h-0 flex-1 overflow-y-auto px-4 py-3 clean-scroll">
+            <div className="flex items-center gap-2 px-2 pb-1 text-[10px] font-medium uppercase tracking-[0.06em] text-muted">
+              <span className="flex-1 pl-2.5">{t('receipt.item', {defaultValue: 'Item'})}</span>
+              <span className="w-[50px] text-right">{t('receipt.qty', {defaultValue: 'Qty'})}</span>
+              <span className="w-[70px] text-right">{t('receipt.price', {defaultValue: 'Price'})}</span>
+              <span className="w-[70px] text-right">{t('receipt.total', {defaultValue: 'Total'})}</span>
             </div>
-            <div
+
+            <div className="flex flex-col" data-testid="payment-line-items">
+              {getOrderFilteredItems(order).map(item => (
+                <OrderItemName
+                  key={item.id}
+                  item={item}
+                  showPrice
+                  showQuantity
+                  showTotal
+                  showModifierPrice
+                  showGroups={false}
+                  showModifiers
+                />
+              ))}
+            </div>
+          </ScrollContainer>
+
+          <div className="border-t border-border bg-surface px-3 py-2" data-testid="payment-totals">
+            <div className="flex items-baseline justify-between px-1 py-1 text-[12.5px]">
+              <span className="text-muted">{t('totals.items', {count: totalCount})}</span>
+              <span className="tnum">{withCurrency(itemsTotal)}</span>
+            </div>
+
+            <button
+              type="button"
               data-testid="payment-row-tax"
-              className={
-              cn(
-                "flex justify-between p-3 cursor-pointer",
-                mode === PaymentOptions.Tax && 'bg-neutral-900 text-warning'
-              )
-            } onClick={() => {
-              protectAction(() => setMode(PaymentOptions.Tax), {
-                module: 'orders.apply_tax',
-                description: 'Apply tax',
-                payload: {
-                  order: order.id.toString()
-                }
-              });
-            }}>
-              <div>
+              className={rowClass(mode === PaymentOptions.Tax)}
+              onClick={() => {
+                protectAction(() => setMode(PaymentOptions.Tax), {
+                  module: 'orders.apply_tax',
+                  description: 'Apply tax',
+                  payload: {
+                    order: order.id.toString()
+                  }
+                });
+              }}
+            >
+              <span className="pay-row-label">
                 {tax
                   ? t('tabs.taxWithRate', {name: tax.name, rate: tax.rate})
-                  : t('tabs.tax')}{' '}
-                <FontAwesomeIcon icon={faPencil}/>
-              </div>
-              <div className="text-right">{withCurrency(taxAmount)}</div>
-            </div>
+                  : t('tabs.tax')}
+              </span>
+              <span className="pay-row-amt">
+                {withCurrency(taxAmount)}
+                <FontAwesomeIcon icon={faPencil} className="pay-row-edit"/>
+              </span>
+            </button>
 
-            <div
+            <button
+              type="button"
               data-testid="payment-row-discount"
-              className={
-              cn(
-                "flex justify-between p-3 cursor-pointer",
-                mode === PaymentOptions.Discount && 'bg-neutral-900 text-warning'
-              )
-            } onClick={() => {
-              protectAction(() => setMode(PaymentOptions.Discount), {
-                module: 'orders.apply_discount',
-                description: 'Apply discount',
-                payload: {
-                  order: order.id.toString()
-                }
-              });
-            }}>
-              <div>
-                {t('tabs.discount')}{' '}
-                {cartTotals.discountLines.length > 0 && `(${cartTotals.discountLines.length})`}{' '}
-                <FontAwesomeIcon icon={faPencil}/>
-              </div>
-              <div className="text-right">{withCurrency(cartTotals.discountTotal)}</div>
-            </div>
+              className={rowClass(mode === PaymentOptions.Discount)}
+              onClick={() => {
+                protectAction(() => setMode(PaymentOptions.Discount), {
+                  module: 'orders.apply_discount',
+                  description: 'Apply discount',
+                  payload: {
+                    order: order.id.toString()
+                  }
+                });
+              }}
+            >
+              <span className="pay-row-label">
+                {t('tabs.discount')}
+                {cartTotals.discountLines.length > 0 && ` (${cartTotals.discountLines.length})`}
+              </span>
+              <span className="pay-row-amt">
+                {withCurrency(cartTotals.discountTotal)}
+                <FontAwesomeIcon icon={faPencil} className="pay-row-edit"/>
+              </span>
+            </button>
 
-            <div
+            <button
+              type="button"
               data-testid="payment-row-coupon"
-              className={
-              cn(
-                "flex justify-between p-3 cursor-pointer",
-                mode === PaymentOptions.Coupon && 'bg-neutral-900 text-warning'
-              )
-            } onClick={() => {
-              protectAction(() => setMode(PaymentOptions.Coupon), {
-                module: 'orders.apply_coupon',
-                description: 'Apply coupon',
-                payload: {
-                  order: order.id.toString()
-                }
-              });
-            }}>
-              <div>{t('tabs.coupon')} <FontAwesomeIcon icon={faPencil}/></div>
-              <div className="text-right">{withCurrency(couponAmount)}</div>
-            </div>
+              className={rowClass(mode === PaymentOptions.Coupon)}
+              onClick={() => {
+                protectAction(() => setMode(PaymentOptions.Coupon), {
+                  module: 'orders.apply_coupon',
+                  description: 'Apply coupon',
+                  payload: {
+                    order: order.id.toString()
+                  }
+                });
+              }}
+            >
+              <span className="pay-row-label">{t('tabs.coupon')}</span>
+              <span className="pay-row-amt">
+                {withCurrency(couponAmount)}
+                <FontAwesomeIcon icon={faPencil} className="pay-row-edit"/>
+              </span>
+            </button>
 
-            <div
+            <button
+              type="button"
               data-testid="payment-row-service-charges"
-              className={
-              cn(
-                "flex justify-between p-3 cursor-pointer",
-                mode === PaymentOptions['Service Charges'] && 'bg-neutral-900 text-warning'
-              )
-            } onClick={() => {
-              protectAction(() => setMode(PaymentOptions['Service Charges']), {
-                module: 'orders.apply_service_charges',
-                description: 'Apply service charges',
-                payload: {
-                  order: order.id.toString()
-                }
-              });
-            }}>
-              <div>{t('tabs.serviceCharges', {
-                value: serviceCharge,
-                unit: serviceChargeType === DiscountType.Percent ? '%' : ''
-              })}{' '}
-                <FontAwesomeIcon icon={faPencil}/></div>
-              <div className="text-right">{withCurrency(serviceChargeAmount)}</div>
-            </div>
+              className={rowClass(mode === PaymentOptions['Service Charges'])}
+              onClick={() => {
+                protectAction(() => setMode(PaymentOptions['Service Charges']), {
+                  module: 'orders.apply_service_charges',
+                  description: 'Apply service charges',
+                  payload: {
+                    order: order.id.toString()
+                  }
+                });
+              }}
+            >
+              <span className="pay-row-label">
+                {t('tabs.serviceCharges', {
+                  value: serviceCharge,
+                  unit: serviceChargeType === DiscountType.Percent ? '%' : ''
+                })}
+              </span>
+              <span className="pay-row-amt">
+                {withCurrency(serviceChargeAmount)}
+                <FontAwesomeIcon icon={faPencil} className="pay-row-edit"/>
+              </span>
+            </button>
 
             {Object.keys(extras).map(extra => (
-              <div
-                className={
-                  cn(
-                    "flex justify-between p-3 cursor-pointer",
-                    extras[extra] === 0 ? 'line-through decoration-2' : ''
-                  )
-                }
+              <button
+                type="button"
+                className={cn('pay-row', extras[extra] === 0 && 'opacity-45')}
                 key={extra}
                 data-testid="payment-row-extra"
+                aria-pressed={extras[extra] !== 0}
                 onClick={() => {
                   protectAction(() => setExtraToggles(prev => ({
                     ...prev,
@@ -828,66 +841,82 @@ export const OrderPayment = ({
                   });
                 }}
               >
-                <div>{extra}</div>
-                <div className="text-right">{withCurrency(extras[extra])}</div>
-              </div>
+                <span className={cn('pay-row-label', extras[extra] === 0 && 'line-through')}>{extra}</span>
+                <span className="pay-row-amt">{withCurrency(extras[extra])}</span>
+              </button>
             ))}
-            <div
-              data-testid="payment-row-notes"
-              className={
-              cn(
-                "flex justify-between p-3 cursor-pointer",
-                mode === PaymentOptions.Notes && 'bg-neutral-900 text-warning'
-              )
-            } onClick={() => setMode(PaymentOptions.Notes)}>
-              <div>{t('tabs.notes')} <FontAwesomeIcon icon={faPencil}/></div>
-              <div className="text-right">{notes}</div>
-            </div>
 
-            <div className="flex justify-between p-3" data-testid="payment-total-row">
-              <div className="text-2xl">{t('tabs.total')}</div>
-              <div className="text-right text-2xl">{withCurrency(total)}</div>
+            <button
+              type="button"
+              data-testid="payment-row-notes"
+              className={rowClass(mode === PaymentOptions.Notes)}
+              onClick={() => setMode(PaymentOptions.Notes)}
+            >
+              <span className="pay-row-label max-w-[55%] truncate">{notes || t('tabs.notes')}</span>
+              <span className="pay-row-amt">
+                <FontAwesomeIcon icon={faPencil} className="pay-row-edit !opacity-100"/>
+              </span>
+            </button>
+
+            <div
+              className="mt-2 flex items-baseline justify-between gap-2 border-t border-border px-1 pt-2.5"
+              data-testid="payment-total-row"
+            >
+              <span className="text-[13px] font-medium">{t('tabs.total')}</span>
+              <span className="text-[24px] font-semibold leading-none tracking-[-0.01em] tnum">
+                {withCurrency(total)}
+              </span>
             </div>
           </div>
         </div>
-        <div className="bg-surface-elevated rounded-xl flex flex-col p-3 h-[calc(100vh_-_120px_-_var(--app-toolbar-h))]" data-testid="payment-adjust-panel">
-          {mode === PaymentOptions.Tax && (
-            <OrderPaymentTax tax={tax} setTax={setTax}/>
-          )}
-          {mode === PaymentOptions.Discount && (
-            <OrderPaymentDiscountEngine
-              order={order}
-              discountLines={discountLines.filter(l => l.applicationType === 'manual')}
-              automaticLines={cartTotals.discountLines.filter(l => l.applicationType === 'automatic')}
-              onApply={(manualLines) => {
-                const autoLines = cartTotals.discountLines.filter(l => l.applicationType === 'automatic');
-                setDiscountLines([...autoLines, ...manualLines]);
-              }}
-            />
-          )}
-          {mode === PaymentOptions.Coupon && (
-            <OrderPaymentCoupon
-              coupon={coupon}
-              couponAmount={couponAmount}
-              isApplying={isApplyingCoupon}
-              onApply={applyCoupon}
-              onClear={clearCoupon}
-            />
-          )}
-          {mode === PaymentOptions['Service Charges'] && (
-            <OrderPaymentServiceCharges
-              serviceCharge={serviceCharge}
-              setServiceCharge={setServiceCharge}
-              setServiceChargeType={setServiceChargeType}
-              serviceChargeType={serviceChargeType}
-              order={order}
-            />
-          )}
-          {mode === PaymentOptions.Notes && (
-            <OrderPaymentNotes setNotes={setNotes} notes={notes}/>
-          )}
+
+        <div
+          className="flex min-h-0 flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface-elevated"
+          data-testid="payment-adjust-panel"
+        >
+          <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
+            <h3 className="truncate text-[13px] font-semibold">{modeTitle}</h3>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto p-4 clean-scroll">
+            {mode === PaymentOptions.Tax && (
+              <OrderPaymentTax tax={tax} setTax={setTax}/>
+            )}
+            {mode === PaymentOptions.Discount && (
+              <OrderPaymentDiscountEngine
+                order={order}
+                discountLines={discountLines.filter(l => l.applicationType === 'manual')}
+                automaticLines={cartTotals.discountLines.filter(l => l.applicationType === 'automatic')}
+                onApply={(manualLines) => {
+                  const autoLines = cartTotals.discountLines.filter(l => l.applicationType === 'automatic');
+                  setDiscountLines([...autoLines, ...manualLines]);
+                }}
+              />
+            )}
+            {mode === PaymentOptions.Coupon && (
+              <OrderPaymentCoupon
+                coupon={coupon}
+                couponAmount={couponAmount}
+                isApplying={isApplyingCoupon}
+                onApply={applyCoupon}
+                onClear={clearCoupon}
+              />
+            )}
+            {mode === PaymentOptions['Service Charges'] && (
+              <OrderPaymentServiceCharges
+                serviceCharge={serviceCharge}
+                setServiceCharge={setServiceCharge}
+                setServiceChargeType={setServiceChargeType}
+                serviceChargeType={serviceChargeType}
+                order={order}
+              />
+            )}
+            {mode === PaymentOptions.Notes && (
+              <OrderPaymentNotes setNotes={setNotes} notes={notes}/>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col bg-surface rounded-xl col-span-2" data-testid="payment-receiving-column">
+
+        <div className="min-h-0" data-testid="payment-receiving-column">
           <OrderPaymentReceiving
             order={order}
             total={total}

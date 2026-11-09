@@ -17,60 +17,70 @@ export const OrderHeader = ({
 }: Props) => {
   const {t} = useTranslation('orders');
 
-  const colors = {
-    [OrderStatus["In Progress"]]: 'bg-warning-100 text-warning-700',
-    [OrderStatus["Paid"]]: 'bg-success-100 text-success-700',
-    [OrderStatus["Completed"]]: 'bg-success-100 text-success-700',
-    [OrderStatus['Merged']]: 'bg-info-100 text-info-700',
-    [OrderStatus['Spilt']]: 'bg-info-100 text-info-700',
-    [OrderStatus['Cancelled']]: 'bg-danger-100 text-danger-700',
+  const statusTone: Record<string, string> = {
+    [OrderStatus["In Progress"]]: 'bg-warning/10 text-warning',
+    [OrderStatus["Paid"]]: 'bg-success/10 text-success',
+    [OrderStatus["Completed"]]: 'bg-success/10 text-success',
+    [OrderStatus['Merged']]: 'bg-info/10 text-info',
+    [OrderStatus['Spilt']]: 'bg-info/10 text-info',
+    [OrderStatus['Cancelled']]: 'bg-danger/10 text-danger',
   };
 
   return (
-    <div className="flex justify-between">
-      <div className="flex gap-3">
-        {order?.table && (
-          <span className="p-3 text-lg rounded-xl min-w-[56px] flex justify-center items-center" style={{
-            color: order?.table?.color,
-            background: order?.table?.background
-          }}>{getTableLabel(order?.table)}</span>
-        )}
-
-        <div className="flex flex-col items-start gap-1">
-          <span className="font-bold">
-            {order?.order_type?.name
-              ? t('header.orderNumber', {invoice: getInvoiceNumber(order), orderType: order.order_type.name})
-              : t('header.orderNumberNoType', {invoice: getInvoiceNumber(order)})}
-          </span>
-          <span className={
-            cn(
-              "uppercase p-1 px-3 rounded-lg text-sm font-bold flex-grow-0 flex-shrink",
-              colors[order?.status]
-            )
-          }>{translateOrderStatus(t, order?.status)}</span>
-
-        </div>
-      </div>
-      <div className="flex flex-col items-end gap-1">
-        <div className="flex items-center gap-2">
-          {tempPrinted && (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start gap-2.5">
+          {order?.table && (
             <span
-              className="text-warning-600 bg-warning-100 px-2 py-1 rounded"
-              title={t('print.tempAlreadyPrinted')}
+              className="grid h-10 w-12 flex-shrink-0 place-items-center whitespace-nowrap rounded-lg px-1 text-[11px] font-semibold leading-tight"
+              style={{
+                color: order?.table?.color,
+                background: order?.table?.background,
+                boxShadow: 'inset 0 0 0 1px rgb(var(--border))'
+              }}
             >
-              <FontAwesomeIcon icon={faPrint} />
+              {getTableLabel(order?.table)}
             </span>
           )}
-          <span className="text-lg font-bold bg-surface dark:bg-neutral-700 px-2 rounded">{order?.user?.first_name}</span>
-        </div>
-        {order?.customer && (
-          <>
-            <span>{order?.customer?.name}</span>
-            <span>{order?.customer?.phone}</span>
-          </>
-        )}
 
+          <div className="min-w-0">
+            <div className="truncate text-[13.5px] font-semibold leading-snug">
+              {order?.order_type?.name
+                ? t('header.orderNumber', {invoice: getInvoiceNumber(order), orderType: order.order_type.name})
+                : t('header.orderNumberNoType', {invoice: getInvoiceNumber(order)})}
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              <span
+                className={cn(
+                  "rounded px-1.5 py-0.5 text-[10.5px] font-medium leading-tight",
+                  statusTone[order?.status]
+                )}
+              >
+                {translateOrderStatus(t, order?.status)}
+              </span>
+              {order?.user?.first_name && (
+                <span className="truncate text-[11.5px] text-muted">{order.user.first_name}</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {tempPrinted && (
+          <span
+            className="flex-shrink-0 text-[11px] text-warning"
+            title={t('print.tempAlreadyPrinted')}
+          >
+            <FontAwesomeIcon icon={faPrint} />
+          </span>
+        )}
       </div>
+
+      {order?.customer && (
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[11.5px] text-muted">
+          <span className="truncate font-medium text-foreground">{order?.customer?.name}</span>
+          {order?.customer?.phone && <span className="tnum">{order?.customer?.phone}</span>}
+        </div>
+      )}
     </div>
   )
 }
