@@ -28,6 +28,8 @@
     "shifts": "Shifts",
     "accessTab": "Access {{title}}",
     "ariaLabel": "Administration tabs",
+    "prevGroup": "Previous function group",
+    "nextGroup": "Next function group",
     "securityAlerts": "Security Alerts",
     "catalogPublish": "Catalog publish"
   },

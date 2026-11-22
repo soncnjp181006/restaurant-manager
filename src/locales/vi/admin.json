@@ -28,6 +28,8 @@
     "shifts": "Ca làm",
     "accessTab": "Quyền {{title}}",
     "ariaLabel": "Tab quản trị",
+    "prevGroup": "Nhóm chức năng trước",
+    "nextGroup": "Nhóm chức năng sau",
     "securityAlerts": "Cảnh báo bảo mật",
     "catalogPublish": "Xuất bản danh mục"
   },

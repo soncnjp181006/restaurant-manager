@@ -1,7 +1,7 @@
 import { TabList, Tabs } from "react-aria-components";
 import { Layout } from "@/screens/partials/layout.tsx";
 import { Tab, TabPanel } from "@/components/common/react-aria/tabs";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { AdminFloors } from "@/components/settings/floors";
 import { AdminTables } from "@/components/settings/tables";
 import { AdminSelfOrder } from "@/components/settings/self_order";
@@ -18,7 +18,8 @@ import { AdminTaxes } from "@/components/settings/taxes";
 import { AdminUsers } from "@/components/settings/users";
 import { SecurityAlertsPanel } from "@/components/admin/security-alerts";
 import { CatalogPublishPanel } from "@/components/settings/catalog_publish";
-import ScrollContainer from "react-indiana-drag-scroll";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import {AdminMenus} from "@/components/settings/menu";
 import {AdminPrints} from "@/components/settings/prints";
 import { AdminExtras } from "@/components/settings/extras";
@@ -114,8 +115,12 @@ const ADMIN_TAB_BUILD_MODULES: Record<AdminTabKey, string> = {
   qr_ordering: 'admin.qr_ordering',
 };
 
+const ADMIN_TAB_PAGE_SIZE = 10;
+
 export const Admin = () => {
   const [selected, setSelected] = useState<AdminTabKey>('dishes');
+  const [page, setPage] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
   const {protectAction} = useSecurity();
   const { t } = useTranslation('admin');
   const { t: tNav } = useTranslation('navigation');
@@ -153,40 +158,97 @@ export const Admin = () => {
 
   const selectedKey = (firstPageKey(pages, selected) || 'dishes') as AdminTabKey;
 
+  const pageCount = Math.max(1, Math.ceil(tabKeys.length / ADMIN_TAB_PAGE_SIZE));
+
+  // Build-module filtering can shrink the tab list; keep the page index in range.
+  useEffect(() => {
+    setPage((prev) => Math.min(prev, pageCount - 1));
+  }, [pageCount]);
+
+  const pageStart = page * ADMIN_TAB_PAGE_SIZE;
+  const visibleTabKeys = tabKeys.slice(pageStart, pageStart + ADMIN_TAB_PAGE_SIZE);
+
+  const goToPage = (next: number) => {
+    setDirection(next > page ? 1 : -1);
+    setPage(Math.min(Math.max(next, 0), pageCount - 1));
+  };
+
+  const arrowButtonClass = "flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface text-foreground cursor-pointer hover:bg-neutral-100 active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-primary-500";
+
   return (
     <Layout>
       <DocumentTitle parts={[pages[selectedKey]?.title, tNav('sidebar.manage')]} />
-      <div data-testid="admin-page">
+      <div data-testid="admin-page" className="h-full min-h-0 flex flex-col">
         <Tabs
-          className="w-full flex flex-col"
+          className="w-full flex flex-col flex-1 min-h-0"
           selectedKey={selectedKey}
           onSelectionChange={(key: string) => protectAction(() => setSelected(key as AdminTabKey), {
             module: ADMIN_TAB_MODULES[key as AdminTabKey],
             description: t('tabs.accessTab', { title: pages[key as AdminTabKey].title }),
           })}
         >
-          <ScrollContainer mouseScroll hideScrollbars={false} className="flex-grow-0 flex-shrink">
+          <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
+            {tabKeys.map((key) => (
+              <TabPanel id={key} key={key} className="bg-surface-elevated shadow flex-grow flex-shrink-0">
+                <div data-testid={`admin-panel-${key}`}>
+                  {pages[key].component}
+                </div>
+              </TabPanel>
+            ))}
+          </div>
+          <div
+            data-testid="admin-tabs-bar"
+            className="flex-shrink-0 border-t border-border bg-surface-elevated px-3 pt-2 pb-1 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]"
+          >
             <TabList
+              key={page}
               aria-label={t('tabs.ariaLabel')}
-              className="flex flex-row gap-3 px-1 py-3 flex-nowrap"
+              className={`flex flex-row items-stretch justify-center gap-2 w-full flex-nowrap [&>div]:min-w-0 [&>div]:flex-initial [&>div]:px-3 animate-in fade-in duration-200 motion-reduce:animate-none ${
+                direction === 1 ? 'slide-in-from-right-4' : 'slide-in-from-left-4'
+              }`}
               data-testid="admin-tabs"
             >
-              {tabKeys.map(key => (
+              {visibleTabKeys.map(key => (
                 <Tab
                   id={key}
                   key={key}
                   data-testid={`admin-tab-${key}`}
-                >{t(TAB_I18N_KEYS[key])}</Tab>
+                >
+                  <span className="min-w-0 truncate" title={t(TAB_I18N_KEYS[key])}>
+                    {t(TAB_I18N_KEYS[key])}
+                  </span>
+                </Tab>
               ))}
             </TabList>
-          </ScrollContainer>
-          {tabKeys.map((key) => (
-            <TabPanel id={key} key={key} className="bg-surface-elevated shadow flex-grow flex-shrink-0">
-              <div data-testid={`admin-panel-${key}`}>
-                {pages[key].component}
-              </div>
-            </TabPanel>
-          ))}
+            {pageCount > 1 && (
+              <nav
+                data-testid="admin-tabs-nav"
+                aria-label={t('tabs.ariaLabel')}
+                className="mt-1 flex items-center justify-center gap-3 py-1"
+              >
+                <button
+                  type="button"
+                  data-testid="admin-tabs-prev"
+                  aria-label={t('tabs.prevGroup')}
+                  disabled={page === 0}
+                  onClick={() => goToPage(page - 1)}
+                  className={arrowButtonClass}
+                >
+                  <FontAwesomeIcon icon={faChevronLeft} />
+                </button>
+                <button
+                  type="button"
+                  data-testid="admin-tabs-next"
+                  aria-label={t('tabs.nextGroup')}
+                  disabled={page === pageCount - 1}
+                  onClick={() => goToPage(page + 1)}
+                  className={arrowButtonClass}
+                >
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </button>
+              </nav>
+            )}
+          </div>
         </Tabs>
       </div>
     </Layout>
